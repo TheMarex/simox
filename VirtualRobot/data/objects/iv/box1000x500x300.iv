@@ -1,0 +1,10 @@
+#Inventor V1.0 ascii
+
+Separator {
+
+    Cube {
+        width 1000
+        height 500
+        depth 300
+   }
+}

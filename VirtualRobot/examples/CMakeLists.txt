@@ -1,0 +1,10 @@
+
+ADD_SUBDIRECTORY(loadRobot)
+if (SOQT_FOUND)
+	ADD_SUBDIRECTORY(RobotViewer)
+	ADD_SUBDIRECTORY(SceneViewer)
+	ADD_SUBDIRECTORY(Jacobi)
+	ADD_SUBDIRECTORY(reachability)
+	ADD_SUBDIRECTORY(stability)
+    ADD_SUBDIRECTORY(GraspEditor)
+endif()	

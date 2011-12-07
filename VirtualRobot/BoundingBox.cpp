@@ -1,0 +1,80 @@
+#include "BoundingBox.h"
+
+namespace VirtualRobot {
+
+BoundingBox::BoundingBox()
+{
+	min = max = Eigen::Vector3f::Zero();
+}
+
+bool BoundingBox::planeGoesThrough( const MathTools::Plane &p )
+{
+	bool left = false;
+	bool right = false;
+
+	std::vector < Eigen::Vector3f > points = getPoints();
+
+	for (int i=0;i<8;i++)
+		if ( MathTools::onNormalPointingSide(points[i],p) )
+			left = true;
+		else
+			right = true;
+
+	if (!left || !right)
+		return false;
+
+	return true;
+}
+
+
+BoundingBox::BoundingBox(const std::vector< Eigen::Vector3f > &p)
+{
+	if (p.size()==0)
+		min = max = Eigen::Vector3f::Zero();
+	else
+	{
+		min = p[0];
+		max = p[0];
+
+		for (size_t i=1;i<p.size();i++)
+		{
+			for (int j=0;j<3;j++)
+			{
+				if (p[i](j) < min(j))
+					min(j) = p[i](j);
+				if (p[i](j) > max(j))
+					max(j) = p[i](j);
+			}
+		}
+	}
+}
+
+std::vector <Eigen::Vector3f> BoundingBox::getPoints()
+{
+	std::vector < Eigen::Vector3f > points;
+
+	points.push_back(Eigen::Vector3f(min(0),min(1),min(2)));
+	points.push_back(Eigen::Vector3f(min(0),min(1),max(2)));
+	points.push_back(Eigen::Vector3f(min(0),max(1),min(2)));
+	points.push_back(Eigen::Vector3f(min(0),max(1),max(2)));
+
+	points.push_back(Eigen::Vector3f(max(0),min(1),min(2)));
+	points.push_back(Eigen::Vector3f(max(0),min(1),max(2)));
+	points.push_back(Eigen::Vector3f(max(0),max(1),min(2)));
+	points.push_back(Eigen::Vector3f(max(0),max(1),max(2)));
+
+	return points;
+}
+
+void BoundingBox::print()
+{
+	cout << "* Bounding Box\n";
+	std::streamsize pr = cout.precision(2);
+	cout << "** min <" << min(0) << "," << min(1) << "," << min(2) << ">\n";
+	cout << "** max <" << max(0) << "," << max(1) << "," << max(2) << ">\n";
+	cout.precision(pr);
+
+}
+
+
+}

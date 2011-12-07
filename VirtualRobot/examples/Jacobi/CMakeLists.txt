@@ -1,0 +1,50 @@
+PROJECT ( JacobiDemo )
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
+
+CMAKE_POLICY(VERSION 2.6)
+
+IF(NOT DEFINED VR_CONFIGURED)
+	INCLUDE(../../config.cmake)
+ENDIF()
+
+IF(SIMOX_USE_COIN_VISUALIZATION)
+    LINK_DIRECTORIES(${SIMOX_LIB_DIR})
+    
+	    
+	# the variable "demo_SRCS" contains all .cpp files of this project
+	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/JacobiDemo.cpp ${PROJECT_SOURCE_DIR}/JacobiWindow.cpp)
+	FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/JacobiWindow.h)
+
+  
+################################## moc'ing ##############################
+    set(GUI_MOC_HDRS
+        ${PROJECT_SOURCE_DIR}/JacobiWindow.h
+    )
+
+    set(GUI_UIS
+        ${PROJECT_SOURCE_DIR}/Jacobi.ui
+    )
+
+	#MESSAGE("GUI_MOC_HDRS: ${GUI_MOC_HDRS}")
+	#MESSAGE("GUI_UIS: ${GUI_UIS}")
+    qt4_wrap_cpp(demo_SRCS ${GUI_MOC_HDRS})
+    qt4_wrap_ui(UI_HEADER ${GUI_UIS})
+    get_filename_component(UI_HEADER_DIR ${UI_HEADER} PATH)
+	#MESSAGE("UI_HEADER: ${UI_HEADER}")
+    list(APPEND demo_INCS ${UI_HEADER})
+
+    include_directories(${UI_HEADER_DIR})
+
+
+    ADD_EXECUTABLE(${PROJECT_NAME} ${demo_SRCS} ${demo_INCS})
+    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${SIMOX_BIN_DIR})
+
+#MESSAGE("QT_LIBRARIES :" ${QT_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME} VirtualRobot ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${SoQt_LIBRARIES})
+    INCLUDE_DIRECTORIES(${SoQt_INCLUDE_DIRS})
+    INCLUDE(${QT_USE_FILE})
+    ADD_DEFINITIONS(-DSOQT_DLL)
+
+    MESSAGE( STATUS ${PROJECT_NAME} " will be placed into " ${SIMOX_BIN_DIR})
+ENDIF(SIMOX_USE_COIN_VISUALIZATION)

@@ -1,0 +1,27 @@
+#Inventor V2.1 ascii
+
+Separator {
+
+	Transform {
+		translation 0 0 0
+		rotation 0 1 0 1.57
+	}
+
+
+	Transform {
+		translation 0 0 0
+		rotation 1 0 0 -1.57
+	}
+
+	Transform {
+		translation 0 0 -30
+		rotation 0 0 1 0
+	}
+
+	
+
+	Separator 
+	{
+		File {name hip_conv.wrl }
+	}
+}

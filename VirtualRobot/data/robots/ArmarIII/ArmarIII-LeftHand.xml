@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Robot Type="MyDemoRobotType" StandardName="ExampleRobo" RootNode="Hand L Base">
+
+
+    <RobotNode name="Hand L Base">
+		<Child name="TCP L"/>
+		<Child name="GCP L"/>
+		<Child name="Hand Palm 1 L"/>
+	</RobotNode>
+	
+	<RobotNode name="TCP L">
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="130"/>
+				</Transform>
+			</PreJointTransform>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+		</Visualization>
+	</RobotNode>
+	
+	<RobotNode name="GCP L">
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<Translation X="-40" Y="-20" Z="90"/>
+					<rollpitchyaw roll="0" pitch="-45" yaw="0" units="degree"/>
+				</Transform>
+			</PreJointTransform>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+		</Visualization>
+	</RobotNode>
+	
+	<RobotNode name="Hand Palm 1 L">
+		<Joint type="revolute">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="36"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="0" z="1"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/palm1_l.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/palm1_l.iv</File>
+		</CollisionModel>
+		
+		<Child name="Hand Palm 2 L"/>
+		<Child name="Thumb L"/>
+	</RobotNode>
+	
+	<RobotNode name="Hand Palm 2 L">
+		<Joint type="revolute">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="-8.7" y="13.5" z="29.25"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/palm2_l.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/palm2_l.iv</File>
+		</CollisionModel>
+		
+		<Child name="Pinky L"/>
+		<Child name="Ring L"/>
+		<Child name="Middle L"/>
+		<Child name="Index L"/>
+	</RobotNode>
+	
+	<RobotNode name="Thumb L">
+		<Joint type="revolute">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="-48.9" y="0" z="29.25"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+		</Visualization>
+		
+		<Child name="Thumb L J0"/>
+	</RobotNode>
+	
+	<RobotNode name="Thumb L J0">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="0"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/thumb_l1.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/thumb_l1.iv</File>
+		</CollisionModel>
+		
+		<Child name="Thumb L J1"/>
+	</RobotNode>
+	
+	<RobotNode name="Thumb L J1">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="-40.2" y="0" z="0"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/thumb_l2.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/thumb_l2.iv</File>
+		</CollisionModel>
+	</RobotNode>
+	
+	<RobotNode name="Pinky L">
+		<Joint type="revolute">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="-73" z="40.4"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+		</Visualization>
+		
+		<Child name="Pinky L J0"/>
+	</RobotNode>
+	
+	<RobotNode name="Pinky L J0">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="0"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/pinky_l1.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/pinky_l1.iv</File>
+		</CollisionModel>
+		
+		<Child name="Pinky L J1"/>
+	</RobotNode>
+	
+	<RobotNode name="Pinky L J1">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="40.2"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/pinky_l2.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/pinky_l2.iv</File>
+		</CollisionModel>
+	</RobotNode>
+	
+	<RobotNode name="Ring L">
+		<Joint type="revolute">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="-51" z="40.4"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+		</Visualization>
+		
+		<Child name="Ring L J0"/>
+	</RobotNode>
+	
+	<RobotNode name="Ring L J0">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="0"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/ring_l1.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/ring_l1.iv</File>
+		</CollisionModel>
+		
+		<Child name="Ring L J1"/>
+	</RobotNode>
+	
+	<RobotNode name="Ring L J1">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="40.2"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/ring_l2.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/ring_l2.iv</File>
+		</CollisionModel>
+	</RobotNode>
+	
+	<RobotNode name="Middle L">
+		<Joint type="revolute">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="-27" z="40.4"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+		</Visualization>
+		
+		<Child name="Middle L J0"/>
+	</RobotNode>
+	
+	<RobotNode name="Middle L J0">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="0"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/middle_l1.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/middle_l1.iv</File>
+		</CollisionModel>
+		
+		<Child name="Middle L J1"/>
+	</RobotNode>
+	
+	<RobotNode name="Middle L J1">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="40.2"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/middle_l2.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/middle_l2.iv</File>
+		</CollisionModel>
+	</RobotNode>
+	
+	<RobotNode name="Index L">
+		<Joint type="revolute">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="40.2"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+		</Visualization>
+		
+		<Child name="Index L J0"/>
+	</RobotNode>
+	
+	<RobotNode name="Index L J0">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="0"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/index_l1.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/index_l1.iv</File>
+		</CollisionModel>
+		
+		<Child name="Index L J1"/>
+	</RobotNode>
+	
+	<RobotNode name="Index L J1">
+		<Joint type="revolute">
+			<Limits unit="degree" lo="0" hi="180"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="40.2"/>
+				</Transform>
+			</PreJointTransform>
+			<Axis x="0" y="-1" z="0"/>
+		</Joint>
+		
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+			<File type="Inventor">fullmodel/index_l2.iv</File>
+		</Visualization>
+		
+		<CollisionModel>
+			<File type="Inventor">collisionModel/index_l2.iv</File>
+		</CollisionModel>
+	</RobotNode>
+
+	<Endeffector name="Hand L" base="Hand L Base" tcp="TCP L" gcp="GCP L">
+		<Static>
+			<Node name="Hand Palm 1 L"/>
+			<Node name="Hand Palm 2 L"/>
+		</Static>
+		<Actor name="Thumb Left">
+			<Node name="Thumb L J0" considerCollisions="Actors"/>
+			<Node name="Thumb L J1" considerCollisions="All"/>
+		</Actor>
+		<Actor name="Index Left">
+			<Node name="Index L J0" considerCollisions="Actors"/>
+			<Node name="Index L J1" considerCollisions="All"/>
+		</Actor>
+		<Actor name="Middle Left">
+			<Node name="Middle L J0" considerCollisions="Actors"/>
+			<Node name="Middle L J1" considerCollisions="All"/>
+		</Actor>
+		<Actor name="Ring Left">
+			<Node name="Ring L J0" considerCollisions="Actors"/>
+			<Node name="Ring L J1" considerCollisions="All"/>
+		</Actor>
+		<Actor name="Pinky Left">
+			<Node name="Pinky L J0" considerCollisions="Actors"/>
+			<Node name="Pinky L J1" considerCollisions="All"/>
+		</Actor>
+	</Endeffector>
+
+</Robot>

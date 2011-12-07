@@ -1,0 +1,11 @@
+#Inventor V2.1 ascii
+
+Separator { 
+	Transform {
+		rotation 1 0 0 -1.57
+	}
+
+	File { 
+		name "armar/neck/neck_yaw_link.iv"
+	}
+} 

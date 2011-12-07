@@ -1,0 +1,2 @@
+ADD_VR_TEST(DHParameterTest)
+ADD_VR_TEST(TransformationTest)

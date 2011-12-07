@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Robot Type="ArmarIII-Head" StandardName="Head" RootNode="Head">
+
+  <RobotNode name="Head"/>
+    	<Visualization enable="true">
+		<CoordinateAxis enable="true" scaling="1" text="Axis1"/>
+	</Visualization>
+    	<Child name="Neck_1_Pitch"/>
+  </RobotNode>
+
+  <RobotNode name="Neck_1_Pitch"/>
+    	<Limits unit="degree" lo="-45" hi="45"/>
+    	<Joint type="revolute" offset="0">
+		<Axis x="-1" y="0" z="0"/>			
+	</Joint>
+	<Visualization>
+		<File>fullModel/neck_pitch_link.iv</File>
+	</Visualization>
+	<Child name="Neck_2_Roll"/>
+  </RobotNode>
+<!--
+  <RobotNode name="Neck_2_Roll"/>
+	<Limits unit="degree" lo="-45" hi="45"/>
+	<Joint type="revolute" offset="0">
+		<Axis x="=" y="1" z="0"/>			
+	</Joint>
+	<Visualization>
+		<FileA>fullModel/neck_yaw_link.iv</File>
+	</Visualization>
+    <Child name="Neck_3_Yaw"/>
+  </RobotNode>
+
+  <RobotNode name="Neck_3_Yaw"/>
+    	<Limits unit="degree" lo="-45" max ="45"/>
+    	<Joint type="revolute" offset="0">
+		<Axis x="=" y="0" z="-1"/>			
+	</Joint>
+    	<Visualization>
+      		<File>fullModel/neck_roll_link.iv</File>
+    	</Visualization>
+    <!-- Child name="Head_Tilt"/ -->
+  </RobotNode>
+<!--
+  <ChildJoint>
+    <Name value="Head_Tilt"/>
+    <Limits min="-45" max ="45"/>
+    <JointTransformation>
+      <RotationAxis X="1" Y="0" Z="0"/>
+      <TranslationFromParent X="0" Y="0" Z="120"/>
+    </JointTransformation>
+    <Visualization>
+      <IVModel file="fullModel/head.iv"/>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+    <CollisionChecking>
+      <IVModel file="collisionModel/head.iv"/>
+      <UseBoundingBoxes value="0"/>
+      <Enable value="1"/>
+    </CollisionChecking>
+    <ChildNode name="Head Center"/>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Head Center"/>
+    <DH>
+      <d value="54.5"/>
+      <alpha value="-90"/>
+    </DH>
+    <Visualization>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+    <ChildNode name="Cameras"/>
+    <ChildNode name="Jaw"/>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Jaw"/>
+    <JointValueOffset value="15"/>
+    <JointTransformation>
+      <RotationAxis X="-1" Y="0" Z="0"/>
+      <TranslationFromParent X="0" Y="-10" Z="0"/>
+    </JointTransformation>
+    <Visualization>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+      <IVModel file="fullModel/jaw.iv"/>
+    </Visualization>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Cameras"/>
+    <DH>
+      <d value="100"/>
+      <alphaJoint value="1"/>
+    </DH>
+    <Visualization>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+    <ChildNode name="Eye_Left_Dummy"/>
+    <ChildNode name="Eye_Right_Dummy"/>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Eye_Left_Dummy"/>
+    <DH>
+      <a value="-46.5"/>
+      <alpha value="90"/>
+    </DH>
+    <Visualization>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+    <ChildNode name="Eye_Left"/>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Eye_Right_Dummy"/>
+    <DH>
+      <a value="46.5"/>
+      <alpha value="90"/>
+    </DH>
+    <Visualization>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+    <ChildNode name="Eye_Right"/>
+  </ChildJoint>
+
+
+  <ChildJoint>
+    <Name value="Eye_Left"/>
+    <DH>
+      <alpha value="-90"/>
+      <thetaJoint value="1"/>
+    </DH>
+    <Visualization>
+      <CoordinateAxis enable="0" scaling="2.5"/>
+      <IVModel file="fullModel/eye_link_l.iv"/>
+    </Visualization>
+    <ChildNode name="Eye_Left_Model"/>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Eye_Right"/>
+    <DH>
+      <alpha value="-90"/>
+      <thetaJoint value="1"/>
+    </DH>
+    <Visualization>
+      <CoordinateAxis enable="0" scaling="2.5"/>
+    </Visualization>
+    <Visualization>
+      <IVModel file="fullModel/eye_link_r.iv"/>
+    </Visualization>
+    <ChildNode name="Eye_Right_Model"/>
+  </ChildJoint>
+
+
+
+  <ChildJoint>
+    <Name value="Eye_Left_Model"/>
+    <DH>
+      <a value="0"/>
+    </DH>
+    <Visualization>
+      <IVModel file="fullModel/eye_l.iv"/>
+    
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+    <Sensors>
+      <Camera>
+        <Name value="LeftEyeCam"/>
+        <offset x="0" y="18" z="0"/>
+       
+        <orientation rot_x="1" rot_y="0" rot_z="0" angle="90"/>
+
+      </Camera>
+    </Sensors>
+    <ChildNode name="Lid Left Bottom"/>
+    <ChildNode name="Lid Left Top"/>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Lid Left Bottom"/>
+    <JointValueOffset value="50"/>
+    <JointTransformation>
+      <RotationAxis X="-1" Y="0" Z="0"/>
+      <TranslationFromParent X="0" Y="0" Z="0"/>
+    </JointTransformation>
+    <Visualization>
+      <IVModel file="fullModel/lid_l_bottom.iv"/>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Lid Left Top"/>
+    <JointValueOffset value="50"/>
+    <JointTransformation>
+      <RotationAxis X="1" Y="0" Z="0"/>
+      <TranslationFromParent X="0" Y="0" Z="0"/>
+    </JointTransformation>
+    <Visualization>
+      <IVModel file="fullModel/lid_l_top.iv"/>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+  </ChildJoint>
+
+
+  <ChildJoint>
+    <Name value="Eye_Right_Model"/>
+    <DH>
+      <a value="0"/>
+    </DH>
+    <Visualization>
+      <IVModel file="fullModel/eye_r.iv"/>
+      
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+    <Sensors>
+      <Camera>
+        <Name value="RightEyeCam"/>
+        <offset x="0" y="18" z="0"/>
+        
+        <orientation rot_x="1" rot_y="0" rot_z="0" angle="90"/>
+      
+      </Camera>
+    </Sensors>
+    <ChildNode name="Lid Right Bottom"/>
+    <ChildNode name="Lid Right Top"/>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Lid Right Bottom"/>
+    <JointValueOffset value="50"/>
+    <JointTransformation>
+      <RotationAxis X="-1" Y="0" Z="0"/>
+      <TranslationFromParent X="0" Y="0" Z="0"/>
+    </JointTransformation>
+    <Visualization>
+      <IVModel file="fullModel/lid_r_bottom.iv"/>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+  </ChildJoint>
+
+  <ChildJoint>
+    <Name value="Lid Right Top"/>
+    <JointValueOffset value="50"/>
+    <JointTransformation>
+      <RotationAxis X="1" Y="0" Z="0"/>
+      <TranslationFromParent X="0" Y="0" Z="0"/>
+    </JointTransformation>
+    <Visualization>
+      <IVModel file="fullModel/lid_r_top.iv"/>
+      <CoordinateAxis enable="0" scaling="4.0"/>
+    </Visualization>
+  </ChildJoint>
+-->
+
+</Robot>

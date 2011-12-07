@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Robot Type="iCub" RootNode="iCubRoot">
+	
+	<RobotNode name="iCubRoot">
+		<Visualization enable="true">
+			<CoordinateAxis  type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
+		<Child name="UpperBody"/>
+		<Child name="LowerBody"/>
+	</RobotNode>
+	
+	<RobotNode name="UpperBody">
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<matrix4x4>
+						<row1 c1="0" c2="-1" c3="0"  c4="0"/>
+						<row2 c1="0" c2="0"  c3="-1" c4="0"/>
+						<row3 c1="1" c2="0"  c3="0"  c4="0"/>
+						<row4 c1="0" c2="0"  c3="0"  c4="1"/>
+					</matrix4x4>
+				</Transform>
+			</PreJointTransform>
+		</Joint>
+		<Child name="Torso1"/>
+	</RobotNode>
+
+	
+	<RobotNode name="Torso1">
+		<Joint type="revolute">
+			<DH a="32" d="0" theta="0" alpha="90" units="degree"/>
+			<Limits unit="degree" lo="-22" hi="84"/>
+		</Joint>
+		<Child name="Torso2"/>
+	</RobotNode>
+	
+	<RobotNode name="Torso2">
+		<Joint type="revolute">
+			<DH a="0" d="-5.5" theta="-90" alpha="90" units="degree"/>
+			<Limits unit="degree" lo="-39" hi="39"/>
+		</Joint>
+		<Child name="CenterArms"/>
+	</RobotNode>
+
+	<RobotNode name="CenterArms">
+		<Joint type="fixed">
+			<DH a="0" d="-143.3" theta="0" alpha="0" units="degree"/>
+		</Joint>
+		<ChildFromRobot>
+			<File importEEF="true">iCub_LeftArm_BBoxColModel.xml</File>
+		</ChildFromRobot>
+		<ChildFromRobot>
+			<File importEEF="true">iCub_RightArm_BBoxColModel.xml</File>
+		</ChildFromRobot>
+		<ChildFromRobot>
+			<File>iCub_Head_BBoxColModel.xml</File>
+		</ChildFromRobot>
+		<Child name="UpperBodyModel"/>
+	</RobotNode>
+		
+	<RobotNode name="UpperBodyModel">
+		<Visualization enable="true">
+			<File type="Inventor">model/upperbody.iv</File>
+		</Visualization>
+		<CollisionModel>
+			<File type="Inventor" boundingbox="true">model/upperbodyCol.iv</File>
+		</CollisionModel>
+	</RobotNode>
+
+
+
+	<RobotNode name="LowerBody">
+		<Visualization enable="true">
+			<File type="Inventor">model/hip.iv</File>
+		</Visualization>
+		<CollisionModel>
+			<File type="Inventor" boundingbox="true">model/hipCol.iv</File>
+		</CollisionModel>
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<matrix4x4>
+						<row1 c1="1" c2="0"  c3="0" c4="0"/>
+						<row2 c1="0" c2="0"  c3="1" c4="0"/>
+						<row3 c1="0" c2="-1" c3="0" c4="-119.9"/>
+						<row4 c1="0" c2="0"  c3="0" c4="1"/>
+					</matrix4x4>
+				</Transform>
+			</prejointtransform>
+		</Joint>
+		<ChildFromRobot>
+			<File>iCub_LeftLeg_BBoxColModel.xml</File>
+		</ChildFromRobot>		
+		<ChildFromRobot>
+			<File>iCub_RightLeg_BBoxColModel.xml</File>
+		</ChildFromRobot>
+	</RobotNode>
+
+	
+	<!--
+	
+	<RobotNode name="Dummy_Platform">
+		<Joint type="fixed">
+			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+		</Joint>
+	</RobotNode>
+	
+	<RobotNode name="X_Platform">
+		<Joint type="prismatic">
+			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
+			<Limits unit="mm" lo="-10000" hi="10000"/>
+		</Joint>
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+		</Visualization>
+		<Child name="Y_Platform"/>
+	</RobotNode>
+	
+	<RobotNode name="Y_Platform">
+		<Joint type="prismatic">
+			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
+			<Limits unit="mm" lo="-10000" hi="10000"/>
+		</Joint>
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
+		</Visualization>
+		<Child name="Yaw_Platform"/>
+	</RobotNode-->
+	
+
+
+	
+
+</Robot>

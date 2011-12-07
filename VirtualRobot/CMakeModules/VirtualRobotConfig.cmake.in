@@ -1,0 +1,19 @@
+##  Copyright (c) 2011, Karlsruhe Institute of Technology (Manfred Kroehnert)
+
+# - Config file for the VirtualRobot package
+# It defines the following variables
+#  VIRTUAL_ROBOT_INCLUDE_DIRS - include directories for VirtualRobot
+#  VIRTUAL_ROBOT_LIBRARY_DIRS - library directories for VirtualRobot (normally not used!)
+#  VIRTUAL_ROBOT_LIBRARIES    - libraries to link against
+#  VIRTUAL_ROBOT_EXECUTABLES   - the VirtualRobot executable
+
+# Tell the user project where to find VirtualRobot headers and libraries
+SET(VIRTUAL_ROBOT_INCLUDE_DIRS "@VIRTUAL_ROBOT_INCLUDE_DIRS@")
+SET(VIRTUAL_ROBOT_LIBRARY_DIRS "@VIRTUAL_ROBOT_LIB_DIRS@")
+
+# VirtualRobot library dependencies (contains definitions for IMPORTED targets)
+include("@VIRTUAL_ROBOT_CMAKE_DIR@/VirtualRobotLibraryDepends.cmake")
+
+# These are IMPORTED targets created by VirtualRobotLibraryDepends.cmake
+SET(VIRTUAL_ROBOT_LIBRARIES "@VIRTUAL_ROBOT_LIBRARIES@")
+SET(VIRTUAL_ROBOT_EXECUTABLES "@VIRTUAL_ROBOT_EXECUTABLES@")

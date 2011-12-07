@@ -1,0 +1,8 @@
+#Inventor V1.0 ascii
+
+Separator {
+
+    Sphere {
+        radius 10
+   }
+}

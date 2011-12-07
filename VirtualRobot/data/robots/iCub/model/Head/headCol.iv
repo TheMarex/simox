@@ -1,0 +1,14 @@
+#Inventor V2.1 ascii
+
+Separator {
+
+	Transform {
+		translation 0 90 -25
+		rotation 1 0 0 1.57
+	}	
+
+	Separator 
+	{
+		File {name head_conv.wrl }
+	}
+}

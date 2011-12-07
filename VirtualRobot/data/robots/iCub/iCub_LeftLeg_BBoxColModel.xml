@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Robot Type="iCub_LeftLeg" StandardName="iCub_LeftLeg" RootNode="LowerBody L">
+
+
+	<RobotNode name="LowerBody L">
+		<Visualization enable="true">
+			<CoordinateAxis  type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<matrix4x4>
+						<row1 c1="1" c2="0"  c3="0" c4="0"/>
+						<row2 c1="0" c2="1"  c3="0" c4="0"/>
+						<row3 c1="0" c2="0"  c3="1" c4="-68.1"/>
+						<row4 c1="0" c2="0"  c3="0" c4="1"/>
+					</matrix4x4>
+				</Transform>
+			</prejointtransform>
+		</Joint>
+		<Child name="Waist1 L"/>
+	</RobotNode>
+
+
+	
+	<RobotNode name="Waist1 L">
+		<Joint type="revolute">
+			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
+			<Limits unit="degree" lo="-44" hi="132"/>
+		</Joint>
+		<Child name="Waist2 L"/>
+	</RobotNode>
+	
+
+	<RobotNode name="Waist2 L">
+		<Joint type="revolute">
+			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
+			<Limits unit="degree" lo="-119" hi="17"/>
+		</Joint>
+		<Child name="Waist3 L"/>
+	</RobotNode>
+	
+	<RobotNode name="Waist3 L">
+		<Joint type="revolute">
+			<DH a="0" d="-223.6" theta="-90" alpha="90" units="degree"/>
+			<Limits unit="degree" lo="-79" hi="79"/>
+		</Joint>
+		<Visualization enable="true">
+			<File type="Inventor">model/Legs/leftUpperLeg.iv</File>
+		</Visualization>
+		<CollisionModel>
+			<File type="Inventor" boundingbox="true">model/Legs/leftUpperLegCol.iv</File>
+		</CollisionModel>
+		<Child name="Knee L"/>
+	</RobotNode>
+	
+	
+	<RobotNode name="Knee L">
+		<Joint type="revolute">
+			<DH a="-213" d="0" theta="90" alpha="180" units="degree"/>
+			<Limits unit="degree" lo="-125" hi="0"/>
+		</Joint>
+		<Visualization enable="true">
+			<File type="Inventor">model/Legs/leftLowerLeg.iv</File>
+		</Visualization>
+		<CollisionModel>
+			<File type="Inventor" boundingbox="true">model/Legs/leftLowerLegCol.iv</File>
+		</CollisionModel>
+		<Child name="Foot1 L"/>
+	</RobotNode>
+	
+	
+	<RobotNode name="Foot1 L">
+		<Joint type="revolute">
+			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+			<Limits unit="degree" lo="-42" hi="21"/>
+		</Joint>
+		<Child name="Foot2 L"/>
+	</RobotNode>
+	
+	
+	<RobotNode name="Foot2 L">
+		<Joint type="revolute">
+			<DH a="-41" d="0" theta="0" alpha="0" units="degree"/>
+			<Limits unit="degree" lo="-24" hi="24"/>
+		</Joint>
+		<Visualization enable="true">
+			<File type="Inventor">model/Legs/leftFoot.iv</File>
+		</Visualization>
+		<CollisionModel>
+			<File type="Inventor" boundingbox="true">model/Legs/leftFootCol.iv</File>
+		</CollisionModel>
+		<Child name="Foot TCP L"/>
+	</RobotNode>
+	
+	<RobotNode name="Foot TCP L">
+		<!--Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<matrix4x4>
+						<row1 c1="0" c2="0"  c3="-1" c4="0"/>
+						<row2 c1="0" c2="-1"  c3="0" c4="0"/>
+						<row3 c1="-1" c2="0"  c3="0" c4="0"/>
+						<row4 c1="0" c2="0"  c3="0" c4="1"/>
+					</matrix4x4>
+				</Transform>
+			</PreJointTransform>
+		</Joint-->
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
+	</RobotNode>
+	
+</Robot>

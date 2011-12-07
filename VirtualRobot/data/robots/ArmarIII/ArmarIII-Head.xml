@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Robot Type="MyDemoRobotType" StandardName="ExampleRobo" RootNode="Head Base">
+    
+    <RobotNode name="Head Base">
+        <Joint type="revolute">
+            <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
+        </Joint>
+        <Visualization enable="true">
+            <CoordinateAxis type="Inventor" enable="false" scaling="1" text="Axis1"/>
+        </Visualization>
+        <Child name="Neck_1_Pitch"/>
+    </RobotNode>
+
+    <RobotNode name="Neck_1_Pitch">
+        <Joint type="revolute">
+            <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
+        </Joint>
+        <Physics>
+            <CoM location="Joint"/>
+            <Mass value="1.41482052" units="kg" />
+        </Physics>
+        <Visualization>
+            <File type="Inventor">fullmodel/neck_pitch_link.iv</File>           
+        </Visualization>
+        <Child name="Neck_2_Roll"/>
+    </RobotNode>
+        
+    <RobotNode name="Neck_2_Roll">
+        <Joint type="revolute">
+            <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
+        </Joint>
+        <Physics>
+            <CoM location="Joint"/>
+            <Mass value="1.41482052" units="kg" />
+        </Physics>
+        <Visualization>
+            <File type="Inventor">fullmodel/neck_yaw_link.iv</File>
+        </Visualization>
+        <Child name="Neck_3_Yaw"/>
+    </RobotNode>    
+    
+    <RobotNode name="Neck_3_Yaw">
+        <Joint type="revolute">
+            <DH theta="90" d="120" a="0"  alpha="90" units="degree"/>
+        </Joint>
+        <Physics>
+            <CoM location="Joint"/>
+            <Mass value="1.41482052" units="kg" />
+        </Physics>
+        <Visualization>
+            <File type="Inventor">fullmodel/neck_roll_link.iv</File>
+        </Visualization>
+        <Child name="Head_Tilt"/>
+    </RobotNode>
+
+    <RobotNode name="Head_Tilt">
+        <Joint type="revolute">
+            <DH theta="0" d="0" a="0"  alpha="-90" units="degree"/>
+        </Joint>
+        <Physics>
+            <CoM location="Joint"/>
+            <Mass value="2.29877000" units="kg" />
+        </Physics>
+        <Visualization>
+            <File type="Inventor">fullmodel/head.iv</File>
+        </Visualization>
+        <CollisionModel>
+            <File type="Inventor">collisionModel/head.iv</File>
+        </CollisionModel>   
+        <Child name="Head Center"/>
+    </RobotNode>
+    
+    <RobotNode name="Head Center">
+        <Joint type="fixed">
+          <DH theta="0" d="54.5" a="0" alpha="-90" units="degree"/>
+        </Joint>
+        <Child name="Cameras"/>
+        <Child name="Jaw"/>
+    </RobotNode>
+
+    <RobotNode name="Jaw"> 
+        <Joint type="revolute"> 
+            <DH theta="0" d="0" a="0" alpha="0" units="degree"/>
+        </Joint>
+        <Visualization> 
+            <File type="Inventor">fullmodel/jaw.iv</File>
+        </Visualization>
+    </RobotNode>
+
+    <RobotNode name="Cameras">
+        <!-- TODO: this was an AlphaJoint: but rotations around alpha axis are not supported by DH!! -->
+        <Joint type="revolute">
+            <PreJointTransform>
+                <Transform>
+                    <Translation x="100" y="0" z="0"/>
+                </Transform>
+            </PreJointTransform>       
+            <Axis x="0" y="0" z="1"/>
+            <PostJointTransform>
+                <Transform>
+                    <Translation x="0" y="0" z="0"/>
+                </Transform>
+            </PostJointTransform>
+            <Limits unit="degree" lo="-30" hi="45"/>
+        </Joint>
+        <Child name="Eye_Left_Dummy"/>
+        <Child name="Eye_Right_Dummy"/>
+    </RobotNode>
+
+    <RobotNode name="Eye_Left_Dummy">
+        <Joint type="fixed">
+            <DH a="0" d="-46.5" theta="0" alpha="-90" units="degree"/>
+        </Joint>
+        <Child name="Eye_Left"/>
+    </RobotNode>
+
+    <RobotNode name="Eye_Right_Dummy">
+        <Joint type="fixed">
+          <DH a="0" d="46.5" theta="0" alpha="-90" units="degree"/>
+        </Joint>
+        <Child name="Eye_Right"/>
+      </RobotNode>
+
+    <RobotNode name="Eye_Left">
+        <Joint type="revolute">
+          <DH theta="0" d="0" a="0" alpha="0" units="degree"/>
+          <Limits unit="degree" lo="-30" hi="30"/>
+        </Joint>
+        <!--Visualization>
+          <File type="Inventor">fullmodel/eye_link_l.iv</File>
+        </Visualization-->
+        <Child name="Eye_Left_Model"/>
+    </RobotNode>
+
+    <RobotNode name="Eye_Right">
+        <Joint type="revolute">
+          <DH theta="0" d="0" a="0" alpha="0" units="degree"/>
+          <Limits unit="degree" lo="-30" hi="30"/>
+        </Joint>
+        <!--Visualization>
+          <File type="Inventor">fullmodel/eye_link_r.iv</File>
+        </Visualization-->
+        <Child name="Eye_Right_Model"/>
+    </RobotNode>
+
+    <RobotNode name="Eye_Left_Model">
+        <Joint type="revolute">
+          <DH theta="0" d="0" a="0" alpha="0" units="degree"/>
+        </Joint>
+        <Visualization>
+          <File type="Inventor">fullmodel/eye_l.iv</File>
+        </Visualization>
+        <!--
+        <Sensors>
+          <Camera>
+            <Name value="LeftEyeCam"/>
+            <offset x="0" y="18" z="0"/>
+            <orientation rot_x="1" rot_y="0" rot_z="0" angle="90"/>
+          </Camera>
+        </Sensors>
+        -->
+        <Child name="Lid Left Bottom"/>
+        <Child name="Lid Left Top"/>
+    </RobotNode>
+
+  <RobotNode name="Lid Left Bottom">
+    <Joint type="revolute" offset="-0.87">
+      <Axis x="0" y="1" z="0"/>
+    </Joint>
+    <Visualization>
+      <File type="Inventor">fullmodel/lid_l_bottom.iv</File>
+    </Visualization>
+  </RobotNode>
+  
+  <RobotNode name="Lid Left Top">
+    <Joint type="revolute" offset="-2.44">
+      <Axis x="0" y="1" z="0"/>
+    </Joint>
+    <Visualization>
+      <File type="Inventor">fullmodel/lid_l_top.iv</File>
+    </Visualization>
+  </RobotNode>
+
+  <RobotNode name="Eye_Right_Model">
+    <Joint type="revolute">
+      <DH theta="0" d="0" a="0" alpha="0" units="degree"/>
+    </Joint>
+    <Visualization>
+      <File type="Inventor">fullmodel/eye_r.iv</File>
+    </Visualization>
+    <Child name="Lid Right Bottom"/>
+    <Child name="Lid Right Top"/>
+  </RobotNode>
+
+  <RobotNode name="Lid Right Bottom">
+    <Joint type="revolute" offset="-0.87">
+      <Axis x="0" y="1" z="0"/>
+    </Joint>
+    <Visualization>
+      <File type="Inventor">fullmodel/lid_r_bottom.iv</File>
+    </Visualization>
+  </RobotNode>
+
+  <RobotNode name="Lid Right Top">
+  <Joint type="revolute" offset="-2.44">
+    <Axis x="0" y="1" z="0"/>
+  </Joint>
+    <Visualization>
+      <File type="Inventor">fullmodel/lid_r_top.iv</File>
+    </Visualization>
+  </RobotNode>
+  
+    <RobotNodeSet name="Head" kinematicRoot="Neck_1_Pitch">
+        <Node name="Neck_1_Pitch"/>
+        <Node name="Neck_2_Roll"/>
+        <Node name="Neck_3_Yaw"/>
+        <Node name="Head_Tilt"/>
+        <Node name="Cameras"/>
+        <Node name="Eye_Left"/>
+        <Node name="Eye_Right"/>
+    </RobotNodeSet>
+</Robot>

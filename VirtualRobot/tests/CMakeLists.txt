@@ -9,6 +9,8 @@ ADD_VR_TEST( VirtualRobotCollisionTest )
 
 ADD_VR_TEST( VirtualRobotJacobianTest )
 
+ADD_VR_TEST( VirtualRobotLinkedCoordinateTest )
+
 ADD_VR_TEST( VirtualRobotSceneTest )
 
 ADD_VR_TEST( VirtualRobotConfigTest )

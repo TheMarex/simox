@@ -56,6 +56,7 @@ ManipulationObject.cpp
 BoundingBox.cpp
 RuntimeEnvironment.cpp
 CompressionRLE.cpp
+LinkedCoordinate.cpp
 )
 
 SET(INCLUDES

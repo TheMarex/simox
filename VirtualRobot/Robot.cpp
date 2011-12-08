@@ -598,6 +598,26 @@ void Robot::createVisualizationFromCollisionModels()
 	}
 }
 
+VirtualRobot::RobotConfigPtr Robot::getConfig()
+{
+	RobotConfigPtr r(new RobotConfig(shared_from_this(),getName()));
+	std::map< std::string, RobotNodePtr >::iterator i = robotNodeMap.begin();
+	while (i!=robotNodeMap.end())
+	{
+		RobotNodePtr rn = i->second;
+		if (rn->isTranslationalJoint() || rn->isRotationalJoint())
+			r->setConfig(rn,rn->getJointValue());
+		i++;
+	}
+	return r;
+}
+
+bool Robot::setConfig( RobotConfigPtr c )
+{
+	if (c)
+		return c->applyToRobot(shared_from_this());
+	return false;
+}
 
 
 } // namespace VirtualRobot

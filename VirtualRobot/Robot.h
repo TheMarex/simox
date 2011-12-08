@@ -26,6 +26,7 @@
 #include "VirtualRobotImportExport.h"
 #include "Nodes/RobotNode.h"
 #include "RobotNodeSet.h"
+#include "RobotConfig.h"
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/type_traits/is_base_of.hpp>
@@ -114,6 +115,14 @@ public:
 	void setUpdateVisualization (bool enable);
 	bool getUpdateVisualizationStatus();
 
+	/*!
+		get the complete setup of all robot nodes
+	*/
+	RobotConfigPtr getConfig();
+	/*!
+		Sets the configuration according to the RobtoNodes, defined in c. All other nodes are not affected.
+	*/
+	bool setConfig(RobotConfigPtr c);
 
 	/*!
 		This method is automatically called in RobotNode's initialization routine.

@@ -122,6 +122,12 @@ namespace MathTools
 	//! Returns q1*q2
 	Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT multiplyQuaternions( const Quaternion &q1, const Quaternion &q2 );
 
+	//! returns q1 dot q2
+	float VIRTUAL_ROBOT_IMPORT_EXPORT getDot(const Quaternion &q1, const Quaternion &q2 );
+	
+	//! Computes mean orientation of quaternions
+	MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT getMean(std::vector<MathTools::Quaternion> quaternions );
+
 
 
 	//! Get the projected point in 2D (local coordinate system of the plane)
@@ -245,6 +251,8 @@ namespace MathTools
 	void VIRTUAL_ROBOT_IMPORT_EXPORT convertMM2M( const std::vector<ContactPoint> points, std::vector<ContactPoint> &storeResult );
 
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT ensureOrthonormalBasis(Eigen::Vector3f &x, Eigen::Vector3f &y, Eigen::Vector3f &z);
+
+
 };
 } // namespace VirtualRobot
 

@@ -862,6 +862,49 @@ MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::axisangle2quat( con
 	return eigen4f2quat(m);
 }
 
+float MathTools::getDot( const Quaternion &q1, const Quaternion &q2 )
+{
+	return q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
+}
+
+MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getMean( std::vector<MathTools::Quaternion> quaternions )
+{
+	Quaternion res;
+	if (quaternions.size()==0)
+		return res;
+	res.x = res.y = res.z = res.w = 0;
+	for (size_t i=0;i<quaternions.size();i++)
+	{
+		if (getDot(res,quaternions[i])>0)
+		{
+			res.x += quaternions[i].x;
+			res.y += quaternions[i].y;
+			res.z += quaternions[i].z;
+			res.w += quaternions[i].w;
+		} else
+		{
+			res.x += -quaternions[i].x;
+			res.y += -quaternions[i].y;
+			res.z += -quaternions[i].z;
+			res.w += -quaternions[i].w;
+		}
+	}
+	float mag = sqrtf(res.x * res.x + res.y * res.y + res.z * res.z + res.w * res.w);
+
+	if (mag > 0.0001)
+	{
+		res.x /= mag;
+		res.y /= mag;
+		res.z /= mag;
+		res.w /= mag;
+	}
+	else
+		res = quaternions[0];
+	return res;
+}
+
+
+
 
 
 

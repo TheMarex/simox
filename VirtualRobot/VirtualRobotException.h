@@ -57,10 +57,10 @@ protected:
 /**
  * This macro throws a VirtualRobot::VirtualRobotException and is the preferred
  * way of creating and throwing these types of exceptions.
- * The reported message is composed of the linenumber and the file in which
- * the throw occured and is followed by the \a messageString parameter.
+ * The reported message is composed of the line number and the file in which
+ * the throw occurred and is followed by the \a messageString parameter.
  */
-#define THROW_VR_EXCEPTION(messageString) do{std::stringstream s; s << __FILE__ << ":" << __LINE__ << ": " << __func__ << ": " << messageString; std::string er = s.str(); throw VirtualRobot::VirtualRobotException(er);}while(0);
+#define THROW_VR_EXCEPTION(messageString) do{std::stringstream s; s << __FILE__ << ":" << __LINE__ << ": " << BOOST_CURRENT_FUNCTION << ": " << messageString; std::string er = s.str(); throw VirtualRobot::VirtualRobotException(er);}while(0);
 
 /**
  * This macro checks \a condition and calls THROW_VR_EXCEPTION

@@ -66,7 +66,7 @@ public:
 	 * @details If you want to use a different format for the pose you can use these
 	 * helper functions @sa EulerToMatrix4x4 and @sa QuaternionsToMatrix4x4
 	 */
-	void set(const RobotNodePtr &frame,const Eigen::Matrix4f &pose=Eigen::Matrix4f::Identity()) throw(VirtualRobotException);
+	void set(const RobotNodePtr &frame,const Eigen::Matrix4f &pose=Eigen::Matrix4f::Identity());
 	
 	/** Sets the frame of reference and the coordinate relative to it.
 	 * @param frame The name of the robot node that defines the reference frame of the coordinate.
@@ -75,7 +75,7 @@ public:
 	 * @details A homogeneous vector can be converted using Eigen::Vector4f::head<3>().
 	 */
 	
-	void set(const RobotNodePtr &frame,const Eigen::Vector3f &position) throw(VirtualRobotException);
+	void set(const RobotNodePtr &frame,const Eigen::Vector3f &position);
 	
 	/** Sets the frame of reference and the pose relative to it.
 	 * @param frame The name of the robot node that defines the reference frame of the coordinate.
@@ -86,7 +86,7 @@ public:
 	 * @sa set(Eigen::Matrix4x4,const RobotNodePtr &)
 	 */
 	
-	void set(const std::string &frame,const Eigen::Matrix4f &pose=Eigen::Matrix4f::Identity()) throw(VirtualRobotException);
+	void set(const std::string &frame,const Eigen::Matrix4f &pose=Eigen::Matrix4f::Identity());
 
 	/** Sets the frame of reference and the coordinate relative to it.
 	 * @param frame The name of the robot node that defines the reference frame of the coordinate.
@@ -95,7 +95,7 @@ public:
 	 * @details A homogeneous vector can be previously converted using Eigen::Vector4f::head<3>().
 	 */
 	
-	void set(const std::string &frame,const Eigen::Vector3f &position) throw(VirtualRobotException);
+	void set(const std::string &frame,const Eigen::Vector3f &position);
 	
 	/** Returns a RobotNodePtr that contains the frame of reference the coordinate is defined in.
 	 * @returns The reference or an empty RobotNodePtr is none has been defined.
@@ -108,14 +108,15 @@ public:
 	 * @details If iCoord::set has not been called before, the pose is set to the 
 	 * unit marix.
 	 */
-	void changeFrame(const std::string & frame) throw(VirtualRobotException);
+	void changeFrame(const std::string & frame);
 	
 	/** Sets a new reference frame and performs a coordinate transformation into this new frame.
 	 * @param frame A reference to the robot node that defines the new reference.
 	 * @details If iCoord::set has not been called before, the pose is set to the 
 	 * unit marix.
+	 * @throw VirtualRobotException An exception is thrown if frame is NULL. 
 	 */
-	void changeFrame(const RobotNodePtr & frame) throw(VirtualRobotException);
+	void changeFrame(const RobotNodePtr & frame);
 
 	/** Performs \a only a coordinate transformation into a new frame of reference.
 	 * @param frame The name of the robot node that defines the new reference.
@@ -124,7 +125,7 @@ public:
 	 * @returns A homogeneous matrix of the pose 
 	 * @sa getPose()
 	 */
-	Eigen::Matrix4f getInFrame(const std::string & frame) const throw(VirtualRobotException);
+	Eigen::Matrix4f getInFrame(const std::string & frame) const;
 	
 	/** Performs \a only a coordinate transformation into a new frame of reference.
 	 * @param frame A reference to the robot node that defines the new reference.
@@ -133,8 +134,9 @@ public:
 	 * @returns A homogeneous matrix of the pose 
 	 * @sa getPose()
 	 * @details If you are only interested in the translational part use iCoord::getPosition() or Matrix4f::block<3,1>(0,3).
+	 * @throw VirtualRobotException An exception is thrown if frame is NULL. 
 	 */
-	Eigen::Matrix4f getInFrame(const RobotNodePtr & frame) const throw(VirtualRobotException);
+	Eigen::Matrix4f getInFrame(const RobotNodePtr & frame) const;
 
 	/** Returns the actual pose stored in this object.
 	 * @details If you are only interested in the translational part use iCoord::getPosition() or Matrix4f::block<3,1>(0,3).

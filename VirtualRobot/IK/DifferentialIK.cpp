@@ -64,7 +64,7 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 	MatrixXf orientation = MatrixXf::Zero(3,nDoF);
 	
 	if (!tcp) tcp = this->getDefaultTCP();
-//	THROW_VR_EXCEPTION_IF(!tcp,boost::format("No tcp defined in node set \"%1%\" of robot %2% (DifferentialIK::%3% )") % this->rns->getName() % this->rns->getRobot()->getName() % __func__);
+//	THROW_VR_EXCEPTION_IF(!tcp,boost::format("No tcp defined in node set \"%1%\" of robot %2% (DifferentialIK::%3% )") % this->rns->getName() % this->rns->getRobot()->getName() % BOOST_CURRENT_FUNCTION);
 		
 
 

@@ -11,7 +11,7 @@
 			</PreJointTransform>
 		</Joint>
 		<Visualization enable="true">
-			<CoordinateAxis  type="Inventor" enable="true" scaling="1"/>
+			<CoordinateAxis  type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
 		<Child name="UpperBody"/>
 		<Child name="LowerBody"/>

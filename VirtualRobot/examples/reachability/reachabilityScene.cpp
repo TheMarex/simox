@@ -17,6 +17,7 @@
 
 #include "reachabilityWindow.h"
 
+#define ICUB
 //#define AXIS_X
 
 using std::cout;
@@ -27,13 +28,17 @@ int main(int argc, char *argv[])
 	SoDB::init();
 	SoQt::init(argc,argv,"showRobot");
 	cout << " --- START --- " << endl;
-	std::string filenameRob(VR_BASE_DIR "/data/robots/ArmarIII/ArmarIII.xml");
-#ifdef AXIS_X
-	Eigen::Vector3f axisTCP(1.0f,0,0);
-#else
-	Eigen::Vector3f axisTCP(0,0,1.0f);
-#endif
+
 	std::string filenameReach;
+#ifdef ICUB
+		std::string filenameRob(VR_BASE_DIR "/data/robots/iCub/iCub.xml");
+		Eigen::Vector3f axisTCP(1.0f,0,0);
+		filenameReach = "reachability/iCub_HipLeftArm.bin";
+#else
+	std::string filenameRob(VR_BASE_DIR "/data/robots/ArmarIII/ArmarIII.xml");
+	Eigen::Vector3f axisTCP(0,0,1.0f);	
+#endif
+
 
 	VirtualRobot::RuntimeEnvironment::considerKey("robot");
 	VirtualRobot::RuntimeEnvironment::considerKey("reachability");

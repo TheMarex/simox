@@ -4,6 +4,7 @@
 #include "VirtualRobot/ReachabilitySpace.h"
 #include "VirtualRobot/XML/RobotIO.h"
 #include "VirtualRobot/Visualization/CoinVisualization/CoinVisualizationFactory.h"
+#include <VirtualRobot/RuntimeEnvironment.h>
 
  #include <QFileDialog>
 #include <Eigen/Geometry>
@@ -49,7 +50,8 @@ reachabilityWindow::reachabilityWindow(std::string &sRobotFile, std::string &rea
 
 	if (!reachFile.empty())
 	{
-		loadReachFile(reachFile);
+		if (RuntimeEnvironment::getDataFileAbsolute(reachFile))
+			loadReachFile(reachFile);
 	}
 
 	m_pExViewer->viewAll();
@@ -71,9 +73,9 @@ void reachabilityWindow::setupUI()
 	m_pExViewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
 	m_pExViewer->setAccumulationBuffer(true);
 #ifdef WIN32
-#ifndef _DEBUG
-	m_pExViewer->setAntialiasing(true, 4);
-#endif
+//#ifndef _DEBUG
+	m_pExViewer->setAntialiasing(true, 8);
+//#endif
 #endif
 	m_pExViewer->setGLRenderAction(new SoLineHighlightRenderAction);
 	m_pExViewer->setTransparencyType(SoGLRenderAction::BLEND);

@@ -544,7 +544,7 @@ Eigen::Vector3f MathTools::planePoint3D( const Eigen::Vector2f &pointLocal, cons
 
 	Quaternion quat = getRotation(normalUp,plane.n);
 
-	Eigen::Matrix4f rotationMatrix = quat2eigen4x4(quat);
+	Eigen::Matrix4f rotationMatrix = quat2eigen4f(quat);
 	rotationMatrix(0,3) = plane.p(0);
 	rotationMatrix(1,3) = plane.p(1);
 	rotationMatrix(2,3) = plane.p(2);
@@ -567,7 +567,7 @@ Eigen::Vector2f MathTools::projectPointToPlane2D( const Eigen::Vector3f &point, 
 
 	Quaternion quat = getRotation(plane.n,normalUp);
 	
-	Eigen::Matrix4f rotationMatrix = quat2eigen4x4(quat);
+	Eigen::Matrix4f rotationMatrix = quat2eigen4f(quat);
 	rotationMatrix(0,3) = -plane.p(0);
 	rotationMatrix(1,3) = -plane.p(1);
 	rotationMatrix(2,3) = -plane.p(2);
@@ -582,13 +582,13 @@ Eigen::Vector2f MathTools::projectPointToPlane2D( const Eigen::Vector3f &point, 
 
 }
 
-Eigen::Matrix4f MathTools::quat2eigen4x4( const Quaternion q )
+Eigen::Matrix4f MathTools::quat2eigen4f( const Quaternion q )
 {
-	return quat2eigen4x4(q.x,q.y,q.z,q.w);
+	return quat2eigen4f(q.x,q.y,q.z,q.w);
 }
 
 
-Eigen::Matrix4f MathTools::quat2eigen4x4( float x, float y, float z, float w )
+Eigen::Matrix4f MathTools::quat2eigen4f( float x, float y, float z, float w )
 {
 
 	Eigen::Matrix4f m;
@@ -901,6 +901,34 @@ MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getMean( std::vecto
 	else
 		res = quaternions[0];
 	return res;
+}
+
+Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getBasisTransformation( const std::vector< Eigen::VectorXf > &basisSrc, const std::vector< Eigen::VectorXf > &basisDst )
+{
+	THROW_VR_EXCEPTION_IF(basisSrc.size()==0,"NULL size");
+	THROW_VR_EXCEPTION_IF(basisSrc.size()!=basisDst.size(),"Different size of basis vectors");
+	int rows = basisSrc[0].rows();
+	THROW_VR_EXCEPTION_IF(rows!=basisDst[0].rows(),"Different row size of basis vectors");
+	Eigen::MatrixXf mSrc(rows,basisSrc.size());
+	Eigen::MatrixXf mDst(rows,basisDst.size());
+	for (size_t i=0;i<basisSrc.size();i++)
+	{
+		THROW_VR_EXCEPTION_IF(rows!=basisSrc[i].rows(),"Different row size of basis vectors");
+		THROW_VR_EXCEPTION_IF(rows!=basisDst[i].rows(),"Different row size of basis vectors");
+		mSrc.block(0,i,rows,1) = basisSrc[i];
+		mDst.block(0,i,rows,1) = basisDst[i];
+	}
+	return getBasisTransformation(mSrc,mDst);
+}
+
+Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getBasisTransformation( const Eigen::MatrixXf &basisSrc, const Eigen::MatrixXf &basisDst )
+{
+	THROW_VR_EXCEPTION_IF(basisSrc.rows()==0 || basisSrc.cols()==0,"NULL size");
+	THROW_VR_EXCEPTION_IF(basisSrc.rows()!=basisDst.rows(),"Different row sizes");
+	THROW_VR_EXCEPTION_IF(basisSrc.cols()!=basisDst.cols(),"Different col sizes");
+
+
+	return basisDst.householderQr().solve(basisSrc);
 }
 
 

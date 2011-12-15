@@ -238,7 +238,7 @@ VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createBox( float wi
 	return visualizationNode;
 }
 
-VisualizationNodePtr CoinVisualizationFactory::createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width, float colorR, float colorG, float colorB, CollisionCheckerPtr colChecker)
+SoNode* CoinVisualizationFactory::createCoinLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width, float colorR, float colorG, float colorB)
 {
 	SoSeparator *s = new SoSeparator();
 	s->ref();
@@ -273,9 +273,14 @@ VisualizationNodePtr CoinVisualizationFactory::createLine(const Eigen::Matrix4f 
 	lineSet->numVertices.setValue(2);
 	lineSet->startIndex.setValue(0);
 	s->addChild(lineSet);
+	s->unrefNoDelete();
+	return s;
+}
 
+VisualizationNodePtr CoinVisualizationFactory::createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width, float colorR, float colorG, float colorB)
+{
+	SoNode* s = createCoinLine(from,to,width,colorR,colorG,colorB);
 	VisualizationNodePtr visualizationNode(new CoinVisualizationNode(s));
-	s->unref();
 	return visualizationNode;
 }
 

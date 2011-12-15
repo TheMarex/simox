@@ -85,4 +85,38 @@ BOOST_AUTO_TEST_CASE(testMathToolsConvexHull2D)
 }
 
 
+BOOST_AUTO_TEST_CASE(testMathToolsBasisChange)
+{
+	Eigen::VectorXf a1(3),a2(3),a3(3);
+	a1 << 1,0,2;
+	a2 << 3,1,0;
+	a3 << 2,1,1;
+	Eigen::VectorXf b1(3),b2(3),b3(3);
+	b1 << 1,0,1;
+	b2 << 0,1,1;
+	b3 << 1,1,0;
+	std::vector< Eigen::VectorXf > a;
+	a.push_back(a1);
+	a.push_back(a2);
+	a.push_back(a3);
+	std::vector< Eigen::VectorXf > b;
+	b.push_back(b1);
+	b.push_back(b2);
+	b.push_back(b3);
+	Eigen::MatrixXf T;
+	BOOST_REQUIRE_NO_THROW( T = VirtualRobot::MathTools::getBasisTransformation(a,b) );
+
+	BOOST_CHECK_EQUAL ( T.cols(), 3 );
+	BOOST_CHECK_EQUAL ( T.rows(), 3 );
+	Eigen::Vector3f v_b;
+	v_b << 2,-1,3;
+	Eigen::Vector3f v_c;
+	BOOST_REQUIRE_NO_THROW ( v_c = T*v_b );
+	// should be (5,2,0)
+	BOOST_CHECK_CLOSE ( v_c(0), 5.0f, 0.1f );
+	BOOST_CHECK_CLOSE ( v_c(1), 2.0f, 0.1f );
+	BOOST_CHECK_SMALL ( v_c(2) , 0.001f );
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

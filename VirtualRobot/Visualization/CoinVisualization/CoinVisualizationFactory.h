@@ -53,7 +53,7 @@ public:
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromString(const std::string& modelString, bool boundingBox = false);
 	virtual VisualizationNodePtr createBox(float width, float height, float depth, float colorR, float colorG, float colorB, CollisionCheckerPtr colChecker = CollisionCheckerPtr());
-	virtual VisualizationNodePtr createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f, CollisionCheckerPtr colChecker = CollisionCheckerPtr());
+	virtual VisualizationNodePtr createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
 	virtual VisualizationNodePtr createSphere(float radius, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f, CollisionCheckerPtr colChecker = CollisionCheckerPtr());
 	virtual VisualizationNodePtr createCoordSystem(float scaling = 1.0f, std::string *text = NULL, float axisLength = 100.0f, float axisSize = 3.0f, int nrOfBlocks = 10);
 	virtual VisualizationNodePtr createBoundingBox(const BoundingBox &bbox);
@@ -137,6 +137,8 @@ public:
 	static SoNode* getCoinVisualization(ReachabilitySpacePtr reachSpace, int a, int b, int c, int nrBestEntries, SoSeparator* arrow, const VirtualRobot::ColorMap &cm, bool transformToGlobalPose, unsigned char minValue);
 
 	static SoMatrixTransform* getMatrixTransform(Eigen::Matrix4f &m);
+	static SoNode* createCoinLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width, float colorR, float colorG, float colorB);
+
 protected:
 	static void GetVisualizationFromSoInput(SoInput& soInput, VisualizationNodePtr& visualizationNode, bool bbox = false);
 

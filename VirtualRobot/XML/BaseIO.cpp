@@ -222,9 +222,9 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 		y = getFloatByAttributeName(quatXMLNode, "y");
 		z = getFloatByAttributeName(quatXMLNode, "z");
 		w = getFloatByAttributeName(quatXMLNode, "w");
-		Eigen::Matrix4f r = MathTools::quat2eigen4x4(x,y,z,w);
+		Eigen::Matrix4f r = MathTools::quat2eigen4f(x,y,z,w);
 		transform.block(0,0,3,3) = r.block(0,0,3,3);
-		//MathTools::quat2eigen4x4(x,y,z,w,transform);
+		//MathTools::quat2eigen4f(x,y,z,w,transform);
 		rotation = true;
 	}
 	// Translation

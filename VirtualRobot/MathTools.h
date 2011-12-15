@@ -66,8 +66,8 @@ namespace MathTools
 		The translational part of m is zero
 		\return Homogeneous matrix representing the rotation of q.
 	*/
-	Eigen::Matrix4f VIRTUAL_ROBOT_IMPORT_EXPORT quat2eigen4x4 (float x, float y, float z, float w);
-	Eigen::Matrix4f VIRTUAL_ROBOT_IMPORT_EXPORT quat2eigen4x4 (const Quaternion q);
+	Eigen::Matrix4f VIRTUAL_ROBOT_IMPORT_EXPORT quat2eigen4f (float x, float y, float z, float w);
+	Eigen::Matrix4f VIRTUAL_ROBOT_IMPORT_EXPORT quat2eigen4f (const Quaternion q);
 
 	Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT eigen4f2quat (const Eigen::Matrix4f &m);
 
@@ -77,6 +77,27 @@ namespace MathTools
 	Eigen::Matrix4f VIRTUAL_ROBOT_IMPORT_EXPORT axisangle2eigen4f(const Eigen::Vector3f &axis, float angle);
 	Eigen::Matrix3f VIRTUAL_ROBOT_IMPORT_EXPORT axisangle2eigen3f(const Eigen::Vector3f &axis, float angle);
 	Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT axisangle2quat(const Eigen::Vector3f &axis, float angle);
+
+
+	/*!
+		Computes the matrix describing the basis transformation from basis formed by vectors in basisSrc to basisDst.
+		So v_{Src} can be transformed to v_{Dst}, given as linear combination of basisDst vectors, by 
+		v_{Dst} = T v_{Src} with T is the BasisTransformationMatrix given by this method.
+		\param basisSrc The initial basis vectors.
+		\param basisDst The final basis vectors.
+		\return The transformation matrix T.
+	*/
+	Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT getBasisTransformation(const std::vector< Eigen::VectorXf > &basisSrc, const std::vector< Eigen::VectorXf > &basisDst);
+
+	/*!
+		Computes the matrix describing the basis transformation from basis formed by vectors in basisSrc to basisDst.
+		So v_{Src} can be transformed to v_{Dst}, given as linear combination of basisDst vectors, by 
+		v_{Dst} = T v_{Src} with T is the BasisTransformationMatrix given by this method.
+		\param basisSrc The column vectors are the initial basis vectors 
+		\param basisDst The column vectors are the final basis vectors.
+		\return The transformation matrix T.
+	*/
+	Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT getBasisTransformation(const Eigen::MatrixXf &basisSrc, const Eigen::MatrixXf &basisDst);
 
 	/*!
 		Check if all entries of v are valid numbers (i.e. all entries of v are not NaN and not INF)

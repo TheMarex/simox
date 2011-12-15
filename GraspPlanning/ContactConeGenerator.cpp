@@ -57,7 +57,7 @@ void ContactConeGenerator::computeConePoints( const VirtualRobot::MathTools::Con
 	
 	Eigen::Vector3f upRightNormal(0.0f,0.0f,1.0f);
 	MathTools::Quaternion objNormalRot =  MathTools::getRotation(upRightNormal,point.n);
-    Eigen::Matrix4f objNormalTrafo = MathTools::quat2eigen4x4(objNormalRot);
+    Eigen::Matrix4f objNormalTrafo = MathTools::quat2eigen4f(objNormalRot);
         
     Eigen::Vector3f conePoint;
 	
@@ -106,7 +106,7 @@ void ContactConeGenerator::computeConePoints(const VirtualRobot::MathTools::Cont
 	
 	Eigen::Vector3f upRightNormal(0.0f,0.0f,1.0f);
 	MathTools::Quaternion objNormalRot =  MathTools::getRotation(upRightNormal,point.n); // invert?!
-    Eigen::Matrix4f objNormalTrafo = MathTools::quat2eigen4x4(objNormalRot);
+    Eigen::Matrix4f objNormalTrafo = MathTools::quat2eigen4f(objNormalRot);
         
     Eigen::Vector3f conePoint;
 

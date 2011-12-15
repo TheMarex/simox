@@ -61,7 +61,7 @@ public:
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr getVisualizationFromString(const std::string& modelString, bool boundingBox = false){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createBox(float length, float height, float width, float colorR, float colorG, float colorB, CollisionCheckerPtr colChecker = CollisionCheckerPtr()){return VisualizationNodePtr();}
-	virtual VisualizationNodePtr createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f, CollisionCheckerPtr colChecker = CollisionCheckerPtr()){return VisualizationNodePtr();}
+	virtual VisualizationNodePtr createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createSphere(float radius, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f, CollisionCheckerPtr colChecker = CollisionCheckerPtr()){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createCoordSystem(float scaling = 1.0f, std::string *text = NULL, float axisLength = 100.0f, float axisSize = 3.0f, int nrOfBlocks = 10){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createBoundingBox(const BoundingBox &bbox){return VisualizationNodePtr();}

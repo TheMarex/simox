@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 	SoQt::init(argc,argv,"GraspPlanner");
 	cout << " --- START --- " << endl;
 
+	// --robot robots/iCub/iCub.xml --endeffector "Left Hand" --preshape "Grasp Preshape"
 	std::string robot(SIMOX_BASE_DIR "/VirtualRobot/data/robots/ArmarIII/ArmarIII.xml");
 	std::string eef("Hand L");
 	//std::string object(SIMOX_BASE_DIR "/VirtualRobot/data/objects/wok.xml");

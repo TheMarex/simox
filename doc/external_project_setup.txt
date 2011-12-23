@@ -29,7 +29,7 @@ INCLUDE(${SIMOX_DIR}/CMakeModules/SimoxProject.cmake)
 SET(DEMO_BASE_DIR ${PROJECT_SOURCE_DIR})
 ADD_DEFINITIONS(-DDEMO_BASE_DIR="${DEMO_BASE_DIR}")
 
-IF(SIMOX_USE_COIN_VISUALIZATION)
+IF(SIMOX_VISUALIZATION)
 
     # Adjust these lines according to your filenames 
 	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/demoFile1.cpp ${PROJECT_SOURCE_DIR}/demoFile1.cpp)
@@ -48,6 +48,6 @@ IF(SIMOX_USE_COIN_VISUALIZATION)
     # pass file lists to simox cmake script: create the executable
     simox_add_executable(${PROJECT_NAME} "${demo_SRCS}" "${demo_INCS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
     
-ENDIF(SIMOX_USE_COIN_VISUALIZATION)
+ENDIF(SIMOX_VISUALIZATION)
 
 <---- snippet ----->

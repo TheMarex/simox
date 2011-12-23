@@ -8,9 +8,8 @@ IF(NOT DEFINED SIMOX_CONFIGURED)
 	INCLUDE(../../config.cmake)
 ENDIF()
 	
-IF(SIMOX_USE_COIN_VISUALIZATION)
+IF(SIMOX_VISUALIZATION)
 
-     
 	# the variable "demo_SRCS" contains all .cpp files of this project
 	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/GraspPlanner.cpp ${PROJECT_SOURCE_DIR}/GraspPlannerWindow.cpp)
 	FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/GraspPlannerWindow.h)
@@ -27,4 +26,4 @@ IF(SIMOX_USE_COIN_VISUALIZATION)
     
     # we need the GraspStudio lib
     TARGET_LINK_LIBRARIES(${PROJECT_NAME} GraspStudio)    
-ENDIF(SIMOX_USE_COIN_VISUALIZATION)
+ENDIF(SIMOX_VISUALIZATION)

@@ -11,41 +11,16 @@ INCLUDE_DIRECTORIES(${SABA_DIR})
 IF(SIMOX_USE_COIN_VISUALIZATION)
     LINK_DIRECTORIES(${SIMOX_LIB_DIR})
 
-   # the variable "demo_SRCS" contains all .cpp files of this project
+    # the variable "demo_SRCS" contains all .cpp files of this project
 	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/RRTdemo.cpp)
-	#FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/RRTdemoWindow.h)
 
-
-################################## moc'ing ##############################
-#    set(GUI_MOC_HDRS
-#        ${PROJECT_SOURCE_DIR}/RRTdemoWindow.h
-#    )
-
-#    set(GUI_UIS
-#        ${PROJECT_SOURCE_DIR}/RRTDemo.ui
-#    )
-
-#MESSAGE("GUI_MOC_HDRS: ${GUI_MOC_HDRS}")
-#MESSAGE("GUI_UIS: ${GUI_UIS}")
-#    qt4_wrap_cpp(demo_SRCS ${GUI_MOC_HDRS})
-#    qt4_wrap_ui(UI_HEADER ${GUI_UIS})
-#    get_filename_component(UI_HEADER_DIR ${UI_HEADER} PATH)
-#MESSAGE("UI_HEADER: ${UI_HEADER}")
-#    list(APPEND demo_INCS ${UI_HEADER})
-
-#    include_directories(${UI_HEADER_DIR})
-
-
-    ADD_EXECUTABLE(${PROJECT_NAME} ${demo_SRCS} ${demo_INCS})
+    ADD_EXECUTABLE(${PROJECT_NAME} ${demo_SRCS})
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${SIMOX_BIN_DIR})
-    #MESSAGE( STATUS "SIMOX_LIB_DIR " ${SIMOX_LIB_DIR})
 
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME} VirtualRobot Saba ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${SoQt_LIBRARIES})
-    INCLUDE_DIRECTORIES(${SoQt_INCLUDE_DIRS})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME} VirtualRobot Saba ${SIMOX_VISUALIZATION_LIBS})
+    INCLUDE_DIRECTORIES(${SIMOX_VISUALIZATION_INCLUDE_PATHS})
     INCLUDE(${QT_USE_FILE})
-    ADD_DEFINITIONS(-DSOQT_DLL)
- #   ADD_DEFINITIONS(-DQT_DLL)
- #   ADD_DEFINITIONS(-DQT3_SUPPORT)
+    ADD_DEFINITIONS(${SIMOX_VISUALIZATION_COMPILE_FLAGS})
 
     MESSAGE( STATUS ${PROJECT_NAME} " will be placed into " ${SIMOX_BIN_DIR})
 ENDIF(SIMOX_USE_COIN_VISUALIZATION)

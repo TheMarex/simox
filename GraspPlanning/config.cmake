@@ -9,7 +9,7 @@ get_filename_component(SIMOX_DIR_STANDARD ${SIMOX_DIR_STANDARD} ABSOLUTE)
 SET (GRASPSTUDIO_SimoxDir ${SIMOX_DIR_STANDARD} CACHE STRING "Path to Simox used by GraspStudio")
 
 INCLUDE(${GRASPSTUDIO_SimoxDir}/config.cmake)
-INCLUDE(${GRASPSTUDIO_SimoxDir}/SimoxProject.cmake)
+INCLUDE(${GRASPSTUDIO_SimoxDir}/CMakeModules/SimoxProject.cmake)
 	
 IF(NOT DEFINED SIMOX_BUILD_DIRECTORY)
 	get_filename_component(SIMOX_BUILD_DIRECTORY ${SIMOX_BUILD_DIRECTORY} ABSOLUTE)

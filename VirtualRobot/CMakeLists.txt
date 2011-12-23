@@ -119,7 +119,6 @@ CompressionRLE.h
 ADD_SUBDIRECTORY(Visualization/tests)
 
 if (SIMOX_USE_COIN_VISUALIZATION)
-    MESSAGE (STATUS "By using the Con3D library, the license of Simox is not LGPL any more. The license must be GPL, since Con3D is a GPL library. If you want to use Simox under LGPL you must disable Coin3D supprot!") 
 	SET(SOURCES
 	${SOURCES}
 	Visualization/CoinVisualization/CoinVisualizationFactory.cpp
@@ -136,6 +135,8 @@ if (SIMOX_USE_COIN_VISUALIZATION)
 	ADD_SUBDIRECTORY(Visualization/CoinVisualization/tests)
 endif (SIMOX_USE_COIN_VISUALIZATION)
 
+INCLUDE_DIRECTORIES(${SIMOX_VISUALIZATION_INCLUDE_PATHS})
+ADD_DEFINITIONS(${SIMOX_VISUALIZATION_COMPILE_FLAGS})
 
 # include collision detection
 INCLUDE (CollisionDetection/CMakeLists.txt)

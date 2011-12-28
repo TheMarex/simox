@@ -1,7 +1,7 @@
 # Macros for Simox executables
 
 function(simox_add_example PROJECT_NAME SOURCES HEADERS GUI_MOC_HDRS GUI_UIS)
-simox_add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GUI_MOC_HDRS} ${GUI_UIS})
+simox_add_executable(${PROJECT_NAME} "${SOURCES}" "${HEADERS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
 endfunction()
 

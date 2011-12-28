@@ -59,7 +59,7 @@ public:
 		Create a standard obstacle. 
 
 	*/
-	static ObstaclePtr createBox(float width, float height, float depth, float colorR = 1.0f, float colorG = 0.0f, float colorB=0.0f, std::string visualizationType = "inventor", CollisionCheckerPtr colChecker = CollisionCheckerPtr());
+	static ObstaclePtr createBox(float width, float height, float depth, float colorR = 1.0f, float colorG = 0.0f, float colorB=0.0f, std::string visualizationType = "", CollisionCheckerPtr colChecker = CollisionCheckerPtr());
 
 protected:
 

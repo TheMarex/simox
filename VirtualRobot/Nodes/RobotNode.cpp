@@ -415,14 +415,26 @@ void RobotNode::showCoordinateSystem( bool enable, float scaling, std::string *t
 	}
 	if (enable)
 	{
-		VisualizationFactoryPtr visualizationFactory = VisualizationFactory::fromName(visualizationType, NULL);
+		VisualizationFactoryPtr visualizationFactory;
+		if (visualizationType.empty())
+			visualizationFactory = VisualizationFactory::first(NULL);
+		else
+			visualizationFactory = VisualizationFactory::fromName(visualizationType, NULL);
+		if (!visualizationFactory)
+		{
+			VR_WARNING << "No visualization factory for name " << visualizationType << endl;
+			return;
+		}
 		// create coord visu
 		VisualizationNodePtr visualizationNode = visualizationFactory->createCoordSystem(scaling,&coordName);
 		// this is a little hack: The globalPose is used to set the "local" position of the attached Visualization:
 		// Since the attached visualizations are already positioned at the global pose of the visualizationModel, 
 		// we just need the local postJointTransform
-		visualizationNode->setGlobalPose(postJointTransformation);
-		visualizationModel->attachVisualization("CoordinateSystem",visualizationNode);
+		if (visualizationNode)
+		{
+			visualizationNode->setGlobalPose(postJointTransformation);
+			visualizationModel->attachVisualization("CoordinateSystem",visualizationNode);
+		}
 	}
 }
 
@@ -441,7 +453,16 @@ void RobotNode::showStructure( bool enable, const std::string &visualizationType
 	visualizationModel->detachVisualization(attachName3);
 	if (enable)
 	{
-		VisualizationFactoryPtr visualizationFactory = VisualizationFactory::fromName(visualizationType, NULL);
+		VisualizationFactoryPtr visualizationFactory;
+		if (visualizationType.empty())
+			visualizationFactory = VisualizationFactory::first(NULL);
+		else
+			visualizationFactory = VisualizationFactory::fromName(visualizationType, NULL);
+		if (!visualizationFactory)
+		{
+			VR_WARNING << "No visualization factory for name " << visualizationType << endl;
+			return;
+		}
 
 		// create visu
 		Eigen::Matrix4f i = Eigen::Matrix4f::Identity();
@@ -449,14 +470,17 @@ void RobotNode::showStructure( bool enable, const std::string &visualizationType
 		if (!preJointTransformation.isIdentity())
 		{
 			VisualizationNodePtr visualizationNode1 = visualizationFactory->createLine(preJointTransformation.inverse(),i);
-			visualizationModel->attachVisualization(attachName1,visualizationNode1);
+			if (visualizationNode1)
+				visualizationModel->attachVisualization(attachName1,visualizationNode1);
 		}
 		VisualizationNodePtr visualizationNode2 = visualizationFactory->createSphere(5.0f);
-		visualizationModel->attachVisualization(attachName2,visualizationNode2);
+		if (visualizationNode2)
+			visualizationModel->attachVisualization(attachName2,visualizationNode2);
 		if (!postJointTransformation.isIdentity())
 		{
 			VisualizationNodePtr visualizationNode3 = visualizationFactory->createLine(i,postJointTransformation,3);
-			visualizationModel->attachVisualization(attachName3,visualizationNode3);
+			if (visualizationNode3)
+				visualizationModel->attachVisualization(attachName3,visualizationNode3);
 		}
 	}
 }

@@ -1,25 +1,27 @@
-PROJECT ( GraspEditor )
+PROJECT ( RobotViewerOSG )
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
 
 CMAKE_POLICY(VERSION 2.6)
 
-IF(SIMOX_USE_COIN_VISUALIZATION)
+IF(SIMOX_VISUALIZATION AND SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION)
+    
     LINK_DIRECTORIES(${SIMOX_LIB_DIR})
     
 	    
 	# the variable "demo_SRCS" contains all .cpp files of this project
-	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/GraspEditor.cpp ${PROJECT_SOURCE_DIR}/GraspEditorWindow.cpp)
-	FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/GraspEditorWindow.h)
+	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/RobotViewer.cpp ${PROJECT_SOURCE_DIR}/showRobotWindow.cpp osgViewerWidget.cpp)
+	FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/showRobotWindow.h osgViewerWidget.h)
 
   
     ################################## moc'ing ##############################
     set(GUI_MOC_HDRS
-        ${PROJECT_SOURCE_DIR}/GraspEditorWindow.h
+        ${PROJECT_SOURCE_DIR}/showRobotWindow.h
+        ${PROJECT_SOURCE_DIR}/osgViewerWidget.h
     )
 
     set(GUI_UIS
-        ${PROJECT_SOURCE_DIR}/GraspEditor.ui
+        ${PROJECT_SOURCE_DIR}/RobotViewer.ui
     )
 
     qt4_wrap_cpp(demo_SRCS ${GUI_MOC_HDRS})
@@ -28,7 +30,6 @@ IF(SIMOX_USE_COIN_VISUALIZATION)
     list(APPEND demo_INCS ${UI_HEADER})
 
     include_directories(${UI_HEADER_DIR})
-
 
     ADD_EXECUTABLE(${PROJECT_NAME} ${demo_SRCS} ${demo_INCS})
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
@@ -40,4 +41,4 @@ IF(SIMOX_USE_COIN_VISUALIZATION)
     ADD_DEFINITIONS(${SIMOX_VISUALIZATION_COMPILE_FLAGS})
 
     MESSAGE( STATUS ${PROJECT_NAME} " will be placed into " ${SIMOX_BIN_DIR})
-ENDIF(SIMOX_USE_COIN_VISUALIZATION)
+ENDIF()

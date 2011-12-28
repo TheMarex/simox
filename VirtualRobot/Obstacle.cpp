@@ -45,11 +45,14 @@ int Obstacle::getID()
 	return id;
 }
 
-VirtualRobot::ObstaclePtr Obstacle::createBox( float width, float height, float depth, float colorR /*= 1.0f*/, float colorG /*= 0.0f*/, float colorB/*=0.0f*/, std::string visualizationType /*="inventor"*/, CollisionCheckerPtr colChecker )
+VirtualRobot::ObstaclePtr Obstacle::createBox( float width, float height, float depth, float colorR /*= 1.0f*/, float colorG /*= 0.0f*/, float colorB/*=0.0f*/, std::string visualizationType , CollisionCheckerPtr colChecker )
 {
 	ObstaclePtr result;
-
-	VisualizationFactoryPtr visualizationFactory = VisualizationFactory::fromName(visualizationType, NULL);
+	VisualizationFactoryPtr visualizationFactory;
+	if (visualizationType.empty())
+		visualizationFactory=VisualizationFactory::first(NULL);
+	else
+		visualizationFactory = VisualizationFactory::fromName(visualizationType, NULL);
 	if (!visualizationFactory)
 	{
 		VR_ERROR << "Could not create factory for visu type " << visualizationType << endl;

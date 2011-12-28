@@ -58,11 +58,6 @@ public:
 	*/
 	std::string getName();
 
-	//! Creates an Inventor separator with all collision models of this Set
-	//void GetIVCollisionModels (SoSeparator *storeResult);
-
-
-
 	//! store axis aligned bounding box covering all CollisionModels to store_aabb
 	//virtual void GetAABB(SbBox3f& store_aabb);
 

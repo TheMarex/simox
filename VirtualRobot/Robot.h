@@ -87,11 +87,11 @@ public:
 	/*! 
 		Shows the structure of the robot
 	*/
-	void showStructure(bool enable, const std::string &type="inventor");
+	void showStructure(bool enable, const std::string &type="");
 	/*! 
 		Shows the coordinate systems of the robot nodes
 	*/
-	void showCoordinateSystems(bool enable, const std::string &type="inventor");
+	void showCoordinateSystems(bool enable, const std::string &type="");
 
 	/*!
 		Setup the full model visualization.

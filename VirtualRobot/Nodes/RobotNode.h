@@ -168,8 +168,9 @@ public:
 		\p text Text to display at coordinate system. If not given, the name of this robot node will be displayed.
 		\p visualizationType	This option is only needed when the current robot node does not yet own a visualization. 
 								Then a visualziationNode has to be built and the \p visualizationType specifies which type of visualization should be used.
+								If not given, the first registered visaulizationfactory is used.
 	*/
-	virtual void showCoordinateSystem( bool enable, float scaling = 1.0f, std::string *text = NULL, const std::string &visualizationType="inventor");
+	virtual void showCoordinateSystem( bool enable, float scaling = 1.0f, std::string *text = NULL, const std::string &visualizationType="");
 
 
 	/*!
@@ -205,9 +206,10 @@ public:
 		Visualize the structure of this RobotNode.
 		\p enable Show or hide the structure visualization
 		\p visualizationType	This option is only needed when the current robot node does not yet own a visualization. 
-		Then a visualziationNode has to be build and the \p visualizationType specifies which type of visualization should be used.
+								Then a visualziationNode has to be build and the \p visualizationType specifies which type of visualization should be used.
+								If not given, the first registered visaulizationfactory is used.
 	*/
-	virtual void showStructure( bool enable, const std::string &visualizationType="inventor");
+	virtual void showStructure( bool enable, const std::string &visualizationType="");
 
 
 	/*!

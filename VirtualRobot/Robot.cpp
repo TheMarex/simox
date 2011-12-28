@@ -401,7 +401,7 @@ void Robot::highlight (VisualizationPtr visualization, bool enable)
 	}
 }
 
-void Robot::showStructure( bool enable, const std::string &type/*="inventor"*/ )
+void Robot::showStructure( bool enable, const std::string &type )
 {
 	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
 	while(robotNodeMap.end() != iterator)
@@ -412,7 +412,7 @@ void Robot::showStructure( bool enable, const std::string &type/*="inventor"*/ )
 
 }
 
-void Robot::showCoordinateSystems( bool enable, const std::string &type/*="inventor"*/ )
+void Robot::showCoordinateSystems( bool enable, const std::string &type )
 {
 	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
 	while(robotNodeMap.end() != iterator)

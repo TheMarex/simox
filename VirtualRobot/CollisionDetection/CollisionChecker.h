@@ -82,7 +82,7 @@ public:
 
 	/*! 
 	Activates / Deactivates the automatic size check on col model creation.
-	The size check can be useful when the UNITS definitions in the inventor files result in different scalings of the 3D models.
+	The size check can be useful when the UNITS definitions in inventor files result in different scalings of the 3D models.
 	(Standard: true)
 	*/
 	void setAutomaticSizeCheck(bool checkSizeOnColModelCreation);

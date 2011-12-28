@@ -4,13 +4,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
 
 CMAKE_POLICY(VERSION 2.6)
 
-IF(NOT DEFINED VR_CONFIGURED)
-	INCLUDE(../../config.cmake)
-ENDIF()
 
 INCLUDE(${SABA_SimoxDir}/CMakeModules/SimoxProject.cmake)
 
-IF(SIMOX_USE_COIN_VISUALIZATION)
+IF(SIMOX_VISUALIZATION AND SIMOX_USE_COIN_VISUALIZATION)
      
 	# the variable "demo_SRCS" contains all .cpp files of this project
 	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/RrtGui.cpp ${PROJECT_SOURCE_DIR}/RrtGuiWindow.cpp)
@@ -25,8 +22,8 @@ IF(SIMOX_USE_COIN_VISUALIZATION)
 
 
     # create the executable
-    simox_add_executable(${PROJECT_NAME} "${demo_SRCS}" "${demo_INCS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
+    simox_add_example(${PROJECT_NAME} "${demo_SRCS}" "${demo_INCS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
     
     # we need the GraspStudio lib
     TARGET_LINK_LIBRARIES(${PROJECT_NAME} GraspStudio)    
-ENDIF(SIMOX_USE_COIN_VISUALIZATION)
+ENDIF()

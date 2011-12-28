@@ -4,6 +4,9 @@ IF (NOT SIMOX_CONFIGURED)
 	# defines SIMOX_CONFIGURED variable which indicates that this config file has already been included
 	SET(SIMOX_CONFIGURED TRUE)
 	
+	# use virtual folders for grouping projects in IDEs 
+	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+	
 	# Set up for debug build
 	IF(NOT CMAKE_BUILD_TYPE)
 	  SET(CMAKE_BUILD_TYPE Debug CACHE STRING
@@ -90,6 +93,7 @@ IF (NOT SIMOX_CONFIGURED)
 		endif ( QT_FOUND )
 		
 		if (QT_FOUND AND SOQT_FOUND AND COIN3D_FOUND)
+		    MESSAGE (STATUS "Enabling Coin3D/Qt/SoQt support")
 		    MESSAGE (STATUS "By using the Con3D library, the license of Simox is not LGPL any more. The license must be GPL, since Con3D is a GPL library. If you want to use Simox under LGPL you must disable Coin3D support!") 
 			SET (SIMOX_VISUALIZATION TRUE)
         	SET (SIMOX_VISUALIZATION_LIBS ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${SoQt_LIBRARIES} )
@@ -101,7 +105,7 @@ IF (NOT SIMOX_CONFIGURED)
 	
 	    MESSAGE(STATUS "Searching OSG and Qt...")
 	
-	    FIND_PACKAGE(OpenSceneGraph REQUIRED)
+	    FIND_PACKAGE(OpenSceneGraph REQUIRED osgViewer osgUtil osgDB osgGA)
 
 		if (OPENSCENEGRAPH_FOUND)
 		    MESSAGE (STATUS "Found OpenSceneGraph:" ${OPENSCENEGRAPH_INCLUDE_DIRS})
@@ -112,12 +116,23 @@ IF (NOT SIMOX_CONFIGURED)
 			MESSAGE (STATUS "Found Qt4: " ${QT_INCLUDE_DIR})
 			include(${QT_USE_FILE})
 			#MESSAGE(STATUS "QT_LIBRARIES: " ${QT_LIBRARIES})
-	
 		else ( QT_FOUND )
 			MESSAGE (STATUS "Did not found Qt. Disabling Qt/OSG support.")
 		endif ( QT_FOUND )
 		
 		if (QT_FOUND AND OPENSCENEGRAPH_FOUND)
+		    MESSAGE (STATUS "Enabling OSG/Qt support")
+		    ### a little hack is needed here since osgQt is not supported in the FindOSG script
+		    MESSAGE("OPENSCENEGRAPH_LIBRARIES: ${OPENSCENEGRAPH_LIBRARIES}")
+		    LIST(GET OPENSCENEGRAPH_LIBRARIES 1 firstOsgLib)
+		    MESSAGE("firstOsgLib: ${firstOsgLib}")
+		    GET_FILENAME_COMPONENT(osgLibPath ${firstOsgLib} PATH)
+		    MESSAGE("osgLibPath: ${osgLibPath}")
+		    list(APPEND OPENSCENEGRAPH_LIBRARIES optimized)
+		    list(APPEND OPENSCENEGRAPH_LIBRARIES ${osgLibPath}/osgQt.lib)
+		    list(APPEND OPENSCENEGRAPH_LIBRARIES debug)
+		    list(APPEND OPENSCENEGRAPH_LIBRARIES ${osgLibPath}/osgQtd.lib)
+		    MESSAGE("OPENSCENEGRAPH_LIBRARIES: ${OPENSCENEGRAPH_LIBRARIES}")
 			SET (SIMOX_VISUALIZATION TRUE)
         	SET (SIMOX_VISUALIZATION_LIBS ${QT_LIBRARIES} ${OPENSCENEGRAPH_LIBRARIES} )
         	SET (SIMOX_VISUALIZATION_INCLUDE_PATHS ${OPENSCENEGRAPH_INCLUDE_DIRS} )

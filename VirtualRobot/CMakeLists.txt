@@ -118,7 +118,8 @@ CompressionRLE.h
 
 ADD_SUBDIRECTORY(Visualization/tests)
 
-if (SIMOX_USE_COIN_VISUALIZATION)
+if (SIMOX_VISUALIZATION AND SIMOX_USE_COIN_VISUALIZATION)
+
 	SET(SOURCES
 	${SOURCES}
 	Visualization/CoinVisualization/CoinVisualizationFactory.cpp
@@ -133,7 +134,25 @@ if (SIMOX_USE_COIN_VISUALIZATION)
     Visualization/CoinVisualization/CoinVisualization.h
 	)
 	ADD_SUBDIRECTORY(Visualization/CoinVisualization/tests)
-endif (SIMOX_USE_COIN_VISUALIZATION)
+	
+elseif (SIMOX_VISUALIZATION AND SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION)
+
+	SET(SOURCES
+	${SOURCES}
+	Visualization/OSGVisualization/OSGVisualizationFactory.cpp
+	Visualization/OSGVisualization/OSGVisualizationNode.cpp
+    Visualization/OSGVisualization/OSGVisualization.cpp
+	)
+
+	SET(INCLUDES
+	${INCLUDES}
+	Visualization/OSGVisualization/OSGVisualizationFactory.h
+	Visualization/OSGVisualization/OSGVisualizationNode.h
+    Visualization/OSGVisualization/OSGVisualization.h
+	)
+	ADD_SUBDIRECTORY(Visualization/OSGVisualization/tests)
+
+endif ()
 
 INCLUDE_DIRECTORIES(${SIMOX_VISUALIZATION_INCLUDE_PATHS})
 ADD_DEFINITIONS(${SIMOX_VISUALIZATION_COMPILE_FLAGS})

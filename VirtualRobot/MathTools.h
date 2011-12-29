@@ -273,6 +273,9 @@ namespace MathTools
 
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT ensureOrthonormalBasis(Eigen::Vector3f &x, Eigen::Vector3f &y, Eigen::Vector3f &z);
 
+	//! Check if three points are colinear
+	bool VIRTUAL_ROBOT_IMPORT_EXPORT collinear(const Eigen::Vector3f &p1, const Eigen::Vector3f &p2, const Eigen::Vector3f &p3 );
+	Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT findNormal( const std::vector<Eigen::Vector3f> &points);
 
 };
 } // namespace VirtualRobot

@@ -56,7 +56,7 @@ public:
 	virtual VisualizationNodePtr createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
 	virtual VisualizationNodePtr createSphere(float radius, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f, CollisionCheckerPtr colChecker = CollisionCheckerPtr());
 	virtual VisualizationNodePtr createCoordSystem(float scaling = 1.0f, std::string *text = NULL, float axisLength = 100.0f, float axisSize = 3.0f, int nrOfBlocks = 10);
-	virtual VisualizationNodePtr createBoundingBox(const BoundingBox &bbox);
+	virtual VisualizationNodePtr createBoundingBox(const BoundingBox &bbox, bool wireFrame=false);
 	virtual VisualizationNodePtr createVertexVisualization(const Eigen::Vector3f &position, float radius, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
 	virtual VisualizationNodePtr createTriMeshModelVisualization(TriMeshModelPtr model, bool showNormals, Eigen::Matrix4f &pose);
 	virtual VisualizationNodePtr createPlane(const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
@@ -72,9 +72,9 @@ public:
 	static SoSeparator* CreatePolygonVisualization(const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner = VisualizationFactory::Color::Blue(), VisualizationFactory::Color colorLine = VisualizationFactory::Color::Black(), float lineSize = 5.0f);
 	static SoSeparator* CreatePlaneVisualization(const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency, bool grid=true,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
 	static SoSeparator* CreateCoordSystemVisualization(float scaling = 1.0f, std::string *text = NULL, float axisLength = 100.0f, float axisSize = 3.0f, int nrOfBlocks = 10);
-	static SoSeparator* CreateBoundingBox(SoNode* ivModel);
+	static SoSeparator* CreateBoundingBox(SoNode* ivModel, bool wireFrame=false);
 	static SoSeparator* CreateGrid(float width,float depth,float widthMosaic,float depthMosaic,bool InvertNormal,const char* pFileName,float Transparency);
-	static SoSeparator* CreateBBoxVisualization(const BoundingBox &bbox);
+	static SoSeparator* CreateBBoxVisualization(const BoundingBox &bbox, bool wireFrame=false);
 	static SoSeparator* CreatePointVisualization(const MathTools::ContactPoint &point, bool showNormals = false);
 	static SoSeparator* CreatePointsVisualization(const std::vector<MathTools::ContactPoint> &points, bool showNormals = false);
 	static SoSeparator* CreateArrow(const Eigen::Vector3f &n, float length = 50.0f, float width = 2.0f, const Color &color = Color::Gray());

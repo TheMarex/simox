@@ -344,8 +344,10 @@ RobotNodePtr RobotIO::processRobotNode(rapidxml::xml_node<char> *robotNodeXMLNod
 					THROW_VR_EXCEPTION_IF(colProcessed, "Two collision tags defined in RobotNode '" << robotNodeName << "'." << endl);
 					std::string colModelName = robotNodeName;
 					colModelName += "_VISU_ColModel";
+					// clone model
+					VisualizationNodePtr visualizationNodeClone = visualizationNode->clone();
 					// todo: ID?
-					collisionModel.reset(new CollisionModel(visualizationNode,colModelName,CollisionCheckerPtr()));
+					collisionModel.reset(new CollisionModel(visualizationNodeClone,colModelName,CollisionCheckerPtr()));
 					colProcessed = true;
 				}
 			} else if (loadMode==eCollisionModel)

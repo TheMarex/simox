@@ -13,6 +13,7 @@
 
 #include <osg/Shape>
 #include <osg/ShapeDrawable>
+#include <osgDB/WriteFile>
 #include <sstream>
 using namespace std;
 using namespace VirtualRobot;
@@ -215,9 +216,10 @@ void showRobotWindow::collisionModel()
 {
 	if (!robot)
 		return;
-
+	cout << "1:" << osgRobot->getNumChildren() << endl;
 	if (osgRobot->getNumChildren()>0)
 		osgRobot->removeChildren(0,osgRobot->getNumChildren());
+	cout << "2:" << osgRobot->getNumChildren() << endl;
 
 	//setRobotModelShape(UI.checkBoxColModel->state() == QCheckBox::On);
 	useColModel = UI.checkBoxColModel->checkState() == Qt::Checked;
@@ -450,7 +452,19 @@ void showRobotWindow::loadRobot()
 	// build visualization
 	collisionModel();
 	robotStructure();
-	 //m_pExViewer->viewAll();
+
+
+	/*boost::shared_ptr<VirtualRobot::OSGVisualization> visualizationCol = robot->getVisualization<OSGVisualization>(SceneObject::Collision);
+	osg::Node* visualisationNodeCol = NULL;
+	if (visualizationCol)
+		visualisationNodeCol = visualizationCol->getOSGVisualization();
+	osgDB::writeNodeFile(*visualisationNodeCol, std::string(SIMOX_BASE_DIR "/colModel.osg"));
+
+	boost::shared_ptr<VirtualRobot::OSGVisualization> visualizationFul = robot->getVisualization<OSGVisualization>(SceneObject::Collision);
+	osg::Node* visualisationNodeFul = NULL;
+	if (visualizationFul)
+		visualisationNodeFul = visualizationFul->getOSGVisualization();
+	osgDB::writeNodeFile(*visualisationNodeFul, std::string(SIMOX_BASE_DIR "/fullModel.osg"));*/
 }
 
 void showRobotWindow::robotStructure()

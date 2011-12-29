@@ -23,7 +23,13 @@ namespace VirtualRobot {
 OSGVisualizationNode::OSGVisualizationNode(osg::Node* visualizationNode) 
 {
 	visualization = visualizationNode;
+	if (!visualization)
+	{
+		visualization = new osg::Node; // create dummy node
+	}
 	visualization->ref();
+	// use visualization before it gets transformed
+	createTriMeshModel();
 
 	visualizationAtGlobalPose = new osg::Group;
 	visualizationAtGlobalPose->ref();
@@ -35,8 +41,6 @@ OSGVisualizationNode::OSGVisualizationNode(osg::Node* visualizationNode)
 	attachedVisualizationsSeparator->ref();
 	globalPoseTransform->addChild(attachedVisualizationsSeparator);
 
-	if (!visualization)
-		visualization = new osg::Node; // create dummy node
 
 	globalPoseTransform->addChild(visualization);
 }
@@ -88,8 +92,6 @@ void OSGVisualizationNode::createTriMeshModel()
 	osg::Geode* visuGeode = visualization->asGeode();
 	if (visuGeode)
 	{
-		osg::TriangleFunctor<osgTriangleConverter> tf;
-		tf.triMeshModel = triMeshModel;
 		addGeodeTriData(visuGeode,triMeshModel);
 	} else
 	{
@@ -101,6 +103,7 @@ void OSGVisualizationNode::createTriMeshModel()
 		}
 	}
 }
+
 void OSGVisualizationNode::addGeodeTriData(osg::Geode* geode, TriMeshModelPtr mesh)
 {
 	if (!geode || !mesh)
@@ -109,6 +112,7 @@ void OSGVisualizationNode::addGeodeTriData(osg::Geode* geode, TriMeshModelPtr me
 	{
 		osg::TriangleFunctor<osgTriangleConverter> tf;
 		tf.triMeshModel = mesh;
+		tf.mat = *(OSGVisualizationFactory::getGlobalPose(geode));
 		geode->getDrawable( i )->accept( tf );
 	}
 }
@@ -237,16 +241,16 @@ void OSGVisualizationNode::setupVisualization( bool showVisualization, bool show
 	if (!visualizationAtGlobalPose || !attachedVisualizationsSeparator || !visualization)
 		return;
 	
-	if (showAttachedVisualizations && !visualizationAtGlobalPose->containsNode(attachedVisualizationsSeparator))
-		visualizationAtGlobalPose->addChild(attachedVisualizationsSeparator);
-	if (!showAttachedVisualizations && visualizationAtGlobalPose->containsNode(attachedVisualizationsSeparator))
-		visualizationAtGlobalPose->removeChild(attachedVisualizationsSeparator);
+	if (showAttachedVisualizations && !globalPoseTransform->containsNode(attachedVisualizationsSeparator))
+		globalPoseTransform->addChild(attachedVisualizationsSeparator);
+	if (!showAttachedVisualizations && globalPoseTransform->containsNode(attachedVisualizationsSeparator))
+		globalPoseTransform->removeChild(attachedVisualizationsSeparator);
 
 
-	if (showVisualization && !visualizationAtGlobalPose->containsNode(visualization))
-		visualizationAtGlobalPose->addChild(visualization);
-	if (!showVisualization && visualizationAtGlobalPose->containsNode(visualization))
-		visualizationAtGlobalPose->removeChild(visualization);
+	if (showVisualization && !globalPoseTransform->containsNode(visualization))
+		globalPoseTransform->addChild(visualization);
+	if (!showVisualization && globalPoseTransform->containsNode(visualization))
+		globalPoseTransform->removeChild(visualization);
 }
 
 

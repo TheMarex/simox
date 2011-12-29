@@ -138,7 +138,7 @@ void CoinVisualizationFactory::GetVisualizationFromSoInput(SoInput& soInput, Vis
 
 	if (boundingBox)
 	{
-		SoSeparator* bboxVisu = CreateBoundingBox(coinVisualization);
+		SoSeparator* bboxVisu = CreateBoundingBox(coinVisualization, false);
 		bboxVisu->ref();
 		coinVisualization->unref();
 		coinVisualization = bboxVisu;
@@ -152,7 +152,7 @@ void CoinVisualizationFactory::GetVisualizationFromSoInput(SoInput& soInput, Vis
 
 
 
-SoSeparator* CoinVisualizationFactory::CreateBoundingBox(SoNode *ivModel)
+SoSeparator* CoinVisualizationFactory::CreateBoundingBox(SoNode *ivModel, bool wireFrame)
 {
 	THROW_VR_EXCEPTION_IF(!ivModel,"NULL ivModel!");
 
@@ -181,8 +181,10 @@ SoSeparator* CoinVisualizationFactory::CreateBoundingBox(SoNode *ivModel)
 
 
 	SoDrawStyle *s = new SoDrawStyle();
-	//s->style =  SoDrawStyle::LINES;
-	s->style =  SoDrawStyle::FILLED;
+	if (wireFrame)
+	    s->style =  SoDrawStyle::LINES;
+	else
+	    s->style =  SoDrawStyle::FILLED;
 	SoSeparator *n = new SoSeparator();
 	SoTranslation *t = new SoTranslation();
 	t->translation.setValue((maxX-minX)*0.5f+minX,(maxY-minY)*0.5f+minY,(maxZ-minZ)*0.5f+minZ);
@@ -827,12 +829,15 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( TriMeshModelPtr model, 
 
 
 
-SoSeparator* CoinVisualizationFactory::CreateBBoxVisualization( const BoundingBox &bbox )
+SoSeparator* CoinVisualizationFactory::CreateBBoxVisualization( const BoundingBox &bbox, bool wireFrame )
 {
 	SoSeparator *res = new SoSeparator;
 
 	SoDrawStyle *ds = new SoDrawStyle;
-	ds->style = SoDrawStyle::LINES;
+	if (wireFrame)
+	    ds->style = SoDrawStyle::LINES;
+	else
+	    ds->style = SoDrawStyle::FILLED;
 	res->addChild(ds);
 
 	SoTranslation *tr = new SoTranslation();
@@ -857,9 +862,9 @@ SoSeparator* CoinVisualizationFactory::CreateBBoxVisualization( const BoundingBo
 	return res;
 }
 
-VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createBoundingBox( const BoundingBox &bbox )
+VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createBoundingBox( const BoundingBox &bbox, bool wireFrame )
 {
-	SoSeparator *res = CreateBBoxVisualization(bbox);
+	SoSeparator *res = CreateBBoxVisualization(bbox, wireFrame);
 
 	VisualizationNodePtr node(new CoinVisualizationNode(res));
 	return node;

@@ -58,41 +58,6 @@ std::string CollisionModel::getName()
 	return name;
 }
 
-/*
-
-int CollisionModel::SetIVModel( SoNode *pModel, int id )
-{
-	if(!pModel || !colChecker)
-	{
-		cout << __FUNCTION__ << ": NULL data" << endl;
-		return 0;
-	}
-	if (m_pIVModel)
-	{
-		m_pIVModel->unref();
-	}
-	m_pIVModel = new SoSeparator();
-	m_pIVModel->ref();
-	SoMatrixTransform *pMaTr = new SoMatrixTransform();
-	m_pIVModel->addChild(pMaTr);
-	m_pIVModel->addChild(pModel);
-
-	m_vCollisionModelIds.clear();
-	m_vCollisionModelIds.push_back(id);
-	
-	int trCount = collisionModelImplementation->SetIVModel(pModel, id);
-
-	SbMatrix mat;
-	mat.makeIdentity();
-	SetGlobalPose(mat);
-	return trCount;
-}
-
-SoNode* CollisionModel::GetIVModel()
-{
-	return m_pIVModel;
-}*/
-
 void CollisionModel::setGlobalPose(const Eigen::Matrix4f &m)
 {
 	globalPose = m;

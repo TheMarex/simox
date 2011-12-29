@@ -695,6 +695,33 @@ bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::isValid( const Eigen::MatrixXf &v )
 	return !(boost::math::isinf(v.maxCoeff()) || boost::math::isinf(-v.minCoeff()) || boost::math::isnan(v.sum()));
 }
 
+
+Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::findNormal( const std::vector<Eigen::Vector3f> &points)
+{
+	Eigen::Vector3f result(0,0,1.0f);
+	if (points.size()<3)
+		return result;
+
+	for (unsigned int i=2;i<points.size();i++)
+	{
+		if (!collinear(points[i-2],points[i-1],points[i]))
+		{
+			result = (points[i-1]-points[i-2]).cross( (points[i-1]-points[i]) );
+			result.normalize();
+			return result;
+		}
+	}
+
+	// all points collinear
+	return result;
+}
+
+bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::collinear( const Eigen::Vector3f &p1, const Eigen::Vector3f &p2, const Eigen::Vector3f &p3 )
+{
+	float d = ( (p2-p1).cross( (p2-p3) ) ).norm();
+	return (d<1e-6);
+}
+
 bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::ensureOrthonormalBasis( Eigen::Vector3f &x, Eigen::Vector3f &y, Eigen::Vector3f &z )
 {
 	const float minLength = 1e-10f;

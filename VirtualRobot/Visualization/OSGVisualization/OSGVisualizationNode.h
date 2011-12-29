@@ -90,19 +90,14 @@ protected:
 	osg::Group* attachedVisualizationsSeparator;
 	std::map< std::string, osg::Node* > attachedOSGVisualizations;	//< These optional visualizations will not show up in the TriMeshModel
 
-	//SoNode* visualization;
-	//SoSeparator* visualizationAtGlobalPose;
-	//SoSeparator* attachedVisualizationsSeparator;
-	//std::map< std::string, SoNode* > attachedOSGVisualizations;	//< These optional visualizations will not show up in the TriMeshModel
-
 	osg::MatrixTransform *globalPoseTransform;
 	TriMeshModelPtr triMeshModel;
 
 	struct osgTriangleConverter {
 		inline void operator () ( const osg::Vec3& _v1, const osg::Vec3& _v2, const osg::Vec3& _v3, bool treatVertexDataAsTemporary ) {
-			osg::Vec3 v1 = _v1;// * m_mat;
-			osg::Vec3 v2 = _v2;// * m_mat;
-			osg::Vec3 v3 = _v3;// * m_mat;
+			osg::Vec3 v1 = _v1 * mat;
+			osg::Vec3 v2 = _v2 * mat;
+			osg::Vec3 v3 = _v3 * mat;
 			osg::Vec3 vV1V2 = v2-v1;
 			osg::Vec3 vV1V3 = v3-v1;
 			osg::Vec3 vNormal = vV1V2.operator ^(vV1V3);
@@ -116,15 +111,16 @@ protected:
 
 			// read out vertices
 			Eigen::Vector3f a, b, c, n;
-			a << _v1.x(), _v1.y(), _v1.z();
-			b << _v2.x(), _v2.y(), _v2.z();
-			c << _v3.x(), _v3.y(), _v3.z();
+			a << v1.x(), v1.y(), v1.z();
+			b << v2.x(), v2.y(), v2.z();
+			c << v3.x(), v3.y(), v3.z();
 			n << vNormal.x(), vNormal.y(), vNormal.z();
 			// add new triangle to the model
 			triMeshModel->addTriangleWithFace(a, b, c, n);
 		}
 
 		TriMeshModelPtr triMeshModel;
+		osg::Matrix mat;
 
 	};
 

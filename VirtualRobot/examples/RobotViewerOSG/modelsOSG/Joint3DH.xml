@@ -28,8 +28,10 @@
     </Joint>
 		<Visualization enable="true">
 			 <File type="osg">joint_rot_sphere.iv</File>
-			 <UseAsCollisionModel/>
 		</Visualization>
+		<CollisionModel>
+			 <File type="osg" boundingbox="true">joint_rot_sphere.iv</File>
+		</CollisionModel>
 		<Child name="Joint3"/>
 	</RobotNode>
 

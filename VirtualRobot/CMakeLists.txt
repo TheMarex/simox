@@ -142,6 +142,7 @@ elseif (SIMOX_VISUALIZATION AND SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION)
 	Visualization/OSGVisualization/OSGVisualizationFactory.cpp
 	Visualization/OSGVisualization/OSGVisualizationNode.cpp
     Visualization/OSGVisualization/OSGVisualization.cpp
+    Visualization/OSGVisualization/osgQtWidget/osgViewerWidget.cpp
 	)
 
 	SET(INCLUDES
@@ -149,8 +150,18 @@ elseif (SIMOX_VISUALIZATION AND SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION)
 	Visualization/OSGVisualization/OSGVisualizationFactory.h
 	Visualization/OSGVisualization/OSGVisualizationNode.h
     Visualization/OSGVisualization/OSGVisualization.h
+    Visualization/OSGVisualization/osgQtWidget/osgViewerWidget.h
 	)
+	
+	set(GUI_MOC_HDRS
+        Visualization/OSGVisualization/osgQtWidget/osgViewerWidget.h
+    )
+MESSAGE("SOURCES:${SOURCES}")
+    qt4_wrap_cpp(SOURCES ${GUI_MOC_HDRS})
+MESSAGE("SOURCES:${SOURCES}")
+    
 	ADD_SUBDIRECTORY(Visualization/OSGVisualization/tests)
+	#ADD_SUBDIRECTORY(Visualization/OSGVisualization/osgQtViewer)
 
 endif ()
 

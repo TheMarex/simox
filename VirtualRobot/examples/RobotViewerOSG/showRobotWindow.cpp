@@ -42,7 +42,7 @@ showRobotWindow::showRobotWindow(std::string &sRobotFilename, Qt::WFlags flags)
 	setupUI();
 	
 	loadRobot();
-
+	osgWidget->viewAll();
 	 //m_pExViewer->viewAll();
 }
 
@@ -105,7 +105,7 @@ void showRobotWindow::setupUI()
 	 basicShapesGeode->addDrawable(unitCubeDrawable);
 	 osgRoot->addChild(basicShapesGeode);*/
 
-	 osgWidget = new osgViewerWidget(osgRoot,UI.frameViewer);
+	 osgWidget = new VirtualRobot::osgViewerWidget(osgRoot,UI.frameViewer);
 	 osgWidget->show();
 
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));

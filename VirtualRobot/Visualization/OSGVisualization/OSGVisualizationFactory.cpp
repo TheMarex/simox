@@ -153,10 +153,138 @@ VisualizationNodePtr OSGVisualizationFactory::createSphere(float radius, float c
 
 VisualizationNodePtr OSGVisualizationFactory::createCoordSystem(float scaling, std::string *text, float axisLength, float axisSize, int nrOfBlocks)
 {
-    VR_INFO << "init nyi..." << endl;
-	return VisualizationNodePtr();
+	osg::Node *s = OSGVisualizationFactory::CreateCoordSystemVisualization(scaling,text,axisLength,axisSize,nrOfBlocks);
+	VisualizationNodePtr visualizationNode(new OSGVisualizationNode(s));
+	return visualizationNode;
 }
 
+
+
+osg::Node* OSGVisualizationFactory::CreateCoordSystemVisualization(float scaling, std::string *text, float axisLength, float axisSize, int nrOfBlocks)
+{
+
+	osg::Node* xAxis = CreateArrow(Eigen::Vector3f(1,0,0),axisLength,axisSize,Color::Red());
+	osg::Node* yAxis = CreateArrow(Eigen::Vector3f(0,1,0),axisLength,axisSize,Color::Green());
+	osg::Node* zAxis = CreateArrow(Eigen::Vector3f(0,0,1),axisLength,axisSize,Color::Blue());
+
+	osg::Group* g = new osg::Group;
+	g->addChild(xAxis);
+	g->addChild(yAxis);
+	g->addChild(zAxis);
+	return g;
+	/*float blockSize = axisSize+0.5f;
+	float blockWidth = 0.1f;
+	if (axisSize>10.0f)
+	{
+		blockSize += axisSize / 10.0f;
+		blockWidth += axisSize / 10.0f;
+	}
+
+	float axisBlockTranslation;
+	if (nrOfBlocks!=0)
+	{
+		axisBlockTranslation = axisLength / nrOfBlocks;
+	} else
+		axisBlockTranslation = axisLength / 10.0f;
+
+	SoSeparator* result = new SoSeparator();
+
+	SbMatrix m;
+	m.makeIdentity();
+	SoMatrixTransform *mtr = new SoMatrixTransform();
+	mtr->matrix.setValue(m);
+	result->addChild(mtr);
+
+	//SoScale *sc = new SoScale();
+	//sc->scaleFactor.setValue(scaling,scaling,scaling);
+	//result->addChild(sc);
+
+	for (int i=0;i<3;i++)
+	{
+		SoSeparator *tmp1 = new SoSeparator();
+		SoTransform *t = new SoTransform();
+		SoMaterial *m = new SoMaterial();
+		if (i==0)
+		{
+			m->diffuseColor.setValue(1.0f,0,0);
+			t->translation.setValue((axisLength/2.0f + axisSize/2.0f)*scaling,0,0);
+		} else if (i==1)
+		{
+			m->diffuseColor.setValue(0,1.0f,0);
+			t->translation.setValue(0,(axisLength/2.0f + axisSize/2.0f)*scaling,0);
+		} else
+		{
+			m->diffuseColor.setValue(0,0,1.0f);
+			t->translation.setValue(0,0,(axisLength/2.0f + axisSize/2.0f)*scaling);
+		}
+
+		tmp1->addChild(m);
+		tmp1->addChild(t);
+		SoCube *c = new SoCube();
+		SoCube *c2 = new SoCube();
+		SoTransform *t2 = new SoTransform();
+		if (i==0)
+		{
+			c->width = axisLength*scaling;
+			c->height = axisSize*scaling;
+			c->depth = axisSize*scaling;
+			c2->width = blockWidth*scaling;
+			c2->height = blockSize*scaling;
+			c2->depth = blockSize*scaling;
+			t2->translation.setValue(axisBlockTranslation*scaling,0,0);
+		} else if (i==1)
+		{
+			c->height = axisLength*scaling;
+			c->width = axisSize*scaling;
+			c->depth = axisSize*scaling;
+			c2->width = blockSize*scaling;
+			c2->height = blockWidth*scaling;
+			c2->depth = blockSize*scaling;
+			t2->translation.setValue(0,axisBlockTranslation*scaling,0);
+		} else
+		{
+			c->depth = axisLength*scaling;
+			c->height = axisSize*scaling;
+			c->width = axisSize*scaling;
+			c2->width = blockSize*scaling;
+			c2->height = blockSize*scaling;
+			c2->depth = blockWidth*scaling;
+			t2->translation.setValue(0,0,axisBlockTranslation*scaling);
+		}
+		tmp1->addChild(c);
+		result->addChild(tmp1);
+
+		SoSeparator *tmp2 = new SoSeparator();
+		SoMaterial *m2 = new SoMaterial();
+		m2->diffuseColor.setValue(1.0f,1.0f,1.0f);
+		tmp2->addChild(m2);
+
+		for (int j=0;j<nrOfBlocks;j++)
+		{
+			tmp2->addChild(t2);
+			tmp2->addChild(c2);
+		}
+
+		result->addChild(tmp2);
+	}
+
+	if (text!=NULL)
+	{
+		SoSeparator *textSep = new SoSeparator();
+		SoTranslation *moveT = new SoTranslation();
+		moveT->translation.setValue(2.0f,2.0f,0.0f);
+		textSep->addChild(moveT);
+		SoAsciiText *textNode = new SoAsciiText();
+		/*std::string text2(*text);
+		text2.replace( ' ', "_" );* /
+		SbString text2(text->c_str());
+		text2.apply( &IVToolsHelper_ReplaceSpaceWithUnderscore );
+		textNode->string.set(text2.getString());
+		textSep->addChild(textNode);
+		result->addChild(textSep);
+	}
+	return result;*/
+}
 /*VisualizationNodePtr OSGVisualizationFactory::createVisualization(CollisionCheckerPtr colChecker)
 {
     VR_INFO << "init nyi..." << endl;
@@ -294,8 +422,8 @@ osg::Node* OSGVisualizationFactory::getOSGVisualization( TriMeshModelPtr model, 
 			osg::MatrixTransform *mt = getMatrixTransform(mat);
 			ar->addChild(mt);
 
-			//osg::Node *n = CreateArrow(model->faces[i].normal,30.0f,1.5f);
-			//mt->addChild(n);
+			osg::Node *n = CreateArrow(model->faces[i].normal,30.0f,1.5f);
+			mt->addChild(n);
 
 			res->addChild(ar);
 		}
@@ -352,11 +480,17 @@ osg::Node* OSGVisualizationFactory::CreatePolygonVisualization( const std::vecto
 
 	return geode;
 }
-
-
 VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createArrow( const Eigen::Vector3f &n, float length /*= 50.0f*/, float width /*= 2.0f*/, const Color &color /*= Color::Gray()*/ )
 {
-	/*float coneHeight = width*6.0f;
+	osg::Node* res = CreateArrow(n,length,width,color);
+
+	VisualizationNodePtr node(new OSGVisualizationNode(res));
+	return node;
+}
+
+osg::Node* OSGVisualizationFactory::CreateArrow( const Eigen::Vector3f &n, float length /*= 50.0f*/, float width /*= 2.0f*/, const Color &color /*= Color::Gray()*/ )
+{
+	float coneHeight = width*6.0f;
 	float coneBotomRadius = width*2.5f;
 	osg::Group *res = new osg::Group;
 
@@ -365,63 +499,30 @@ VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createArrow( const E
 	objNormalTrafo.makeIdentity();
 
 	osg::MatrixTransform* arrow = new osg::MatrixTransform;
-	arrow->addChild(lineGeode);
-	arrow->addChild(geode);
-
+	
 	// Rotate X-axis arrow appropriately.
-	osg::Quat rotation; rotation.makeRotate(osg::Vec3(0,1.0f,0),objNormal);
+	osg::Quat rotation; rotation.makeRotate(osg::Vec3(0,0,1.0),objNormal);
 	arrow->setMatrix(osg::Matrix(rotation));
 
 	res->addChild(arrow);
 
+	osg::Geode* geodeCyl = new osg::Geode;
+	osg::Cylinder* cyl = new osg::Cylinder(osg::Vec3(0,0,length*0.5),width,length);
+	osg::ShapeDrawable* cylDraw = new osg::ShapeDrawable(cyl);
+	if (!color.isNone())
+		cylDraw->setColor(osg::Vec4(color.r,color.g,color.b,1.0-color.transparency));
+	geodeCyl->addDrawable(cylDraw);
+	arrow->addChild(geodeCyl);
 
-	SoTranslation *tr = new SoTranslation;
-	tr->translation.setValue(0,length*0.5f,0);
-	res->addChild(tr);
-
-
-	SoCylinder *c = new SoCylinder();
-	c->radius = width;
-	c->height = length;
-	res->addChild(c);
-
-	SoTranslation *transl = new SoTranslation;
-	transl->translation.setValue(0,length*0.5f+coneHeight*0.5f,0);
-	res->addChild(transl);
-
-	SoCone *cone = new SoCone();
-	cone->bottomRadius.setValue(coneBotomRadius);
-	cone->height.setValue(coneHeight);
-	res->addChild(cone);
+	osg::Geode* geodeCone = new osg::Geode;
+	osg::Cone* cone = new osg::Cone (osg::Vec3(0.0f, 0, length),coneBotomRadius,coneHeight);
+	osg::ShapeDrawable* coneDraw = new osg::ShapeDrawable(cone);
+	if (!color.isNone())
+		coneDraw->setColor(osg::Vec4(color.r,color.g,color.b,1.0-color.transparency));
+	geodeCone->addDrawable(coneDraw);
+	arrow->addChild(geodeCone);
 
 	return res;
-
-
-
-	// Create a line.
-	osg::Geode* lineGeode = new osg::Geode;
-	{
-		osg::Geometry* geometry = new osg::Geometry();
-
-		osg::Vec3Array* vertices = new osg::Vec3Array(2);
-		(*vertices)[0] = osg::Vec3(0.0f,0.0f,-0.5f);
-		(*vertices)[1] = osg::Vec3(0.0f,0.0f,0.5f);
-
-		geometry->setVertexArray(vertices);
-		geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2));
-
-		lineGeode->addDrawable(geometry);
-	}
-
-	// Turn of lighting for line and set line width.
-	osg::LineWidth* linewidth = new osg::LineWidth();
-	linewidth->setWidth(2.0f);
-	lineGeode->getOrCreateStateSet()->setAttributeAndModes(linewidth, osg::StateAttribute::ON);
-	lineGeode->getOrCreateStateSet()->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-
-	*/
-	VR_INFO << "nyi.." << endl;
-	return VisualizationNodePtr();
 }
 
 VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createVisualization( CollisionCheckerPtr colChecker /*= CollisionCheckerPtr()*/ )
@@ -431,9 +532,9 @@ VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createVisualization(
 	return visualizationNode;
 }
 
-osg::Matrix* OSGVisualizationFactory::getGlobalPose( osg::Node* n )
+osg::Matrix* OSGVisualizationFactory::getRelativePose( osg::Node* n, osg::Node* rootNode )
 {
-	globalPoseNodeVisitor* ncv = new globalPoseNodeVisitor();
+	globalPoseNodeVisitor* ncv = new globalPoseNodeVisitor(rootNode);
 	if (n && ncv)
 	{
 		n->accept(*ncv);

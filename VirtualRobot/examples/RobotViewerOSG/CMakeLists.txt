@@ -10,15 +10,16 @@ IF(SIMOX_VISUALIZATION AND SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION)
     
 	    
 	# the variable "demo_SRCS" contains all .cpp files of this project
-	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/RobotViewer.cpp ${PROJECT_SOURCE_DIR}/showRobotWindow.cpp osgViewerWidget.cpp)
-	FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/showRobotWindow.h osgViewerWidget.h)
+	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/RobotViewer.cpp ${PROJECT_SOURCE_DIR}/showRobotWindow.cpp)# osgViewerWidget.cpp)
+	FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/showRobotWindow.h)# osgViewerWidget.h)
 
   
     ################################## moc'ing ##############################
     set(GUI_MOC_HDRS
         ${PROJECT_SOURCE_DIR}/showRobotWindow.h
-        ${PROJECT_SOURCE_DIR}/osgViewerWidget.h
+        
     )
+#${PROJECT_SOURCE_DIR}/osgViewerWidget.h
 
     set(GUI_UIS
         ${PROJECT_SOURCE_DIR}/RobotViewer.ui

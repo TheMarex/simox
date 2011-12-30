@@ -3,6 +3,8 @@
 #include <osgGA/TrackballManipulator>
 #include <osgGA/StateSetManipulator>
 
+namespace VirtualRobot {
+
 osgViewerWidget::osgViewerWidget(osg::Node* scene, QWidget *parent) : QGLWidget(parent)
 {
 	viewer = new osgViewer::Viewer;
@@ -23,7 +25,9 @@ void osgViewerWidget::initializeGL()
 	viewer->addEventHandler(new osgGA::StateSetManipulator(transformation->getOrCreateStateSet()));
 	viewer->addEventHandler(new osgViewer::StatsHandler);
 	viewer->addEventHandler(new osgViewer::WindowSizeHandler);
-	viewer->setCameraManipulator(new osgGA::TrackballManipulator);
+	sceneManipulator = new osgGA::TrackballManipulator;
+	sceneManipulator->setAutoComputeHomePosition(true);
+	viewer->setCameraManipulator(sceneManipulator);
 	viewer->setSceneData(transformation.get());
 
 	connect(&paintTimer, SIGNAL(timeout()), this, SLOT(timerCB()));
@@ -224,7 +228,15 @@ void osgViewerWidget::resizeEvent( QResizeEvent *event )
 	QSize widgetSize = event->size();
 	std::cout << "w:" << widgetSize.width() << ", h:" << widgetSize.height() << std::endl;
 
-	QWidget::resizeEvent(event);
+	QGLWidget::resizeEvent(event);
+}
+
+void osgViewerWidget::viewAll()
+{
+	if (!sceneManipulator)
+		return;
+	sceneManipulator->computeHomePosition();
+	sceneManipulator->home(0);
 }
 
 
@@ -295,3 +307,4 @@ void osgViewerWidget::paintEvent( QPaintEvent* event )
 	frame();
 }
 */
+} // namespace

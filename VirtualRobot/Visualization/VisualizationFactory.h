@@ -49,7 +49,7 @@ public:
 		bool isNone() const {return transparency>=1.0f;}
 		static Color Blue(float transparency=0.0f){return Color(0.2f,0.2f,1.0f,transparency);}
 		static Color Red(float transparency=0.0f){return Color(1.0f,0.2f,0.2f,transparency);}
-		static Color Green(float transparency=0.0f){return Color(0.2f,0.2f,1.0f,transparency);}
+		static Color Green(float transparency=0.0f){return Color(0.2f,1.0f,0.2f,transparency);}
 		static Color Black(float transparency=0.0f){return Color(0,0,0,transparency);}
 		static Color Gray(){return Color(0.5f,0.5f,0.5f,0);}
 		static Color None(){return Color(0.0f,0.0f,0.0f,1.0f);}

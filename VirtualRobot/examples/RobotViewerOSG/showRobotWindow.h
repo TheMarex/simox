@@ -1,4 +1,25 @@
-
+/**
+* This file is part of Simox.
+*
+* Simox is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as
+* published by the Free Software Foundation; either version 2 of
+* the License, or (at your option) any later version.
+*
+* Simox is distributed in the hope that it will be useful, but
+* WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*
+* @package    VirtualRobot
+* @author     Nikolaus Vahrenkamp
+* @copyright  2011 Nikolaus Vahrenkamp
+*             GNU Lesser General Public License
+*
+*/
 #ifndef __ShowRobot_WINDOW_H_
 #define __ShowRobot_WINDOW_H_
 
@@ -28,7 +49,7 @@
 
 #include "ui_RobotViewer.h"
 
-#include "osgViewerWidget.h"
+#include <VirtualRobot/Visualization/OSGVisualization/osgQtWidget/osgViewerWidget.h>
 
 class showRobotWindow : public QMainWindow
 {
@@ -91,7 +112,7 @@ protected:
 	bool structureEnabled;
 
 
-	osgViewerWidget* osgWidget;
+	VirtualRobot::osgViewerWidget* osgWidget;
 	osg::Group* osgRoot;	 
 	osg::Group* osgRobot;
 	boost::shared_ptr<VirtualRobot::OSGVisualization> visualization;

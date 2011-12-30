@@ -72,7 +72,7 @@ public:
 	virtual void setupVisualization(bool showVisualization, bool showAttachedVisualizations);
 
 
-/*!
+	/*!
 		Clone this visualization.
 		\param deepCopy When true, the underlying visualization is copied, otherwise a reference to the existing visualization is passed. 
 		Since the underlying implementation may be able to re-use the visualization data, a deep copy may not be necessary in some cases.
@@ -83,9 +83,10 @@ public:
 
 protected:
 	void createTriMeshModel();
-	void addGeodeTriData(osg::Geode* geode, TriMeshModelPtr mesh);
-	void addGroupTriData(osg::Group* visuGroup, TriMeshModelPtr mesh);
+	void addGeodeTriData(osg::Geode* geode, TriMeshModelPtr mesh, osg::Node* rootNode);
+	void addGroupTriData(osg::Group* visuGroup, TriMeshModelPtr mesh, osg::Node* rootNode);
 	osg::Node* visualization;
+	//osg::Node* originalVisualization;
 	osg::Group* visualizationAtGlobalPose;
 	osg::Group* attachedVisualizationsSeparator;
 	std::map< std::string, osg::Node* > attachedOSGVisualizations;	//< These optional visualizations will not show up in the TriMeshModel
@@ -100,14 +101,12 @@ protected:
 			osg::Vec3 v3 = _v3 * mat;
 			osg::Vec3 vV1V2 = v2-v1;
 			osg::Vec3 vV1V3 = v3-v1;
+			osg::Vec3 vV2V3 = v2-v1;
+			float epsilon = 1e-8f;
+			// check for identical points
+			if (vV1V2.length()<epsilon || vV1V3.length()<epsilon || vV2V3.length()<epsilon)
+				return;
 			osg::Vec3 vNormal = vV1V2.operator ^(vV1V3);
-			/**m_stream << "facet normal " << vNormal[0] << " " << vNormal[1] << " " << vNormal[2] << std::endl;
-			*m_stream << "outer loop" << std::endl;
-			*m_stream << "vertex " << v1[0] << " " << v1[1] << " " << v1[2] << std::endl;
-			*m_stream << "vertex " << v2[0] << " " << v2[1] << " " << v2[2] << std::endl;
-			*m_stream << "vertex " << v3[0] << " " << v3[1] << " " << v3[2] << std::endl;
-			*m_stream << "endloop" << std::endl;
-			*m_stream << "endfacet " << std::endl;*/
 
 			// read out vertices
 			Eigen::Vector3f a, b, c, n;
@@ -120,7 +119,7 @@ protected:
 		}
 
 		TriMeshModelPtr triMeshModel;
-		osg::Matrix mat;
+		osg::Matrix mat; // the globalPose of the object
 
 	};
 

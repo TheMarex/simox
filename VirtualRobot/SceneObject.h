@@ -44,9 +44,9 @@ public:
 
 	enum VisualizationType
 	{
-		Full,			// the original full model
-		Collision,		// the original collision model
-		CollisionData	// a visualization of the collision model data that is internally used 
+		Full,			//!< the full model
+		Collision,		//!< the collision model
+		CollisionData	//!< a visualization of the collision model data that is internally used (this mode is only for debug purposes, the model is static, i.e. updates/movements/rotations are not visualized!)
 	};
 
 	struct Physics

@@ -76,8 +76,13 @@ public:
 	static osg::MatrixTransform* getMatrixTransform(const Eigen::Matrix4f &pose);
 	static osg::Node* getOSGVisualization( TriMeshModelPtr model, bool showNormals, VisualizationFactory::Color color = VisualizationFactory::Color::Gray() );
 	static osg::Node* CreatePolygonVisualization( const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner = VisualizationFactory::Color::Blue(), VisualizationFactory::Color colorLine = VisualizationFactory::Color::Black(), float lineSize = 5.0f );
+	static osg::Node* CreateArrow(const Eigen::Vector3f &n, float length = 50.0f, float width = 2.0f, const Color &color = Color::Gray());
+	static osg::Node* CreateCoordSystemVisualization(float scaling, std::string *text, float axisLength, float axisSize, int nrOfBlocks);
 
-	static osg::Matrix* getGlobalPose(osg::Node* n);
+	//! Get pose of n in coordinate system of rootNode (if rootNode==NULL, the global coordinate system is used)
+	static osg::Matrix* getRelativePose(osg::Node* n, osg::Node* rootNode);
+	//! Get global pose
+	static osg::Matrix* getGlobalPose(osg::Node* n) {return getRelativePose(n,NULL);}
 
 	// AbstractFactoryMethod
 public:
@@ -90,20 +95,24 @@ private:
 class globalPoseNodeVisitor : public osg::NodeVisitor 
 {
 public:
-	globalPoseNodeVisitor():
+	globalPoseNodeVisitor(osg::Node* rootNode):
 	osg::NodeVisitor(NodeVisitor::TRAVERSE_PARENTS), done(false)
 	{
 		gpMatrix = new osg::Matrix();
+		gpMatrix->makeIdentity();
+		this->rootNode = rootNode;
 	}
 	virtual void apply(osg::Node &node)
 	{
 		if (!done)
 		{
-			if ( 0 == node.getNumParents() ) // no parents
+
+			if ( 0 == node.getNumParents() ||	// no parents
+				&node == rootNode )				//  or rootNode reached
 			{
 				gpMatrix->set( osg::computeLocalToWorld(this->getNodePath()) );
 				done = true;
-			}
+			} 
 			traverse(node);
 		}
 	}
@@ -114,6 +123,7 @@ public:
 private:
 	bool done;
 	osg::Matrix* gpMatrix;
+	osg::Node* rootNode;
 };
 
 } // namespace VirtualRobot

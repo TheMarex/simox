@@ -28,8 +28,11 @@ OSGVisualizationNode::OSGVisualizationNode(osg::Node* visualizationNode)
 		visualization = new osg::Node; // create dummy node
 	}
 	visualization->ref();
-	// use visualization before it gets transformed
-	createTriMeshModel();
+	// clone the visualization, so that we have a pointer to the original one
+	// this is neccessary since createTrimeshmodel will go up the scene-graph until parent==0, 
+	// in order to find the globalPose matrix
+	//originalVisualization = dynamic_cast<osg::Node*>(visualization->clone(osg::CopyOp::DEEP_COPY_ALL));
+	//originalVisualization->ref();
 
 	visualizationAtGlobalPose = new osg::Group;
 	visualizationAtGlobalPose->ref();
@@ -41,7 +44,6 @@ OSGVisualizationNode::OSGVisualizationNode(osg::Node* visualizationNode)
 	attachedVisualizationsSeparator->ref();
 	globalPoseTransform->addChild(attachedVisualizationsSeparator);
 
-
 	globalPoseTransform->addChild(visualization);
 }
 
@@ -52,6 +54,8 @@ OSGVisualizationNode::~OSGVisualizationNode()
 {
 	if (visualization)
 		visualization->unref();
+	//if (originalVisualization)
+	//	originalVisualization->unref();
 	if (visualizationAtGlobalPose)
 		visualizationAtGlobalPose->unref();
 	if (attachedVisualizationsSeparator)
@@ -92,19 +96,19 @@ void OSGVisualizationNode::createTriMeshModel()
 	osg::Geode* visuGeode = visualization->asGeode();
 	if (visuGeode)
 	{
-		addGeodeTriData(visuGeode,triMeshModel);
+		addGeodeTriData(visuGeode,triMeshModel,visualization);
 	} else
 	{
 		// check if node is a group
 		osg::Group* visuGroup = visualization->asGroup();
 		if (visuGroup)
 		{
-			addGroupTriData(visuGroup,triMeshModel);
+			addGroupTriData(visuGroup,triMeshModel,visualization);
 		}
 	}
 }
 
-void OSGVisualizationNode::addGeodeTriData(osg::Geode* geode, TriMeshModelPtr mesh)
+void OSGVisualizationNode::addGeodeTriData(osg::Geode* geode, TriMeshModelPtr mesh, osg::Node* rootNode)
 {
 	if (!geode || !mesh)
 		return;
@@ -112,23 +116,25 @@ void OSGVisualizationNode::addGeodeTriData(osg::Geode* geode, TriMeshModelPtr me
 	{
 		osg::TriangleFunctor<osgTriangleConverter> tf;
 		tf.triMeshModel = mesh;
-		tf.mat = *(OSGVisualizationFactory::getGlobalPose(geode));
+		//tf.rootNode = rootNode;
+		tf.mat = *(OSGVisualizationFactory::getRelativePose(geode,rootNode));
+		cout << "MAT translation:" << tf.mat(0,3) << "," << tf.mat(1,3)  << "," << tf.mat(2,3) << endl;
 		geode->getDrawable( i )->accept( tf );
 	}
 }
 
-void OSGVisualizationNode::addGroupTriData(osg::Group* visuGroup, TriMeshModelPtr mesh)
+void OSGVisualizationNode::addGroupTriData(osg::Group* visuGroup, TriMeshModelPtr mesh, osg::Node* rootNode)
 {
 	for ( unsigned int i = 0; i < visuGroup->getNumChildren(); ++i ) 
 	{
 		osg::Geode* geode = visuGroup->getChild(i)->asGeode();
 		if (geode)
-			addGeodeTriData(geode,triMeshModel);
+			addGeodeTriData(geode, mesh, rootNode);
 		else
 		{
 			osg::Group* group = visuGroup->getChild(i)->asGroup();
 			if (group)
-				addGroupTriData(group,triMeshModel);
+				addGroupTriData(group, mesh, rootNode);
 		}
 	}
 }

@@ -699,7 +699,10 @@ EndEffectorPtr RobotIO::processEndeffectorNode(rapidxml::xml_node<char>* endeffe
 			THROW_VR_EXCEPTION_IF(gcpNodeName.empty(), "Endeffector tag does not specify a <gcp> tag.");
 			gcpNode = robo->getRobotNode(gcpNodeName);
 			THROW_VR_EXCEPTION_IF(!gcpNode, "gcp associated with <Endeffector> not available in the robot model.");
-		} 
+		} else 
+		{
+			VR_WARNING << "Ignoring unknown attribute in EEF <"<< endeffectorName <<"> definition:" << attributeName << endl;
+		}
 		attr = attr->next_attribute();
 	}
 

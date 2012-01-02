@@ -43,40 +43,107 @@ IF (NOT SIMOX_CONFIGURED)
 	    MESSAGE ("!! Could not find Boost !!")
 	endif (Boost_FOUND)
 	
-	#### Coin3D (Qt and SoQt)
-	MESSAGE ("TODO!!! Update this block according to Simox config file!")
+	#### QT 
+	# QT_QMAKE_EXECUTABLE is the only relieable way of setting the qt4 path!
+	# convert env var to cmake define	
+	IF(NOT "$ENV{QT_QMAKE_EXECUTABLE}" STREQUAL "")
+	    MESSAGE (STATUS "USING QT-PATH from environment variable QT_QMAKE_EXECUTABLE: $ENV{QT_QMAKE_EXECUTABLE}")
+	    file(TO_CMAKE_PATH "$ENV{QT_QMAKE_EXECUTABLE}" QT_QMAKE_EXECUTABLE)
+	ENDIF()
+	FIND_PACKAGE(Qt4 4.6.0 COMPONENTS QtOpenGL QtCore QtGui)
+
+	#### VISUALIZATION Coin3D+Qt+SoQt / OSG+Qt
+	##########################################
+	SET (SIMOX_VISUALIZATION FALSE)
+	SET (SIMOX_VISUALIZATION_LIBS "")
+	SET (SIMOX_VISUALIZATION_INCLUDE_PATHS "")
+	SET (SIMOX_VISUALIZATION_COMPILE_FLAGS "")
+	
 	OPTION(SIMOX_USE_COIN_VISUALIZATION "Use Coin3D for visualization" ON)
+	OPTION(SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION "Use OpenSceneGraph for visualization" OFF)
+	
+	
 	if (SIMOX_USE_COIN_VISUALIZATION)
+	    MESSAGE(STATUS "Searching Coin3D, Qt and SoQt...")
+	    
+	    ##### Coin3D
 		FIND_PACKAGE(Coin3D REQUIRED)
 		if (COIN3D_FOUND)
-			MESSAGE (STATUS "** Coin3D found at: ${COIN3D_INCLUDE_DIRS}")
-			INCLUDE_DIRECTORIES(${COIN3D_INCLUDE_DIRS})
-			ADD_DEFINITIONS(-DCOIN_DLL)
+		    MESSAGE (STATUS "Found Coin3D: " ${COIN3D_INCLUDE_DIRS})
+			##INCLUDE_DIRECTORIES(${COIN3D_INCLUDE_DIRS})
+			##ADD_DEFINITIONS(-DCOIN_DLL)
 		endif (COIN3D_FOUND)
 		
-		#### QT 
-		# QT_QMAKE_EXECUTABLE is the only relieable way of setting the qt4 path!
-		# convert env var to cmake define		
-		file(TO_CMAKE_PATH "$ENV{QT_QMAKE_EXECUTABLE}" QT_QMAKE_EXECUTABLE)
- 		FIND_PACKAGE(Qt4 4.6.0 COMPONENTS QtOpenGL QtCore QtGui)
+
 		if ( QT_FOUND )
-			MESSAGE (STATUS "** Qt4 found at: " ${QT_INCLUDE_DIR})
+			MESSAGE (STATUS "Found Qt4: " ${QT_INCLUDE_DIR})
 			include(${QT_USE_FILE})
-				
+			#MESSAGE(STATUS "QT_LIBRARIES: " ${QT_LIBRARIES})
+	
 			#### SoQt
 			# This will set SoQt_INCLUDE_DIRS and SoQt_LIBRARIES
 			FIND_PACKAGE(SoQt)
 			if (SOQT_FOUND)
-				MESSAGE (STATUS "** SoQt found at:" ${SoQt_INCLUDE_DIRS})
-				ADD_DEFINITIONS(-DSOQT_DLL)
+				MESSAGE (STATUS "Found SoQt:" ${SoQt_INCLUDE_DIRS})
+				##ADD_DEFINITIONS(-DSOQT_DLL)
 			else (SOQT_FOUND)
-				MESSAGE (STATUS "-> Did not found SoQt. Disabling SoQt support.")
+				MESSAGE (STATUS "Did not found SoQt. Disabling SoQt support.")
 			endif (SOQT_FOUND)
 		else ( QT_FOUND )
-			MESSAGE (STATUS "-> Did not found Qt. Disabling Qt/SoQt support.")
+			MESSAGE (STATUS "Did not found Qt. Disabling Qt/SoQt support.")
 		endif ( QT_FOUND )
-	endif (SIMOX_USE_COIN_VISUALIZATION)
+		
+		if (QT_FOUND AND SOQT_FOUND AND COIN3D_FOUND)
+		    MESSAGE (STATUS "Enabling Coin3D/Qt/SoQt support")
+		    MESSAGE (STATUS "By using the Con3D library, the license of Simox is not LGPL any more. The license must be GPL, since Con3D is a GPL library. If you want to use Simox under LGPL you must disable Coin3D support!") 
+			SET (SIMOX_VISUALIZATION TRUE)
+        	SET (SIMOX_VISUALIZATION_LIBS ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${SoQt_LIBRARIES} )
+        	SET (SIMOX_VISUALIZATION_INCLUDE_PATHS ${SoQt_INCLUDE_DIRS} ${COIN3D_INCLUDE_DIRS} )
+        	SET (SIMOX_VISUALIZATION_COMPILE_FLAGS "-DCOIN_DLL " "-DSOQT_DLL ")
+		endif()
+		
+	elseif (SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION)
 	
+	    MESSAGE(STATUS "Searching OSG and Qt...")
+	
+	    FIND_PACKAGE(OpenSceneGraph REQUIRED osgViewer osgUtil osgDB osgGA)
+
+		if (OPENSCENEGRAPH_FOUND)
+		    MESSAGE (STATUS "Found OpenSceneGraph:" ${OPENSCENEGRAPH_INCLUDE_DIRS})
+			##INCLUDE_DIRECTORIES(${OPENSCENEGRAPH_INCLUDE_DIRS})
+		endif (OPENSCENEGRAPH_FOUND)
+		
+		if ( QT_FOUND )
+			MESSAGE (STATUS "Found Qt4: " ${QT_INCLUDE_DIR})
+			include(${QT_USE_FILE})
+			#MESSAGE(STATUS "QT_LIBRARIES: " ${QT_LIBRARIES})
+		else ( QT_FOUND )
+			MESSAGE (STATUS "Did not found Qt. Disabling Qt/OSG support.")
+		endif ( QT_FOUND )
+		
+		if (QT_FOUND AND OPENSCENEGRAPH_FOUND)
+		    MESSAGE (STATUS "Enabling OSG/Qt support")
+		    ### a little hack is needed here since osgQt is not supported in the FindOSG script
+		    MESSAGE("OPENSCENEGRAPH_LIBRARIES: ${OPENSCENEGRAPH_LIBRARIES}")
+		    LIST(GET OPENSCENEGRAPH_LIBRARIES 1 firstOsgLib)
+		    MESSAGE("firstOsgLib: ${firstOsgLib}")
+		    GET_FILENAME_COMPONENT(osgLibPath ${firstOsgLib} PATH)
+		    MESSAGE("osgLibPath: ${osgLibPath}")
+		    list(APPEND OPENSCENEGRAPH_LIBRARIES optimized)
+		    list(APPEND OPENSCENEGRAPH_LIBRARIES ${osgLibPath}/osgQt.lib)
+		    list(APPEND OPENSCENEGRAPH_LIBRARIES debug)
+		    list(APPEND OPENSCENEGRAPH_LIBRARIES ${osgLibPath}/osgQtd.lib)
+		    MESSAGE("OPENSCENEGRAPH_LIBRARIES: ${OPENSCENEGRAPH_LIBRARIES}")
+			SET (SIMOX_VISUALIZATION TRUE)
+        	SET (SIMOX_VISUALIZATION_LIBS ${QT_LIBRARIES} ${OPENSCENEGRAPH_LIBRARIES} )
+        	SET (SIMOX_VISUALIZATION_INCLUDE_PATHS ${OPENSCENEGRAPH_INCLUDE_DIRS} )
+        	SET (SIMOX_VISUALIZATION_COMPILE_FLAGS "")
+		endif()
+		
+	else()
+	    MESSAGE(STATUS "Visualization disabled")
+	endif()
+		
 	############################# SETUP PATHS #############################
 	IF(DEFINED SIMOX_DIR)
 		get_filename_component(SIMOX_DIR ${SIMOX_DIR} ABSOLUTE)

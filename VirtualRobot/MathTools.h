@@ -171,7 +171,7 @@ namespace MathTools
 	*/
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT onNormalPointingSide(const Eigen::Vector3f &point, const Plane &p);
 
-	static Plane getFloorPlane(){return Plane(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,1.0f));}
+	static Plane VIRTUAL_ROBOT_IMPORT_EXPORT getFloorPlane(){return Plane(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,1.0f));}
 
 	/*! 
 		Convenient structs for handling 3D/6D vertices, faces and convex hulls.

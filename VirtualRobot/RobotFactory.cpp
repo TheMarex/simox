@@ -25,7 +25,7 @@ RobotFactory::~RobotFactory()
 
 RobotPtr RobotFactory::createRobot( const std::string &name )
 {
-	RobotPtr result(new Robot(name));
+	RobotPtr result(new LocalRobot(name));
 	return result;
 
 }

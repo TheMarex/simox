@@ -574,7 +574,7 @@ RobotPtr RobotIO::processRobotAttributes(rapidxml::xml_node<char>* robotXMLNode,
 	robotRoot = attr->value();
 
 	// build robot
-	RobotPtr robo(new Robot(robotName,robotType));
+	RobotPtr robo(new LocalRobot(robotName,robotType));
 	return robo;
 }
 

@@ -66,13 +66,11 @@ public:
 	/*!
 		The root node is the first RobotNode of this robot.
 	*/
-	void setRootNode(RobotNodePtr node);
-	RobotNodePtr getRootNode();
+	virtual void setRootNode(RobotNodePtr node) = 0;
+	virtual RobotNodePtr getRootNode() = 0;
 
 	void applyJointValues();
 
-	std::vector< RobotNodePtr > getRobotNodes();
-	void getRobotNodes(std::vector< RobotNodePtr > &storeNodes, bool clearVector=true);
 
 
 	/*!
@@ -123,36 +121,38 @@ public:
 		Sets the configuration according to the RobtoNodes, defined in c. All other nodes are not affected.
 	*/
 	bool setConfig(RobotConfigPtr c);
-
+	
 	/*!
 		This method is automatically called in RobotNode's initialization routine.
 	*/
-	void registerRobotNode(RobotNodePtr node);
-	void deregisterRobotNode(RobotNodePtr node);
+	virtual void registerRobotNode(RobotNodePtr node)=0;
+	virtual void deregisterRobotNode(RobotNodePtr node)=0;
 	bool hasRobotNode( RobotNodePtr node );
-	bool hasRobotNode( const std::string &robotNodeName );
-	RobotNodePtr getRobotNode(const std::string &robotNodeName);
+	virtual bool hasRobotNode( const std::string &robotNodeName ) = 0;
+	virtual RobotNodePtr getRobotNode(const std::string &robotNodeName) = 0;
+	std::vector< RobotNodePtr > getRobotNodes();
+	virtual void getRobotNodes(std::vector< RobotNodePtr > &storeNodes, bool clearVector=true) = 0;
 
 	/*!
 		This method is automatically called in RobotNodeSet's initialization routine.
 	*/
-	void registerRobotNodeSet(RobotNodeSetPtr nodeSet);
-	void deregisterRobotNodeSet(RobotNodeSetPtr nodeSet);
+	virtual void registerRobotNodeSet(RobotNodeSetPtr nodeSet)=0;
+	virtual void deregisterRobotNodeSet(RobotNodeSetPtr nodeSet)=0;
 	bool hasRobotNodeSet( RobotNodeSetPtr nodeSet );
-	bool hasRobotNodeSet( const std::string &name );
-	RobotNodeSetPtr getRobotNodeSet(const std::string &nodeSetName);
+	virtual bool hasRobotNodeSet( const std::string &name ) = 0;
+	virtual RobotNodeSetPtr getRobotNodeSet(const std::string &nodeSetName) =0;
 	std::vector<RobotNodeSetPtr> getRobotNodeSets();
-	void getRobotNodeSets(std::vector<RobotNodeSetPtr> &storeNodeSet);
+	virtual void getRobotNodeSets(std::vector<RobotNodeSetPtr> &storeNodeSet)=0;
 
 	/**
 	 *
 	 */
-	void registerEndEffector(EndEffectorPtr endEffector);
+	virtual void registerEndEffector(EndEffectorPtr endEffector)=0;
 	bool hasEndEffector(EndEffectorPtr endEffector);
-	bool hasEndEffector(const std::string& endEffectorName);
-	EndEffectorPtr getEndEffector(const std::string& endEffectorName);
+	virtual bool hasEndEffector(const std::string& endEffectorName)=0;
+	virtual EndEffectorPtr getEndEffector(const std::string& endEffectorName)=0;
 	std::vector<EndEffectorPtr> getEndEffectors();
-	void getEndEffectors(std::vector<EndEffectorPtr> &storeEEF);
+	virtual void getEndEffectors(std::vector<EndEffectorPtr> &storeEEF)=0;
 
 	/*!
 		Use this method to automatically build a SceneObjectSet out of a RobotNodeSet (e.g. to be used for collision detection)
@@ -181,14 +181,14 @@ public:
 	/*!
 		Set the global position of this robot
 	*/
-	void setGlobalPose(const Eigen::Matrix4f &globalPose);
+	virtual void setGlobalPose(const Eigen::Matrix4f &globalPose) = 0;
 
 	/*!
 		Set the global pose of this robot so that the RobotNode node is at position globalPoseNode
 	*/
 	void setGlobalPoseForRobotNode(const RobotNodePtr &node, const Eigen::Matrix4f &globalPoseNode);
 
-	Eigen::Matrix4f getGlobalPose();
+	virtual Eigen::Matrix4f getGlobalPose() = 0;
 
 	/*!
 		Return center of mass of this robot
@@ -230,15 +230,9 @@ protected:
 
 	std::string name;
 	std::string type;
-	RobotNodePtr rootNode;
 
 	bool updateVisualization;
 
-	Eigen::Matrix4f globalPose; //!< The pose of this roobt in the world
-
-	std::map< std::string, RobotNodePtr > robotNodeMap;
-	std::map< std::string, RobotNodeSetPtr > robotNodeSetMap;
-	std::map< std::string, EndEffectorPtr > endEffectorMap;
 };
 
 /**
@@ -261,6 +255,47 @@ boost::shared_ptr<T> Robot::getVisualization(SceneObject::VisualizationType visu
 	boost::shared_ptr<T> visualization(new T(collectedVisualizationNodes));
 	return visualization;
 }
+
+class LocalRobot : public Robot {
+public:
+	LocalRobot(const std::string &name, const std::string &type=""); 
+	virtual ~LocalRobot();
+	
+	virtual void setRootNode(RobotNodePtr node);
+	virtual RobotNodePtr getRootNode();
+
+	virtual void registerRobotNode(RobotNodePtr node);
+	virtual void deregisterRobotNode(RobotNodePtr node);
+	virtual bool hasRobotNode( const std::string &robotNodeName );
+	virtual RobotNodePtr getRobotNode(const std::string &robotNodeName);
+	virtual void getRobotNodes(std::vector< RobotNodePtr > &storeNodes, bool clearVector=true);
+	
+	virtual void registerRobotNodeSet(RobotNodeSetPtr nodeSet);
+	virtual void deregisterRobotNodeSet(RobotNodeSetPtr nodeSet);
+	virtual bool hasRobotNodeSet( const std::string &name );
+	virtual RobotNodeSetPtr getRobotNodeSet(const std::string &nodeSetName);
+	virtual void getRobotNodeSets(std::vector<RobotNodeSetPtr> &storeNodeSet);
+
+	virtual void registerEndEffector(EndEffectorPtr endEffector);
+	virtual bool hasEndEffector(const std::string& endEffectorName);
+	virtual EndEffectorPtr getEndEffector(const std::string& endEffectorName);
+	virtual void getEndEffectors(std::vector<EndEffectorPtr> &storeEEF);
+
+	virtual void setGlobalPose(const Eigen::Matrix4f &globalPose);
+	virtual Eigen::Matrix4f getGlobalPose();
+
+protected:
+	Eigen::Matrix4f globalPose; //!< The pose of this robot in the world
+	RobotNodePtr rootNode;
+
+	std::map< std::string, RobotNodePtr > robotNodeMap;
+	std::map< std::string, RobotNodeSetPtr > robotNodeSetMap;
+	std::map< std::string, EndEffectorPtr > endEffectorMap;
+		
+
+};
+
+
 
 } // namespace VirtualRobot
 

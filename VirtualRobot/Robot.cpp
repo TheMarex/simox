@@ -11,15 +11,20 @@ Robot::Robot(const std::string &name, const std::string &type)
 	this->name = name;
 	this->type = type;
 	updateVisualization = true;
-	globalPose = Eigen::Matrix4f::Identity();
 }
 
-Robot::~Robot()
+Robot::~Robot(){}
+
+LocalRobot::~LocalRobot()
 {
 	robotNodeSetMap.clear();
 }
 
-void Robot::setRootNode( RobotNodePtr node )
+LocalRobot::LocalRobot(const std::string &name, const std::string &type) : Robot (name, type) {
+	globalPose = Eigen::Matrix4f::Identity();
+}; 
+
+void LocalRobot::setRootNode( RobotNodePtr node )
 {
 	rootNode = node;
 	//robotNodeMap.clear();
@@ -36,7 +41,8 @@ void Robot::setRootNode( RobotNodePtr node )
 		for (unsigned int i=0;i<allNodes.size();i++)
 		{
 			std::string name = allNodes[i]->getName();
-			if (robotNodeMap.find(name) == robotNodeMap.end())
+			if (!this->hasRobotNode(name))
+			//stefan if (robotNodeMap.find(name) == robotNodeMap.end())
 			{
 				VR_WARNING << "Robot node with name <" << name << "> was not registered, adding it to RobotNodeMap" << endl;
 				registerRobotNode(allNodes[i]);
@@ -45,7 +51,7 @@ void Robot::setRootNode( RobotNodePtr node )
 	}
 }
 
-RobotNodePtr Robot::getRobotNode( const std::string &robotNodeName )
+RobotNodePtr LocalRobot::getRobotNode( const std::string &robotNodeName )
 {
 	if (robotNodeMap.find(robotNodeName) == robotNodeMap.end())
 	{
@@ -55,7 +61,7 @@ RobotNodePtr Robot::getRobotNode( const std::string &robotNodeName )
 	return robotNodeMap[robotNodeName];
 }
 
-void Robot::registerRobotNode( RobotNodePtr node )
+void LocalRobot::registerRobotNode( RobotNodePtr node )
 {
 	if (!node)
 		return;
@@ -82,19 +88,20 @@ bool Robot::hasRobotNode( RobotNodePtr node )
         if (!node)
                 return false;
         std::string robotNodeName = node->getName();
-        if (robotNodeMap.find(robotNodeName) != robotNodeMap.end())
+        if (this->hasRobotNode(robotNodeName))
         {
-                return (robotNodeMap[robotNodeName] == node);
+                return (this->getRobotNode(robotNodeName) == node);
         }
         return false;
 }
 
-bool Robot::hasRobotNode( const std::string &robotNodeName )
+bool LocalRobot::hasRobotNode( const std::string &robotNodeName )
 {
         return (robotNodeMap.find(robotNodeName) != robotNodeMap.end());
 }
 
-void Robot::deregisterRobotNode( RobotNodePtr node )
+
+void LocalRobot::deregisterRobotNode( RobotNodePtr node )
 {
 	if (!node)
 		return;
@@ -107,7 +114,7 @@ void Robot::deregisterRobotNode( RobotNodePtr node )
 }
 
 
-void Robot::registerRobotNodeSet( RobotNodeSetPtr nodeSet )
+void LocalRobot::registerRobotNodeSet( RobotNodeSetPtr nodeSet )
 {
 	if (!nodeSet)
 		return;
@@ -130,7 +137,7 @@ bool Robot::hasRobotNodeSet( RobotNodeSetPtr nodeSet )
         return hasRobotNodeSet(nodeSetName);
 }
 
-bool Robot::hasRobotNodeSet( const std::string& name )
+bool LocalRobot::hasRobotNodeSet( const std::string& name )
 {
         if (robotNodeSetMap.find(name) != robotNodeSetMap.end())
         {
@@ -139,7 +146,7 @@ bool Robot::hasRobotNodeSet( const std::string& name )
         return false;
 }
 
-void Robot::deregisterRobotNodeSet( RobotNodeSetPtr nodeSet )
+void LocalRobot::deregisterRobotNodeSet( RobotNodeSetPtr nodeSet )
 {
 	if (!nodeSet)
 		return;
@@ -158,7 +165,7 @@ void Robot::deregisterRobotNodeSet( RobotNodeSetPtr nodeSet )
  * It throws an exception if a VirtualRobot::EndEffector with the same name
  * has already been registered.
  */
-void Robot::registerEndEffector(EndEffectorPtr endEffector)
+void LocalRobot::registerEndEffector(EndEffectorPtr endEffector)
 {
 	if (!endEffector)
 		return;
@@ -181,9 +188,10 @@ bool Robot::hasEndEffector(EndEffectorPtr endEffector)
 	if (!endEffector)
 		return false;
 	std::string endEffectorName = endEffector->getName();
-	if (endEffectorMap.find(endEffectorName) != endEffectorMap.end())
+	if (this->hasEndEffector(endEffectorName))
+	//stefan if (endEffectorMap.find(endEffectorName) != endEffectorMap.end())
 	{
-		return (endEffectorMap[endEffectorName] == endEffector);
+		return (this->getEndEffector(endEffectorName) == endEffector);
 	}
 	return false;
 }
@@ -192,7 +200,7 @@ bool Robot::hasEndEffector(EndEffectorPtr endEffector)
 /**
  * \return true if instance of VirtualRobot::Robot contains an endeffector with name \p endEffectorName and false otherwise
  */
-bool Robot::hasEndEffector(const std::string& endEffectorName)
+bool LocalRobot::hasEndEffector(const std::string& endEffectorName)
 {
 	if (endEffectorName.empty())
 		return false;
@@ -205,7 +213,7 @@ bool Robot::hasEndEffector(const std::string& endEffectorName)
 /**
  * \return reference to endeffector with name \p endEffectorName or Null-Pointer otherwise
  */
-EndEffectorPtr Robot::getEndEffector(const std::string& endEffectorName)
+EndEffectorPtr LocalRobot::getEndEffector(const std::string& endEffectorName)
 {
 	if (endEffectorMap.find(endEffectorName) == endEffectorMap.end())
 	{
@@ -219,7 +227,7 @@ EndEffectorPtr Robot::getEndEffector(const std::string& endEffectorName)
  * This method stores all endeffectors belonging to the robot in \p storeEEF.
  * If there are no registered endeffectors \p storeEEF will be empty.
  */
-void Robot::getEndEffectors(std::vector<EndEffectorPtr> &storeEEF)
+void LocalRobot::getEndEffectors(std::vector<EndEffectorPtr> &storeEEF)
 {
 	storeEEF.clear();
 	storeEEF.reserve(endEffectorMap.size());
@@ -260,26 +268,31 @@ void Robot::print()
 	cout << "******** Robot ********" << endl;
 	cout << "* Name: " << name << endl;
 	cout << "* Type: " << type << endl;
-	if (rootNode)
-		cout << "* Root Node: " << rootNode->getName() << endl;
+	if (this->getRootNode())
+		cout << "* Root Node: " << this->getRootNode()->getName() << endl;
 	else
 		cout << "* Root Node: not set" << endl;
 
 	cout << endl;
 
-	if (rootNode)
-		rootNode->print(true,true);
+	if (this->getRootNode())
+		this->getRootNode()->print(true,true);
 
 	cout << endl;
-
-	if (robotNodeSetMap.size()>0)
+	
+	std::vector<RobotNodeSetPtr> robotNodeSets = this->getRobotNodeSets();
+	if (robotNodeSets.size()>0)
 	{
 		cout << "* RobotNodeSets:" << endl;
-		std::map< std::string, RobotNodeSetPtr >::iterator iter = robotNodeSetMap.begin();
-		while (iter != robotNodeSetMap.end())
+
+		std::vector<RobotNodeSetPtr>::iterator iter = robotNodeSets.begin();
+		//stefan std::map< std::string, RobotNodeSetPtr >::iterator iter = robotNodeSetMap.begin();
+		//stefan while (iter != robotNodeSetMap.end())
+		while (iter != robotNodeSets.end())
 		{
 			cout << "----------------------------------" << endl;
-			iter->second->print();
+			//stefan iter->second->print();
+			(*iter)->print();
 			iter++;
 		}
 		cout << endl;
@@ -291,7 +304,7 @@ void Robot::print()
 /**
  * This method returns a reference to Robot::rootNode;
  */
-RobotNodePtr Robot::getRootNode()
+RobotNodePtr LocalRobot::getRootNode()
 {
 	return this->rootNode;
 }
@@ -301,7 +314,7 @@ RobotNodePtr Robot::getRootNode()
  */
 void Robot::applyJointValues()
 {
-	rootNode->applyJointValue(globalPose);
+	this->getRootNode()->applyJointValue(this->getGlobalPose());
 }
 
 
@@ -309,7 +322,7 @@ void Robot::applyJointValues()
  * This method stores all nodes belonging to the robot in \p storeNodes.
  * If there are no registered nodes \p storeNodes will be empty.
  */
-void Robot::getRobotNodes( std::vector< RobotNodePtr > &storeNodes, bool clearVector /*=true*/ )
+void LocalRobot::getRobotNodes( std::vector< RobotNodePtr > &storeNodes, bool clearVector /*=true*/ )
 {
 	if (clearVector)
 		storeNodes.clear();
@@ -335,10 +348,15 @@ std::vector< RobotNodePtr > Robot::getRobotNodes()
 void Robot::setUpdateVisualization( bool enable )
 {
 	updateVisualization = enable;
-	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
-	while(robotNodeMap.end() != iterator)
+
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr> ::const_iterator iterator = robotNodes.begin();
+//	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		iterator->second->setUpdateVisualization(enable);
+		//iterator->second->setUpdateVisualization(enable);
+		(*iterator)->setUpdateVisualization(enable);
 		++iterator;
 	}
 }
@@ -348,7 +366,7 @@ bool Robot::getUpdateVisualizationStatus()
 	return updateVisualization;
 }
 
-RobotNodeSetPtr Robot::getRobotNodeSet(const std::string &nodeSetName)
+RobotNodeSetPtr LocalRobot::getRobotNodeSet(const std::string &nodeSetName)
 {
 	if (robotNodeSetMap.find(nodeSetName) == robotNodeSetMap.end())
 	{
@@ -362,7 +380,7 @@ RobotNodeSetPtr Robot::getRobotNodeSet(const std::string &nodeSetName)
  * This method stores all endeffectors belonging to the robot in \p storeEEF.
  * If there are no registered endeffectors \p storeEEF will be empty.
  */
-void Robot::getRobotNodeSets(std::vector<RobotNodeSetPtr> &storeNodeSets)
+void LocalRobot::getRobotNodeSets(std::vector<RobotNodeSetPtr> &storeNodeSets)
 {
 	storeNodeSets.clear();
 	storeNodeSets.reserve(robotNodeSetMap.size());
@@ -393,20 +411,27 @@ SceneObjectSetPtr Robot::getSceneObjectSet(const std::string &robotNodeSet)
 
 void Robot::highlight (VisualizationPtr visualization, bool enable)
 {
-	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
-	while(robotNodeMap.end() != iterator)
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+//stefan	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//stefan	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		iterator->second->highlight(visualization,enable);
+		(*iterator)->highlight(visualization,enable);
 		++iterator;
 	}
 }
 
 void Robot::showStructure( bool enable, const std::string &type )
 {
-	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
-	while(robotNodeMap.end() != iterator)
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+//stefan	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//stefan	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		iterator->second->showStructure(enable,type);
+		(*iterator)->showStructure(enable,type);
+//stefan		iterator->second->showStructure(enable,type);
 		++iterator;
 	}
 
@@ -414,20 +439,28 @@ void Robot::showStructure( bool enable, const std::string &type )
 
 void Robot::showCoordinateSystems( bool enable, const std::string &type )
 {
-	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
-	while(robotNodeMap.end() != iterator)
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+//stefan	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//stefan	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		iterator->second->showCoordinateSystem(enable,1.0f,NULL,type);
+		(*iterator)->showCoordinateSystem(enable,1.0f,NULL,type);
+//stefan iterator->second->showCoordinateSystem(enable,1.0f,NULL,type);
 		++iterator;
 	}
 }
 
 void Robot::setupVisualization( bool showVisualization, bool showAttachedVisualizations )
 {
-	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
-	while(robotNodeMap.end() != iterator)
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+//stefan	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//stefan	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		iterator->second->setupVisualization(showVisualization,showAttachedVisualizations);
+		(*iterator)->setupVisualization(showVisualization,showAttachedVisualizations);
+//stefan		iterator->second->setupVisualization(showVisualization,showAttachedVisualizations);
 		++iterator;
 	}
 
@@ -436,10 +469,14 @@ void Robot::setupVisualization( bool showVisualization, bool showAttachedVisuali
 int Robot::getNumFaces(bool collisionModel)
 {
 	int res = 0;
-	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
-	while(robotNodeMap.end() != iterator)
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+//stefan	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//stefan	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		res += iterator->second->getNumFaces(collisionModel);
+		res += (*iterator)->getNumFaces(collisionModel);
+//stefan		res += iterator->second->getNumFaces(collisionModel);
 		++iterator;
 	}
 	return res;
@@ -447,18 +484,20 @@ int Robot::getNumFaces(bool collisionModel)
 
 VirtualRobot::CollisionCheckerPtr Robot::getCollisionChecker()
 {
-	if (robotNodeMap.size()==0)
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+//stefan	if (robotNodeMap.size()==0)
+	if (robotNodes.size()==0)
 		return CollisionChecker::getGlobalCollisionChecker();
-	return robotNodeMap.begin()->second->getCollisionChecker();
+	return (*robotNodes.begin())->getCollisionChecker();
 }
 
-void Robot::setGlobalPose(const Eigen::Matrix4f &globalPose )
+void LocalRobot::setGlobalPose(const Eigen::Matrix4f &globalPose )
 {
 	this->globalPose = globalPose;
 	applyJointValues();
 }
 
-Eigen::Matrix4f Robot::getGlobalPose()
+Eigen::Matrix4f LocalRobot::getGlobalPose()
 {
 	return globalPose;
 }
@@ -472,12 +511,16 @@ Eigen::Vector3f Robot::getCoM()
 	if (m<=0)
 		return res;
 
-	std::map< std::string, RobotNodePtr >::iterator i = robotNodeMap.begin();
-	while (i!=robotNodeMap.end())
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+//stefan	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//stefan	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		res += i->second->getCoMGlobal() * i->second->getMass() / m;
+//stefan		res += i->second->getCoMGlobal() * i->second->getMass() / m;
+		res += (*iterator)->getCoMGlobal() * (*iterator)->getMass() / m;
 
-		i++;
+		iterator++;
 	}
 	
 	return res;
@@ -486,11 +529,15 @@ Eigen::Vector3f Robot::getCoM()
 float Robot::getMass()
 {
 	float res = 0;
-	std::map< std::string, RobotNodePtr >::iterator i = robotNodeMap.begin();
-	while (i!=robotNodeMap.end())
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+//stefan	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//stefan	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		res += i->second->getMass();
-		i++;
+		res += (*iterator)->getMass();
+//stefan		res += i->second->getMass();
+		iterator++;
 	}
 	return res;
 }
@@ -498,10 +545,14 @@ float Robot::getMass()
 std::vector< CollisionModelPtr > Robot::getCollisionModels()
 {
 	std::vector< CollisionModelPtr > result;
-	for (std::map< std::string, RobotNodePtr >::iterator i=robotNodeMap.begin();i!=robotNodeMap.end();i++)
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+	while(robotNodes.end() != iterator)
+//stefan	for (std::map< std::string, RobotNodePtr >::iterator i=robotNodeMap.begin();i!=robotNodeMap.end();i++)
 	{
-		if (i->second->getCollisionModel())
-			result.push_back(i->second->getCollisionModel());
+		if ((*iterator)->getCollisionModel())
+			result.push_back( (*iterator)->getCollisionModel());
+		iterator++;
 	}
 	return result;
 }
@@ -513,7 +564,9 @@ VirtualRobot::RobotPtr Robot::extractSubPart( RobotNodePtr startJoint, const std
 	CollisionCheckerPtr colChecker = collisionChecker;
 	if (!colChecker)
 		colChecker = this->getCollisionChecker();
-	RobotPtr result(new Robot(newRobotName,newRobotType));
+
+	//stefan Warning!!!!! which robot-type to create
+	RobotPtr result(new LocalRobot(newRobotName,newRobotType));
 
 	RobotNodePtr rootNew = startJoint->clone(result, true, RobotNodePtr(), colChecker);
 	THROW_VR_EXCEPTION_IF(!rootNew, "Clone failed...");
@@ -524,12 +577,17 @@ VirtualRobot::RobotPtr Robot::extractSubPart( RobotNodePtr startJoint, const std
 	// check for RNS that are covered by subpart
 	if (cloneRNS)
 	{
-		std::map<std::string, RobotNodeSetPtr>::const_iterator iterator = robotNodeSetMap.begin();
-		while(robotNodeSetMap.end() != iterator)
+		//stefan std::map<std::string, RobotNodeSetPtr>::const_iterator iterator = robotNodeSetMap.begin();
+		//stefan while(robotNodeSetMap.end() != iterator)
+		std::vector<RobotNodeSetPtr> robotNodeSets = this->getRobotNodeSets();
+		std::vector<RobotNodeSetPtr>::const_iterator iterator = robotNodeSets.begin();
+		while(robotNodeSets.end() != iterator)
 		{
-			if (iterator->second->nodesSufficient(rn))
+			//stefan if (iterator->second->nodesSufficient(rn))
+			if ( (*iterator)->nodesSufficient(rn))
 			{
-				RobotNodeSetPtr rns = iterator->second->clone(result);
+				RobotNodeSetPtr rns = (*iterator)->clone(result);
+				//stefan RobotNodeSetPtr rns = iterator->second->clone(result);
 
 				// already done in rns->clone()
 				//if (rns)
@@ -541,15 +599,20 @@ VirtualRobot::RobotPtr Robot::extractSubPart( RobotNodePtr startJoint, const std
 
 	if (cloneEEFs)
 	{
-		std::map<std::string, EndEffectorPtr>::const_iterator iterator2 = endEffectorMap.begin();
-		while(endEffectorMap.end() != iterator2)
+		std::vector<EndEffectorPtr> endEffectors = this->getEndEffectors();
+		std::vector<EndEffectorPtr>::const_iterator iterator = endEffectors.begin();
+		while(endEffectors.end() != iterator)
+		//stefan std::map<std::string, EndEffectorPtr>::const_iterator iterator2 = endEffectorMap.begin();
+		//stefan while(endEffectorMap.end() != iterator2)
 		{
-			if (iterator2->second->nodesSufficient(rn))
+			//stefan if (iterator2->second->nodesSufficient(rn))
+			if ( (*iterator)->nodesSufficient(rn))
 			{
 				// registers eef to result:
-				EndEffectorPtr eef = iterator2->second->clone(result);
+				EndEffectorPtr eef = (*iterator)->clone(result);
+				//stefan EndEffectorPtr eef = iterator2->second->clone(result);
 			}
-			++iterator2;
+			++iterator;
 		}
 	}
 	std::vector<RobotNodePtr> allNodes;
@@ -585,29 +648,36 @@ VirtualRobot::RobotPtr Robot::clone( const std::string &name, CollisionCheckerPt
 
 void Robot::createVisualizationFromCollisionModels()
 {
-	std::map< std::string, RobotNodePtr >::iterator i = robotNodeMap.begin();
-	while (i!=robotNodeMap.end())
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+//stefan	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//stefan	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		RobotNodePtr rn = i->second;
-		if (!rn->getVisualization(SceneObject::Full) && rn->getVisualization(SceneObject::Collision))
+		RobotNodePtr rn = *iterator;
+		if (rn->getVisualization(SceneObject::Full) && rn->getVisualization(SceneObject::Collision))
 		{
 			VisualizationNodePtr v = rn->getVisualization(SceneObject::Collision)->clone();
 			rn->setVisualization(v);
 		}
-		i++;
+		iterator++;
 	}
 }
 
 VirtualRobot::RobotConfigPtr Robot::getConfig()
 {
 	RobotConfigPtr r(new RobotConfig(shared_from_this(),getName()));
-	std::map< std::string, RobotNodePtr >::iterator i = robotNodeMap.begin();
-	while (i!=robotNodeMap.end())
+	
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+//stefan	std::map< std::string, RobotNodePtr>::const_iterator iterator = robotNodeMap.begin();
+//stefan	while(robotNodeMap.end() != iterator)
+	while(robotNodes.end() != iterator)
 	{
-		RobotNodePtr rn = i->second;
+		RobotNodePtr rn = *iterator;
 		if (rn->isTranslationalJoint() || rn->isRotationalJoint())
 			r->setConfig(rn,rn->getJointValue());
-		i++;
+		iterator++;
 	}
 	return r;
 }

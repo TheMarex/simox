@@ -79,8 +79,8 @@ bool RobotNodeFixed::initialize(RobotNodePtr parent, bool initializeChildren)
 
 void RobotNodeFixed::updateTransformationMatrices()
 {
-	if (parent)
-		globalPose = parent->getGlobalPose() * preJointTransformation;
+	if (this->getParent())
+		globalPose = this->getParent()->getGlobalPose() * preJointTransformation;
 	else
 		globalPose = preJointTransformation;
 
@@ -93,7 +93,7 @@ void RobotNodeFixed::updateTransformationMatrices()
 
 void RobotNodeFixed::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
-	THROW_VR_EXCEPTION_IF(parent,"This method could only be called on RobotNodes without parents.");
+	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 
 	this->globalPose = globalPose * preJointTransformation;
 
@@ -113,6 +113,8 @@ void RobotNodeFixed::print( bool printChildren, bool printDecoration ) const
 	if (printDecoration)
 		cout << "******** End RobotNodeFixed ********" << endl;
 
+
+	std::vector< RobotNodePtr > children = this->getChildren();
 	if (printChildren)
 		std::for_each(children.begin(), children.end(), boost::bind(&RobotNode::print, _1, true, true));
 }

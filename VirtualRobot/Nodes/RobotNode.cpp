@@ -57,7 +57,6 @@ RobotNode::~RobotNode()
 void RobotNode::reset()
 {
 	SceneObject::reset();
-	parentName = ""; // root
 	childrenNames.clear();
 	jointValueOffset = 0.0f;
 	jointLimitLo = 0.0f;
@@ -86,19 +85,17 @@ bool RobotNode::initialize(RobotNodePtr parent, bool initializeChildren)
 
 	// process parent
 	this->parent = parent;
-	parentName = "";
 	if (parent)
 	{
-		parentName = parent->getName();
 		if (!parent->hasChildNode(shared_from_this()))
 			parent->addChildNode(shared_from_this());
 	}
 
 	// process children
 	children.clear();
-	for (unsigned int i=0; i<childrenNames.size(); i++)
+	for (unsigned int i=0; i<this->getChildrenNames().size(); i++)
 	{
-		RobotNodePtr n = rob->getRobotNode(childrenNames[i]);
+		RobotNodePtr n = rob->getRobotNode(this->getChildrenNames()[i]);
 		if (n)
 		{
 			children.push_back(n);
@@ -164,7 +161,8 @@ void RobotNode::applyJointValue()
 	THROW_VR_EXCEPTION_IF(!initialized, "Not initialized");
 
 	updateTransformationMatrices();
-
+	
+	std::vector< RobotNodePtr > children = this->getChildren(); //Stefan
 	for (std::vector< RobotNodePtr >::iterator i = children.begin(); i!= children.end(); i++ )
 		(*i)->applyJointValue();
 	//std::for_each(children.begin(), children.end(), boost::mem_fn(&RobotNode::applyJointValue));
@@ -176,6 +174,7 @@ void RobotNode::applyJointValue(const Eigen::Matrix4f &globalPose)
 
 	updateTransformationMatrices(globalPose);
 
+	std::vector< RobotNodePtr > children = this->getChildren(); //Stefan
 	for (std::vector< RobotNodePtr >::iterator i = children.begin(); i!= children.end(); i++ )
 		(*i)->applyJointValue();
 	//std::for_each(children.begin(), children.end(), boost::mem_fn(&RobotNode::applyJointValue));
@@ -187,6 +186,7 @@ void RobotNode::collectAllRobotNodes( std::vector< RobotNodePtr > &storeNodes )
 
 	// call ::collectAllRobotNodes() on all members of the children vector
 	// with the parameter bound to storeNodes
+	std::vector< RobotNodePtr > children = this->getChildren(); //Stefan
 	std::for_each(children.begin(), children.end(), boost::bind(&RobotNode::collectAllRobotNodes, _1, boost::ref(storeNodes)));
 }
 
@@ -224,12 +224,12 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 	if (printDecoration)
 		cout << "******** RobotNode ********" << endl;
 	cout << "* Name: " << name << endl;
-	cout << "* Parent: " << parentName << endl;
+	cout << "* Parent: " << this->getParentName() << endl;
 	cout << "* Children: ";
-	if (childrenNames.size() == 0)
+	if (this->getChildrenNames().size() == 0)
 		cout << " -- " << endl;
-	for (unsigned int i = 0; i < childrenNames.size(); i++)
-		cout << childrenNames[i] << ", ";
+	for (unsigned int i = 0; i < this->getChildrenNames().size(); i++)
+		cout << this->getChildrenNames()[i] << ", ";
 	cout << endl;
 	cout << "* Mass: ";
 	if (physics.massKg<=0)
@@ -238,7 +238,7 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 		cout << physics.massKg << " kg" << endl;
 	cout << "* CoM:" << physics.localCoM(0) << ", " << physics.localCoM(1) << ", " << physics.localCoM(2) << endl;
 	cout << "* Limits: Lo:" << jointLimitLo << ", Hi:" << jointLimitHi << endl;
-	cout << "* jointValue: " << jointValue << ", jointValueOffset: " << jointValueOffset << endl;
+	cout << "* jointValue: " << this->getJointValue() << ", jointValueOffset: " << jointValueOffset << endl;
 	if (optionalDHParameter.isSet)
 	{
 		cout << "* DH parameters: ";
@@ -264,8 +264,8 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 	{ // scope1
 		std::ostringstream sos;
 		sos << std::setiosflags(std::ios::fixed);
-		sos << "* preJointTransformation:" << endl << preJointTransformation << endl;
-		sos << "* postJointTransformation:" << endl << postJointTransformation << endl;
+		sos << "* preJointTransformation:" << endl << preJointTransformation << endl; //Stefan
+		sos << "* postJointTransformation:" << endl << postJointTransformation << endl; //Stefan
 		sos << "* globalPose:" << endl << getGlobalPose() << endl;
 		cout << sos.str() << endl;
 	} // scope1
@@ -275,6 +275,7 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 
 	if (printChildren)
 	{
+		std::vector< RobotNodePtr > children = this->getChildren(); //Stefan
 		for (unsigned int i = 0; i < children.size(); i++)
 			children[i]->print(true, true);
 	}
@@ -293,6 +294,7 @@ void RobotNode::addChildNode( RobotNodePtr child )
 
 bool RobotNode::hasChildNode( const RobotNodePtr child, bool recursive ) const
 {
+	std::vector< RobotNodePtr > children = this->getChildren(); //Stefan
 	for (unsigned int i = 0; i < children.size(); i++)
 	{
 		if (children[i] == child)
@@ -309,15 +311,15 @@ bool RobotNode::hasChildNode( const RobotNodePtr child, bool recursive ) const
 bool RobotNode::hasChildNode( const std::string &child, bool recursive ) const
 {
 	RobotPtr rob(robot);
-	for (unsigned int i=0; i<childrenNames.size(); i++)
+	for (unsigned int i=0; i<this->getChildrenNames().size(); i++)
 	{
 	THROW_VR_EXCEPTION_IF(!rob, "no robot" );
 
-		if (childrenNames[i] == child)
+		if (this->getChildrenNames()[i] == child)
 			return true;
 		if (recursive)
 		{
-			RobotNodePtr p = rob->getRobotNode(childrenNames[i]);
+			RobotNodePtr p = rob->getRobotNode(this->getChildrenNames()[i]);
 			if (p && p->hasChildNode(child))
 				return true;
 		}	
@@ -335,7 +337,7 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 
 	std::vector< std::string > clonedChildrenNames;
 	if (cloneChildren)
-		clonedChildrenNames = childrenNames;
+		clonedChildrenNames = this->getChildrenNames();
 
 	VisualizationNodePtr clonedVisualizationNode;
 	if (visualizationModel)
@@ -358,6 +360,7 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 			result->initialize(initializeWithParent);
 	} else
 	{
+		std::vector< RobotNodePtr > children = this->getChildren(); //Stefan
 		for (unsigned int i=0; i<children.size(); i++)
 		{
 			RobotNodePtr c = children[i]->clone(newRobot,true,RobotNodePtr(),colChecker);

@@ -86,7 +86,7 @@ public:
 		\param updateTransformations When true, the transformation matrices of this joint and all child joints are updated (by calling applyJointValue()).
 		\param clampToLimits Consider joint limits. When false an exception is thrown in case of invalid values.
 	*/
-	void setJointValue(float q, bool updateTransformations = true, bool clampToLimits = true);
+	virtual void setJointValue(float q, bool updateTransformations = true, bool clampToLimits = true);
 
 	/*!
 		Compute/Update the transformations of this joint and all child joints.
@@ -95,7 +95,7 @@ public:
 	/*!
 		This method is only useful for root nodes (e.g. no parents are available). Then the pose of the robot can be set here.
 	*/
-	void applyJointValue(const Eigen::Matrix4f &globalPos);
+	virtual void applyJointValue(const Eigen::Matrix4f &globalPos);
 
 	/// Checks if the given node is one of the own parents. 
 	//bool isParent(RobotNodePtr parent){return false;};
@@ -106,7 +106,7 @@ public:
 	*/
 	void collectAllRobotNodes( std::vector< RobotNodePtr > &storeNodes);
 	
-	float getJointValue() const;
+	virtual float getJointValue() const;
 
 	/*!
 		Checks if jointValue is within joint limits. If not jointValue is adjusted.
@@ -121,12 +121,12 @@ public:
 	/*!
 		The postJoint transformation.
 	*/
-	inline Eigen::Matrix4f getPostJointTransformation() {return postJointTransformation;}
+	virtual Eigen::Matrix4f getPostJointTransformation() {return postJointTransformation;}
 
 	/*!
 		The preJoint transformation.
 	*/
-	inline Eigen::Matrix4f getPreJointTransformation() {return preJointTransformation;}
+	virtual  Eigen::Matrix4f getPreJointTransformation() {return preJointTransformation;}
 	
 	/*!
 		Initialize robot node. Here pointers to robot and children are created from names. 
@@ -196,7 +196,7 @@ public:
 	/*!
 		Set joint limits [rad]
 	*/
-	void setJointLimits(float lo, float hi);
+	virtual void setJointLimits(float lo, float hi);
 
 	virtual bool isTranslationalJoint() const;
 	virtual bool isRotationalJoint() const;
@@ -218,7 +218,7 @@ public:
 	std::vector<RobotNodePtr> getAllParents( RobotNodeSetPtr rns );
  
 	//! Return parent node
-	RobotNodePtr getParent();
+	virtual RobotNodePtr getParent();
 
 	/*!
 		Clone this RobotNode. 
@@ -229,24 +229,33 @@ public:
 	*/
 	virtual RobotNodePtr clone(RobotPtr newRobot, bool cloneChildren = true, RobotNodePtr initializeWithParent = RobotNodePtr(), CollisionCheckerPtr colChecker = CollisionCheckerPtr());
 
-protected:
-
-	///////////////////////// SETUP ////////////////////////////////////
-	std::string parentName;
+private: // Use the private setters and getters instead
+	float jointValue;							//< The joint value
 	std::vector<std::string> childrenNames;
-	float jointValueOffset;
-	float jointLimitLo,jointLimitHi;
+	std::vector< RobotNodePtr > children;
+	RobotNodePtr parent;
+
+protected:
 	Eigen::Matrix4f preJointTransformation;
 	Eigen::Matrix4f postJointTransformation;
+
+	///////////////////////// SETUP ////////////////////////////////////
+	
+	//Stefan
+	virtual std::vector<std::string> getChildrenNames() const {return childrenNames;};
+	virtual std::string getParentName() const {return parent->getName();};
+	virtual std::vector< RobotNodePtr > getChildren() const {return children;};
+
+	float jointValueOffset;
+	float jointLimitLo,jointLimitHi;
 	DHParameter optionalDHParameter;			// When the joint is defined via DH parameters they are stored here
 	///////////////////////// SETUP ////////////////////////////////////
 
 	virtual void updateTransformationMatrices();
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &globalPose);
-	float jointValue;							//< The joint value
 	RobotWeakPtr robot;
-	std::vector< RobotNodePtr > children;
-	RobotNodePtr parent;
+	
+
 	Eigen::Matrix4f globalPosePostJoint;	//< The postJoint transformation applied to transformationJoint. Defines the starting pose for all child joints.
 
 	/*!

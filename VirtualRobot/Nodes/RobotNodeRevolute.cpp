@@ -99,12 +99,12 @@ bool RobotNodeRevolute::initialize(RobotNodePtr parent, bool initializeChildren)
 
 void RobotNodeRevolute::updateTransformationMatrices()
 {
-	if (parent)
-		globalPose = parent->getGlobalPose() * preJointTransformation;
+	if (this->getParent())
+		globalPose = this->getParent()->getGlobalPose() * preJointTransformation;
 	else
 		globalPose = preJointTransformation;
 
-	Eigen::Affine3f tmpT(Eigen::AngleAxisf(jointValue+jointValueOffset,jointRotationAxis));
+	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
 	globalPose *= tmpT.matrix();
 
 	globalPosePostJoint = globalPose*postJointTransformation;
@@ -116,11 +116,11 @@ void RobotNodeRevolute::updateTransformationMatrices()
 
 void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
-	THROW_VR_EXCEPTION_IF(parent,"This method could only be called on RobotNodes without parents.");
+	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 
 	this->globalPose = globalPose * preJointTransformation;
 
-	Eigen::Affine3f tmpT(Eigen::AngleAxisf(jointValue+jointValueOffset,jointRotationAxis));
+	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
 	this->globalPose *= tmpT.matrix();
 
 	globalPosePostJoint = this->globalPose*postJointTransformation;
@@ -143,6 +143,7 @@ void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 	if (printDecoration)
 		cout << "******** End RobotNodeRevolute ********" << endl;
 
+	std::vector< RobotNodePtr > children = this->getChildren();
 	if (printChildren)
 		std::for_each(children.begin(), children.end(), boost::bind(&RobotNode::print, _1, true, true));
 }

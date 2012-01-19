@@ -958,6 +958,11 @@ Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getBasisTransformation( c
 	return basisDst.householderQr().solve(basisSrc);
 }
 
+MathTools::Plane VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getFloorPlane()
+{
+	return Plane(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,1.0f));
+}
+
 
 
 

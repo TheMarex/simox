@@ -236,6 +236,13 @@ public:
 		Standard: disabled
 	*/
 	void checkImprovements(bool enable);
+
+	/*!
+		If enabled, the Jacobian is computed for [m] while assuming the kinematic definitions are given in [mm].
+		Standard: disabled
+	*/
+	void convertModelScalingtoM(bool enable);
+	
 protected:
 	
 	void setNRows();
@@ -254,6 +261,8 @@ protected:
 	std::map<RobotNodePtr,IKSolver::CartesianSelection> modes;	
 	std::map<RobotNodePtr,float> tolerancePosition;	
 	std::map<RobotNodePtr,float> toleranceRotation;	
+
+	bool convertMMtoM; // if set, the distances for Jacobian computations are scaled with 1/1000, otherwise the scaling of the model is used (which usually is mm)
 
 	std::vector <RobotNodePtr> nodes;
 	std::map< RobotNodePtr, std::vector<RobotNodePtr> > parents;

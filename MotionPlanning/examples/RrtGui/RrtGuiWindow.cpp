@@ -109,11 +109,9 @@ void RrtGuiWindow::setupUI()
 	// setup
 	viewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
 	viewer->setAccumulationBuffer(true);
-#ifdef WIN32
-#ifndef _DEBUG
+
 	viewer->setAntialiasing(true, 4);
-#endif
-#endif
+
 	viewer->setGLRenderAction(new SoLineHighlightRenderAction);
 	viewer->setTransparencyType(SoGLRenderAction::BLEND);
 	viewer->setFeedbackVisibility(true);

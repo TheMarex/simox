@@ -31,6 +31,7 @@ DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem) 
 		p.push_back(nodes[i]);// if the tcp is not fixed, it must be considered for calculating hte Jacobian
 		parents[nodes[i]] = p;
 	}
+	convertMMtoM = false;
 }
 
 
@@ -107,6 +108,8 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 						toTCP = tcp->getGlobalPose().block(0,3,3,1) 
 							- dof->getGlobalPoseJoint().block(0,3,3,1);
 					}
+					if (convertMMtoM)
+						toTCP /= 1000.0f;
 					//cout << "toTCP: " << tcp->getName() << endl;
 					//cout << toTCP << endl;
 					position.block(0,i,3,1) = axis.cross(toTCP);
@@ -359,6 +362,11 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 bool DifferentialIK::solveIK( float stepSize /*= 0.2f*/, float minChange /*= 0.0f */, int maxSteps /*= 50*/ )
 {
 	return computeSteps(stepSize,minChange,maxSteps);
+}
+
+void DifferentialIK::convertModelScalingtoM( bool enable )
+{
+	convertMMtoM = enable;
 }
 
 } // namespace VirtualRobot

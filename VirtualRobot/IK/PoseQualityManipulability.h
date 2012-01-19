@@ -51,7 +51,12 @@ public:
 	~PoseQualityManipulability();
 
 	virtual float getPoseQuality();
-	float getManipulability(ManipulabilityIndexType i);
+	virtual float getManipulability(ManipulabilityIndexType i);
+	/*!
+		Considers the first considerFirstSV singular values and ignores any remaining entries in the sv vector.
+		This can be useful, when constrained motions should be analyzed (e.g. 2d motions in 3d)
+	*/
+	virtual float getManipulability(ManipulabilityIndexType i, int considerFirstSV);
 
 	/*!
 		Returns the singular values of the current Jacobian. The values are ordered, starting with the largest value.
@@ -65,10 +70,27 @@ public:
 		SVD:  J = USV'
 	*/
 	Eigen::MatrixXf getSingularVectorCartesian();
+
+	/*
+		Enable or disable joint limit considerations.
+		If enabled, joint limits are considered by applying this penalize function:
+		P(\theta_i) = 1 - \exp (-k \prod_{i=1}^n { \frac{(\theta_i - l_i^-)(l_i^+ - \theta_i)} { (l_i^+ - l_i^-)^2 } } ).
+
+		The joint limits are given by l_i^- and l_i^+  and k is a factor that can be used to adjust the behavior
+	*/
+	virtual void penalizeJointLimits(bool enable, float k = 50.0f);
 protected:
 
-	VirtualRobot::DifferentialIKPtr jacobain;
+	float PoseQualityManipulability::getJointLimitPenalizationFactor();
+
+	VirtualRobot::DifferentialIKPtr jacobian;
 	ManipulabilityIndexType manipulabilityType;
+
+	bool penJointLimits;
+	float penJointLimits_k;
+
+	//! is set, the Jacobian is computed in [m], while assuming the kinematic definitions to be in [mm]
+	bool convertMMtoM;
 };
 
 }

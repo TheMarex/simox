@@ -98,6 +98,7 @@ public:
 
 protected:
 
+	RobotNodePrismatic(){};
 	virtual void updateTransformationMatrices();
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &globalPose);
 

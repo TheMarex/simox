@@ -28,9 +28,9 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 {
 	initialized = false;
 	optionalDHParameter.isSet = false;
-	this->preJointTransformation = preJointTransform;
+	this->setPreJointTransformation(preJointTransform);
 	jointRotationAxis = axis;
-	this->postJointTransformation = postJointTransform;
+	this->setPostJointTransformation(postJointTransform);
 	/*preJointTransformation = Eigen::Matrix4f::Identity();
 	postJointTransformation = Eigen::Matrix4f::Identity();
 	postJointTransformation.block<3,1>(0,3) = postJointTranslation;*/
@@ -76,9 +76,9 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 	RotAlpha(2,1) = sin(alpha);
 	RotAlpha(2,2) = cos(alpha);
 
-	preJointTransformation = RotTheta;//Eigen::Matrix4f::Identity();	// no pre transformation->why?
+	this->setPreJointTransformation(RotTheta);//Eigen::Matrix4f::Identity();	// no pre transformation->why?
 	jointRotationAxis = Eigen::Vector3f(0,0,1);			// rotation around z axis
-	postJointTransformation = TransD*TransA*RotAlpha;
+	this->setPostJointTransformation(TransD*TransA*RotAlpha);
 }
 
 
@@ -100,14 +100,14 @@ bool RobotNodeRevolute::initialize(RobotNodePtr parent, bool initializeChildren)
 void RobotNodeRevolute::updateTransformationMatrices()
 {
 	if (this->getParent())
-		globalPose = this->getParent()->getGlobalPose() * preJointTransformation;
+		globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
 	else
-		globalPose = preJointTransformation;
+		globalPose = getPreJointTransformation();
 
 	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
 	globalPose *= tmpT.matrix();
 
-	globalPosePostJoint = globalPose*postJointTransformation;
+	globalPosePostJoint = globalPose*getPostJointTransformation();
 
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
@@ -118,12 +118,12 @@ void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &glob
 {
 	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 
-	this->globalPose = globalPose * preJointTransformation;
+	this->globalPose = globalPose * getPreJointTransformation();
 
 	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
 	this->globalPose *= tmpT.matrix();
 
-	globalPosePostJoint = this->globalPose*postJointTransformation;
+	globalPosePostJoint = this->globalPose*getPostJointTransformation();
 
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
@@ -155,7 +155,7 @@ RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, const std::vecto
 	if (optionalDHParameter.isSet)
 		result.reset(new RobotNodeRevolute(newRobot,name,newChildren, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics));
 	else
-		result.reset(new RobotNodeRevolute(newRobot,name,newChildren,jointLimitLo,jointLimitHi,preJointTransformation,jointRotationAxis,postJointTransformation,visualizationModel,collisionModel,jointValueOffset,physics));
+		result.reset(new RobotNodeRevolute(newRobot,name,newChildren,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointRotationAxis,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics));
 	return result;
 }
 

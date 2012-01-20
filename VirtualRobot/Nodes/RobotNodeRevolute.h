@@ -47,6 +47,7 @@ public:
 
 	/*!
 	*/
+
 	RobotNodeRevolute(	RobotWeakPtr rob, 									//!< The robot
 						const std::string &name,							//!< The name
 						const std::vector<std::string> &childrenNames,		//!< The list of all children
@@ -96,6 +97,8 @@ public:
 	Eigen::Vector3f getJointRotationAxis(const SceneObjectPtr coordSystem = SceneObjectPtr()) const;
 protected:
 
+	RobotNodeRevolute(){};
+	
 	virtual void updateTransformationMatrices();
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &globalPose);
 

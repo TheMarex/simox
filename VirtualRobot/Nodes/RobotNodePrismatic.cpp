@@ -27,9 +27,9 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 {
 	initialized = false;
 	optionalDHParameter.isSet = false;
-	this->preJointTransformation = preJointTransform;
+	this->setPreJointTransformation(preJointTransform);
 	this->jointTranslationDirection = translationDirection;
-	this->postJointTransformation = postJointTransform;
+	this->setPostJointTransformation(postJointTransform);
 }
 
 RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob, 
@@ -70,11 +70,11 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	RotAlpha(2,2) = cos(alpha);
 
 	// fixed rotation around theta
-	preJointTransformation = RotTheta;
+	this->setPreJointTransformation(RotTheta);
 	// joint setup
 	jointTranslationDirection = Eigen::Vector3f(0,0,1);	// translation along the z axis
 	// compute postJointTransformation
-	postJointTransformation = TransD*TransA*RotAlpha;
+	this->setPostJointTransformation(TransD*TransA*RotAlpha);
 }
 
 RobotNodePrismatic::~RobotNodePrismatic()
@@ -95,14 +95,14 @@ bool RobotNodePrismatic::initialize(RobotNodePtr parent, bool initializeChildren
 void RobotNodePrismatic::updateTransformationMatrices()
 {
 	if (this->getParent())
-		globalPose = this->getParent()->getGlobalPose() * preJointTransformation;
+		globalPose = this->getParent()->getGlobalPose() * this->getPreJointTransformation();
 	else
-		globalPose = preJointTransformation;
+		globalPose = this->getPreJointTransformation();
 
 	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
 	globalPose *= tmpT.matrix();
 
-	globalPosePostJoint = globalPose*postJointTransformation;
+	globalPosePostJoint = globalPose*this->getPostJointTransformation();
 
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
@@ -113,12 +113,12 @@ void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &glo
 {
 	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 
-	this->globalPose = globalPose * preJointTransformation;
+	this->globalPose = globalPose * getPreJointTransformation();
 
 	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
 	this->globalPose *= tmpT.matrix();
 
-	globalPosePostJoint = this->globalPose*postJointTransformation;
+	globalPosePostJoint = this->globalPose*getPostJointTransformation();
 
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
@@ -150,7 +150,7 @@ RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, const std::vect
 	if (optionalDHParameter.isSet)
 		result.reset(new RobotNodePrismatic(newRobot,name,newChildren, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics));
 	else
-		result.reset(new RobotNodePrismatic(newRobot,name,newChildren,jointLimitLo,jointLimitHi,preJointTransformation,jointTranslationDirection,postJointTransformation,visualizationModel,collisionModel,jointValueOffset,physics));
+		result.reset(new RobotNodePrismatic(newRobot,name,newChildren,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointTranslationDirection,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics));
 	return result;
 }
 

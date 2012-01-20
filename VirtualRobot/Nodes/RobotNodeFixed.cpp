@@ -22,8 +22,8 @@ RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob,
 	) : RobotNode(rob,name,childrenNames,0.0f,0.0f,visualization,collisionModel,0.0f,p,colChecker)
 {
 	optionalDHParameter.isSet = false;
-	this->preJointTransformation = preJointTransform;
-	this->postJointTransformation = postJointTransform;
+	this->setPreJointTransformation(preJointTransform);
+	this->setPostJointTransformation(postJointTransform);
 }
 
 RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob, 
@@ -59,8 +59,8 @@ RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob,
 	RotAlpha(2,1) = sin(alpha);
 	RotAlpha(2,2) = cos(alpha);
 
-	preJointTransformation = RotTheta;
-	postJointTransformation = TransD*TransA*RotAlpha;
+	this->setPreJointTransformation(RotTheta);
+	this->setPostJointTransformation(TransD*TransA*RotAlpha);
 }
 
 RobotNodeFixed::~RobotNodeFixed()
@@ -80,11 +80,11 @@ bool RobotNodeFixed::initialize(RobotNodePtr parent, bool initializeChildren)
 void RobotNodeFixed::updateTransformationMatrices()
 {
 	if (this->getParent())
-		globalPose = this->getParent()->getGlobalPose() * preJointTransformation;
+		globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
 	else
-		globalPose = preJointTransformation;
+		globalPose = getPreJointTransformation();
 
-	globalPosePostJoint = globalPose*postJointTransformation;
+	globalPosePostJoint = globalPose*getPostJointTransformation();
 
 	// update collision and visualization model
 	SceneObject::setGlobalPose(globalPose);
@@ -95,9 +95,9 @@ void RobotNodeFixed::updateTransformationMatrices(const Eigen::Matrix4f &globalP
 {
 	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 
-	this->globalPose = globalPose * preJointTransformation;
+	this->globalPose = globalPose * getPreJointTransformation();
 
-	globalPosePostJoint = this->globalPose*postJointTransformation;
+	globalPosePostJoint = this->globalPose*getPostJointTransformation();
 
 	// update collision and visualization model
 	SceneObject::setGlobalPose(this->globalPose);
@@ -127,7 +127,7 @@ RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, const std::vector<s
 	if (optionalDHParameter.isSet)
 		result.reset(new RobotNodeFixed(newRobot,name,newChildren,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,physics));
 	else
-		result.reset(new RobotNodeFixed(newRobot,name,newChildren,preJointTransformation,postJointTransformation,visualizationModel,collisionModel,physics));
+		result.reset(new RobotNodeFixed(newRobot,name,newChildren,getPreJointTransformation(),getPostJointTransformation(),visualizationModel,collisionModel,physics));
 
 	return result;
 }

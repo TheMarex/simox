@@ -63,6 +63,8 @@ public:
 
 	/*!
 	*/
+
+
 	RobotNode(	RobotWeakPtr rob, 
 				const std::string &name,
 				const std::vector<std::string> &childrenNames,
@@ -77,6 +79,7 @@ public:
 	/*!
 	*/
 	virtual ~RobotNode();
+
 
 	RobotPtr getRobot();
 
@@ -228,23 +231,30 @@ public:
 		\param colChecker Must only be set if the cloned RobotNode should be registered to a different collision checker instance.
 	*/
 	virtual RobotNodePtr clone(RobotPtr newRobot, bool cloneChildren = true, RobotNodePtr initializeWithParent = RobotNodePtr(), CollisionCheckerPtr colChecker = CollisionCheckerPtr());
+	virtual std::vector< RobotNodePtr > getChildren() const {return children;};
+	
+	inline float getJointValueOffset() const {return jointValueOffset;}
+	inline float getJointLimitHigh() const {return jointLimitHi;}
+	inline float getJointLimitLow() const {return jointLimitLo;}
 
 private: // Use the private setters and getters instead
 	float jointValue;							//< The joint value
 	std::vector<std::string> childrenNames;
 	std::vector< RobotNodePtr > children;
 	RobotNodePtr parent;
-
-protected:
 	Eigen::Matrix4f preJointTransformation;
 	Eigen::Matrix4f postJointTransformation;
 
+protected:
 	///////////////////////// SETUP ////////////////////////////////////
 	
+	RobotNode(){};
+	virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo) {postJointTransformation = trafo;}
+	virtual void setPreJointTransformation(const Eigen::Matrix4f &trafo) {preJointTransformation = trafo;}
+
 	//Stefan
 	virtual std::vector<std::string> getChildrenNames() const {return childrenNames;};
 	virtual std::string getParentName() const {return parent->getName();};
-	virtual std::vector< RobotNodePtr > getChildren() const {return children;};
 
 	float jointValueOffset;
 	float jointLimitLo,jointLimitHi;

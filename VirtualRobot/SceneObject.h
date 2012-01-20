@@ -243,6 +243,8 @@ public:
 	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker );
 
 protected:
+
+	SceneObject(){};
 	///////////////////////// SETUP ////////////////////////////////////
 	std::string name;
 	bool initialized;														//< Invalid object when false

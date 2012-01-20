@@ -254,7 +254,7 @@ protected:
 
 	//Stefan
 	virtual std::vector<std::string> getChildrenNames() const {return childrenNames;};
-	virtual std::string getParentName() const {return parent->getName();};
+	virtual std::string getParentName() const {if (parent) return parent->getName(); else return std::string();};
 
 	float jointValueOffset;
 	float jointLimitLo,jointLimitHi;

@@ -10,7 +10,7 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 ############################# SETUP MODULES #############################
 GET_FILENAME_COMPONENT (CurrentPath ${CMAKE_CURRENT_LIST_FILE} PATH)
-SET(CMAKE_MODULE_PATH ${CurrentPath}/CMakeModules)
+SET(CMAKE_MODULE_PATH ${CurrentPath}/../CMakeModules)
 
 #### Eigen
 FIND_PACKAGE (Eigen3 REQUIRED)

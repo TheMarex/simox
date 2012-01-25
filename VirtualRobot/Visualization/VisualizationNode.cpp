@@ -9,6 +9,7 @@
 #include "VisualizationNode.h"
 #include "TriMeshModel.h"
 
+#include "VirtualRobot/VirtualRobot.h"
 #include "VirtualRobot/VirtualRobotException.h"
 
 namespace VirtualRobot {

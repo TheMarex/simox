@@ -81,7 +81,7 @@ public:
 	virtual void penalizeJointLimits(bool enable, float k = 50.0f);
 protected:
 
-	float PoseQualityManipulability::getJointLimitPenalizationFactor();
+	float getJointLimitPenalizationFactor();
 
 	VirtualRobot::DifferentialIKPtr jacobian;
 	ManipulabilityIndexType manipulabilityType;

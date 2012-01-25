@@ -13,6 +13,10 @@ Robot::Robot(const std::string &name, const std::string &type)
 	updateVisualization = true;
 }
 
+Robot::Robot()
+{
+}
+
 Robot::~Robot(){}
 
 LocalRobot::~LocalRobot()

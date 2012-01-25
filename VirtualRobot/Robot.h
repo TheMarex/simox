@@ -200,7 +200,7 @@ public:
 	*/
 	float getMass();
 
-	/*!
+	/*!/home/staff/ulbrich/Projects/Simox/VirtualRobot/build/lib/libVirtualRobot.so
 		Extract a sub kinematic from this robot and create a new robot instance.
 		\param startJoint The kinematic starts with this RobotNode
 		\param newRobotType The name of the newly created robot type
@@ -220,6 +220,7 @@ public:
 	RobotPtr clone(const std::string &name, CollisionCheckerPtr collisionChecker = CollisionCheckerPtr());
 
 protected:
+	Robot();
 	/*!
 		Goes through all RobotNodes and if no visualization is present:
 		* the collision model is checked and in case it owns a visualization 

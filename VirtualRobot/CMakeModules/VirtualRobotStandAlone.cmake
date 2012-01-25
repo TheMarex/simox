@@ -141,7 +141,7 @@ endif()
 IF(DEFINED SIMOX_DIR)
 	get_filename_component(SIMOX_DIR ${SIMOX_DIR} ABSOLUTE)
 ELSE()
-	SET(SIMOX_DIR "${CurrentPath}/..") # we assume simox a directory above?!
+	SET(SIMOX_DIR "${CurrentPath}/../..") # we assume a simox directory above VirtualRobot
 ENDIF()
 MESSAGE (STATUS "SIMOX_DIR: ${SIMOX_DIR}")
 

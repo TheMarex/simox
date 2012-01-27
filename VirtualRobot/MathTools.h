@@ -277,6 +277,10 @@ namespace MathTools
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT collinear(const Eigen::Vector3f &p1, const Eigen::Vector3f &p2, const Eigen::Vector3f &p3 );
 	Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT findNormal( const std::vector<Eigen::Vector3f> &points);
 
+	//! perform the Gram-Schmidt method for building an orthonormal basis
+	bool VIRTUAL_ROBOT_IMPORT_EXPORT GramSchmidt(std::vector< Eigen::VectorXf > & basis);
+	bool VIRTUAL_ROBOT_IMPORT_EXPORT randomLinearlyIndependentVector(const std::vector< Eigen::VectorXf > basis, Eigen::VectorXf &storeResult);
+	bool VIRTUAL_ROBOT_IMPORT_EXPORT containsVector(const Eigen::MatrixXf& m, const Eigen::VectorXf &v);
 };
 } // namespace VirtualRobot
 

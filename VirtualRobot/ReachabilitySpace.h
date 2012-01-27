@@ -74,6 +74,8 @@ public:
 		if (data[pos]==0)
 			voxelFilledCount++;
 		data[pos] = value;
+		if (value >= maxEntry)
+			maxEntry = value;
 	}
 
 	inline void setDatum(unsigned int x[6], unsigned char value)
@@ -82,6 +84,8 @@ public:
 		if (data[pos]==0)
 			voxelFilledCount++;
 		data[pos] = value;
+		if (value >= maxEntry)
+			maxEntry = value;
 	}
 
 	inline void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
@@ -226,6 +230,11 @@ public:
 	void addCurrentTCPPose();
 
 	/*!
+		Sets entry that corresponds to TCP pose to e, if current entry is lower than e.
+	*/
+	void setCurrentTCPPoseEntryIfLower(unsigned char e);
+
+	/*!
 		Append a number of random TCP poses to Reachability Data
 		\param loops Number of poses that should be appended
 		\param checkForSelfCollisions Build a collision-free configuration. If true, random configs are generated until one is collision-free.
@@ -257,6 +266,13 @@ public:
 	//! returns a random pose that is reachable
 	Eigen::Matrix4f sampleReachablePose();
 
+	int getNumVoxels(int dim);
+	float getMinBound(int dim);
+	float getMaxBound(int dim);
+
+	unsigned char getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f);
+
+
 protected:
 	//! Specific methods to read/write strings from/to reachability files
 	bool readString(std::string &res, std::ifstream &file);
@@ -278,7 +294,6 @@ protected:
 	int sumAngleReachabilities(int x0, int x1, int x2);
 
 	bool getVoxelFromPose(float x[6], unsigned int v[6]);
-
 	RobotPtr robot;
 	RobotNodePtr baseNode;
 	RobotNodePtr tcpNode;

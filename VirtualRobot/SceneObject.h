@@ -53,24 +53,34 @@ public:
 	{
 		enum CoMLocation
 		{
-			eCustom,			//!< Not related to model
-			eVisuBBoxCenter		//!< The CoM position is computed from the bounding box of the visualization model
+			eCustom,			//!< Not related to 3d model, the position is set by hand
+			eVisuBBoxCenter		//!< The CoM position is automatically computed from the bounding box of the visualization model
 		};
 		Physics()
 		{
 
 			localCoM.setZero();
+			intertiaMatrix.setIdentity();
 			massKg = 0.0f;
+			maxVelocity = 0.0f;
+			maxAcceleration = 0.0f;
 			comLocation = eCustom;
 		}
 		void print()
 		{
-			std::cout << " ** Mass: " << massKg << " kg" << std::endl;
-			std::cout << " ** local CoM: " <<  localCoM(0) << localCoM(1) << localCoM(2) << std::endl;
+			std::cout << " ** Mass: " << massKg << " [kg]" << std::endl;
+			std::cout << " ** local CoM [mm]: " <<  localCoM(0) << localCoM(1) << localCoM(2) << std::endl;
+			std::cout << " ** max velocity " << maxVelocity  << " [m/s]" << std::endl;
+			std::cout << " ** max acceleration " << maxAcceleration  << " [m/s^2]" << std::endl;
+			std::cout << " ** inertia matrix:\n " << intertiaMatrix  << std::endl;
 		}
-		Eigen::Vector3f localCoM;	//!< Defined in the local coordinate system of this object
+		Eigen::Vector3f localCoM;	//!< Defined in the local coordinate system of this object [mm]
 		float massKg;				//!< The mass of this object
 		CoMLocation comLocation;	//!< Where is the CoM located
+		Eigen::Matrix3f intertiaMatrix;
+
+		float maxVelocity;			//! given in m/s
+		float maxAcceleration;		//! given in m/s^2
 	};
 
 	/*!
@@ -214,6 +224,23 @@ public:
 	*/
 	float getMass();
 
+	/*!
+		Maximum velocity in m/s.
+	*/
+	float getMaxVelocity();
+
+	/*!
+		Maximum acceleration in m/s^2.
+	*/
+	float getMaxAcceleration();
+
+	/*
+		Inertia matrix.
+	*/
+	Eigen::Matrix3f getInertiaMatrix();
+
+
+
 	virtual void print(bool printDecoration = true);
 
 
@@ -241,6 +268,8 @@ public:
 		Clones this object. If no col checker is given, the one of the original object is used.
 	*/
 	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker );
+
+
 
 protected:
 	SceneObject(){};

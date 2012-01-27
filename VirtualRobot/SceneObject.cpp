@@ -451,4 +451,19 @@ SceneObjectPtr SceneObject::clone( const std::string &name, CollisionCheckerPtr 
 	return result;
 }
 
+float SceneObject::getMaxVelocity()
+{
+	return physics.maxVelocity;
+}
+
+float SceneObject::getMaxAcceleration()
+{
+	return physics.maxAcceleration;
+}
+
+Eigen::Matrix3f SceneObject::getInertiaMatrix()
+{
+	return physics.intertiaMatrix;
+}
+
 } // namespace

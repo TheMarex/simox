@@ -722,8 +722,213 @@ bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::collinear( const Eigen::Vector3f &p1
 	return (d<1e-6);
 }
 
+bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::containsVector(const Eigen::MatrixXf& m, const Eigen::VectorXf &v)
+{
+	VR_ASSERT(m.rows() == v.rows());
+	for (int i=0;i<(int)m.cols();i++)
+	{
+		if ( (m.block(0,i,m.rows(),1) - v).norm() < 1e-8)
+			return true;
+	}
+	return false;
+}
+
+// creates an orthonormal basis out of the given basis
+// overwrites given basis
+bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::GramSchmidt(std::vector< Eigen::VectorXf > & basis)
+{
+	int dim = basis.size();
+	THROW_VR_EXCEPTION_IF(dim == 0, "Need basis vectors");
+	for (int i=0;i<dim;i++)
+	{
+		VR_ASSERT_MESSAGE((int)basis[i].rows() == dim,"Length of basis vectors is wrong");
+	}
+
+	int rows = basis[0].rows();
+	Eigen::MatrixXf mBasis(rows,dim);
+	for (int i=0;i<(int)basis.size();i++)
+		mBasis.block(0,i,rows,1) = basis[i];
+	Eigen::FullPivLU<Eigen::MatrixXf> lu_decomp(mBasis);
+	Eigen::MatrixXf basisVectors = lu_decomp.image(mBasis);
+	int startWithDet = (int)(basisVectors.cols());
+
+	if (startWithDet!=dim)
+	{
+		std::vector< Eigen::VectorXf > tmpBasisV;
+		// remain order of basis vectors
+		for (int i=0;i<dim;i++)
+		{
+			if (containsVector(basisVectors,basis[i]))
+				tmpBasisV.push_back(basis[i]);
+		}
+		for (int j=startWithDet;j<dim;j++)
+		{
+			Eigen::VectorXf newBasisVector;
+			if (!randomLinearlyIndependentVector(tmpBasisV,newBasisVector))
+			{
+				VR_ERROR << "Could not find linearly independent basis vector?! " << endl;
+				for (int i=0;i<dim;i++)
+				{
+					cout << "vec " << i << ":\n" << basis[i] << endl;
+				}
+				return false;
+			}
+			tmpBasisV.push_back(newBasisVector);
+		}
+		basis = tmpBasisV;
+	}
+
+	// check if vectors are linearly independent
+	/*
+	int startWithDet = 0;
+	int pos = 2;
+	while (pos<dim)
+	{
+
+		Eigen::MatrixXf m(rows,pos);
+
+		for (int i=0;i<pos;i++)
+		{
+			m.block(0,i,rows,1) = basis[i];
+		}
+		float d = m.determinant();
+		if (d==0)
+		{
+			// if determinant = 0, the vectors are not linear independent
+			startWithDet = pos;
+			pos = dim+1; // end loop
+			break;
+		}
+
+		pos++;
+	}*/
+	/*if (startWithDet!=dim)
+	{
+
+		std::vector< Eigen::VectorXf > tmpBasis;
+		for (int j=0; j<startWithDet;j++)
+		{
+			tmpBasis.push_back(basis[j]);
+		}
+		for (int j=startWithDet;j<dim;j++)
+		{
+			Eigen::VectorXf newBasisVector;
+			if (!randomLinearlyIndependentVector(tmpBasis,newBasisVector))
+			{
+				VR_ERROR << "Could not find linearly independent basis vector?! " << endl;
+				for (int i=0;i<dim;i++)
+				{
+					cout << "vec " << i << ":\n" << basis[i] << endl;
+				}
+				return false;
+			}
+			tmpBasis.push_back(newBasisVector);
+			basis[j] = newBasisVector;
+		}
+	}*/
+
+	// check with which basis vector we must start 
+
+	// norm the first vector
+	basis[0].normalize();
+	int startWith = 0;
+	int pos = 1;
+	while (pos<dim)
+	{
+		for (int i=0;i<pos;i++)
+		{
+			if (basis[i].dot(basis[pos]) != 0)
+			{
+				startWith = pos;
+				pos = dim+1; // end loop
+				break;
+			}
+		}
+		pos++;
+	}
+	if (startWith==0)
+	{
+		// nothing to do
+		return true;
+	}
+
+
+	float scPr;
+	for (int i=startWith;i<dim;i++) // each basis vector
+	{
+		// store original vector
+		Eigen::Vector3f tmp = basis[i];
+
+		for (int j=0;j<i;j++)  // subtract scalar products of former basises 
+		{
+			// create scalar product
+			scPr = tmp.dot(basis[j]);
+			basis[i] -= scPr*basis[j];
+			/*for (k=0;k<dim;k++) // each entry in vector
+			{
+				basis[i][k] -= scPr*basis[j][k];
+			}*/
+		}
+
+		basis[i].normalize();
+	}
+
+	return true;
+}
+
+bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::randomLinearlyIndependentVector(const std::vector< Eigen::VectorXf > basis, Eigen::VectorXf &storeResult)
+{
+	VR_ASSERT_MESSAGE(basis.size()>0,"need vectors");
+	int dim = (int)basis[0].rows();
+	VR_ASSERT_MESSAGE((int)basis.size() < dim,"Could not get a linearly independent vector, since basis already covers all dimensions.");
+	for (int i=1;i<(int)basis.size();i++)
+	{
+		VR_ASSERT_MESSAGE((int)basis[i].rows() == (int)basis[0].rows(),"Length of basis vectors is wrong");
+	}
+	int loop = 0;
+	Eigen::MatrixXf m(dim,basis.size()+1);
+	for (int i=0;i<(int)basis.size();i++)
+	{
+		m.block(0,i,dim,1) = basis[i];
+	}
+	while (true)
+	{
+		storeResult = Eigen::VectorXf::Random(dim);
+		if (storeResult.norm()>1e-8)
+		{
+			storeResult.normalize();
+
+			m.block(0,basis.size(),dim,1) = storeResult;
+
+			Eigen::FullPivLU<Eigen::MatrixXf> lu_decomp(m);
+			if (lu_decomp.rank() == basis.size()+1)
+				return true;
+		}
+
+		loop++;
+		if (loop>100)
+		{
+			VR_ERROR << "Could not determine independent vector, aborting after 100 tries" << endl;
+			return false;
+		}
+	}
+}
+
 bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::ensureOrthonormalBasis( Eigen::Vector3f &x, Eigen::Vector3f &y, Eigen::Vector3f &z )
 {
+	std::vector< Eigen::VectorXf > basis;
+	basis.push_back(x);
+	basis.push_back(y);
+	basis.push_back(z);
+
+	bool res = GramSchmidt(basis);
+	if (!res)
+		return false;
+	x = basis[0];
+	y = basis[1];
+	z = basis[2];
+	return true;
+	/*
 	const float minLength = 1e-10f;
 	const float orthoCheck = 1e-3f;
 	
@@ -796,7 +1001,7 @@ bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::ensureOrthonormalBasis( Eigen::Vecto
 			return false;
 	} while (!succ);
 
-	return true;
+	return true;*/
 }
 
 void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::eigen4f2axisangle( const Eigen::Matrix4f &m, Eigen::Vector3f &storeAxis, float& storeAngle )

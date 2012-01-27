@@ -132,7 +132,7 @@ float PoseQualityManipulability::getJointLimitPenalizationFactor()
 			p *= a/d;
 	}
 	float result = 1.0f-exp(-penJointLimits_k*p);
-	cout << "Pen factor:" << result << endl;
+	//cout << "Pen factor:" << result << endl;
 	return result;
 }
 

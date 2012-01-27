@@ -91,6 +91,39 @@ float BaseIO::getOptionalFloatByAttributeName(rapidxml::xml_node<char>* xmlNode,
 	return convertToFloat(attr->value());
 }
 
+Eigen::Matrix3f BaseIO::process3x3Matrix(rapidxml::xml_node<char> *matrixXMLNode)
+{
+	Eigen::Matrix3f m;
+	m.setIdentity();
+	if (!matrixXMLNode)
+	{
+		VR_ERROR << "NULL matrix transform node?!" << endl;
+		return m;
+	}
+	rapidxml::xml_node<> *row1XMLNode = matrixXMLNode->first_node("row1",0,false);
+	rapidxml::xml_node<> *row2XMLNode = matrixXMLNode->first_node("row2",0,false);
+	rapidxml::xml_node<> *row3XMLNode = matrixXMLNode->first_node("row3",0,false);
+	if (row1XMLNode)
+	{
+		m(0, 0) = getFloatByAttributeName(row1XMLNode, "c1");
+		m(0, 1) = getFloatByAttributeName(row1XMLNode, "c2");
+		m(0, 2) = getFloatByAttributeName(row1XMLNode, "c3");
+	}
+	if (row2XMLNode)
+	{
+		m(1, 0) = getFloatByAttributeName(row2XMLNode, "c1");
+		m(1, 1) = getFloatByAttributeName(row2XMLNode, "c2");
+		m(1, 2) = getFloatByAttributeName(row2XMLNode, "c3");
+	}
+
+	if (row3XMLNode)
+	{
+		m(2, 0) = getFloatByAttributeName(row3XMLNode, "c1");
+		m(2, 1) = getFloatByAttributeName(row3XMLNode, "c2");
+		m(2, 2) = getFloatByAttributeName(row3XMLNode, "c3");
+	}
+	return m;
+}
 
 
 /**
@@ -161,29 +194,9 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 
 	if (matrixXMLNode)
 	{
+		Eigen::Matrix3f m = process3x3Matrix(matrixXMLNode);
 		
-		rapidxml::xml_node<> *row1XMLNode = matrixXMLNode->first_node("row1",0,false);
-		rapidxml::xml_node<> *row2XMLNode = matrixXMLNode->first_node("row2",0,false);
-		rapidxml::xml_node<> *row3XMLNode = matrixXMLNode->first_node("row3",0,false);
-		if (row1XMLNode)
-		{
-			transform(0, 0) = getFloatByAttributeName(row1XMLNode, "c1");
-			transform(0, 1) = getFloatByAttributeName(row1XMLNode, "c2");
-			transform(0, 2) = getFloatByAttributeName(row1XMLNode, "c3");
-		}
-		if (row2XMLNode)
-		{
-			transform(1, 0) = getFloatByAttributeName(row2XMLNode, "c1");
-			transform(1, 1) = getFloatByAttributeName(row2XMLNode, "c2");
-			transform(1, 2) = getFloatByAttributeName(row2XMLNode, "c3");
-		}
-
-		if (row3XMLNode)
-		{
-			transform(2, 0) = getFloatByAttributeName(row3XMLNode, "c1");
-			transform(2, 1) = getFloatByAttributeName(row3XMLNode, "c2");
-			transform(2, 2) = getFloatByAttributeName(row3XMLNode, "c3");
-		}
+		transform.block(0,0,3,3) = m;
 		rotation = true;
 	}
 
@@ -240,6 +253,13 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 	}
 }
 
+bool BaseIO::hasUnitsAttribute(rapidxml::xml_node<char> *node)
+{
+	rapidxml::xml_attribute<> *attr = node->first_attribute("unit", 0, false);
+	if (!attr)
+		attr = node->first_attribute("units", 0, false);
+	return (attr!=NULL);
+}
 
 /**
  * This method processes the unit or units attribute of xml_node \p node.
@@ -652,7 +672,6 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 	rapidxml::xml_node<> *comXMLNode = physicsXMLNode->first_node("com",0,false);
 	if (comXMLNode)
 	{
-
 		attr = comXMLNode->first_attribute("location", 0, false);
 		if (attr)
 		{
@@ -674,8 +693,31 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 			physics.localCoM(0) = getOptionalFloatByAttributeName(comXMLNode,"x",0.0f);
 			physics.localCoM(1) = getOptionalFloatByAttributeName(comXMLNode,"y",0.0f);
 			physics.localCoM(2) = getOptionalFloatByAttributeName(comXMLNode,"z",0.0f);
+			if (hasUnitsAttribute(comXMLNode))
+			{
+				Units unitCom = getUnitsAttribute(comXMLNode,Units::eLength);
+				if (unitCom.isMeter())
+					physics.localCoM *= 0.001f;
+			}
 		}
+		
 	} 
+	rapidxml::xml_node<> *inMatXMLNode = physicsXMLNode->first_node("intertiamatrix",0,false);
+	if (inMatXMLNode)
+	{
+		physics.intertiaMatrix = process3x3Matrix(inMatXMLNode);
+	}
+	rapidxml::xml_node<> *velXMLNode = physicsXMLNode->first_node("maxVelocity",0,false);
+	if (velXMLNode)
+	{
+		physics.maxVelocity = getFloatByAttributeName(velXMLNode,"value");
+	} 	
+	rapidxml::xml_node<> *accXMLNode = physicsXMLNode->first_node("maxAcceleration",0,false);
+	if (accXMLNode)
+	{
+		physics.maxAcceleration = getFloatByAttributeName(accXMLNode,"value");
+	} 
+
 }
 
 std::string BaseIO::processFileNode( rapidxml::xml_node<char> *fileNode, const std::string &basePath )

@@ -550,6 +550,38 @@ RobotNodeSetPtr ReachabilitySpace::getNodeSet()
 {
 	return nodeSet;
 }
+void ReachabilitySpace::setCurrentTCPPoseEntryIfLower(unsigned char e)
+{
+	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No reachability space loaded");
+
+	Eigen::Matrix4f p = tcpNode->getGlobalPose();
+	if (baseNode)
+		p = baseNode->toLocalCoordinateSystem(p);
+
+	float x[6];
+	MathTools::eigen4f2rpy(p,x);
+
+	// check for achieved values
+	for (int i=0;i<6;i++)
+	{
+		if (x[i] < achievedMinValues[i])
+			achievedMinValues[i] = x[i];
+		if (x[i] > achievedMaxValues[i])
+			achievedMaxValues[i] = x[i];
+	}
+
+	// get voxels
+	unsigned int v[6];
+	if (getVoxelFromPose(x,v))
+	{
+		if (data->get(v) < e)
+		{
+			data->setDatum(v,e);
+		}
+	}
+
+	buildUpLoops++;
+}
 
 void ReachabilitySpace::addCurrentTCPPose()
 {	
@@ -925,6 +957,32 @@ int ReachabilitySpace::fillHoles()
 							}
 						}
 	return res;
+}
+
+int ReachabilitySpace::getNumVoxels( int dim )
+{
+	VR_ASSERT((dim>=0 && dim<6));
+
+	return numVoxels[dim];
+}
+
+float ReachabilitySpace::getMinBound( int dim )
+{
+	VR_ASSERT((dim>=0 && dim<6));
+
+	return minBounds[dim];
+}
+
+float ReachabilitySpace::getMaxBound( int dim )
+{
+	VR_ASSERT((dim>=0 && dim<6));
+
+	return maxBounds[dim];
+}
+
+unsigned char ReachabilitySpace::getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f)
+{
+	return data->get(a,b,c,d,e,f);
 }
 
 

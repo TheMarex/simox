@@ -215,4 +215,44 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotEndeffectorMissingBasenode)
 	BOOST_REQUIRE_THROW(VirtualRobot::RobotIO::createRobotFromString(robotString), VirtualRobot::VirtualRobotException);
 }
 
+BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
+{
+	const std::string robotString =
+		"<Robot Type='DemoRobotType' RootNode='Joint1'>"
+		" <RobotNode name='Joint1'>"
+		"  <Physics>"
+		"   <Mass value='100' units='kg'/>"
+		"   <CoM location='joint' x='10' y='20' z='30' units='mm'/>"
+		"   <MaxVelocity value='0.3'/>"
+		"   <MaxAcceleration value='0.1'/>"
+		"   <IntertiaMatrix>"
+		"     <row1 c1='1' c2='2' c3='3'/>"
+		"     <row2 c1='4' c2='5' c3='6'/>"
+		"     <row3 c1='7' c2='8' c3='9'/>"
+		"   </IntertiaMatrix>"
+		"  </Physics>"
+		" </RobotNode>"
+		"</Robot>";
+	VirtualRobot::RobotPtr rob;
+	BOOST_REQUIRE_NO_THROW(rob = VirtualRobot::RobotIO::createRobotFromString(robotString));
+	BOOST_REQUIRE(rob);
+	VirtualRobot::RobotNodePtr rn = rob->getRobotNode("Joint1");
+	BOOST_REQUIRE(rn);
+	float mass = rn->getMass();
+	BOOST_CHECK_EQUAL(mass,100.0f);
+	float vel = rn->getMaxVelocity();
+	BOOST_CHECK_EQUAL(vel,0.3f);
+	float acc = rn->getMaxAcceleration();
+	BOOST_CHECK_EQUAL(acc,0.1f);
+	Eigen::Vector3f com = rn->getCoMLocal();
+	bool comOK = com.isApprox(Eigen::Vector3f(10.0f,20.0f,30.0f));
+	BOOST_REQUIRE(comOK);
+
+	Eigen::Matrix3f inertia = rn->getInertiaMatrix();
+	Eigen::Matrix3f expectedMat;
+	expectedMat << 1,2,3,4,5,6,7,8,9;
+	bool inertiaMatrixOK = inertia.isApprox(expectedMat);
+	BOOST_REQUIRE(inertiaMatrixOK);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

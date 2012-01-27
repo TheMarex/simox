@@ -1236,7 +1236,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilitySpacePtr reac
 	return res;
 }
 
-SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilitySpacePtr reachSpace, const Eigen::Vector3f &fixedEEFOrientationGlobalRPY, VirtualRobot::ColorMap::type cmType, bool transformToGlobalPose, const Eigen::Vector3f &axis, unsigned char minValue)
+SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilitySpacePtr reachSpace, const Eigen::Vector3f &fixedEEFOrientationGlobalRPY, VirtualRobot::ColorMap::type cmType, bool transformToGlobalPose, const Eigen::Vector3f &axis, unsigned char minValue, float arrowSize)
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();
@@ -1266,6 +1266,8 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilitySpacePtr reac
 	float minS = size(0);
 	if (size(1)<minS) minS = size(1);
 	if (size(2)<minS) minS = size(2);
+	if (arrowSize!=0)
+		minS = arrowSize;
 	//Eigen::Vector3f zAxis(0,0,1.0f);
 	int value;
 	VirtualRobot::VisualizationFactory::Color color = VirtualRobot::VisualizationFactory::Color::None();
@@ -1372,7 +1374,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilitySpacePtr reac
 }
 */
 
-SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilitySpacePtr reachSpace, VirtualRobot::ColorMap::type cmType, const Eigen::Vector3f &axis, bool transformToGlobalPose, unsigned char minValue)
+SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilitySpacePtr reachSpace, VirtualRobot::ColorMap::type cmType, const Eigen::Vector3f &axis, bool transformToGlobalPose, unsigned char minValue, float arrowSize)
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();
@@ -1388,6 +1390,8 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilitySpacePtr reac
 	float minS = size(0);
 	if (size(1)<minS) minS = size(1);
 	if (size(2)<minS) minS = size(2);
+	if (arrowSize!=0)
+		minS = arrowSize;
 	VirtualRobot::VisualizationFactory::Color color = VirtualRobot::VisualizationFactory::Color::None();
 	SoSeparator* arrow = CreateArrow(axis,minS*0.7f,minS/25.0f,color);
 
@@ -1432,6 +1436,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilitySpacePtr reac
 	float minS = size(0);
 	if (size(1)<minS) minS = size(1);
 	if (size(2)<minS) minS = size(2);
+
 	ColorMap cm(cmType);
 
 	VirtualRobot::VisualizationFactory::Color color = VirtualRobot::VisualizationFactory::Color::None();

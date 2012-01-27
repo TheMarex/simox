@@ -82,6 +82,8 @@ protected:
 	static CollisionModelPtr processCollisionTag(rapidxml::xml_node<char> *colXMLNode, const std::string &tagName, const std::string &basePath);
 	static void processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const std::string &nodeName, SceneObject::Physics &physics);
 	static RobotNodeSetPtr processRobotNodeSet(rapidxml::xml_node<char>* setXMLNode, RobotPtr robo, const std::string& robotRootNode, int& robotNodeSetCounter );
+	static Eigen::Matrix3f process3x3Matrix(rapidxml::xml_node<char> *matrixXMLNode);
+	static bool hasUnitsAttribute(rapidxml::xml_node<char> *node);
 	static boost::mutex mutex; 
 };
 

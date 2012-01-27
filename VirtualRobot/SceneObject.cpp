@@ -466,4 +466,9 @@ Eigen::Matrix3f SceneObject::getInertiaMatrix()
 	return physics.intertiaMatrix;
 }
 
+float SceneObject::getMaxTorque()
+{
+	return physics.maxTorque;
+}
+
 } // namespace

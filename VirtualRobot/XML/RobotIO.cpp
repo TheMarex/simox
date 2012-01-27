@@ -107,7 +107,7 @@ void RobotIO::processLimitsNode(rapidxml::xml_node<char> *limitsXMLNode, float &
 	catch(...) {
 		if (unit.isMillimeter())
 		{
-			VR_WARNING << "No 'lo' attribute in <Limits> tag. Assuming 1000 [mm]."<< endl;
+			VR_WARNING << "No 'hi' attribute in <Limits> tag. Assuming 1000 [mm]."<< endl;
 			jointLimitLo = 1000.0f;
 		}
 		else

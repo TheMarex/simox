@@ -664,6 +664,9 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 		if (unit.isGram())
 			physics.massKg *= 0.001f;
 
+		if (unit.isTon())
+			physics.massKg *= 1000.0f;
+
 	} else
 	{
 		VR_WARNING << "Expecting mass tag for physics node in <" << nodeName << ">." << endl;
@@ -680,14 +683,16 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 			if (loc=="visualizationbboxcenter")
 			{
 				physics.comLocation = SceneObject::Physics::eVisuBBoxCenter;
-			} else if (loc=="custom" || loc=="joint")
+			} else if (loc=="joint" || loc=="custom")
 			{
 				physics.comLocation = SceneObject::Physics::eCustom;
 			} else
 			{
 				THROW_VR_EXCEPTION ("Unsupported Physics <CoM> tag attribute:" << loc);
 			}
-		}
+		} else
+			physics.comLocation = SceneObject::Physics::eCustom;
+
 		if (physics.comLocation == SceneObject::Physics::eCustom)
 		{
 			physics.localCoM(0) = getOptionalFloatByAttributeName(comXMLNode,"x",0.0f);
@@ -698,6 +703,7 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 				Units unitCom = getUnitsAttribute(comXMLNode,Units::eLength);
 				if (unitCom.isMeter())
 					physics.localCoM *= 0.001f;
+
 			}
 		}
 		
@@ -716,6 +722,12 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 	if (accXMLNode)
 	{
 		physics.maxAcceleration = getFloatByAttributeName(accXMLNode,"value");
+	} 
+
+	rapidxml::xml_node<> *torXMLNode = physicsXMLNode->first_node("maxTorque",0,false);
+	if (torXMLNode)
+	{
+		physics.maxTorque = getFloatByAttributeName(torXMLNode,"value");
 	} 
 
 }

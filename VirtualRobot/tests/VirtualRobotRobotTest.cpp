@@ -225,6 +225,7 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 		"   <CoM location='joint' x='10' y='20' z='30' units='mm'/>"
 		"   <MaxVelocity value='0.3'/>"
 		"   <MaxAcceleration value='0.1'/>"
+		"   <MaxTorque value='0.2'/>"
 		"   <IntertiaMatrix>"
 		"     <row1 c1='1' c2='2' c3='3'/>"
 		"     <row2 c1='4' c2='5' c3='6'/>"
@@ -242,6 +243,8 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 	BOOST_CHECK_EQUAL(mass,100.0f);
 	float vel = rn->getMaxVelocity();
 	BOOST_CHECK_EQUAL(vel,0.3f);
+	float to = rn->getMaxTorque();
+	BOOST_CHECK_EQUAL(to,0.2f);
 	float acc = rn->getMaxAcceleration();
 	BOOST_CHECK_EQUAL(acc,0.1f);
 	Eigen::Vector3f com = rn->getCoMLocal();

@@ -40,7 +40,8 @@ public:
 
 	bool isGram() {return ("g" == unitString || "gram" == unitString);}
 	bool isKilogram() {return ("kg" == unitString || "kilogram" == unitString);}
-	bool isWeight() {return (isGram() ||  isKilogram());}
+	bool isTon() {return ("t" == unitString || "ton" == unitString);}
+	bool isWeight() {return (isGram() ||  isKilogram() ||  isTon());}
 
 	bool isValid() {return (isLength() || isAngle() || isWeight());}
 

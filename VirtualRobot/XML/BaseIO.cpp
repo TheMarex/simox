@@ -261,6 +261,29 @@ bool BaseIO::hasUnitsAttribute(rapidxml::xml_node<char> *node)
 	return (attr!=NULL);
 }
 
+std::vector< Units > BaseIO::getUnitsAttributes(rapidxml::xml_node<char> *node)
+{
+	std::vector< Units > result;
+	rapidxml::xml_attribute<> *attr = node->first_attribute("unit", 0, false);
+	while (attr)
+	{
+		Units unitsAttribute(getLowerCase(attr->value()));
+		result.push_back(unitsAttribute);
+
+		attr = attr->next_attribute("unit", 0, false);
+	}
+
+	attr = node->first_attribute("units", 0, false);
+	while (attr)
+	{
+		Units unitsAttribute(getLowerCase(attr->value()));
+		result.push_back(unitsAttribute);
+
+		attr = attr->next_attribute("units", 0, false);
+	}
+	return result;
+}
+
 /**
  * This method processes the unit or units attribute of xml_node \p node.
  *
@@ -712,6 +735,26 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 	if (inMatXMLNode)
 	{
 		physics.intertiaMatrix = process3x3Matrix(inMatXMLNode);
+		std::vector< Units > unitsAttr = getUnitsAttributes(inMatXMLNode);
+		Units uWeight("kg");
+		Units uLength("m");
+		for (size_t i=0;i<unitsAttr.size();i++)
+		{
+			if (unitsAttr[i].isWeight())
+				uWeight = unitsAttr[i];
+			if (unitsAttr[i].isLength())
+				uLength = unitsAttr[i];
+		}
+		float factor = 1.0f;
+		if (uWeight.isGram())
+			factor *= 0.001f;
+		if (uWeight.isTon())
+			factor *= 1000.0f;
+		if (uLength.isMillimeter())
+			factor *= 0.000001f;
+
+		physics.intertiaMatrix *= factor;
+
 	}
 	rapidxml::xml_node<> *velXMLNode = physicsXMLNode->first_node("maxVelocity",0,false);
 	if (velXMLNode)

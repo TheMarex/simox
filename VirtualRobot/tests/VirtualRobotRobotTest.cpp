@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 		"   <MaxVelocity value='0.3'/>"
 		"   <MaxAcceleration value='0.1'/>"
 		"   <MaxTorque value='0.2'/>"
-		"   <IntertiaMatrix>"
+		"   <IntertiaMatrix units='ton' units='mm'>"
 		"     <row1 c1='1' c2='2' c3='3'/>"
 		"     <row2 c1='4' c2='5' c3='6'/>"
 		"     <row3 c1='7' c2='8' c3='9'/>"
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 
 	Eigen::Matrix3f inertia = rn->getInertiaMatrix();
 	Eigen::Matrix3f expectedMat;
-	expectedMat << 1,2,3,4,5,6,7,8,9;
+	expectedMat << 0.001f,0.002f,0.003f,0.004f,0.005f,0.006f,0.007f,0.008f,0.009f;
 	bool inertiaMatrixOK = inertia.isApprox(expectedMat);
 	BOOST_REQUIRE(inertiaMatrixOK);
 }

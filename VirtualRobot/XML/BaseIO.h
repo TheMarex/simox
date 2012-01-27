@@ -84,6 +84,7 @@ protected:
 	static RobotNodeSetPtr processRobotNodeSet(rapidxml::xml_node<char>* setXMLNode, RobotPtr robo, const std::string& robotRootNode, int& robotNodeSetCounter );
 	static Eigen::Matrix3f process3x3Matrix(rapidxml::xml_node<char> *matrixXMLNode);
 	static bool hasUnitsAttribute(rapidxml::xml_node<char> *node);
+	static std::vector< Units > getUnitsAttributes(rapidxml::xml_node<char> *node);
 	static boost::mutex mutex; 
 };
 

@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 		"   <MaxVelocity value='0.3'/>"
 		"   <MaxAcceleration value='0.1'/>"
 		"   <MaxTorque value='0.2'/>"
-		"   <IntertiaMatrix units='ton' units='mm'>"
+		"   <IntertiaMatrix unitsWeight='ton' unitsLength='mm'>"
 		"     <row1 c1='1' c2='2' c3='3'/>"
 		"     <row2 c1='4' c2='5' c3='6'/>"
 		"     <row3 c1='7' c2='8' c3='9'/>"

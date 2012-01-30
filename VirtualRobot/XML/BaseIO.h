@@ -85,6 +85,7 @@ protected:
 	static Eigen::Matrix3f process3x3Matrix(rapidxml::xml_node<char> *matrixXMLNode);
 	static bool hasUnitsAttribute(rapidxml::xml_node<char> *node);
 	static std::vector< Units > getUnitsAttributes(rapidxml::xml_node<char> *node);
+	static void getAllAttributes(rapidxml::xml_node<char> *node, const std::string &attrString, std::vector<std::string> &storeValues);
 	static boost::mutex mutex; 
 };
 

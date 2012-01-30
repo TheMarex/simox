@@ -258,29 +258,42 @@ bool BaseIO::hasUnitsAttribute(rapidxml::xml_node<char> *node)
 	rapidxml::xml_attribute<> *attr = node->first_attribute("unit", 0, false);
 	if (!attr)
 		attr = node->first_attribute("units", 0, false);
+	if (!attr)
+		attr = node->first_attribute("unitsWeight", 0, false);
+	if (!attr)
+		attr = node->first_attribute("unitsLength", 0, false);
+	if (!attr)
+		attr = node->first_attribute("unitsAngle", 0, false);
 	return (attr!=NULL);
+}
+
+void BaseIO::getAllAttributes(rapidxml::xml_node<char> *node, const std::string &attrString, std::vector<std::string> &storeValues)
+{
+	rapidxml::xml_attribute<> *attr = node->first_attribute(attrString.c_str(), 0, false);
+	while (attr)
+	{
+		std::string s(attr->value());
+		storeValues.push_back(s);
+		
+		attr = attr->next_attribute(attrString.c_str(), 0, false);
+	}
 }
 
 std::vector< Units > BaseIO::getUnitsAttributes(rapidxml::xml_node<char> *node)
 {
 	std::vector< Units > result;
-	rapidxml::xml_attribute<> *attr = node->first_attribute("unit", 0, false);
-	while (attr)
+	std::vector<std::string> attrStr;
+	getAllAttributes(node, "unit", attrStr);
+	getAllAttributes(node, "units", attrStr);
+	getAllAttributes(node, "unitsWeight", attrStr);
+	getAllAttributes(node, "unitsLength", attrStr);
+	getAllAttributes(node, "unitsAngle", attrStr);
+	for (size_t i=0;i<attrStr.size();i++)
 	{
-		Units unitsAttribute(getLowerCase(attr->value()));
+		Units unitsAttribute(getLowerCase(attrStr[i].c_str()));
 		result.push_back(unitsAttribute);
-
-		attr = attr->next_attribute("unit", 0, false);
 	}
-
-	attr = node->first_attribute("units", 0, false);
-	while (attr)
-	{
-		Units unitsAttribute(getLowerCase(attr->value()));
-		result.push_back(unitsAttribute);
-
-		attr = attr->next_attribute("units", 0, false);
-	}
+	
 	return result;
 }
 
@@ -295,6 +308,24 @@ Units BaseIO::getUnitsAttribute(rapidxml::xml_node<char> *node, Units::UnitsType
 	rapidxml::xml_attribute<> *attr = node->first_attribute("unit", 0, false);
 	if (!attr)
 		attr = node->first_attribute("units", 0, false);
+	if (!attr)
+	{
+		switch (u)
+		{
+		case Units::eAngle:
+				attr = node->first_attribute("unitsAngle", 0, false);
+			break;
+		case Units::eLength:
+			attr = node->first_attribute("unitsLength", 0, false);
+			break;
+		case Units::eWeight:
+			attr = node->first_attribute("unitsWeight", 0, false);
+			break;
+		default:
+			break;
+		}
+	}
+
 	THROW_VR_EXCEPTION_IF(!attr, "Tag <" << node->name() << "> is missing a unit/units attribute.")
 
 	Units unitsAttribute(getLowerCase(attr->value()));

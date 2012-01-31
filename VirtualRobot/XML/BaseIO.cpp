@@ -787,7 +787,7 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 		physics.intertiaMatrix *= factor;
 
 	}
-	rapidxml::xml_node<> *velXMLNode = physicsXMLNode->first_node("maxVelocity",0,false);
+	/*rapidxml::xml_node<> *velXMLNode = physicsXMLNode->first_node("maxVelocity",0,false);
 	if (velXMLNode)
 	{
 		physics.maxVelocity = getFloatByAttributeName(velXMLNode,"value");
@@ -802,7 +802,7 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 	if (torXMLNode)
 	{
 		physics.maxTorque = getFloatByAttributeName(torXMLNode,"value");
-	} 
+	} */
 
 }
 

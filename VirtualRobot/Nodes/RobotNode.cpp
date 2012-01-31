@@ -28,6 +28,9 @@ RobotNode::RobotNode(	RobotWeakPtr rob,
 						CollisionCheckerPtr colChecker) 
 						: SceneObject(name,visualization,collisionModel,p,colChecker)
 {
+	maxVelocity = 0.0f;
+	maxAcceleration = 0.0f;
+	maxTorque = 0.0f;
 	robot = rob;
 	this->childrenNames = childrenNames;
 	this->jointLimitLo = jointLimitLo;
@@ -238,6 +241,9 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 		cout << physics.massKg << " kg" << endl;
 	cout << "* CoM:" << physics.localCoM(0) << ", " << physics.localCoM(1) << ", " << physics.localCoM(2) << endl;
 	cout << "* Limits: Lo:" << jointLimitLo << ", Hi:" << jointLimitHi << endl;
+	std::cout << "* max velocity " << maxVelocity  << " [m/s]" << std::endl;
+	std::cout << "* max acceleration " << maxAcceleration  << " [m/s^2]" << std::endl;
+	std::cout << "* max torque " << maxTorque  << " [Nm]" << std::endl;
 	cout << "* jointValue: " << this->getJointValue() << ", jointValueOffset: " << jointValueOffset << endl;
 	if (optionalDHParameter.isSet)
 	{
@@ -371,6 +377,9 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 		}
 	}
 
+	result->setMaxVelocity(maxVelocity);
+	result->setMaxAcceleration(maxAcceleration);
+	result->setMaxTorque(maxTorque);
 	newRobot->registerRobotNode(result);
 
 	if (initializeWithParent)
@@ -513,6 +522,36 @@ void RobotNode::setJointLimits( float lo, float hi )
 {
 	jointLimitLo = lo;
 	jointLimitHi = hi;
+}
+
+void RobotNode::setMaxTorque( float maxTo )
+{
+	maxTorque = maxTo;
+}
+
+void RobotNode::setMaxAcceleration( float maxAcc )
+{
+	maxAcceleration = maxAcc;
+}
+
+void RobotNode::setMaxVelocity( float maxVel )
+{
+	maxVelocity = maxVel;
+}
+
+float RobotNode::getMaxVelocity()
+{
+	return maxVelocity;
+}
+
+float RobotNode::getMaxAcceleration()
+{
+	return maxAcceleration;
+}
+
+float RobotNode::getMaxTorque()
+{
+	return maxTorque;
 }
 
 

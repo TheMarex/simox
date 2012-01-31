@@ -182,6 +182,10 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	rapidxml::xml_node<> *limitsNode = NULL;
 	rapidxml::xml_node<> *postjointTransformNode = NULL;
 
+	float maxVelocity = 1.0f; // m/s
+	float maxAcceleration = 1.0f; // m/s^2
+	float maxTorque = 1.0f; // Nm
+
 	while (node)
 	{
 		std::string nodeName = getLowerCase(node->name());
@@ -210,7 +214,17 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		{
 			THROW_VR_EXCEPTION_IF(postjointTransformNode, "Multiple postjointtransform definitions in <Joint> tag of robot node <" << robotNodeName << ">." << endl);
 			postjointTransformNode = node;
-		} else
+		} else if (nodeName == "maxvelocity")
+		{
+			maxVelocity = getFloatByAttributeName(node,"value");
+		} else if (nodeName == "maxacceleration")
+		{
+			maxAcceleration = getFloatByAttributeName(node,"value");
+		} else if (nodeName == "maxtorque")
+		{
+			maxTorque = getFloatByAttributeName(node,"value");
+		} 
+		else
 		{
 			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in <Joint> tag of RobotNode <" << robotNodeName << ">." << endl);
 		}
@@ -223,15 +237,26 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		// check for wrongly defined nodes
 		THROW_VR_EXCEPTION_IF((prejointTransformNode || tmpXMLNodeAxis || tmpXMLNodeTranslation || postjointTransformNode), "DH specification can not be used together with Axis, TranslationDirection, PreJointTransform or PostJointTransform definitions in <Joint> tag of node " << robotNodeName << endl);
 
+		std::vector< Units > unitsAttr = getUnitsAttributes(dhXMLNode);
+		Units uAngle("rad");
+		Units uLength("mm");
+		for (size_t i=0;i<unitsAttr.size();i++)
+		{
+			if (unitsAttr[i].isAngle())
+				uAngle = unitsAttr[i];
+			if (unitsAttr[i].isLength())
+				uLength = unitsAttr[i];
+		}
+
 		dh.isSet = true;
-		bool isRadian = getUnitsAttribute(dhXMLNode,Units::eAngle).isRadian();
+		bool isRadian = uAngle.isRadian();
 
 		attr = dhXMLNode->first_attribute("a", 0, false);
 		if (attr)
-			dh.setAInMM(convertToFloat(attr->value()));
+			dh.setAInMM(uLength.toMillimeter(convertToFloat(attr->value())));
 		attr = dhXMLNode->first_attribute("d", 0, false);
 		if (attr)
-			dh.setDInMM(convertToFloat(attr->value()));
+			dh.setDInMM(uLength.toMillimeter(convertToFloat(attr->value())));
 		attr = dhXMLNode->first_attribute("alpha", 0, false);
 		if (attr)
 			dh.setAlphaRadian(convertToFloat(attr->value()), isRadian);
@@ -284,6 +309,9 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	else
 		THROW_VR_EXCEPTION("RobotNode of type " << jointType << " nyi..." << endl);
 
+	robotNode->setMaxVelocity(maxVelocity);
+	robotNode->setMaxAcceleration(maxAcceleration);
+	robotNode->setMaxTorque(maxTorque);
 	return robotNode;
 }
 

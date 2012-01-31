@@ -237,6 +237,37 @@ public:
 	inline float getJointLimitHigh() const {return jointLimitHi;}
 	inline float getJointLimitLow() const {return jointLimitLo;}
 
+	/*!
+		Set maximum velocity of this joint in m/s.
+	*/
+	virtual void setMaxVelocity(float maxVel);	
+	
+	/*!
+		Set maximum acceleration pf this joint in m/s^2.
+	*/
+	virtual void setMaxAcceleration(float maxAcc);
+
+	/*!
+		Set maximum torque pf this joint in Nm.
+	*/
+	virtual void setMaxTorque(float maxTo);
+
+	/*!
+		Maximum velocity in m/s.
+	*/
+	float getMaxVelocity();
+
+	/*!
+		Maximum acceleration in m/s^2.
+	*/
+	float getMaxAcceleration();
+
+	/*!
+		Maximum acceleration in Nm.
+	*/
+	float getMaxTorque();
+
+
 private: // Use the private setters and getters instead
 	float jointValue;							//< The joint value
 	std::vector<std::string> childrenNames;
@@ -259,6 +290,9 @@ protected:
 	float jointValueOffset;
 	float jointLimitLo,jointLimitHi;
 	DHParameter optionalDHParameter;			// When the joint is defined via DH parameters they are stored here
+	float maxVelocity;			//! given in m/s
+	float maxAcceleration;		//! given in m/s^2
+	float maxTorque;			//! given in Nm
 	///////////////////////// SETUP ////////////////////////////////////
 
 	virtual void updateTransformationMatrices();

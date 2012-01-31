@@ -17,7 +17,7 @@ IF (NOT SIMOX_CONFIGURED)
 	############################# SETUP MODULES #############################
 	GET_FILENAME_COMPONENT (CurrentPath ${CMAKE_CURRENT_LIST_FILE} PATH)
 	#MESSAGE (STATUS "module path: "  ${CurrentPath}/CMakeModules)
-	SET(CMAKE_MODULE_PATH ${CurrentPath}/CMakeModules)
+	SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CurrentPath}/CMakeModules)
 	
 	#### Eigen
 	FIND_PACKAGE (Eigen3 REQUIRED)

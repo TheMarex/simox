@@ -62,28 +62,18 @@ public:
 			localCoM.setZero();
 			intertiaMatrix.setIdentity();
 			massKg = 0.0f;
-			/*maxVelocity = 0.0f;
-			maxAcceleration = 0.0f;
-			maxTorque = 0.0f;*/
 			comLocation = eCustom;
 		}
 		void print()
 		{
 			std::cout << " ** Mass: " << massKg << " [kg]" << std::endl;
 			std::cout << " ** local CoM [mm]: " <<  localCoM(0) << localCoM(1) << localCoM(2) << std::endl;
-			/*std::cout << " ** max velocity " << maxVelocity  << " [m/s]" << std::endl;
-			std::cout << " ** max acceleration " << maxAcceleration  << " [m/s^2]" << std::endl;
-			std::cout << " ** max torque " << maxTorque  << " [Nm]" << std::endl;*/
 			std::cout << " ** inertia matrix [kg*m^2] :\n " << intertiaMatrix  << std::endl;
 		}
 		Eigen::Vector3f localCoM;	//!< Defined in the local coordinate system of this object [mm]
 		float massKg;				//!< The mass of this object
 		CoMLocation comLocation;	//!< Where is the CoM located
 		Eigen::Matrix3f intertiaMatrix; //! in kg*m^2
-
-		//float maxVelocity;			//! given in m/s
-		//float maxAcceleration;		//! given in m/s^2
-		//float maxTorque;			//! given in Nm
 	};
 
 	/*!

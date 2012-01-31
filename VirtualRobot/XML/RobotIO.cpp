@@ -89,15 +89,17 @@ void RobotIO::processLimitsNode(rapidxml::xml_node<char> *limitsXMLNode, float &
 		jointLimitLo = getFloatByAttributeName(limitsXMLNode, "lo");
 	}
 	catch(...) {
-		if (unit.isMillimeter())
+		if (unit.isLength())
 		{
 			VR_WARNING << "No 'lo' attribute in <Limits> tag. Assuming -1000 [mm]."<< endl;
 			jointLimitLo = -1000.0f;
+			unit = Units("mm");
 		}
 		else
 		{
 			VR_WARNING << "No 'lo' attribute in <Limits> tag. Assuming -180 [deg]."<< endl;
 			jointLimitLo = (float)(-M_PI);
+			unit = Units("rad");
 		}
 	}
 
@@ -105,23 +107,30 @@ void RobotIO::processLimitsNode(rapidxml::xml_node<char> *limitsXMLNode, float &
 		jointLimitHi = getFloatByAttributeName(limitsXMLNode, "hi");
 	}
 	catch(...) {
-		if (unit.isMillimeter())
+		if (unit.isLength())
 		{
 			VR_WARNING << "No 'hi' attribute in <Limits> tag. Assuming 1000 [mm]."<< endl;
 			jointLimitLo = 1000.0f;
+			unit = Units("mm");
 		}
 		else
 		{
 			VR_WARNING << "No 'hi' attribute in <Limits> tag. Assuming 180 [deg]." << endl;
 			jointLimitHi = (float)M_PI;
+			unit = Units("rad");
 		}
 	}
 
 	// if values are stored as degrees convert them to radian
-	if (unit.isDegree())
+	if (unit.isAngle())
 	{
-		jointLimitLo = jointLimitLo / 180.0f * (float)M_PI;
-		jointLimitHi = jointLimitHi / 180.0f * (float)M_PI;
+		jointLimitLo = unit.toRadian(jointLimitLo);
+		jointLimitHi = unit.toRadian(jointLimitHi);
+	}
+	if (unit.isLength())
+	{
+		jointLimitLo = unit.toMillimeter(jointLimitLo);
+		jointLimitHi = unit.toMillimeter(jointLimitHi);
 	}
 }
 

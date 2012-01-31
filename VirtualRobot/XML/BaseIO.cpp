@@ -298,7 +298,8 @@ std::vector< Units > BaseIO::getUnitsAttributes(rapidxml::xml_node<char> *node)
 }
 
 /**
- * This method processes the unit or units attribute of xml_node \p node.
+ * This method processes the unit, units, unitsAngle, unitsLength or unitsWeight attribute of xml_node \p node.
+ * The first matching unit is returned.
  *
  * \return instance of VirtualRobot::Units
  */
@@ -320,6 +321,13 @@ Units BaseIO::getUnitsAttribute(rapidxml::xml_node<char> *node, Units::UnitsType
 			break;
 		case Units::eWeight:
 			attr = node->first_attribute("unitsWeight", 0, false);
+			break;
+		case Units::eIgnore:
+				attr = node->first_attribute("unitsAngle", 0, false);
+				if (!attr)
+					attr = node->first_attribute("unitsLength", 0, false);
+				if (!attr)
+					attr = node->first_attribute("unitsWeight", 0, false);
 			break;
 		default:
 			break;

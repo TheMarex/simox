@@ -210,6 +210,12 @@
 		</ChildFromRobot>
 	</RobotNode>
 	
+	<RobotNodeSet name="Torso" kinematicRoot="Platform">
+		<Node name="Hip Pitch"/>
+		<Node name="Hip Roll"/>
+		<Node name="Hip Yaw"/>
+	</RobotNodeSet>
+	
 	<RobotNodeSet name="TorsoHeadColModel">
 		<Node name="Hip Yaw"/>
 		<Node name="Head_Tilt"/>

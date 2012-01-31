@@ -264,6 +264,8 @@ bool BaseIO::hasUnitsAttribute(rapidxml::xml_node<char> *node)
 		attr = node->first_attribute("unitsLength", 0, false);
 	if (!attr)
 		attr = node->first_attribute("unitsAngle", 0, false);
+	if (!attr)
+		attr = node->first_attribute("unitsTime", 0, false);
 	return (attr!=NULL);
 }
 
@@ -288,6 +290,7 @@ std::vector< Units > BaseIO::getUnitsAttributes(rapidxml::xml_node<char> *node)
 	getAllAttributes(node, "unitsWeight", attrStr);
 	getAllAttributes(node, "unitsLength", attrStr);
 	getAllAttributes(node, "unitsAngle", attrStr);
+	getAllAttributes(node, "unitsTime", attrStr);
 	for (size_t i=0;i<attrStr.size();i++)
 	{
 		Units unitsAttribute(getLowerCase(attrStr[i].c_str()));
@@ -298,7 +301,7 @@ std::vector< Units > BaseIO::getUnitsAttributes(rapidxml::xml_node<char> *node)
 }
 
 /**
- * This method processes the unit, units, unitsAngle, unitsLength or unitsWeight attribute of xml_node \p node.
+ * This method processes the unit, units, unitsAngle, unitsLength, unitsTime or unitsWeight attribute of xml_node \p node.
  * The first matching unit is returned.
  *
  * \return instance of VirtualRobot::Units
@@ -322,12 +325,17 @@ Units BaseIO::getUnitsAttribute(rapidxml::xml_node<char> *node, Units::UnitsType
 		case Units::eWeight:
 			attr = node->first_attribute("unitsWeight", 0, false);
 			break;
+		case Units::eTime:
+			attr = node->first_attribute("unitsTime", 0, false);
+			break;
 		case Units::eIgnore:
 				attr = node->first_attribute("unitsAngle", 0, false);
 				if (!attr)
 					attr = node->first_attribute("unitsLength", 0, false);
 				if (!attr)
 					attr = node->first_attribute("unitsWeight", 0, false);
+				if (!attr)
+					attr = node->first_attribute("unitsTime", 0, false);
 			break;
 		default:
 			break;
@@ -352,6 +360,11 @@ Units BaseIO::getUnitsAttribute(rapidxml::xml_node<char> *node, Units::UnitsType
 	case Units::eWeight:
 		{
 			THROW_VR_EXCEPTION_IF(!unitsAttribute.isWeight(), "Wrong <Units> tag! Expecting weight type." << endl);
+		}
+		break;
+	case Units::eTime:
+		{
+			THROW_VR_EXCEPTION_IF(!unitsAttribute.isTime(), "Wrong <Units> tag! Expecting time type." << endl);
 		}
 		break;
 	default:

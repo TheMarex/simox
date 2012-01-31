@@ -226,12 +226,69 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		} else if (nodeName == "maxvelocity")
 		{
 			maxVelocity = getFloatByAttributeName(node,"value");
+	
+			// convert to m/s
+			std::vector< Units > unitsAttr = getUnitsAttributes(node);
+			Units uTime("sec");
+			Units uLength("m");
+			for (size_t i=0;i<unitsAttr.size();i++)
+			{
+				if (unitsAttr[i].isTime())
+					uTime = unitsAttr[i];
+				if (unitsAttr[i].isLength())
+					uLength = unitsAttr[i];
+			}
+			float factor = 1.0f;
+			if (uTime.isMinute())
+				factor /= 60.0f;
+			if (uTime.isHour())
+				factor /= 3600.0f;
+			if (uLength.isMillimeter())
+				factor *= 0.001f;
+
+			maxVelocity *= factor;
+			
 		} else if (nodeName == "maxacceleration")
 		{
 			maxAcceleration = getFloatByAttributeName(node,"value");
+			
+			// convert to m/s^2
+			std::vector< Units > unitsAttr = getUnitsAttributes(node);
+			Units uTime("sec");
+			Units uLength("m");
+			for (size_t i=0;i<unitsAttr.size();i++)
+			{
+				if (unitsAttr[i].isTime())
+					uTime = unitsAttr[i];
+				if (unitsAttr[i].isLength())
+					uLength = unitsAttr[i];
+			}
+			float factor = 1.0f;
+			if (uTime.isMinute())
+				factor /= 3600.0f;
+			if (uTime.isHour())
+				factor /= 12960000.0f;
+			if (uLength.isMillimeter())
+				factor *= 0.001f;
+
+			maxAcceleration *= factor;
+
 		} else if (nodeName == "maxtorque")
 		{
 			maxTorque = getFloatByAttributeName(node,"value");
+			// convert to Nm
+			std::vector< Units > unitsAttr = getUnitsAttributes(node);
+			Units uLength("m");
+			for (size_t i=0;i<unitsAttr.size();i++)
+			{
+				if (unitsAttr[i].isLength())
+					uLength = unitsAttr[i];
+			}
+			float factor = 1.0f;
+			if (uLength.isMillimeter())
+				factor *= 1000.0f;
+
+			maxTorque *= factor;
 		} 
 		else
 		{

@@ -231,9 +231,9 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 		"  </Physics>"
 		"  <Joint type='revolute'>"
 		"    <DH a='1' d='0' theta='0' alpha='-90' units='degree' unitsLength='m'/>"
-		"    <MaxVelocity value='0.3'/>"
-		"    <MaxAcceleration value='0.1'/>"
-		"    <MaxTorque value='0.2'/>"
+		"    <MaxVelocity value='36' unitsLength='mm' unitsTime='h'/>"
+		"    <MaxAcceleration value='36' unitsTime='min'/>"
+		"    <MaxTorque value='0.2' units='meter'/>"
 		"  </Joint>"
 		" </RobotNode>"
 		"</Robot>";
@@ -245,11 +245,11 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 	float mass = rn->getMass();
 	BOOST_CHECK_EQUAL(mass,100.0f);
 	float vel = rn->getMaxVelocity();
-	BOOST_CHECK_EQUAL(vel,0.3f);
-	float to = rn->getMaxTorque();
-	BOOST_CHECK_EQUAL(to,0.2f);
+	BOOST_CHECK_CLOSE(vel,1e-5f,0.01f);
 	float acc = rn->getMaxAcceleration();
-	BOOST_CHECK_EQUAL(acc,0.1f);
+	BOOST_CHECK_CLOSE(acc,0.01f,0.01f);
+	float to = rn->getMaxTorque();
+	BOOST_CHECK_CLOSE(to,0.2f,0.01f);
 	Eigen::Vector3f com = rn->getCoMLocal();
 	bool comOK = com.isApprox(Eigen::Vector3f(10.0f,20.0f,30.0f));
 	BOOST_REQUIRE(comOK);

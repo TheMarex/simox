@@ -22,6 +22,7 @@ public:
 		eAngle,
 		eLength,
 		eWeight,
+		eTime,
 		eIgnore
 	};
 
@@ -50,7 +51,15 @@ public:
 	float toKilogram(float m){if (isGram()) return m*0.001f; else if (isTon()) return m*1000.0f; else return m;}
 	float toTon(float m){if (isGram()) return m*0.000001f; else if (isKilogram()) return m*0.001f; else return m;}
 
-	bool isValid() {return (isLength() || isAngle() || isWeight());}
+	bool isSecond() {return ("s" == unitString || "sec" == unitString || "second" == unitString);}
+	bool isMinute() {return ("min" == unitString || "minute" == unitString);} //!< be careful m==meter!
+	bool isHour() {return ("h" == unitString || "hour" == unitString);}
+	bool isTime() {return (isSecond() ||  isMinute() ||  isHour());}
+	float toSecond(float m){if (isMinute()) return m*60.0f; else if (isHour()) return m*3600.0f; else return m;}
+	float toMinute(float m){if (isSecond()) return m/60.0f; else if (isHour()) return m*60.0f; else return m;}
+	float toHour(float m){if (isSecond()) return m/3600.0f; else if (isMinute()) return m/60.0f; else return m;}
+
+	bool isValid() {return (isLength() || isAngle() || isWeight() || isTime());}
 
 private:
 	std::string unitString;

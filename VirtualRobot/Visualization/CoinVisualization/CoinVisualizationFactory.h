@@ -33,6 +33,9 @@
 
 #include <Inventor/SoInput.h>
 #include <Inventor/nodes/SoMatrixTransform.h>
+#include <Inventor/SoOffscreenRenderer.h>
+#include <Inventor/nodes/SoPerspectiveCamera.h>
+#include <Inventor/nodes/SoCamera.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -139,6 +142,9 @@ public:
 	static SoMatrixTransform* getMatrixTransform(Eigen::Matrix4f &m);
 	static SoNode* createCoinLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width, float colorR, float colorG, float colorB);
 
+	static SoOffscreenRenderer* createOffscreenRenderer(int width, int height);
+	static bool renderOffscreen( SoOffscreenRenderer* renderer, SoCamera* cam, SoNode* scene, unsigned char **buffer);
+	static bool renderOffscreen( SoOffscreenRenderer* renderer, RobotNodePtr camNode, SoNode* scene, unsigned char **buffer );
 protected:
 	static void GetVisualizationFromSoInput(SoInput& soInput, VisualizationNodePtr& visualizationNode, bool bbox = false);
 

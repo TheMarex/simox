@@ -250,6 +250,17 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 		transform(1,3) = getFloatByAttributeName(translationXMLNode, "y");
 		transform(2,3) = getFloatByAttributeName(translationXMLNode, "z");
 		translation = true;
+
+		if (hasUnitsAttribute(translationXMLNode))
+		{
+			Units u = getUnitsAttribute(rpyXMLNode,Units::eLength);
+			if (u.isMeter())
+			{
+				transform(0,3) *= 1000.0f;
+				transform(1,3) *= 1000.0f;
+				transform(2,3) *= 1000.0f;
+			}
+		}
 	}
 }
 

@@ -18,6 +18,7 @@
 #include "../../ReachabilitySpace.h"
 #include <Inventor/SoDB.h>
 #include <Inventor/nodes/SoNode.h>
+#include <Inventor/nodes/SoUnits.h>
 #include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/nodes/SoCube.h>
 #include <Inventor/nodes/SoSphere.h>
@@ -30,6 +31,7 @@
 #include <Inventor/nodes/SoAsciiText.h>
 #include <Inventor/nodes/SoDrawStyle.h>
 #include <Inventor/nodes/SoLineSet.h>
+#include <Inventor/nodes/SoDirectionalLight.h>
 #include <Inventor/nodes/SoCoordinate3.h>
 #include <Inventor/SbViewportRegion.h>
 #include <Inventor/actions/SoGetBoundingBoxAction.h>
@@ -41,6 +43,7 @@
 #include <Inventor/nodes/SoNormal.h>
 #include <Inventor/nodes/SoFaceSet.h>
 #include <Inventor/nodes/SoCylinder.h>
+#include <Inventor/nodes/SoLightModel.h>
 #include <iostream>
 #include <algorithm>
 #include <boost/pointer_cast.hpp>
@@ -1507,10 +1510,81 @@ SoSeparator* CoinVisualizationFactory::Colorize( SoNode *model, VisualizationFac
 	return result;
 }
 
+SoOffscreenRenderer* CoinVisualizationFactory::createOffscreenRenderer( int width, int height )
+{
+	// Set up the offscreen renderer
+	SbViewportRegion vpRegion(width, height);
+	SoOffscreenRenderer *offscreenRenderer = new SoOffscreenRenderer(vpRegion);
+	offscreenRenderer->setComponents(SoOffscreenRenderer::RGB);
+	offscreenRenderer->setBackgroundColor(SbColor(1.0f,1.0f,1.0f));
+	return offscreenRenderer;
+}
+
+bool CoinVisualizationFactory::renderOffscreen( SoOffscreenRenderer* renderer, RobotNodePtr camNode, SoNode* scene, unsigned char **buffer )
+{
+	if (!camNode)
+	{
+		VR_ERROR << "No cam node to render..." << endl;
+		return false;
+	}
+
+	SoPerspectiveCamera *cam = new SoPerspectiveCamera();
+	cam->ref();
+	// set camera position and orientation
+	Eigen::Matrix4f camPose = camNode->getGlobalPose();
+	Eigen::Vector3f camPos = MathTools::getTranslation(camPose);
+	cam->position.setValue(camPos[0],camPos[1],camPos[2]);
+	SbRotation align(SbVec3f(1,0,0),(float)(M_PI)); // first align from  default direction -z to +z by rotating with 180 degree around x axis
+	SbRotation align2(SbVec3f(0,0,1),(float)(M_PI/2.0)); // align up vector by rotating with 90 degree around z axis
+	SbRotation trans(CoinVisualizationFactory::getSbMatrix(camPose)); // get rotation from global pose
+	cam->orientation.setValue( align2*align*trans ); // perform total transformation
+
+	// todo: check these values....
+	cam->nearDistance.setValue(1.0f);
+	cam->farDistance.setValue(5000.0f);
+
+	bool res = renderOffscreen(renderer,cam,scene,buffer);
+	cam->unref();
+	return res;
+}
 
 
 
+bool CoinVisualizationFactory::renderOffscreen( SoOffscreenRenderer* renderer, SoCamera* cam, SoNode* scene, unsigned char **buffer )
+{
+	if (!renderer || !cam || !scene || buffer==NULL)
+		return false;
 
+	// we use MM in VirtualRobot
+	SoUnits *unit = new SoUnits();
+	unit->units = SoUnits::MILLIMETERS;
+
+	// add all to a inventor scene graph
+	SoSeparator *root = new SoSeparator();
+	root->ref();
+	SoDirectionalLight *light = new SoDirectionalLight;
+	root->addChild(light);
+
+	// easy light model, no shadows or something
+	//SoLightModel *lightModel = new SoLightModel();
+	//lightModel->model = SoLightModel::BASE_COLOR;
+	//root->addChild(lightModel);
+
+	root->addChild(unit);
+	root->addChild(cam);
+	root->addChild(scene);
+
+
+	bool ok = renderer->render(root)==TRUE?true:false;
+	root->unref();
+	if (!ok)
+	{
+		VR_ERROR << "Rendering not successful!" << endl;
+		return false;
+	}
+	*buffer = renderer->getBuffer();
+	return true;
+}
 
 
 

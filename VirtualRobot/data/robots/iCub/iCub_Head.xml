@@ -61,6 +61,14 @@
 		<Visualization enable="true">
 			<File type="Inventor">model/Head/eye.iv</File>
 		</Visualization>
+		<Child name="EyeLeftCamera"/>
+	</RobotNode>
+		
+	
+	<RobotNode name="EyeLeftCamera">
+		<Joint type="fixed">
+			<DH a="0" d="20" theta="0" alpha="0" units="degree"/>
+		</Joint>
 	</RobotNode>
 		
 	<RobotNode name="EyeRight1">
@@ -80,6 +88,13 @@
 		<Visualization enable="true">
 			<File type="Inventor">model/Head/eye.iv</File>
 		</Visualization>
+		<Child name="EyeRightCamera"/>
+	</RobotNode>
+	
+	<RobotNode name="EyeRightCamera">
+		<Joint type="fixed">
+			<DH a="0" d="20" theta="0" alpha="0" units="degree"/>
+		</Joint>
 	</RobotNode>
 	
 	<RobotNodeSet name="Head" kinematicRoot="Neck1">

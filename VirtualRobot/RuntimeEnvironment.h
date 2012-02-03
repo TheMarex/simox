@@ -92,6 +92,27 @@ public:
 		*/
 		static bool toVector3f(const std::string &s, Eigen::Vector3f &storeResult);
 
+
+		/*!
+			Check if command line parameters specify a valid filename and 
+			in case the key is not present in the command line arguments or the file was not found, the standardFilename is used.
+			Additionally the absolute filenames are considered by calling getDataFileAbsolute().
+			\param key  The key which is checked for a filename. It is checked if the key is present and if so, it is tried to 
+						construct a valid filename with getDataFileAbsolute().
+			\param standardFilename In case a valid file could not be determined, this file will be returned 
+									(additionally it is made absolute by calling getDataFileAbsolute(). 
+									Hence, a filename with a relative path can be passed
+									and all datapaths are searched for it.
+			\return A valid filename if it can be found, otherwise the standardFilename is returned.
+		*/
+		static std::string checkValidFileParameter(const std::string& key, const std::string& standardFilename);
+
+		/*!
+			Checks command line arguments for parameter key. iF present the corresponding value is returned, 
+			otherwise standardValue will be returned.
+		*/
+		static std::string checkParameter(const std::string& key, const std::string& standardValue = "");
+
 		//! Print status 
 		static void print();
 	protected:

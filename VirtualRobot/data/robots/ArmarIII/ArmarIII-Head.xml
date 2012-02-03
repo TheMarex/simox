@@ -162,6 +162,18 @@
         -->
         <Child name="Lid Left Bottom"/>
         <Child name="Lid Left Top"/>
+        <Child name="EyeLeftCamera"/>
+   </RobotNode>
+
+    <RobotNode name="EyeLeftCamera">
+        <Joint type="fixed">
+            <PreJointTransform>
+                <Transform>
+                    <translation x="20" y="0" z="0"/>
+                    <RollPitchYaw roll="0" pitch="90" yaw ="0" units="degree"/>
+                </Transform>
+            </PreJointTransform>
+        </Joint>
     </RobotNode>
 
   <RobotNode name="Lid Left Bottom">
@@ -191,7 +203,19 @@
     </Visualization>
     <Child name="Lid Right Bottom"/>
     <Child name="Lid Right Top"/>
-  </RobotNode>
+    <Child name="EyeRightCamera"/>
+   </RobotNode>
+
+    <RobotNode name="EyeRightCamera">
+        <Joint type="fixed">
+            <PreJointTransform>
+                <Transform>
+                    <translation x="20" y="0" z="0"/>
+                    <RollPitchYaw roll="0" pitch="90" yaw ="0" units="degree"/>
+                </Transform>
+            </PreJointTransform>
+        </Joint>
+    </RobotNode>
 
   <RobotNode name="Lid Right Bottom">
     <Joint type="revolute" offset="-0.87">

@@ -237,6 +237,34 @@ namespace VirtualRobot
 		return true;
 	}
 
+	std::string RuntimeEnvironment::checkValidFileParameter( const std::string& key, const std::string& standardFilename )
+	{
+		if (VirtualRobot::RuntimeEnvironment::hasValue(key))
+		{
+			std::string f = RuntimeEnvironment::getValue(key);
+			if (VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(f))
+			{
+				return f;
+			}
+		}
+		std::string s = standardFilename;
+		if (!RuntimeEnvironment::getDataFileAbsolute(s))
+		{
+			VR_WARNING << "Could not determine path to file " << standardFilename << endl;
+			return standardFilename;
+		}
+		return s;
+	}
+
+	std::string RuntimeEnvironment::checkParameter( const std::string& key, const std::string& standardValue /*= ""*/ )
+	{
+		if (RuntimeEnvironment::hasValue(key))
+		{
+			return RuntimeEnvironment::getValue(key);
+		}
+		return standardValue;
+	}
+
 
 
 

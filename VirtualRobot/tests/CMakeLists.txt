@@ -5,7 +5,9 @@ ADD_VR_TEST( VirtualRobotRobotTest )
 
 ADD_VR_TEST( VirtualRobotTransformationTest )
 
-ADD_VR_TEST( VirtualRobotCollisionTest )
+if (SIMOX_VISUALIZATION)
+	ADD_VR_TEST( VirtualRobotCollisionTest )
+endif()
 
 ADD_VR_TEST( VirtualRobotJacobianTest )
 

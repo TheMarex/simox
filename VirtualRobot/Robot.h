@@ -80,9 +80,6 @@ public:
 	 */ 
 	void setThreadsafe(bool);
 
-	/// Returns if this robot is threadsafe mode.	
-	bool isThreadsafe();
-
 
 	/*!
 		Retrieve a visualization in the given format.
@@ -244,7 +241,6 @@ protected:
 	std::string type;
 
 	bool updateVisualization;
-	bool threadsafe;	
 
 };
 

@@ -85,7 +85,7 @@ RobotNodePrismatic::~RobotNodePrismatic()
 void RobotNodePrismatic::reset()
 {
 	{ 
-		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		WriteLock w(mutex,use_mutex);
 		jointTranslationDirection = Eigen::Vector3f(0,0,1);
 	}
 	RobotNode::reset();
@@ -99,7 +99,7 @@ bool RobotNodePrismatic::initialize(RobotNodePtr parent, bool initializeChildren
 void RobotNodePrismatic::updateTransformationMatrices()
 {
 	{
-		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		WriteLock w(mutex,use_mutex);
 
 		if (this->getParent())
 			globalPose = this->getParent()->getGlobalPose() * this->getPreJointTransformation();
@@ -119,7 +119,7 @@ void RobotNodePrismatic::updateTransformationMatrices()
 void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
 	{
-		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		WriteLock w(mutex,use_mutex);
 
 		THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 
@@ -138,7 +138,7 @@ void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &glo
 
 void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 {
-	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(mutex,use_mutex);
 	
 	if (printDecoration)
 		cout << "******** RobotNodePrismatic ********" << endl;
@@ -159,7 +159,7 @@ void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel)
 {
 	RobotNodePtr result;
-	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(mutex,use_mutex);
 
 	if (optionalDHParameter.isSet)
 		result.reset(new RobotNodePrismatic(newRobot,name,newChildren, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics));
@@ -176,7 +176,7 @@ bool RobotNodePrismatic::isTranslationalJoint() const
 
 Eigen::Vector3f RobotNodePrismatic::getJointTranslationDirection(const SceneObjectPtr coordSystem) const
 {
-	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(mutex,use_mutex);
 	Eigen::Vector4f result4f = Eigen::Vector4f::Zero();
 	result4f.segment(0,3) = jointTranslationDirection;
 

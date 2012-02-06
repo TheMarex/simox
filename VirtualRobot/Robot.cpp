@@ -3,10 +3,11 @@
 #include "VirtualRobotException.h"
 #include "CollisionDetection/CollisionChecker.h"
 #include "EndEffector/EndEffector.h"
+#include <boost/foreach.hpp>
 
 namespace VirtualRobot {
 
-Robot::Robot(const std::string &name, const std::string &type):  threadsafe(true) 
+Robot::Robot(const std::string &name, const std::string &type)  
 
 {
 	this->name = name;
@@ -14,7 +15,7 @@ Robot::Robot(const std::string &name, const std::string &type):  threadsafe(true
 	updateVisualization = true;
 }
 
-Robot::Robot():  threadsafe(true) 
+Robot::Robot()  
 {
 }
 
@@ -55,8 +56,14 @@ void LocalRobot::setRootNode( RobotNodePtr node )
 	}
 }
 
-bool Robot::isThreadsafe(){return this->threadsafe;}
-void Robot::setThreadsafe(bool flag){this->threadsafe=flag;}	
+void Robot::setThreadsafe(bool flag){
+
+	std::vector< RobotNodePtr > nodes = this->getRobotNodes();
+	BOOST_FOREACH(RobotNodePtr node, nodes){
+		node->setThreadsafe(flag);
+	}
+
+}	
 
 RobotNodePtr LocalRobot::getRobotNode( const std::string &robotNodeName )
 {

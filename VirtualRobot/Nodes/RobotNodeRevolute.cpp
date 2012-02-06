@@ -91,7 +91,7 @@ RobotNodeRevolute::~RobotNodeRevolute()
 void RobotNodeRevolute::reset()
 {
 	{
-		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		WriteLock w(mutex,use_mutex);
 		jointRotationAxis = Eigen::Vector3f(1,0,0);
 	}
 	RobotNode::reset();
@@ -106,7 +106,7 @@ void RobotNodeRevolute::updateTransformationMatrices()
 {
 	{
 		
-		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		WriteLock w(mutex,use_mutex);
 		
 		if (this->getParent())
 			globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
@@ -128,7 +128,7 @@ void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &glob
 	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 	{
 		
-		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		WriteLock w(mutex,use_mutex);
 		this->globalPose = globalPose * getPreJointTransformation();
 
 		Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
@@ -144,7 +144,7 @@ void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &glob
 
 void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 {
-	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(mutex,use_mutex);
 
 	if (printDecoration)
 		cout << "******** RobotNodeRevolute ********" << endl;
@@ -163,7 +163,7 @@ void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 
 RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel)
 {
-	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(mutex,use_mutex);
 	RobotNodePtr result;
 
 	if (optionalDHParameter.isSet)
@@ -180,7 +180,7 @@ bool RobotNodeRevolute::isRotationalJoint() const
 
 Eigen::Vector3f RobotNodeRevolute::getJointRotationAxis(const SceneObjectPtr coordSystem) const
 {
-	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(mutex,use_mutex);
 	//Eigen::Vector3f res = toGlobalCoordinateSystem(jointRotationAxis);
 	Eigen::Vector4f result4f = Eigen::Vector4f::Zero();
 	result4f.segment(0,3) = jointRotationAxis;

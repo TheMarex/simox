@@ -82,7 +82,7 @@ bool RobotNodeFixed::initialize(RobotNodePtr parent, bool initializeChildren)
 void RobotNodeFixed::updateTransformationMatrices()
 {
 	{
-		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		WriteLock w(mutex,use_mutex);
 
 		if (this->getParent())
 			globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
@@ -100,7 +100,7 @@ void RobotNodeFixed::updateTransformationMatrices()
 void RobotNodeFixed::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
 	{
-		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		WriteLock w(mutex,use_mutex);
 		
 		THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 
@@ -132,7 +132,7 @@ void RobotNodeFixed::print( bool printChildren, bool printDecoration ) const
 
 RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel)
 {
-	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(mutex,use_mutex);
 	
 	RobotNodePtr result;
 

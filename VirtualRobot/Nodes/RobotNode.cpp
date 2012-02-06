@@ -28,7 +28,10 @@ RobotNode::RobotNode(	RobotWeakPtr rob,
 						float jointValueOffset,
 						const SceneObject::Physics &p,
 						CollisionCheckerPtr colChecker) 
-						: SceneObject(name,visualization,collisionModel,p,colChecker)
+						: SceneObject(name,visualization,collisionModel,p,colChecker),
+						use_mutex(true)
+
+
 {
 	maxVelocity = 0.0f;
 	maxAcceleration = 0.0f;
@@ -133,7 +136,7 @@ RobotPtr RobotNode::getRobot()
 void RobotNode::setJointValue(float q, bool updateTransformations /*= true*/,
                               bool clampToLimits /*= true*/)
 {
-	WriteLock lock(mutex,this->robot.lock()->isThreadsafe());
+	WriteLock lock(mutex,use_mutex);
 
 	VR_ASSERT_MESSAGE( initialized, "Not initialized");
 	VR_ASSERT_MESSAGE( (!boost::math::isnan(q) && !boost::math::isinf(q)) ,"Not a valid number...");
@@ -167,12 +170,12 @@ void RobotNode::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 }
 
 void RobotNode::setPostJointTransformation(const Eigen::Matrix4f &trafo) {
-	WriteLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	WriteLock lock(this->mutex,use_mutex);
 	postJointTransformation = trafo;
 }
 
 void RobotNode::setPreJointTransformation(const Eigen::Matrix4f &trafo) {
-	WriteLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	WriteLock lock(this->mutex,use_mutex);
 	preJointTransformation = trafo;
 }
 
@@ -212,13 +215,13 @@ void RobotNode::collectAllRobotNodes( std::vector< RobotNodePtr > &storeNodes )
 
 float RobotNode::getJointValue() const
 {
-	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(this->mutex,use_mutex);
 	return jointValue;
 }
 
 void RobotNode::respectJointLimits( float &jointValue ) const
 {
-	WriteLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	WriteLock lock(this->mutex,use_mutex);
 	if (jointValue < jointLimitLo)
 		jointValue = jointLimitLo;
 	if (jointValue > jointLimitHi)
@@ -227,7 +230,7 @@ void RobotNode::respectJointLimits( float &jointValue ) const
 
 bool RobotNode::checkJointLimits( float jointValue, bool verbose ) const
 {
-	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(this->mutex,use_mutex);
 	bool res = true;
 	if (jointValue < jointLimitLo)
 		res = false;
@@ -242,12 +245,17 @@ void RobotNode::setGlobalPose( const Eigen::Matrix4f &pose )
 	THROW_VR_EXCEPTION("Use setJointValues to control the position of a RobotNode");
 }
 
+void RobotNode::setThreadsafe(bool mode){
+	this->use_mutex = mode;
+}
+
+
 void RobotNode::print( bool printChildren, bool printDecoration ) const
 {
-	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(this->mutex,use_mutex);
 	if (printDecoration)
 		cout << "******** RobotNode ********" << endl;
-	cout << "* Thread-safe: " << this->robot.lock()->isThreadsafe() << endl;
+	cout << "* Thread-safe: " << use_mutex << endl;
 	cout << "* Name: " << name << endl;
 	cout << "* Parent: " << this->getParentName() << endl;
 	cout << "* Children: ";
@@ -357,7 +365,7 @@ bool RobotNode::hasChildNode( const std::string &child, bool recursive ) const
 
 RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodePtr initializeWithParent, CollisionCheckerPtr colChecker )
 {
-	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(this->mutex,use_mutex);
 	if (!newRobot)
 	{
 		VR_ERROR << "Attempting to clone RobotNode for invalid robot";
@@ -414,13 +422,13 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 
 float RobotNode::getJointLimitLo()
 {
-	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(this->mutex,use_mutex);
 	return jointLimitLo;
 }
 
 float RobotNode::getJointLimitHi()
 {
-	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(this->mutex,use_mutex);
 	return jointLimitHi;
 }
 	
@@ -477,7 +485,7 @@ void RobotNode::showCoordinateSystem( bool enable, float scaling, std::string *t
 
 void RobotNode::showStructure( bool enable, const std::string &visualizationType)
 {
-	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	ReadLock lock(this->mutex,use_mutex);
 	if (!enable && !visualizationModel)
 		return; // nothing to do
 
@@ -546,7 +554,7 @@ VirtualRobot::RobotNodePtr RobotNode::getParent()
 
 void RobotNode::setJointLimits( float lo, float hi )
 {
-	WriteLock lock(mutex,this->robot.lock()->isThreadsafe());
+	WriteLock lock(mutex,use_mutex);
 	jointLimitLo = lo;
 	jointLimitHi = hi;
 }

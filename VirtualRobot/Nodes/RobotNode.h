@@ -268,6 +268,7 @@ public:
 	*/
 	float getMaxTorque();
 
+	void setThreadsafe(bool);
 
 private: // Use the private setters and getters instead
 	float jointValue;							//< The joint value
@@ -281,7 +282,8 @@ protected:
 	///////////////////////// SETUP ////////////////////////////////////
 	//mutable boost::shared_mutex mutex; 
 	mutable boost::recursive_mutex mutex; 
-	
+	bool use_mutex;
+
 	RobotNode(){};
 	virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo);
 	virtual void setPreJointTransformation(const Eigen::Matrix4f &trafo);

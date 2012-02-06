@@ -18,3 +18,5 @@ ADD_VR_TEST( VirtualRobotSceneTest )
 ADD_VR_TEST( VirtualRobotConfigTest )
 
 ADD_VR_TEST( VirtualRobotMathToolsTest )
+
+ADD_VR_TEST( VirtualRobotThreadsafetyTest )

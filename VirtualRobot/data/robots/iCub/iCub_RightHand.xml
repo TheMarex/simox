@@ -161,9 +161,21 @@
 		<CollisionModel>
 			<File type="Inventor">model/RightHand/RightIndex/col_rightIndex3.iv</File>
 		</CollisionModel>
+        <Child name="Right Hand Index FingerTip"/>
 	</RobotNode>
 	
-
+	<RobotNode name="Right Hand Index FingerTip">
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="18" y="5" z="0"/>
+				</Transform>
+			</PreJointTransform>
+		</Joint>
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
+	</RobotNode>
 	
 	
 	
@@ -253,9 +265,21 @@
 		<CollisionModel>
 			<File type="Inventor">model/RightHand/RightMiddle/col_rightMiddle3.iv</File>
 		</CollisionModel>
+        <Child name="Right Hand Middle FingerTip"/>
 	</RobotNode>
 	
-
+    <RobotNode name="Right Hand Middle FingerTip">
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="18" y="5" z="0"/>
+				</Transform>
+			</PreJointTransform>
+		</Joint>
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
+	</RobotNode>
 	
 
 
@@ -346,9 +370,21 @@
 		<CollisionModel>
 			<File type="Inventor">model/RightHand/RightRing/col_rightRing3.iv</File>
 		</CollisionModel>
+		<Child name="Right Hand Ring FingerTip"/>
 	</RobotNode>
 	
-
+	<RobotNode name="Right Hand Ring FingerTip">
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="18" y="5" z="0"/>
+				</Transform>
+			</PreJointTransform>
+		</Joint>
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
+	</RobotNode>
 
 
 	<!-- PINKY FINGER -->
@@ -437,9 +473,21 @@
 		<CollisionModel>
 			<File type="Inventor">model/RightHand/RightPinky/col_rightPinky3.iv</File>
 		</CollisionModel>
+		<Child name="Right Hand Pinky FingerTip"/>
 	</RobotNode>
 
-
+	<RobotNode name="Right Hand Pinky FingerTip">
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="18" y="5" z="0"/>
+				</Transform>
+			</PreJointTransform>
+		</Joint>
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
+	</RobotNode>
 
 
 	<!-- THUMB -->
@@ -528,6 +576,20 @@
 		<CollisionModel>
 			<File type="Inventor">model/RightHand/RightThumb/col_rightThumb3.iv</File>
 		</CollisionModel>
+		<Child name="Right Hand Thumb FingerTip"/>
+	</RobotNode>
+
+	<RobotNode name="Right Hand Thumb FingerTip">
+		<Joint type="fixed">
+			<PreJointTransform>
+				<Transform>
+					<Translation x="18" y="5" z="0"/>
+				</Transform>
+			</PreJointTransform>
+		</Joint>
+		<Visualization enable="true">
+			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
 	</RobotNode>
 	
 	<!-- END EFFECTOR -->

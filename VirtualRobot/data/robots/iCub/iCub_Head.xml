@@ -28,7 +28,7 @@
 		<Visualization enable="true">
 			<File type="Inventor">model/Head/head.iv</File>
 		</Visualization>
-				<CollisionModel>
+                <CollisionModel>
 			<File type="Inventor">model/Head/headCol.iv</File>
 		</CollisionModel>
 		<Child name="EyesCenter"/>
@@ -61,14 +61,20 @@
 		<Visualization enable="true">
 			<File type="Inventor">model/Head/eye.iv</File>
 		</Visualization>
-		<Child name="EyeLeftCamera"/>
+        <Child name="EyeLeftCam"/>
 	</RobotNode>
-		
-	
-	<RobotNode name="EyeLeftCamera">
+
+	<RobotNode name="EyeLeftCam">
 		<Joint type="fixed">
-			<DH a="0" d="20" theta="0" alpha="0" units="degree"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="15"/>
+				</Transform>
+			</PreJointTransform>
 		</Joint>
+		<Visualization enable="true">
+			<CoordinateAxis  type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
 	</RobotNode>
 		
 	<RobotNode name="EyeRight1">
@@ -88,15 +94,23 @@
 		<Visualization enable="true">
 			<File type="Inventor">model/Head/eye.iv</File>
 		</Visualization>
-		<Child name="EyeRightCamera"/>
+        <Child name="EyeRightCam"/>
 	</RobotNode>
 	
-	<RobotNode name="EyeRightCamera">
+	
+	<RobotNode name="EyeRightCam">
 		<Joint type="fixed">
-			<DH a="0" d="20" theta="0" alpha="0" units="degree"/>
+			<PreJointTransform>
+				<Transform>
+					<Translation x="0" y="0" z="15"/>
+				</Transform>
+			</PreJointTransform>
 		</Joint>
+		<Visualization enable="true">
+			<CoordinateAxis  type="Inventor" enable="false" scaling="1"/>
+		</Visualization>
 	</RobotNode>
-	
+
 	<RobotNodeSet name="Head" kinematicRoot="Neck1">
 		<Node name="Neck1"/>
 		<Node name="Neck2"/>

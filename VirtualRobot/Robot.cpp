@@ -6,14 +6,15 @@
 
 namespace VirtualRobot {
 
-Robot::Robot(const std::string &name, const std::string &type)
+Robot::Robot(const std::string &name, const std::string &type):  threadsafe(true) 
+
 {
 	this->name = name;
 	this->type = type;
 	updateVisualization = true;
 }
 
-Robot::Robot()
+Robot::Robot():  threadsafe(true) 
 {
 }
 
@@ -24,7 +25,7 @@ LocalRobot::~LocalRobot()
 	robotNodeSetMap.clear();
 }
 
-LocalRobot::LocalRobot(const std::string &name, const std::string &type) : Robot (name, type) {
+LocalRobot::LocalRobot(const std::string &name, const std::string &type) : Robot (name, type){
 	globalPose = Eigen::Matrix4f::Identity();
 }; 
 
@@ -53,6 +54,9 @@ void LocalRobot::setRootNode( RobotNodePtr node )
 		}
 	}
 }
+
+bool Robot::isThreadsafe(){return this->threadsafe;}
+void Robot::setThreadsafe(bool flag){this->threadsafe=flag;}	
 
 RobotNodePtr LocalRobot::getRobotNode( const std::string &robotNodeName )
 {

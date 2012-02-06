@@ -71,6 +71,17 @@ public:
 
 	void applyJointValues();
 
+	/** Configures the robot to threadsafe or not.
+	 * Per default the robot is threadsafe, i.e., updating the 
+	 * robot state and reading the Poses from the nodes is mutual 
+	 * exclusive. This feature can be turned of, however, in 
+	 * order to be make data access faster in single threaded
+	 * applications.
+	 */ 
+	void setThreadsafe(bool);
+
+	/// Returns if this robot is threadsafe mode.	
+	bool isThreadsafe();
 
 
 	/*!
@@ -233,6 +244,7 @@ protected:
 	std::string type;
 
 	bool updateVisualization;
+	bool threadsafe;	
 
 };
 
@@ -285,6 +297,7 @@ public:
 	virtual void setGlobalPose(const Eigen::Matrix4f &globalPose);
 	virtual Eigen::Matrix4f getGlobalPose();
 
+
 protected:
 	Eigen::Matrix4f globalPose; //!< The pose of this robot in the world
 	RobotNodePtr rootNode;
@@ -292,7 +305,7 @@ protected:
 	std::map< std::string, RobotNodePtr > robotNodeMap;
 	std::map< std::string, RobotNodeSetPtr > robotNodeSetMap;
 	std::map< std::string, EndEffectorPtr > endEffectorMap;
-		
+	
 
 };
 

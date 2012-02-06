@@ -6,6 +6,7 @@
 #include <boost/bind.hpp>
 #include <Eigen/Geometry> 
 #include "../VirtualRobotException.h"
+#include "ConditionedLock.h"
 
 namespace VirtualRobot {
 
@@ -83,7 +84,10 @@ RobotNodePrismatic::~RobotNodePrismatic()
 
 void RobotNodePrismatic::reset()
 {
-	jointTranslationDirection = Eigen::Vector3f(0,0,1);
+	{ 
+		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		jointTranslationDirection = Eigen::Vector3f(0,0,1);
+	}
 	RobotNode::reset();
 }
 
@@ -94,16 +98,19 @@ bool RobotNodePrismatic::initialize(RobotNodePtr parent, bool initializeChildren
 
 void RobotNodePrismatic::updateTransformationMatrices()
 {
-	if (this->getParent())
-		globalPose = this->getParent()->getGlobalPose() * this->getPreJointTransformation();
-	else
-		globalPose = this->getPreJointTransformation();
+	{
+		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
 
-	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
-	globalPose *= tmpT.matrix();
+		if (this->getParent())
+			globalPose = this->getParent()->getGlobalPose() * this->getPreJointTransformation();
+		else
+			globalPose = this->getPreJointTransformation();
 
-	globalPosePostJoint = globalPose*this->getPostJointTransformation();
+		Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
+		globalPose *= tmpT.matrix();
 
+		globalPosePostJoint = globalPose*this->getPostJointTransformation();
+	}
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
 	SceneObject::setGlobalPose(globalPose);
@@ -111,14 +118,18 @@ void RobotNodePrismatic::updateTransformationMatrices()
 
 void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
-	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
+	{
+		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
 
-	this->globalPose = globalPose * getPreJointTransformation();
+		THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 
-	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
-	this->globalPose *= tmpT.matrix();
+		this->globalPose = globalPose * getPreJointTransformation();
 
-	globalPosePostJoint = this->globalPose*getPostJointTransformation();
+		Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
+		this->globalPose *= tmpT.matrix();
+
+		globalPosePostJoint = this->globalPose*getPostJointTransformation();
+	}
 
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
@@ -127,6 +138,8 @@ void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &glo
 
 void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 {
+	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+	
 	if (printDecoration)
 		cout << "******** RobotNodePrismatic ********" << endl;
 
@@ -146,6 +159,7 @@ void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel)
 {
 	RobotNodePtr result;
+	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
 
 	if (optionalDHParameter.isSet)
 		result.reset(new RobotNodePrismatic(newRobot,name,newChildren, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics));
@@ -162,6 +176,7 @@ bool RobotNodePrismatic::isTranslationalJoint() const
 
 Eigen::Vector3f RobotNodePrismatic::getJointTranslationDirection(const SceneObjectPtr coordSystem) const
 {
+	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
 	Eigen::Vector4f result4f = Eigen::Vector4f::Zero();
 	result4f.segment(0,3) = jointTranslationDirection;
 

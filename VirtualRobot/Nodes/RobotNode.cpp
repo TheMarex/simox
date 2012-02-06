@@ -14,6 +14,8 @@
 
 #include <Eigen/Core>
 
+#include "ConditionedLock.h"
+
 namespace VirtualRobot {
 
 RobotNode::RobotNode(	RobotWeakPtr rob, 
@@ -131,8 +133,12 @@ RobotPtr RobotNode::getRobot()
 void RobotNode::setJointValue(float q, bool updateTransformations /*= true*/,
                               bool clampToLimits /*= true*/)
 {
+	WriteLock lock(mutex,this->robot.lock()->isThreadsafe());
+
 	VR_ASSERT_MESSAGE( initialized, "Not initialized");
 	VR_ASSERT_MESSAGE( (!boost::math::isnan(q) && !boost::math::isinf(q)) ,"Not a valid number...");
+	
+	std::cout << "######## Setting Joint to: " << q << " degrees" << std::endl;
 
 	if (q < jointLimitLo)
 	{
@@ -148,6 +154,7 @@ void RobotNode::setJointValue(float q, bool updateTransformations /*= true*/,
 	jointValue = q;
 	if (updateTransformations)
 		applyJointValue();
+
 }
 
 void RobotNode::updateTransformationMatrices()
@@ -157,6 +164,16 @@ void RobotNode::updateTransformationMatrices()
 void RobotNode::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
 
+}
+
+void RobotNode::setPostJointTransformation(const Eigen::Matrix4f &trafo) {
+	WriteLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	postJointTransformation = trafo;
+}
+
+void RobotNode::setPreJointTransformation(const Eigen::Matrix4f &trafo) {
+	WriteLock lock(this->mutex,this->robot.lock()->isThreadsafe());
+	preJointTransformation = trafo;
 }
 
 void RobotNode::applyJointValue()
@@ -195,11 +212,13 @@ void RobotNode::collectAllRobotNodes( std::vector< RobotNodePtr > &storeNodes )
 
 float RobotNode::getJointValue() const
 {
+	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
 	return jointValue;
 }
 
 void RobotNode::respectJointLimits( float &jointValue ) const
 {
+	WriteLock lock(this->mutex,this->robot.lock()->isThreadsafe());
 	if (jointValue < jointLimitLo)
 		jointValue = jointLimitLo;
 	if (jointValue > jointLimitHi)
@@ -208,6 +227,7 @@ void RobotNode::respectJointLimits( float &jointValue ) const
 
 bool RobotNode::checkJointLimits( float jointValue, bool verbose ) const
 {
+	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
 	bool res = true;
 	if (jointValue < jointLimitLo)
 		res = false;
@@ -224,8 +244,10 @@ void RobotNode::setGlobalPose( const Eigen::Matrix4f &pose )
 
 void RobotNode::print( bool printChildren, bool printDecoration ) const
 {
+	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
 	if (printDecoration)
 		cout << "******** RobotNode ********" << endl;
+	cout << "* Thread-safe: " << this->robot.lock()->isThreadsafe() << endl;
 	cout << "* Name: " << name << endl;
 	cout << "* Parent: " << this->getParentName() << endl;
 	cout << "* Children: ";
@@ -335,6 +357,7 @@ bool RobotNode::hasChildNode( const std::string &child, bool recursive ) const
 
 RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodePtr initializeWithParent, CollisionCheckerPtr colChecker )
 {
+	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
 	if (!newRobot)
 	{
 		VR_ERROR << "Attempting to clone RobotNode for invalid robot";
@@ -391,11 +414,13 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 
 float RobotNode::getJointLimitLo()
 {
+	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
 	return jointLimitLo;
 }
 
 float RobotNode::getJointLimitHi()
 {
+	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
 	return jointLimitHi;
 }
 	
@@ -452,6 +477,7 @@ void RobotNode::showCoordinateSystem( bool enable, float scaling, std::string *t
 
 void RobotNode::showStructure( bool enable, const std::string &visualizationType)
 {
+	ReadLock lock(this->mutex,this->robot.lock()->isThreadsafe());
 	if (!enable && !visualizationModel)
 		return; // nothing to do
 
@@ -520,6 +546,7 @@ VirtualRobot::RobotNodePtr RobotNode::getParent()
 
 void RobotNode::setJointLimits( float lo, float hi )
 {
+	WriteLock lock(mutex,this->robot.lock()->isThreadsafe());
 	jointLimitLo = lo;
 	jointLimitHi = hi;
 }

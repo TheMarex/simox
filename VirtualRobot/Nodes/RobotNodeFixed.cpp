@@ -8,6 +8,8 @@
 #include <boost/bind.hpp>
 #include "../VirtualRobotException.h"
 
+#include "ConditionedLock.h"
+
 namespace VirtualRobot {
 
 RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob, 
@@ -79,13 +81,17 @@ bool RobotNodeFixed::initialize(RobotNodePtr parent, bool initializeChildren)
 
 void RobotNodeFixed::updateTransformationMatrices()
 {
-	if (this->getParent())
-		globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
-	else
-		globalPose = getPreJointTransformation();
+	{
+		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
 
-	globalPosePostJoint = globalPose*getPostJointTransformation();
+		if (this->getParent())
+			globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
+		else
+			globalPose = getPreJointTransformation();
 
+		globalPosePostJoint = globalPose*getPostJointTransformation();
+
+	}
 	// update collision and visualization model
 	SceneObject::setGlobalPose(globalPose);
 }
@@ -93,13 +99,17 @@ void RobotNodeFixed::updateTransformationMatrices()
 
 void RobotNodeFixed::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
-	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
+	{
+		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		
+		THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
 
-	this->globalPose = globalPose * getPreJointTransformation();
+		this->globalPose = globalPose * getPreJointTransformation();
 
-	globalPosePostJoint = this->globalPose*getPostJointTransformation();
+		globalPosePostJoint = this->globalPose*getPostJointTransformation();
 
-	// update collision and visualization model
+		// update collision and visualization model
+	}
 	SceneObject::setGlobalPose(this->globalPose);
 }
 
@@ -122,6 +132,8 @@ void RobotNodeFixed::print( bool printChildren, bool printDecoration ) const
 
 RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel)
 {
+	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+	
 	RobotNodePtr result;
 
 	if (optionalDHParameter.isSet)

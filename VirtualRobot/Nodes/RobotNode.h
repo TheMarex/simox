@@ -35,6 +35,7 @@
 #include <Eigen/Geometry>
 
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/thread.hpp>
 
 #include <string>
 #include <vector>
@@ -278,10 +279,12 @@ private: // Use the private setters and getters instead
 
 protected:
 	///////////////////////// SETUP ////////////////////////////////////
+	//mutable boost::shared_mutex mutex; 
+	mutable boost::recursive_mutex mutex; 
 	
 	RobotNode(){};
-	virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo) {postJointTransformation = trafo;}
-	virtual void setPreJointTransformation(const Eigen::Matrix4f &trafo) {preJointTransformation = trafo;}
+	virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo);
+	virtual void setPreJointTransformation(const Eigen::Matrix4f &trafo);
 
 	//Stefan
 	virtual std::vector<std::string> getChildrenNames() const {return childrenNames;};

@@ -7,6 +7,8 @@
  #include <Eigen/Geometry> 
 #include "../VirtualRobotException.h"
 
+#include "ConditionedLock.h"
+
 namespace VirtualRobot {
 
 
@@ -88,7 +90,10 @@ RobotNodeRevolute::~RobotNodeRevolute()
 
 void RobotNodeRevolute::reset()
 {
-	jointRotationAxis = Eigen::Vector3f(1,0,0);
+	{
+		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		jointRotationAxis = Eigen::Vector3f(1,0,0);
+	}
 	RobotNode::reset();
 }
 
@@ -99,16 +104,20 @@ bool RobotNodeRevolute::initialize(RobotNodePtr parent, bool initializeChildren)
 
 void RobotNodeRevolute::updateTransformationMatrices()
 {
-	if (this->getParent())
-		globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
-	else
-		globalPose = getPreJointTransformation();
+	{
+		
+		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		
+		if (this->getParent())
+			globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
+		else
+			globalPose = getPreJointTransformation();
 
-	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
-	globalPose *= tmpT.matrix();
+		Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
+		globalPose *= tmpT.matrix();
 
-	globalPosePostJoint = globalPose*getPostJointTransformation();
-
+		globalPosePostJoint = globalPose*getPostJointTransformation();
+	}
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
 	SceneObject::setGlobalPose(globalPose);
@@ -117,14 +126,16 @@ void RobotNodeRevolute::updateTransformationMatrices()
 void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
 	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
+	{
+		
+		WriteLock w(mutex,this->robot.lock()->isThreadsafe());
+		this->globalPose = globalPose * getPreJointTransformation();
 
-	this->globalPose = globalPose * getPreJointTransformation();
+		Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
+		this->globalPose *= tmpT.matrix();
 
-	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
-	this->globalPose *= tmpT.matrix();
-
-	globalPosePostJoint = this->globalPose*getPostJointTransformation();
-
+		globalPosePostJoint = this->globalPose*getPostJointTransformation();
+	}
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
 	SceneObject::setGlobalPose(this->globalPose);
@@ -133,6 +144,8 @@ void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &glob
 
 void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 {
+	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
+
 	if (printDecoration)
 		cout << "******** RobotNodeRevolute ********" << endl;
 
@@ -150,6 +163,7 @@ void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 
 RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel)
 {
+	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
 	RobotNodePtr result;
 
 	if (optionalDHParameter.isSet)
@@ -166,6 +180,7 @@ bool RobotNodeRevolute::isRotationalJoint() const
 
 Eigen::Vector3f RobotNodeRevolute::getJointRotationAxis(const SceneObjectPtr coordSystem) const
 {
+	ReadLock lock(mutex,this->robot.lock()->isThreadsafe());
 	//Eigen::Vector3f res = toGlobalCoordinateSystem(jointRotationAxis);
 	Eigen::Vector4f result4f = Eigen::Vector4f::Zero();
 	result4f.segment(0,3) = jointRotationAxis;

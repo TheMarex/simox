@@ -97,7 +97,7 @@ void LocalRobot::registerRobotNode( RobotNodePtr node )
 	}
 }
 
-bool Robot::hasRobotNode( RobotNodePtr node )
+bool LocalRobot::hasRobotNode( RobotNodePtr node )
 {
         if (!node)
                 return false;

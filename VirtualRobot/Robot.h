@@ -135,7 +135,7 @@ public:
 	*/
 	virtual void registerRobotNode(RobotNodePtr node)=0;
 	virtual void deregisterRobotNode(RobotNodePtr node)=0;
-	bool hasRobotNode( RobotNodePtr node );
+	virtual bool hasRobotNode( RobotNodePtr node )=0;
 	virtual bool hasRobotNode( const std::string &robotNodeName ) = 0;
 	virtual RobotNodePtr getRobotNode(const std::string &robotNodeName) = 0;
 	std::vector< RobotNodePtr > getRobotNodes();
@@ -276,6 +276,7 @@ public:
 	virtual void registerRobotNode(RobotNodePtr node);
 	virtual void deregisterRobotNode(RobotNodePtr node);
 	virtual bool hasRobotNode( const std::string &robotNodeName );
+	virtual bool hasRobotNode( RobotNodePtr node );
 	virtual RobotNodePtr getRobotNode(const std::string &robotNodeName);
 	virtual void getRobotNodes(std::vector< RobotNodePtr > &storeNodes, bool clearVector=true);
 	

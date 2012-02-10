@@ -50,7 +50,10 @@ namespace Saba {
  most of the time for collision detection) and the reliability of the results. Since there is no guarantee that
  all potential configurations are detected with sampling-based approaches, a large DCD sampling parameter
  will increase the chance of missing a collision.
+
+ Constraints can be considered by adding instances of ConfigurationConstraintPtr.
  
+  @see CSpace
   @see Rrt
   @see BiRrt
  
@@ -83,12 +86,12 @@ public:
 	virtual CSpacePtr clone(VirtualRobot::CollisionCheckerPtr newColChecker, VirtualRobot::RobotPtr newRobot, VirtualRobot::CDManagerPtr newCDM, unsigned int newRandomSeed = 0);
 
 	/*!
-		Checks the middle configuration and when it is not in collision the path is split 
+		Checks the middle configuration and when it is not invalid (in collision or constraints are violated) the path is split 
 		and both parts are recursively checked until the distance is smalled than the DCD sampling size.
 		Recursion is performed maximal recursionMaxDepth times, since an array of temporary variables is used,
 		in order to avoid slow allocating/deallocating of memory.
 	*/
-	bool isPathCollisionFree( const Eigen::VectorXf &q1, const Eigen::VectorXf &q2 );
+	bool isPathValid( const Eigen::VectorXf &q1, const Eigen::VectorXf &q2 );
 
 		/*!
 		Create a path from start to goal without any checks.
@@ -97,12 +100,13 @@ public:
 	virtual CSpacePathPtr createPath(const Eigen::VectorXf &start, const Eigen::VectorXf &goal);
 
 	/*!
-		Create a path from start to the goal configuration. In case a collision is detected the appending s stopped and the collision-free path is returned.
+		Create a path from start to the goal configuration. 
+		In case an invalid (collision/constraints) position is detected the appending is stopped and the valid part of the path is returned.
 		\param start The start
 		\param goal The goal
-		\param storeAddedLength The length of the collision free path is stored here (1.0 means the complete path from start to goal was collision-free)
+		\param storeAddedLength The length of the valid path is stored here (1.0 means the complete path from start to goal was valid)
 	*/
-	virtual CSpacePathPtr createPathUntilCollision(const Eigen::VectorXf &start, const Eigen::VectorXf &goal, float &storeAddedLength);
+	virtual CSpacePathPtr createPathUntilInvalid(const Eigen::VectorXf &start, const Eigen::VectorXf &goal, float &storeAddedLength);
 
 
 protected:

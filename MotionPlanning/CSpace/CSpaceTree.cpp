@@ -170,7 +170,7 @@ bool CSpaceTree::appendPathUntilCollision(CSpaceNodePtr startNode, const Eigen::
 	SABA_ASSERT (config.rows()==dimension)
 
 	float dist;
-	CSpacePathPtr res = cspace->createPathUntilCollision(startNode->configuration, config, dist);
+	CSpacePathPtr res = cspace->createPathUntilInvalid(startNode->configuration, config, dist);
 	if (res->getNrOfPathPoints()<=1)
 		return false;
 	res->erasePosition(0);

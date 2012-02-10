@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 	VirtualRobot::RuntimeEnvironment::print();
 	
 	cout << " --- START --- " << endl;
+	// --robot "robots/iCub/iCub.xml"
 	std::string filename(VR_BASE_DIR "/data/robots/ArmarIII/ArmarIII.xml");
 	//std::string filename(VR_BASE_DIR "/data/robots/ArmarIII/ArmarIII-RightArm.xml");
 	//std::string filename("C:/Projects/IIT_Projects/iCubRobot/robot/iCub.xml");

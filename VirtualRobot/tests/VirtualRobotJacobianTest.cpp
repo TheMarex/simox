@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(testJacobianRevoluteJoint)
 	
 	VirtualRobot::DifferentialIK ik(kc);
 	Eigen::VectorXf jV(3);
-	jV << 0.78, 0.78,0; 
+	jV << 0.78f, 0.78f,0; 
 	kc->setJointValues(jV);
 	
 	// Calculate the Jacobi matrix at the given position
@@ -98,10 +98,10 @@ BOOST_AUTO_TEST_CASE(testJacobianRevoluteJoint)
 	// Calculate the Differences quotient
 	Eigen::Matrix4f a=r3->getGlobalPose();
 	Eigen::MatrixXf DiffQuot(3,2);
-	jV << 0.78+STEP_SIZE, 0.78,0 ; 
+	jV << 0.78f+STEP_SIZE, 0.78f,0 ; 
 	kc->setJointValues(jV);
 	DiffQuot.block<3,1>(0,0) = ( r3->getGlobalPose().block<3,1>(0,3) - a.block<3,1>(0,3) )/STEP_SIZE;
-	jV << 0.78, 0.78+STEP_SIZE,0; 
+	jV << 0.78f, 0.78f+STEP_SIZE,0; 
 	kc->setJointValues(jV);
 	DiffQuot.block<3,1>(0,1) = ( r3->getGlobalPose().block<3,1>(0,3) - a.block<3,1>(0,3) )/STEP_SIZE;
 	

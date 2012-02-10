@@ -78,14 +78,14 @@ public:
 	virtual CSpacePathPtr createPath(const Eigen::VectorXf &start, const Eigen::VectorXf &goal);
 
 	/*!
-		Create a path from start to the goal configuration. In case a collision 
-		without any checks. Intermediate configurations are added according to the current implementation of the cspace
+		Create a path from start to the goal configuration until an invalid (collision,constraints) configuration is found. 
+		Intermediate configurations are added according to the current implementation of the cspace
 		In this implementation only the start and goal config are added to the path.
 		\param start The start configuration.
 		\param goal The goal configuration.
-		\param storeAddedLength The length of the collision free path is stored here (1.0 means the complete path from start to goal was collision-free)
+		\param storeAddedLength The length of the collision free path is stored here (1.0 means the complete path from start to goal was valid)
 	*/
-	virtual CSpacePathPtr createPathUntilCollision(const Eigen::VectorXf &start, const Eigen::VectorXf &goal, float &storeAddedLength);
+	virtual CSpacePathPtr createPathUntilInvalid(const Eigen::VectorXf &start, const Eigen::VectorXf &goal, float &storeAddedLength);
 
 	
 	/*!
@@ -135,22 +135,21 @@ public:
 		This method returns a random configuration. The value is generated uniformly (standard) 
 		or, in case a sampler is defined a custom sampling strategy can be used.
 		\param storeValues Store the values here.
-		\param checkCollisionFree When set to true, it is guaranteed that the sample not in collision
+		\param checkValid When set to true, it is guaranteed that the sample not in collision and all constraints are considered
 	*/
-	void getRandomConfig(Eigen::VectorXf &storeValues, bool checkCollisionFree = false);
+	void getRandomConfig(Eigen::VectorXf &storeValues, bool checkvalid = false);
 
 	//! set values of configuration considering boundaries
 	virtual void respectBoundaries(Eigen::VectorXf &config);
 	
 	/*! 
 		Check path between two configurations.
-		This cspace just checks q2!
-	  \param q1 first configuration (from)
-	  \param q2 second configuration (to)
-	  \return true if path is valid
+		This cspace implementation just checks q2!
+		\param q1 first configuration (from)
+		\param q2 second configuration (to)
+		\return true if path is valid
 	*/	
-	virtual bool isPathCollisionFree(const Eigen::VectorXf &q1, const Eigen::VectorXf &q2);
-	//virtual bool CheckPath(float *c1, float *c2, float* storePathLengthA = NULL, float* storePathLengthB = NULL) = 0;
+	virtual bool isPathValid(const Eigen::VectorXf &q1, const Eigen::VectorXf &q2);
 
 	/*! 
 		Method for externally stopping the path checking routines.
@@ -260,11 +259,14 @@ public:
 	//! returns the boundary violation status (true for a valid config)
 	virtual bool isInBoundary(const Eigen::VectorXf &config);
 
+	//! returns the constraint violation status (true for a valid config)
+	virtual bool isSatisfyingConstraints(const Eigen::VectorXf &config);
+
 	void printConfig(const Eigen::VectorXf &c) const;
 
 
 	/*!
-		When the size of a c-space dimension is > 2PI and the corresponding joint is rotaional, it is assumed that there are no borders
+		When the size of a c-space dimension is > 2PI and the corresponding joint is rotational, it is assumed that there are no borders
 		\param enable When set, for each c-space dimension the (rotational) corresponding joints are checked:  
 			Borderless dimension, if the distance between Lo and Hi limit is >2PI 
 			This is useful e.g. for free flying or holonomic moving robots.
@@ -281,26 +283,25 @@ public:
 	Eigen::VectorXf interpolate(const Eigen::VectorXf &q1, const Eigen::VectorXf &q2, float step);
 
 
-	//! check whether a configuration is valid (collision check and boundary check)
-	virtual bool isConfigValid(const Eigen::VectorXf &pConfig);
+	//! check whether a configuration is valid (collision, boundary, and constraints check)
+	virtual bool isConfigValid(const Eigen::VectorXf &pConfig, bool checkBorders = true, bool checkCollisions = true, bool checkConstraints = true);
+
+	/*!
+		Add a configuration constraint to be checked within this cspace.
+		Standard: No constraints, meaning that a check for constraints will report a valid status
+	*/
+	virtual void addConstraintCheck(Saba::ConfigurationConstraintPtr constraint);
 
 protected:
 
 
-	/*! 
-		calculates the squared distance between two samples 
-		depending on the useMetricWeights flag the euclidean dist or the weighted dist is returned
-	*/
-	//virtual float getDist2(const Eigen::VectorXf &c1, const Eigen::VectorXf &c2, bool useMetricWeights);
 
 	// gets direction vector from c1 to c2, with (weighted) length
 	virtual void getDirectionVector(const Eigen::VectorXf &c1, const Eigen::VectorXf &c2, Eigen::VectorXf &storeDir, float length);
 
 	virtual void generateNewConfig(const Eigen::VectorXf &randomConfig, const Eigen::VectorXf &nearestConfig, Eigen::VectorXf &storeNewConfig, float stepSize, float preCalculatedDist = -1.0);
 	
-	
-	// returns pointer to a not-used config array 
-	//Eigen::VectorXf* createNewConfiguration(); 
+
 	
 	//! return upper limit for movement of any point on joints if moving from config to nextConfig
 	virtual float getDirectedMaxMovement(const Eigen::VectorXf &config, const Eigen::VectorXf &nextConfig);
@@ -338,12 +339,12 @@ protected:
 	float randMult;
 	bool useMetricWeights;
 	bool checkForBorderlessDims;
-	std::vector< bool > borderLessDimension; // store borderless state
+	std::vector< bool > borderLessDimension;		 // store borderless state
 	
 	bool multiThreaded;								// indicates that more than one CSpace is used by some threads
 	static boost::mutex colCheckMutex;				// only needed when multithreading support is enabled
 													//	-> setting the configurations and checking against collisions is protected by this mutex
-
+	std::vector<ConfigurationConstraintPtr>  constraints;
 
 	SamplerPtr sampleAlgorithm; // standard is NULL (uniformly sampling), is used in getRandomConfig()
 };

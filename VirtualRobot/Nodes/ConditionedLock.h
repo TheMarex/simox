@@ -13,7 +13,8 @@ class ConditionedLock {
 			_lock(mutex, boost::defer_lock), _enabled(enabled){
 			if (_enabled) _lock.lock();
 		}	
-		~ConditionedLock(){
+		~ConditionedLock()
+		{
 			if (_enabled) _lock.unlock();
 		}
 };

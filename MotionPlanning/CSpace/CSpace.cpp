@@ -5,6 +5,7 @@
 #include "Sampler.h"
 #include "CSpaceTree.h"
 #include "CSpacePath.h"
+#include "ConfigurationConstraint.h"
 #include <VirtualRobot/CollisionDetection/CDManager.h>
 #include <VirtualRobot/CollisionDetection/CollisionChecker.h>
 #include "float.h"
@@ -162,7 +163,7 @@ bool CSpace::checkSolution(CSpacePathPtr solution, bool bVerbose)
 	for (unsigned int i = s-1; i > 0; i--)
 	{
 		clock_t t1 = clock();
-		bool bColFree = isPathCollisionFree(solution->getPathEntry(i),solution->getPathEntry(i-1));
+		bool bColFree = isPathValid(solution->getPathEntry(i),solution->getPathEntry(i-1));
 		clock_t t2 = clock();
 		
 		if (bVerbose && t2-t1>0)
@@ -195,7 +196,7 @@ bool CSpace::checkTree(CSpaceTreePtr tree)
 		if (pN1 && pN1->parentID>=0 && tree->getNode(pN1->parentID))
 		{
 			CSpaceNodePtr pN2 = tree->getNode(pN1->parentID);
-			if (!isPathCollisionFree((pN1->configuration),(pN2->configuration)))
+			if (!isPathValid((pN1->configuration),(pN2->configuration)))
 			{
 				return false;
 			}
@@ -433,14 +434,21 @@ bool CSpace::isInBoundary( const Eigen::VectorXf &config )
 	return true;
 }
 
-bool CSpace::isConfigValid( const Eigen::VectorXf &config )
+bool CSpace::isConfigValid( const Eigen::VectorXf &config, bool checkBorders, bool checkCollisions, bool checkConstraints )
 {
 	SABA_ASSERT (config.rows()==dimension)
+
 	// check boundaries
-	if (!isInBoundary(config))
+	if (checkBorders && !isInBoundary(config))
+		return false;
+	// check collision
+	if (checkCollisions && !isCollisionFree(config))
+		return false;
+	//check constraints
+	if (checkConstraints && !isSatisfyingConstraints(config))
 		return false;
 		
-	return isCollisionFree(config);
+	return true;
 }
 
 
@@ -595,7 +603,7 @@ float CSpace::getRandomConfig_UniformSampling(unsigned int dim)
 	return res;
 }
 
-void CSpace::getRandomConfig(Eigen::VectorXf &config, bool checkCollisionFree)
+void CSpace::getRandomConfig(Eigen::VectorXf &config, bool checkValid)
 {
 	SABA_ASSERT (config.rows()==dimension)
 
@@ -613,21 +621,12 @@ void CSpace::getRandomConfig(Eigen::VectorXf &config, bool checkCollisionFree)
 				config[i] = boundaryMin[i] + (boundaryDist[i]*t);
 			}
 		}
-	} while (checkCollisionFree && !isCollisionFree(config));
+	} while (checkValid && !isConfigValid(config,false,true,true));
 }
 
 
 void CSpace::printConfig(const Eigen::VectorXf &config) const
 {
-/*	std::cout << std::fixed << std::setprecision(3);
-	std::cout << "(";
-	for (unsigned int i=0; i< dimension; i++)
-	{
-		std::cout << config[i];
-		if (i!=dimension-1)
-			std::cout << ", ";
-	}
-	std::cout << ")";*/
 	if (config.rows()!=dimension)
 	{
 		SABA_ERROR << "Wrong dimensions..." << endl;
@@ -704,14 +703,14 @@ CSpacePathPtr CSpace::createPath( const Eigen::VectorXf &start, const Eigen::Vec
 	return p;
 }
 
-Saba::CSpacePathPtr CSpace::createPathUntilCollision( const Eigen::VectorXf &start, const Eigen::VectorXf &goal, float &storeAddedLength )
+Saba::CSpacePathPtr CSpace::createPathUntilInvalid( const Eigen::VectorXf &start, const Eigen::VectorXf &goal, float &storeAddedLength )
 {
 	SABA_ASSERT (start.rows() == dimension);
 	SABA_ASSERT (goal.rows() == dimension);
 	CSpacePathPtr p(new CSpacePath(shared_from_this()));
 	storeAddedLength = 0.5f;
 	p->addPathPoint(start);
-	if (isCollisionFree(goal))
+	if (isConfigValid(goal))
 	{
 		p->addPathPoint(goal);
 		storeAddedLength = 1.0f;
@@ -719,9 +718,9 @@ Saba::CSpacePathPtr CSpace::createPathUntilCollision( const Eigen::VectorXf &sta
 	return p;
 }
 
-bool CSpace::isPathCollisionFree( const Eigen::VectorXf &q1, const Eigen::VectorXf &q2 )
+bool CSpace::isPathValid( const Eigen::VectorXf &q1, const Eigen::VectorXf &q2 )
 {
-	return isCollisionFree(q2);
+	return isConfigValid(q2);
 }
 
 
@@ -745,6 +744,21 @@ unsigned int CSpace::getDimension() const
 VirtualRobot::RobotPtr CSpace::getRobot() const
 {
 	return robo;
+}
+
+void CSpace::addConstraintCheck( ConfigurationConstraintPtr constraint )
+{
+	constraints.push_back(constraint);
+}
+
+bool CSpace::isSatisfyingConstraints( const Eigen::VectorXf &config )
+{
+	for (size_t i=0;i<constraints.size();i++)
+	{
+		if (!constraints[i]->isValid(config))
+			return false;
+	}
+	return true;
 }
 
 }

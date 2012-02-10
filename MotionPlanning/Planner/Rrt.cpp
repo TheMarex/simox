@@ -238,7 +238,7 @@ Rrt::ExtensionResult Rrt::extend(Eigen::VectorXf &c, CSpaceTreePtr tree, int &st
 	}
 
 	// CHECK PATH FOR COLLISIONS AND VALID NODES
-	if (cspace->isPathCollisionFree(nn->configuration,tmpConfig))
+	if (cspace->isPathValid(nn->configuration,tmpConfig))
 	{	
 		// ADD IT TO RRT TREE
 		if (!tree->appendPath(nn,tmpConfig,&storeLastAddedID))
@@ -265,7 +265,7 @@ Rrt::ExtensionResult Rrt::connectComplete(Eigen::VectorXf &c, CSpaceTreePtr tree
 	SABA_ASSERT (nn);
 
 	// CHECK PATH FOR COLLISIONS AND VALID NODES
-	if (cspace->isPathCollisionFree(nn->configuration,c))
+	if (cspace->isPathValid(nn->configuration,c))
 	{	
 		// ADD IT TO RRT TREE
 		if (!tree->appendPath(nn,c,&storeLastAddedID))

@@ -247,6 +247,11 @@ namespace VirtualRobot
 				return f;
 			}
 		}
+
+		// don't check for empty files
+		if (standardFilename.empty())
+			return standardFilename;
+
 		std::string s = standardFilename;
 		if (!RuntimeEnvironment::getDataFileAbsolute(s))
 		{

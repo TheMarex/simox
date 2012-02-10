@@ -290,7 +290,7 @@ void RrtGuiWindow::loadScene()
 	qtext = "<none>";
 	UI.comboBoxColModelRobot->addItem(qtext);
 	UI.comboBoxColModelRobotStatic->addItem(qtext);
-
+	robot->setThreadsafe(false);
 	buildVisu();
 }
 

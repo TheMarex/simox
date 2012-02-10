@@ -48,22 +48,10 @@ int main(int argc, char *argv[])
 
 	cout << " --- START --- " << endl;
 
-	if (VirtualRobot::RuntimeEnvironment::hasValue("robot"))
-	{
-		std::string robFile = VirtualRobot::RuntimeEnvironment::getValue("robot");
-		if (VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robFile))
-		{
-			filenameRob = robFile;
-		}
-	}
-	if (VirtualRobot::RuntimeEnvironment::hasValue("reachability"))
-	{
-		std::string reachFile = VirtualRobot::RuntimeEnvironment::getValue("reachability");
-		if (VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(reachFile))
-		{
-			filenameReach = reachFile;
-		}
-	}
+	filenameRob = VirtualRobot::RuntimeEnvironment::checkValidFileParameter("robot",filenameRob);
+
+	filenameReach = VirtualRobot::RuntimeEnvironment::checkValidFileParameter("reachability",filenameReach);
+
 	if (VirtualRobot::RuntimeEnvironment::hasValue("visualizationTCPAxis"))
 	{
 		std::string axisStr = VirtualRobot::RuntimeEnvironment::getValue("visualizationTCPAxis");

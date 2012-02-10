@@ -91,6 +91,8 @@ public:
 	std::vector< CollisionModelPtr > getCollisionModels();
 	std::vector< SceneObjectPtr > getSceneObjects();
 
+	unsigned int getSize();
+	SceneObjectPtr getSceneObject(unsigned int nr);
 
 	//! Returns true, if sceneObject is part of this set
 	bool hasSceneObject(SceneObjectPtr sceneObject);

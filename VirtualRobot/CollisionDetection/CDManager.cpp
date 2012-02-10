@@ -29,11 +29,17 @@ void CDManager::addCollisionModel(SceneObjectSetPtr m)
 {
 	if (m)
 	{
-		colModels.push_back(m);
 		if (m->getCollisionChecker() != colChecker)
 		{
 			VR_WARNING << "CollisionModel is linked to different instance of collision checker..." << endl;
 		}
+		for (size_t i=0; i<colModels.size(); i++)
+		{
+			if (m!=colModels[i])
+				addCollisionModelPair(colModels[i],m);
+		}
+		if (!_hasSceneObjectSet(m))
+			colModels.push_back(m);
 	}
 }
 
@@ -41,16 +47,9 @@ void CDManager::addCollisionModel(SceneObjectPtr m)
 {
 	if (m)
 	{
-		if (!singleCollisionModels)
-		{
-			singleCollisionModels.reset(new VirtualRobot::SceneObjectSet("",colChecker));
-			addCollisionModel(singleCollisionModels);
-		}
-		singleCollisionModels->addSceneObject(m);
-		if (m->getCollisionChecker() != colChecker)
-		{
-			VR_WARNING << "Warning: CollisionModel is linked to different instance of collision checker..." << endl;
-		}
+		VirtualRobot::SceneObjectSetPtr cms(new VirtualRobot::SceneObjectSet("",colChecker));
+		cms->addSceneObject(m);
+		addCollisionModel(cms);
 	}
 }
 
@@ -102,6 +101,22 @@ float CDManager::getDistance(SceneObjectSetPtr m)
 }
 
 
+
+float CDManager::getDistance(SceneObjectSetPtr m, std::vector<SceneObjectSetPtr>& sets)
+{
+	float minDist = FLT_MAX;
+	for (size_t i=0;i<sets.size();i++)
+	{
+		float tmp = (float)colChecker->calculateDistance(m,sets[i]);
+		if (tmp<minDist)
+		{
+			minDist = tmp;
+		}
+	}
+	return minDist;
+}
+
+
 float CDManager::getDistance()
 {
 	float minDist = FLT_MAX;
@@ -110,17 +125,41 @@ float CDManager::getDistance()
 	if (!colChecker)
 		return -1.0f;
 
-	// check all colmodels
-	for (unsigned int i=0; i<colModels.size(); i++)
+	std::map< SceneObjectSetPtr,std::vector<SceneObjectSetPtr> >::iterator i = colModelPairs.begin();
+	while (i != colModelPairs.end())
 	{
-		for (unsigned int j=i+1; j<colModels.size(); j++)
-		{
-			tmp = (float)colChecker->calculateDistance(colModels[i],colModels[j]);
-			if (tmp<minDist)
-				minDist = tmp;
-		}
+		tmp = getDistance(i->first,i->second);
+		if (tmp<minDist)
+			minDist = tmp;
+		i++;
 	}
 
+	return minDist;
+}
+
+float CDManager::getDistance(SceneObjectSetPtr m, std::vector<SceneObjectSetPtr>& sets,Eigen::Vector3f &P1, Eigen::Vector3f &P2, int &trID1, int &trID2)
+{
+	float minDist = FLT_MAX;
+	Eigen::Vector3f _P1;
+	Eigen::Vector3f _P2;
+	int _trID1;
+	int _trID2;
+	for (size_t i=0;i<sets.size();i++)
+	{
+		float tmp = (float)colChecker->calculateDistance(m,sets[i],_P1,_P2,&_trID1,&_trID2);
+		if (tmp<minDist)
+		{
+			minDist = tmp;
+			trID1=_trID1;
+			P1[0] = _P1[0];
+			P1[1] = _P1[1];
+			P1[2] = _P1[2];
+			trID2=_trID2;
+			P2[0] = _P2[0];
+			P2[1] = _P1[1];
+			P2[2] = _P2[2];
+		}
+	}
 	return minDist;
 }
 
@@ -136,27 +175,25 @@ float CDManager::getDistance(Eigen::Vector3f &P1, Eigen::Vector3f &P2, int &trID
 	if (!colChecker)
 		return -1.0f;
 
-	// check all colmodels
-	for (unsigned int i=0; i<colModels.size(); i++)
-	{
-		for (unsigned int j=i+1; j<colModels.size(); j++)
-		{
-			tmp = (float)colChecker->calculateDistance(colModels[i],colModels[j],_P1,_P2,&_trID1,&_trID2);
-			if (tmp<minDist)
-			{
-				minDist = tmp;
-				trID1=_trID1;
-				P1[0] = _P1[0];
-				P1[1] = _P1[1];
-				P1[2] = _P1[2];
-				trID2=_trID2;
-				P2[0] = _P2[0];
-				P2[1] = _P1[1];
-				P2[2] = _P2[2];
-			}
-		}
-	}
 
+	std::map< SceneObjectSetPtr,std::vector<SceneObjectSetPtr> >::iterator i = colModelPairs.begin();
+	while (i != colModelPairs.end())
+	{
+		tmp = getDistance(i->first,i->second,_P1,_P2,_trID1,_trID2);
+		if (tmp<minDist)
+		{
+			minDist = tmp;
+			trID1=_trID1;
+			P1[0] = _P1[0];
+			P1[1] = _P1[1];
+			P1[2] = _P1[2];
+			trID2=_trID2;
+			P2[0] = _P2[0];
+			P2[1] = _P1[1];
+			P2[2] = _P2[2];
+		}
+		i++;
+	}
 	return minDist;
 }
 
@@ -193,29 +230,32 @@ float CDManager::getDistance(SceneObjectSetPtr m, Eigen::Vector3f &P1, Eigen::Ve
 }
 
 
-bool CDManager::isInCollision()
+
+bool CDManager::isInCollision(SceneObjectSetPtr m, std::vector<SceneObjectSetPtr>& sets)
 {
-	if (!colChecker)
-		return false;
-	// check all colmodels   if any exist
-	for (unsigned int i=0; i<colModels.size(); i++)
+	for (size_t i=0;i<sets.size();i++)
 	{
-		for (unsigned int j=i+1; j<colModels.size(); j++)
-		{
-			if (colChecker->checkCollision(colModels[i],colModels[j]))
-			{
-				return true;
-			}
-		}
+		if (colChecker->checkCollision(m,sets[i]))
+			return true;
 	}
 	return false;
 }
 
-
-SceneObjectSetPtr CDManager::getSingleCollisionModels()
+bool CDManager::isInCollision()
 {
-	return singleCollisionModels;
+	if (!colChecker)
+		return false;
+
+	std::map<SceneObjectSetPtr,std::vector<SceneObjectSetPtr>  >::iterator i = colModelPairs.begin();
+	while (i != colModelPairs.end())
+	{
+		if (isInCollision(i->first,i->second))
+			return true;
+		i++;
+	}
+	return false;
 }
+
 
 std::vector<SceneObjectSetPtr> CDManager::getSceneObjectSets()
 {
@@ -225,6 +265,72 @@ std::vector<SceneObjectSetPtr> CDManager::getSceneObjectSets()
 CollisionCheckerPtr CDManager::getCollisionChecker()
 {
 	return colChecker;
+}
+
+bool CDManager::hasSceneObjectSet( SceneObjectSetPtr m )
+{
+	for (size_t i=0;i<colModels.size();i++)
+	{
+		if (colModels[i] == m)
+			return true;
+	}
+	return false;
+}
+
+bool CDManager::_hasSceneObjectSet( SceneObjectSetPtr m )
+{
+	for (size_t i=0;i<colModels.size();i++)
+	{
+		if (colModels[i] == m)
+			return true;
+		if (m->getSize()==1 && colModels[i]->getSize() == 1 &&  colModels[i]->getSceneObject(0) == m->getSceneObject(0))
+			return true;
+	}
+	return false;
+}
+
+bool CDManager::hasSceneObject( SceneObjectPtr m )
+{
+	for (size_t i=0;i<colModels.size();i++)
+	{
+		if (colModels[i]->getSize() == 1 &&  colModels[i]->getSceneObject(0) == m)
+			return true;
+	}
+	return false;
+}
+
+void CDManager::addCollisionModelPair( SceneObjectSetPtr m1, SceneObjectSetPtr m2 )
+{
+	if (!m1 || !m2)
+		return;
+	if (!_hasSceneObjectSet(m1))
+		colModels.push_back(m1);
+	if (!_hasSceneObjectSet(m2))
+		colModels.push_back(m2);
+	colModelPairs[m1].push_back(m2);
+}
+
+void CDManager::addCollisionModelPair( SceneObjectPtr m1, SceneObjectSetPtr m2 )
+{
+	if (!m1 || !m2)
+		return;
+	
+	VirtualRobot::SceneObjectSetPtr cms(new VirtualRobot::SceneObjectSet("",colChecker));
+	cms->addSceneObject(m1);
+	addCollisionModelPair(cms,m2);
+}
+
+void CDManager::addCollisionModelPair( SceneObjectPtr m1, SceneObjectPtr m2 )
+{
+	if (!m1 || !m2)
+		return;
+
+	VirtualRobot::SceneObjectSetPtr cms(new VirtualRobot::SceneObjectSet("",colChecker));
+	cms->addSceneObject(m1);
+	VirtualRobot::SceneObjectSetPtr cms2(new VirtualRobot::SceneObjectSet("",colChecker));
+	cms2->addSceneObject(m2);
+	addCollisionModelPair(cms,cms2);
+
 }
 
 }

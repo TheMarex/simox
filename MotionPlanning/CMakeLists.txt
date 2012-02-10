@@ -17,6 +17,7 @@ CSpace/CSpaceNode.cpp
 CSpace/CSpacePath.cpp
 CSpace/CSpaceTree.cpp
 CSpace/Sampler.cpp
+CSpace/ConfigurationConstraint.cpp
 Planner/MotionPlanner.cpp
 Planner/Rrt.cpp
 Planner/BiRrt.cpp
@@ -34,6 +35,7 @@ CSpace/CSpaceNode.h
 CSpace/CSpacePath.h
 CSpace/CSpaceTree.h
 CSpace/Sampler.h
+CSpace/ConfigurationConstraint.h
 Planner/MotionPlanner.h
 Planner/Rrt.h
 Planner/BiRrt.h

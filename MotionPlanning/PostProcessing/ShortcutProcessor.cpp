@@ -91,7 +91,7 @@ int ShortcutProcessor::tryRandomShortcut(int maxSolutionPathDist)
 		// first check sampled, the validate with freeBubbles 
 		// (if sampled check failed we don't need to do the expensive freeBubble check)
 		//bool pathOK = m_pTree->checkPathSampled(startConfig,endConfig);
-		bool pathOK = cspace->isPathCollisionFree(s,e);
+		bool pathOK = cspace->isPathValid(s,e);
 		if (pathOK)
 		{
 			/*cout << "start:" << endl << s << endl;
@@ -231,7 +231,7 @@ void ShortcutProcessor::doPathPruning()
     {
         Eigen::VectorXf startConfig = optimizedPath->getPathEntry(i);
         Eigen::VectorXf endConfig = optimizedPath->getPathEntry(i+2);
-        if(cspace->isPathCollisionFree(startConfig,endConfig) )
+        if(cspace->isPathValid(startConfig,endConfig) )
         {
             optimizedPath->erasePosition(i+1);
             if (i > 0) i--;

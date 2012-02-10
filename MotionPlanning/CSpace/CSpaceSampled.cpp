@@ -126,7 +126,7 @@ CSpacePathPtr CSpaceSampled::createPath( const Eigen::VectorXf &start, const Eig
 	return p;
 }
 
-Saba::CSpacePathPtr CSpaceSampled::createPathUntilCollision( const Eigen::VectorXf &start, const Eigen::VectorXf &goal, float &storeAddedLength)
+Saba::CSpacePathPtr CSpaceSampled::createPathUntilInvalid( const Eigen::VectorXf &start, const Eigen::VectorXf &goal, float &storeAddedLength)
 {
 	SABA_ASSERT (start.rows() == dimension);
 	SABA_ASSERT (goal.rows() == dimension);
@@ -164,7 +164,7 @@ Saba::CSpacePathPtr CSpaceSampled::createPathUntilCollision( const Eigen::Vector
 		if (dist<=colCheckDist)
 		{
 			LOCAL_DEBUG ("END" << endl);
-			if (!(isCollisionFree(goal)))
+			if (!(isConfigValid(goal,false,true,true)))
 			{
 				LOCAL_DEBUG ("not col free" << endl);
 				storeAddedLength = (origDist - dist) / origDist;
@@ -181,7 +181,7 @@ Saba::CSpacePathPtr CSpaceSampled::createPathUntilCollision( const Eigen::Vector
 			LOCAL_DEBUG ("step from " << endl << tmpConfig << endl);
 			generateNewConfig(goal,tmpConfig,tmpConfig,colCheckDist,dist);
 			LOCAL_DEBUG ("--> " << endl << tmpConfig << endl);
-			if (!(isCollisionFree(tmpConfig)))
+			if (!(isConfigValid(tmpConfig,false,true,true)))
 				return p;
 			nodeDist += colCheckDist;
 			if (nodeDist>=samplingSizePaths)
@@ -204,7 +204,7 @@ Saba::CSpacePathPtr CSpaceSampled::createPathUntilCollision( const Eigen::Vector
 }
 
 
-bool CSpaceSampled::isPathCollisionFree( const Eigen::VectorXf &q1, const Eigen::VectorXf &q2 )
+bool CSpaceSampled::isPathValid( const Eigen::VectorXf &q1, const Eigen::VectorXf &q2 )
 {
 	if (stopPathCheck)
 		return false;
@@ -214,7 +214,7 @@ bool CSpaceSampled::isPathCollisionFree( const Eigen::VectorXf &q1, const Eigen:
 	if(actualWeightedDistance <= samplingSizeDCD*1.001f)
 	{
 		// just checking q2, to avoid double checks
-		return isCollisionFree(q2); // assuming that q1 and q2 are within the limits of the CSpace
+		return isConfigValid(q2,false,true,true); // assuming that q1 and q2 are within the limits of the CSpace
 	}
 	else
 	{
@@ -230,7 +230,7 @@ bool CSpaceSampled::isPathCollisionFree( const Eigen::VectorXf &q1, const Eigen:
 		// generate a configuration exactly in the middle of q1 and q2 using weighted distances
 		generateNewConfig(q2,q1,middleConfiguration,actualWeightedDistance*0.5f,actualWeightedDistance);
 
-		bool r = (isPathCollisionFree(q1,middleConfiguration) && isPathCollisionFree(middleConfiguration,q2));
+		bool r = (isPathValid(q1,middleConfiguration) && isPathValid(middleConfiguration,q2));
 		recursiveTmpValuesIndex--;
 		return r;
 	}

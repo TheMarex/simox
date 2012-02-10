@@ -233,6 +233,17 @@ std::vector< SceneObjectPtr > SceneObjectSet::getSceneObjects()
 	return sceneObjects;
 }
 
+unsigned int SceneObjectSet::getSize()
+{
+	return (unsigned int)sceneObjects.size();
+}
+
+VirtualRobot::SceneObjectPtr SceneObjectSet::getSceneObject( unsigned int nr )
+{
+	VR_ASSERT( (nr<(unsigned int)sceneObjects.size()) );
+	return sceneObjects[nr];
+}
+
 
 
 } // namespace VirtualRobot

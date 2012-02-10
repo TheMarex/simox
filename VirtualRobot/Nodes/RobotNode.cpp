@@ -141,7 +141,7 @@ void RobotNode::setJointValue(float q, bool updateTransformations /*= true*/,
 	VR_ASSERT_MESSAGE( initialized, "Not initialized");
 	VR_ASSERT_MESSAGE( (!boost::math::isnan(q) && !boost::math::isinf(q)) ,"Not a valid number...");
 	
-	std::cout << "######## Setting Joint to: " << q << " degrees" << std::endl;
+	//std::cout << "######## Setting Joint to: " << q << " degrees" << std::endl;
 
 	if (q < jointLimitLo)
 	{

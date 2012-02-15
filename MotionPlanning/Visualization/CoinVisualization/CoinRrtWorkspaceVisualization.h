@@ -55,6 +55,7 @@ public:
 		eCustom
 	};
 	
+
 	/*!
 		Add visualization of a path in cspace.
 	*/
@@ -99,8 +100,12 @@ protected:
 		float nodeR, nodeG, nodeB, lineR, lineG, lineB;
 	};
 
+
 	std::map<ColorSet, RenderColors> colors;
 };
+
+typedef boost::shared_ptr<CoinRrtWorkspaceVisualization> CoinRrtWorkspaceVisualizationPtr;
+
 
 } // namespace Saba
 

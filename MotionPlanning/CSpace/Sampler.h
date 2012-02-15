@@ -31,7 +31,7 @@ namespace Saba {
 
 /*!
 *
-* \bief An interface class for custom sample algorithms 
+* \brief An interface class for custom sample algorithms 
 *
 */
 class SABA_IMPORT_EXPORT Sampler

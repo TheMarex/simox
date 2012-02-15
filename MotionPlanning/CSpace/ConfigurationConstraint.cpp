@@ -6,7 +6,7 @@ namespace Saba
 
 ConfigurationConstraint::ConfigurationConstraint(unsigned int dimension)
 {
-	dimension = dimension;
+	this->dimension = dimension;
 }
 
 ConfigurationConstraint::~ConfigurationConstraint()

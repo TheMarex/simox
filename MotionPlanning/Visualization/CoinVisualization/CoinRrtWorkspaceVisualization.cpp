@@ -132,15 +132,13 @@ void CoinRrtWorkspaceVisualization::setCustomColor(float nodeR, float nodeG, flo
 
 bool CoinRrtWorkspaceVisualization::addCSpacePath(CSpacePathPtr path, CoinRrtWorkspaceVisualization::ColorSet colorSet)
 {
-	if (!path)
+	if (!path || !robotNodeSet || !TCPNode)
 		return false;
 	if (path->getDimension() != robotNodeSet->getSize())
 	{
 		VR_ERROR << " Dimensions do not match: " << path->getDimension() <<"!="<< robotNodeSet->getSize()<<endl;
 		return false;
 	}
-	if (!TCPNode)
-		return false;
 
 	float nodeSolutionSize = pathNodeSize;//15.0;//1.0f
 	float lineSolutionSize = pathLineSize;//4.0;
@@ -226,6 +224,7 @@ bool CoinRrtWorkspaceVisualization::addCSpacePath(CSpacePathPtr path, CoinRrtWor
 		z2 = z;
 		parentConfig = actConfig;
 	} // for
+
 
 	visualization->addChild(sep);
 	return true;
@@ -408,5 +407,6 @@ bool CoinRrtWorkspaceVisualization::addConfiguration( const Eigen::VectorXf &c, 
 	visualization->addChild(sep);
 	return true;
 }
+
 
 } // namespace Saba

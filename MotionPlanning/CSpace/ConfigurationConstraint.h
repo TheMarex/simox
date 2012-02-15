@@ -31,7 +31,7 @@ namespace Saba {
 
 /*!
 *
-* \bief An interface class for defining custom constraints
+* \brief An interface class for defining custom constraints
 *
 */
 class SABA_IMPORT_EXPORT ConfigurationConstraint

@@ -95,7 +95,7 @@ IF (NOT SIMOX_CONFIGURED)
 		
 		if (QT_FOUND AND SOQT_FOUND AND COIN3D_FOUND)
 		    MESSAGE (STATUS "Enabling Coin3D/Qt/SoQt support")
-		    MESSAGE (STATUS "By using the Con3D library, the license of Simox is not LGPL any more. The license must be GPL, since Con3D is a GPL library. If you want to use Simox under LGPL you must disable Coin3D support!") 
+		    MESSAGE (STATUS "By using the Coin3D library, the license of Simox is not LGPL any more. The license must be GPL, since Coin3D is a GPL library. If you want to use Simox under LGPL you must disable Coin3D support!") 
 			SET (SIMOX_VISUALIZATION TRUE)
         	SET (SIMOX_VISUALIZATION_LIBS ${QT_LIBRARIES} ${COIN3D_LIBRARIES} ${SoQt_LIBRARIES} )
         	SET (SIMOX_VISUALIZATION_INCLUDE_PATHS ${SoQt_INCLUDE_DIRS} ${COIN3D_INCLUDE_DIRS} )

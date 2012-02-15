@@ -528,4 +528,33 @@ const std::vector <Eigen::VectorXf>& CSpacePath::getPathData() const
 	return path;
 }
 
+std::vector<Eigen::Matrix4f,Eigen::aligned_allocator<Eigen::Matrix4f> > CSpacePath::createWorkspacePath( VirtualRobot::RobotNodePtr r )
+{
+	VR_ASSERT(r);
+	VR_ASSERT(cspace);
+	VirtualRobot::RobotNodeSetPtr rns = cspace->getRobotNodeSet();
+	VR_ASSERT(rns);
+	std::vector<Eigen::Matrix4f,Eigen::aligned_allocator<Eigen::Matrix4f> > result;
+
+	if (cspace->hasExclusiveRobotAccess())
+		CSpace::lock();
+
+	for (size_t i = 0; i < path.size(); i++)
+	{
+		// get tcp coords:
+		rns->setJointValues(path[i]);
+		Eigen::Matrix4f m;
+		result.push_back(r->getGlobalPose());
+	}
+
+	if (cspace->hasExclusiveRobotAccess())
+		CSpace::unlock();
+	return result;
+}
+
+Saba::CSpacePtr CSpacePath::getCSpace()
+{
+	return cspace;
+}
+
 } // namespace Saba

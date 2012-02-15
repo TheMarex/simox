@@ -27,6 +27,8 @@
 #include <vector>
 #include <string>
 
+#include<Eigen/StdVector>
+ 
 #include "CSpace.h"
 
 namespace Saba {
@@ -138,6 +140,17 @@ public:
 	//! For quick access to data.
 	const std::vector <Eigen::VectorXf>& getPathData() const;
 
+	/*!
+		Creates the corresponding path in workspace.
+		\param r The RobotNode that should be considered (e.g. the TCP of the RobotNodeSet)
+		\return For each path point of this c-space path, the pose of r in workspace is computed and added to the resulting vector. 
+				(The result is a std::vector of Eigen::Matrix4f, but since Eigen alignes memory allocation in a special way, there must be 
+				aligned_allocator passed to the std::vector template.)
+	*/
+	std::vector<Eigen::Matrix4f,Eigen::aligned_allocator<Eigen::Matrix4f> > createWorkspacePath(VirtualRobot::RobotNodePtr r);
+
+
+	CSpacePtr getCSpace();
 protected:
 
 	std::vector <Eigen::VectorXf> path;		//!< vector with configurations which represent the path

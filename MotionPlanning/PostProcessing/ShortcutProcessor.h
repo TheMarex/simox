@@ -23,7 +23,7 @@
 #ifndef __Saba_ShortcutProcessor_h__
 #define __Saba_ShortcutProcessor_h__
 
-#include "Saba.h"
+#include "../Saba.h"
 #include "PathProcessor.h"
 
 namespace Saba

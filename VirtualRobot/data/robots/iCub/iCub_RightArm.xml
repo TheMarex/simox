@@ -127,7 +127,7 @@
 	</RobotNodeSet>
 	
 	<RobotNodeSet name="Right HandArm ColModel">
-		<Node name="Right Arm Shoulder3"/>
+		<!--Node name="Right Arm Shoulder3"/-->
 		<Node name="Right Arm Elbow2"/>
 		<Node name="Right Hand Palm"/>
 		<Node name="Right Hand Thumb Joint1"/>

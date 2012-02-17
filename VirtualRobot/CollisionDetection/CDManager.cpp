@@ -156,7 +156,7 @@ float CDManager::getDistance(SceneObjectSetPtr m, std::vector<SceneObjectSetPtr>
 			P1[2] = _P1[2];
 			trID2=_trID2;
 			P2[0] = _P2[0];
-			P2[1] = _P1[1];
+			P2[1] = _P2[1];
 			P2[2] = _P2[2];
 		}
 	}
@@ -189,7 +189,7 @@ float CDManager::getDistance(Eigen::Vector3f &P1, Eigen::Vector3f &P2, int &trID
 			P1[2] = _P1[2];
 			trID2=_trID2;
 			P2[0] = _P2[0];
-			P2[1] = _P1[1];
+			P2[1] = _P2[1];
 			P2[2] = _P2[2];
 		}
 		i++;
@@ -221,7 +221,7 @@ float CDManager::getDistance(SceneObjectSetPtr m, Eigen::Vector3f &P1, Eigen::Ve
 			P1[2] = _P1[2];
 			trID2=_trID2;
 			P2[0] = _P2[0];
-			P2[1] = _P1[1];
+			P2[1] = _P2[1];
 			P2[2] = _P2[2];
 		}
 	}

@@ -56,9 +56,9 @@ int ShortcutProcessor::tryRandomShortcut(int maxSolutionPathDist)
 
 	if (startNodeIndex<0)
 		startNodeIndex = 0;
-	if (endNodeIndex>(int)optimizedPath->getNrOfPathPoints()-2) // last node should remain unchanged 
-		endNodeIndex = (int)optimizedPath->getNrOfPathPoints()-2;
-	if ((endNodeIndex-startNodeIndex)<=2)
+	if (endNodeIndex>(int)optimizedPath->getNrOfPathPoints()-1) // last node should remain unchanged 
+		endNodeIndex = (int)optimizedPath->getNrOfPathPoints()-1;
+	if ((endNodeIndex-startNodeIndex)<=1)
 		return 0;
 
 	if (verbose)
@@ -79,7 +79,7 @@ int ShortcutProcessor::tryRandomShortcut(int maxSolutionPathDist)
 		std::cout << "-- distShortcut: " << distShortcut << " distPath: " << distPath << std::endl;
 	// -------------------------------------------------------------------
 
-	if (distShortcut<distPath*0.95f)
+	if (distShortcut<distPath*0.99f)
 	{
 		// -------------------------------------------------------------------
 		// DEBUG

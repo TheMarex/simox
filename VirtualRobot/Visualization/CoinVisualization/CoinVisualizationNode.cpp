@@ -152,9 +152,12 @@ void CoinVisualizationNode::InventorTriangleCB(void* data, SoCallbackAction* act
 	mm.multVecMatrix(v2->getPoint(), triangle[1]);
 	mm.multVecMatrix(v3->getPoint(), triangle[2]);
 	SbVec3f normal[3];
-	mm.multVecMatrix(v1->getNormal(), normal[0]);
+	/*mm.multVecMatrix(v1->getNormal(), normal[0]);
 	mm.multVecMatrix(v2->getNormal(), normal[1]);
-	mm.multVecMatrix(v3->getNormal(), normal[2]);
+	mm.multVecMatrix(v3->getNormal(), normal[2]);*/
+	mm.multDirMatrix(v1->getNormal(), normal[0]);
+	mm.multDirMatrix(v2->getNormal(), normal[1]);
+	mm.multDirMatrix(v3->getNormal(), normal[2]);
 
 	normal[0] = (normal[0] + normal[1] + normal[2]) / 3.0f;
 

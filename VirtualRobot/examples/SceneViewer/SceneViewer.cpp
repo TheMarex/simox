@@ -4,6 +4,7 @@
 #include <VirtualRobot/XML/RobotIO.h>
 #include <VirtualRobot/Visualization/VisualizationFactory.h>
 #include <VirtualRobot/Visualization/CoinVisualization/CoinVisualization.h>
+#include <VirtualRobot/RuntimeEnvironment.h>
 
 
 
@@ -32,7 +33,11 @@ int main(int argc, char *argv[])
 	std::string filename(VR_BASE_DIR "/examples/showScene/scene1.xml");
 	//std::string filename(VR_BASE_DIR "/examples/showScene/sceneiCub.xml");
 
+	VirtualRobot::RuntimeEnvironment::considerKey("scene");
+	VirtualRobot::RuntimeEnvironment::processCommandLine(argc,argv);
+	VirtualRobot::RuntimeEnvironment::print();
 
+	filename = VirtualRobot::RuntimeEnvironment::checkValidFileParameter("scene",filename);
 	showSceneWindow rw(filename);
 
 	rw.main();

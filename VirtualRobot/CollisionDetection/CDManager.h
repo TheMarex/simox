@@ -27,7 +27,7 @@
 #ifndef _VirtualRobot_CDManager_h_
 #define _VirtualRobot_CDManager_h_
 
-#include "../VirtualRobot.h"
+#include "../VirtualRobotImportExport.h"
 #include "CollisionModel.h"
 #include "../SceneObjectSet.h"
 #include "CollisionChecker.h"

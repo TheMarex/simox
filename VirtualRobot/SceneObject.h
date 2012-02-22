@@ -23,7 +23,6 @@
 #ifndef _VirtualRobot_SceneObject_h_
 #define _VirtualRobot_SceneObject_h_
 
-#include "VirtualRobot.h"
 #include "VirtualRobotImportExport.h"
 #include "Visualization/VisualizationNode.h"
 #include <Eigen/Core>

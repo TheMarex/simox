@@ -68,7 +68,7 @@ public:
 	unsigned int getNrOfPathPoints() const;
 
 	//! to retrieve entries of path
-	bool getPathEntries(unsigned int start, unsigned int end , std::vector<Eigen::VectorXf> &storePosList) const;
+	bool getPathEntries(unsigned int start, unsigned int end , std::vector<Eigen::VectorXf > &storePosList) const;
 
 	/*!
 	  Creates a copy of the path instance.
@@ -118,7 +118,7 @@ public:
 	  \param c configuration / valid joint values to insert as a point in solution path
 	*/
 	virtual void insertPosition(unsigned int pos, const Eigen::VectorXf &c);
-	virtual void insertPosition(unsigned int pos, std::vector<Eigen::VectorXf> &newConfigurations);
+	virtual void insertPosition(unsigned int pos, std::vector<Eigen::VectorXf > &newConfigurations);
 	virtual void insertPath(unsigned int pos, CSpacePathPtr pathToInsert);
 
 
@@ -138,7 +138,7 @@ public:
 	virtual void print() const;
 
 	//! For quick access to data.
-	const std::vector <Eigen::VectorXf>& getPathData() const;
+	const std::vector <Eigen::VectorXf >& getPathData() const;
 
 	/*!
 		Creates the corresponding path in workspace.
@@ -147,13 +147,13 @@ public:
 				(The result is a std::vector of Eigen::Matrix4f, but since Eigen alignes memory allocation in a special way, there must be 
 				aligned_allocator passed to the std::vector template.)
 	*/
-	std::vector<Eigen::Matrix4f,Eigen::aligned_allocator<Eigen::Matrix4f> > createWorkspacePath(VirtualRobot::RobotNodePtr r);
+	std::vector<Eigen::Matrix4f > createWorkspacePath(VirtualRobot::RobotNodePtr r);
 
 
 	CSpacePtr getCSpace();
 protected:
 
-	std::vector <Eigen::VectorXf> path;		//!< vector with configurations which represent the path
+	std::vector<Eigen::VectorXf > path;		//!< vector with configurations which represent the path
 	unsigned int dimension;		//!< dimension of rrt space
 	CSpacePtr cspace;
 };

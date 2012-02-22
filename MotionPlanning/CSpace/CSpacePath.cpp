@@ -528,13 +528,13 @@ const std::vector <Eigen::VectorXf>& CSpacePath::getPathData() const
 	return path;
 }
 
-std::vector<Eigen::Matrix4f,Eigen::aligned_allocator<Eigen::Matrix4f> > CSpacePath::createWorkspacePath( VirtualRobot::RobotNodePtr r )
+std::vector<Eigen::Matrix4f > CSpacePath::createWorkspacePath( VirtualRobot::RobotNodePtr r )
 {
 	VR_ASSERT(r);
 	VR_ASSERT(cspace);
 	VirtualRobot::RobotNodeSetPtr rns = cspace->getRobotNodeSet();
 	VR_ASSERT(rns);
-	std::vector<Eigen::Matrix4f,Eigen::aligned_allocator<Eigen::Matrix4f> > result;
+	std::vector<Eigen::Matrix4f > result;
 
 	if (cspace->hasExclusiveRobotAccess())
 		CSpace::lock();

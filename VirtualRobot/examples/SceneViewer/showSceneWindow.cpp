@@ -109,92 +109,9 @@ QString showSceneWindow::formatString(const char *s, float f)
 
 void showSceneWindow::resetSceneryAll()
 {
-	/*if (!m_pRobot)
-		return;
-
-	for (unsigned int i=0;i<allRobotNodes.size();i++)
-	{
-		allRobotNodes[i]->setJointValue(0);
-	}
-
-	selectJoint(UI.comboBoxJoint->currentIndex());*/
-}
-
-
-/*
-void showSceneWindow::displayTriangles()
-{
-	QString text1,text2,text3;
-	int trisAllFull, trisRNSFull, trisJointFull;
-	trisAllFull = trisRNSFull = trisJointFull = 0;
-	int trisAllCol,trisRNSCol,trisJointCol;
-	trisAllCol = trisRNSCol = trisJointCol = 0;
-	if (m_pRobot)
-	{
-		trisAllFull = m_pRobot->getNumFaces(false);
-		trisAllCol = m_pRobot->getNumFaces(true);
-		trisRNSFull = trisAllFull;
-		trisRNSCol = trisAllCol;
-	}
-	if (currentRobotNodeSet)
-	{
-		trisRNSFull = currentRobotNodeSet->getNumFaces(false);
-		trisRNSCol = currentRobotNodeSet->getNumFaces(true);
-	}
-	if (currentRobotNode)
-	{
-		trisJointFull = currentRobotNode->getNumFaces(false);
-		trisJointCol = currentRobotNode->getNumFaces(true);
-	}
-	if (UI.checkBoxColModel->checkState() == Qt::Checked)
-	{
-		text1 = tr("Total\t:") + QString::number(trisAllCol);
-		text2 = tr("RobotNodeSet:\t") + QString::number(trisRNSCol);
-		text3 = tr("Joint:\t") + QString::number(trisJointCol);
-	} else
-	{		
-		text1 = tr("Total:\t") + QString::number(trisAllFull);
-		text2 = tr("RobotNodeSet:\t") + QString::number(trisRNSFull);
-		text3 = tr("Joint:\t") + QString::number(trisJointFull);
-	}
-	UI.labelInfo1->setText(text1);
-	UI.labelInfo2->setText(text2);
-	UI.labelInfo3->setText(text3);
-}
-
-void showSceneWindow::robotFullModel()
-{
-	if (!m_pRobot)
-		return;
-
-	bool showFullModel = UI.checkBoxFullModel->checkState() == Qt::Checked;
-
-	m_pRobot->setupVisualization(showFullModel, true);
 
 }
 
-void showSceneWindow::collisionModel()
-{
-	if (!m_pRobot)
-		return;
-	robotSep->removeAllChildren();
-	//setRobotModelShape(UI.checkBoxColModel->state() == QCheckBox::On);
-	useColModel = UI.checkBoxColModel->checkState() == Qt::Checked;
-    visualization = m_pRobot->getVisualization<CoinVisualization>(useColModel);
-	SoNode* visualisationNode = NULL;
-	if (visualization)
-		visualisationNode = visualization->getCoinVisualization();
-
-	if (visualisationNode)
-		robotSep->addChild(visualisationNode);
-
-	selectJoint(UI.comboBoxJoint->currentIndex());
-
-	UI.checkBoxStructure->setEnabled(!useColModel);
-	UI.checkBoxFullModel->setEnabled(!useColModel);
-	UI.checkBoxRobotCoordSystems->setEnabled(!useColModel);
-
-}*/
 
 
 void showSceneWindow::closeEvent(QCloseEvent *event)
@@ -219,12 +136,6 @@ void showSceneWindow::buildVisu()
 
 	if (visualisationNode)
 		sceneVisuSep->addChild(visualisationNode);
-
-	/*selectJoint(UI.comboBoxJoint->currentIndex());
-
-	UI.checkBoxStructure->setEnabled(!useColModel);
-	UI.checkBoxFullModel->setEnabled(!useColModel);
-	UI.checkBoxRobotCoordSystems->setEnabled(!useColModel);*/
 
 }
 
@@ -383,6 +294,33 @@ void showSceneWindow::loadScene()
 		cout << " ERROR while creating scene" << endl;
 		return;
 	}
+
+	/*std::vector<VirtualRobot::ManipulationObjectPtr> mo;
+	mo = scene->getManipulationObjects();
+	cout << "Printing " << mo.size() << " objects" << endl;
+	for (size_t i=0;i<mo.size();i++)
+	{
+		mo[i]->print();
+		mo[i]->showCoordinateSystem(true);
+		Eigen::Vector3f c = mo[i]->getCoMGlobal();
+		cout << "com global: \n" << c << endl;
+		c = mo[i]->getCoMLocal();
+		cout << "com local: \n" << c << endl;
+		//mo[i]->showBoundingBox(true);
+	}*/
+	/*std::vector<VirtualRobot::ObstaclePtr> o;
+	o = scene->getObstacles();
+	cout << "Printing " << o.size() << " obstacles" << endl;
+	for (size_t i=0;i<o.size();i++)
+	{
+		o[i]->print();
+		o[i]->showCoordinateSystem(true);
+		Eigen::Vector3f c = o[i]->getCoMGlobal();
+		cout << "com global: \n" << c << endl;
+		c = o[i]->getCoMLocal();
+		cout << "com local: \n" << c << endl;
+		//mo[i]->showBoundingBox(true);
+	}*/
 
 	// get nodes
 	/*m_pRobot->getRobotNodes(allRobotNodes);

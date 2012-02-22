@@ -528,7 +528,7 @@ void CollisionChecker::getContacts( const MathTools::Plane &p, CollisionModelPtr
 	bbox.min -= Eigen::Vector3f(maxDist,maxDist,maxDist);
 	bbox.max += Eigen::Vector3f(maxDist,maxDist,maxDist);
 
-	std::vector <Eigen::Vector3f> ptsBB = bbox.getPoints();
+	std::vector<Eigen::Vector3f > ptsBB = bbox.getPoints();
 	for (size_t i=0;i<ptsBB.size();i++)
 	{
 		ptsBB[i] = MathTools::transformPosition(ptsBB[i],colModel->getGlobalPose());

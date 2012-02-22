@@ -128,7 +128,7 @@ std::vector< Eigen::Vector3f > CollisionModel::getModelVeticesGlobal()
 	Eigen::Matrix4f t;
 	t.setIdentity();
 
-	for (std::vector<Eigen::Vector3f>::iterator i=model->vertices.begin(); i!=model->vertices.end(); i++)
+	for (std::vector<Eigen::Vector3f >::iterator i=model->vertices.begin(); i!=model->vertices.end(); i++)
 	{
 		t.block(0,3,3,1)=*i;
 		t = globalPose * t;
@@ -142,7 +142,7 @@ BoundingBox CollisionModel::getBoundingBox( bool global /*= true*/ )
 	if (global)
 	{
 
-		std::vector <Eigen::Vector3f> pts = bbox.getPoints();
+		std::vector<Eigen::Vector3f> pts = bbox.getPoints();
 		for (size_t i=0;i<pts.size();i++)
 			pts[i] = MathTools::transformPosition(pts[i],globalPose);
 

@@ -99,6 +99,20 @@
 
 #endif
 
+
+// allow std vector to be used with Eigen objects
+
+#include<Eigen/StdVector>
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector2f)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector3f)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector4f)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::VectorXf)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix2f)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix3f)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix4f)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::MatrixXf)
+
+
 #include <boost/shared_ptr.hpp>
 #include <boost/assert.hpp>
 #include <boost/weak_ptr.hpp>

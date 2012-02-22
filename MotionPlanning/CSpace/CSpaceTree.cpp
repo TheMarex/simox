@@ -185,8 +185,8 @@ bool CSpaceTree::appendPath(CSpaceNodePtr startNode, CSpacePathPtr path, int *st
 	SABA_ASSERT (hasNode(startNode))
 	SABA_ASSERT (path)
 	CSpaceNodePtr n = startNode;
-	const std::vector <Eigen::VectorXf> data = path->getPathData();
-	std::vector <Eigen::VectorXf>::const_iterator it;
+	const std::vector<Eigen::VectorXf > data = path->getPathData();
+	std::vector<Eigen::VectorXf >::const_iterator it;
 	for (it=data.begin(); it!=data.end(); it++)
 	{
 		n = appendNode(*it, n->ID);

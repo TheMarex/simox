@@ -2,8 +2,9 @@
 #include "showRobotWindow.h"
 #include "VirtualRobot/EndEffector/EndEffector.h"
 #include "VirtualRobot/ReachabilitySpace.h"
+#include <VirtualRobot/RuntimeEnvironment.h>
 
- #include <QFileDialog>
+#include <QFileDialog>
 #include <Eigen/Geometry>
 
 #include <time.h>
@@ -29,6 +30,7 @@ showRobotWindow::showRobotWindow(std::string &sRobotFilename, Qt::WFlags flags)
 	//resize(1100, 768);
 
 	useColModel = false;
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(sRobotFilename);
 	m_sRobotFilename = sRobotFilename;
 	sceneSep = new SoSeparator;
 	sceneSep->ref();

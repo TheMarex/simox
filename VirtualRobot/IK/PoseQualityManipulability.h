@@ -91,6 +91,8 @@ protected:
 	bool penJointLimits;
 	float penJointLimits_k;
 
+	float penalizeRotationFactor; // to align translational and rotational components
+
 	//! is set, the Jacobian is computed in [m], while assuming the kinematic definitions to be in [mm]
 	bool convertMMtoM;
 };

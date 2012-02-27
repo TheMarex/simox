@@ -15,6 +15,7 @@ PoseQualityManipulability::PoseQualityManipulability(VirtualRobot::RobotNodeSetP
 {
 	jacobian.reset(new VirtualRobot::DifferentialIK(rns,rns->getTCP()));
 	jacobian->convertModelScalingtoM(convertMMtoM);
+	penalizeRotationFactor = 0.05f; // translation<->rotation factors
 }
 
 
@@ -28,6 +29,10 @@ Eigen::MatrixXf PoseQualityManipulability::getSingularVectorCartesian()
 	if (verbose)
 		cout << "*** PoseQualityManipulability::getSingularVectorCartesian()\n";
 	Eigen::MatrixXf jac = jacobian->getJacobianMatrix(rns->getTCP());
+	//cout << "JAC\n:" << jac << endl;
+	// penalize rotation
+	jac.block(3,0,3,jac.cols()) *= penalizeRotationFactor;
+	//cout << "scaled JAC\n:" << jac << endl;
 	Eigen::JacobiSVD<Eigen::MatrixXf> svd(jac, Eigen::ComputeThinU | Eigen::ComputeThinV);
 	Eigen::MatrixXf U = svd.matrixU();
 	Eigen::VectorXf sv = svd.singularValues();
@@ -40,12 +45,12 @@ Eigen::MatrixXf PoseQualityManipulability::getSingularVectorCartesian()
 	float maxEV = sv(0);
 	if (verbose)
 		cout << "maxEV:" << maxEV << endl;
-	for (int i=0;i<sv.rows();i++)
+	/*for (int i=0;i<sv.rows();i++)
 	{
 		Eigen::MatrixXf Bl = U.block(0,i,U.rows(),1);
 		Bl *= sv(i) / maxEV;
 		U.block(0,i,U.rows(),1) = Bl;
-	}
+	}*/
 	if (verbose)
 		cout << "result:\n" << U << endl;
 	return U;
@@ -107,6 +112,8 @@ float PoseQualityManipulability::getPoseQuality()
 Eigen::VectorXf PoseQualityManipulability::getSingularValues()
 {
 	Eigen::MatrixXf jac = jacobian->getJacobianMatrix(rns->getTCP());
+	// penalize rotation
+	jac.block(3,0,3,jac.cols()) *= penalizeRotationFactor;
 	Eigen::JacobiSVD<Eigen::MatrixXf> svd(jac, Eigen::ComputeThinU | Eigen::ComputeThinV);
 	return svd.singularValues();
 }

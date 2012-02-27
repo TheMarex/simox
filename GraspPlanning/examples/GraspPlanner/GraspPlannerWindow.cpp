@@ -110,7 +110,6 @@ GraspPlannerWindow::~GraspPlannerWindow()
 		ikWindow->updateObject(x);
 }*/
 
-
 void GraspPlannerWindow::setupUI()
 {
 	 UI.setupUi(this);
@@ -242,6 +241,9 @@ void GraspPlannerWindow::loadObject()
 	{
 		object = Obstacle::createBox(50.0f,50.0f,10.0f);
 	}
+	//Eigen::Vector3f minS,maxS;
+	//object->getCollisionModel()->getTriMeshModel()->getSize(minS,maxS);
+	//cout << "minS: \n" << minS << "\nMaxS:\n" << maxS << endl;
 	qualityMeasure.reset(new GraspStudio::GraspQualityMeasureWrenchSpace(object));
 	qualityMeasure->calculateObjectProperties();
 	approach.reset(new GraspStudio::ApproachMovementSurfaceNormal(object,eef));

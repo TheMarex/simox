@@ -1,0 +1,111 @@
+#Inventor V2.1 ascii
+
+Separator {
+
+Separator {
+    Transform {
+		translation 0 0 0
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+
+Separator {
+    Transform {
+		translation 0 0 20
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 0 0 40
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 0 0 60
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 0 0 80
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 0 0 100
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 16 0 120
+    }      
+    File {name duplo_4x2_yellow.wrl }
+}
+
+Separator {
+    Transform {
+		translation 48 0 120
+    }      
+    File {name duplo_4x2_yellow.wrl }
+}
+
+Separator {
+    Transform {
+		translation 112 0 120
+    }      
+    File {name duplo_4x2_yellow.wrl }
+}
+
+
+Separator {
+    Transform {
+		translation 128 0 100
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 128 0 80
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 128 0 60
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 128 0 40
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 128 0 20
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+Separator {
+    Transform {
+		translation 128 0 0
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+}

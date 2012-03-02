@@ -7,7 +7,8 @@ CMAKE_POLICY(VERSION 2.6)
 GET_FILENAME_COMPONENT (CurrentPath ${CMAKE_CURRENT_LIST_FILE} PATH)
 
 # Either you set your environment variable or you edit the path here manually
-SET(SIMOX_DIR_STANDARD "$ENV{Simox_DIR}")
+SET(SIMOX_DIR_STANDARD "${CurrentPath}/../../..")
+#SET(SIMOX_DIR_STANDARD "$ENV{Simox_DIR}")
 
 # be sure to have the absolute path
 get_filename_component(SIMOX_DIR_STANDARD ${SIMOX_DIR_STANDARD} ABSOLUTE)

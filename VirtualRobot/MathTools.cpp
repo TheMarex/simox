@@ -663,15 +663,17 @@ void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::convertMM2M( const std::vector<Conta
 void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const Eigen::Vector3f &v, bool endline )
 {
 	std::streamsize pr = std::cout.precision(2);
-	std::cout << v(0) << "," << v(1) << "," << v(2);
+	std::cout << std::fixed << v(0) << "," << v(1) << "," << v(2);
 	if (endline)
 		cout << endl;
+	std::cout << std::resetiosflags(std::ios::fixed);
 	std::cout.precision(pr);
 }
 void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const ContactPoint &p )
 {
 	std::streamsize pr = std::cout.precision(2);
-	std::cout << "p:" << p.p(0) << "," << p.p(1) << "," << p.p(2) << ", n:" << p.n(0) << "," << p.n(1) << "," << p.n(2) << std::endl;
+	std::cout << std::fixed << "p:" << p.p(0) << "," << p.p(1) << "," << p.p(2) << ", n:" << p.n(0) << "," << p.n(1) << "," << p.n(2) << std::endl;
+	std::cout << std::resetiosflags(std::ios::fixed);
 	std::cout.precision(pr);
 }
 
@@ -1167,6 +1169,60 @@ MathTools::Plane VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getFloorPlane()
 {
 	return Plane(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,1.0f));
 }
+
+MathTools::Line VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::intersectPlanes( const Plane &p1, const Plane &p2 )
+{
+	// algorithm taken from http://paulbourke.net/geometry/planeplane/
+
+	float dotpr = p1.n.dot(p2.n);
+	if (fabs(dotpr-1.0f) < 1.e-6)
+	{
+		// planes are parallel
+		MathTools::Line l(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,0));
+		return l;
+	}
+
+	Eigen::Vector3f dir = p1.n.cross(p2.n);
+
+	float d1 = p1.n.dot(p1.p);
+	float d2 = p2.n.dot(p2.p);
+
+	float det = p1.n.dot(p1.n) * p2.n.dot(p2.n) - p1.n.dot(p2.n)*p1.n.dot(p2.n);
+	if (fabs(det)<1e-9)
+		return MathTools::Line(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,0));
+
+	float c1 = (d1 * (p2.n.dot(p2.n)) - d2 * (p1.n.dot(p2.n))) / det;
+	float c2 = (d2 * (p1.n.dot(p1.n)) - d1 * (p1.n.dot(p2.n))) / det;
+	Eigen::Vector3f pos;
+	pos = c1 * p1.n + c2 * p2.n;
+	MathTools::Line l(pos,dir);
+	// move pos so that we have a position that is next to plane point p1.p
+	pos = nearestPointOnLine(l,p1.p);
+
+	return MathTools::Line(pos,dir);
+}
+
+Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::nearestPointOnLine( const Line &l, const Eigen::Vector3f &p )
+{
+	if (!l.isValid())
+		return Eigen::Vector3f::Zero();
+
+	Eigen::Vector3f lp = p - l.p;
+
+	float lambda = l.d.dot(lp);
+
+	Eigen::Vector3f res = l.p + lambda*l.d;
+	return res;
+}
+
+float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::distPointLine( const Line &l, const Eigen::Vector3f &p )
+{
+	if (!l.isValid())
+		return -1.0f;
+	Eigen::Vector3f p2 = nearestPointOnLine(l,p);
+	return (p2-p).norm();
+}
+
 
 
 

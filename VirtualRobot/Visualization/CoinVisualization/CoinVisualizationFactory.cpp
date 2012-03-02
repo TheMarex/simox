@@ -453,6 +453,22 @@ SoSeparator* CoinVisualizationFactory::CreateCoordSystemVisualization(float scal
 	return result;
 }
 
+SoSeparator* CoinVisualizationFactory::CreateText(const std::string &s)
+{
+	SoSeparator *textSep = new SoSeparator();
+	SoTranslation *moveT = new SoTranslation();
+	moveT->translation.setValue(2.0f,2.0f,0.0f);
+	textSep->addChild(moveT);
+	SoAsciiText *textNode = new SoAsciiText();
+	/*std::string text2(*text);
+	text2.replace( ' ', "_" );*/
+	SbString text2(s.c_str());
+	text2.apply( &IVToolsHelper_ReplaceSpaceWithUnderscore );
+	textNode->string.set(text2.getString());
+	textSep->addChild(textNode);
+	return textSep;
+}
+
 SoSeparator* CoinVisualizationFactory::CreateVertexVisualization( const Eigen::Vector3f &position, float radius, float transparency, float colorR /*= 0.5f*/, float colorG /*= 0.5f*/, float colorB /*= 0.5f*/ )
 {
 	SoSeparator *res = new SoSeparator;

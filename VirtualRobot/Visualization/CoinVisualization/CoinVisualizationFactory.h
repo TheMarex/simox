@@ -108,6 +108,8 @@ public:
 	*/
 	static SoSeparator* CreateEndEffectorVisualization(EndEffectorPtr eef, SceneObject::VisualizationType = SceneObject::Full);
 
+	static SoSeparator* CreateText(const std::string &s);
+
 	/*!
 		Convenient method to retrieve a coin visualization for a robot
 	*/

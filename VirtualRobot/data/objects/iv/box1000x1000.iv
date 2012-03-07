@@ -1,0 +1,12 @@
+#Inventor V1.0 ascii
+
+Separator {
+Translation{
+translation 0 150 -10
+}
+    Cube {
+        width 1000
+        height 500
+        depth 10
+   }
+}

@@ -527,6 +527,39 @@ int ReachabilitySpace::getMaxEntry()
 	return data->getMaxEntry();
 }
 
+int ReachabilitySpace::getMaxEntry( const Eigen::Vector3f &position_global )
+{
+	Eigen::Matrix4f gp;
+	gp.setIdentity();
+	gp.block(0,3,3,1) = position_global;
+
+	// get voxels
+	unsigned int v[6];
+
+	if (!getVoxelFromPose(gp,v))
+		return 0;
+	return getMaxEntry(v[0],v[1],v[2]);
+}
+
+int ReachabilitySpace::getMaxEntry( int x0, int x1, int x2 )
+{
+	int maxValue = 0;
+	for(int a = 0; a < getNumVoxels(3); a+=1)
+	{
+		for(int b = 0; b < getNumVoxels(4); b+=1)
+		{
+			for(int c = 0; c < getNumVoxels(5); c+=1)
+			{
+				int value = data->get(x0,x1,x2,a, b, c);
+				if (value>=maxValue)
+					maxValue = value;
+			}
+		}
+	}
+	return maxValue;
+
+}
+
 float ReachabilitySpace::getVoxelSize(int dim)
 {
 	if(dim < 0 || dim > 6)
@@ -626,6 +659,18 @@ bool ReachabilitySpace::getVoxelFromPose(float x[6], unsigned int v[6])
 		v[i] = a;
 	}
 	return true;
+}
+
+bool ReachabilitySpace::getVoxelFromPose( const Eigen::Matrix4f &globalPose, unsigned int v[6] )
+{
+	float x[6];
+
+	Eigen::Matrix4f p = globalPose;
+	if (baseNode)
+		p = baseNode->toLocalCoordinateSystem(p);
+
+	MathTools::eigen4f2rpy(p,x);
+	return getVoxelFromPose(x,v);
 }
 
 void ReachabilitySpace::addRandomTCPPoses( unsigned int loops, bool checkForSelfCollisions )
@@ -838,16 +883,10 @@ unsigned char ReachabilitySpace::getEntry( const Eigen::Matrix4f &globalPose )
 		VR_ERROR << "NULL DATA" << endl;
 		return 0;
 	}
-	Eigen::Matrix4f p = globalPose;
-	if (baseNode)
-		p = baseNode->toLocalCoordinateSystem(p);
-
-	float x[6];
-	MathTools::eigen4f2rpy(p,x);
 
 	// get voxels
 	unsigned int v[6];
-	if (getVoxelFromPose(x,v))
+	if (getVoxelFromPose(globalPose,v))
 	{
 		return data->get(v);
 	} else
@@ -983,6 +1022,24 @@ float ReachabilitySpace::getMaxBound( int dim )
 unsigned char ReachabilitySpace::getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f)
 {
 	return data->get(a,b,c,d,e,f);
+}
+
+int ReachabilitySpace::getMaxSummedAngleReachablity()
+{
+	int maxValue = 0;
+	for(int a = 0; a < getNumVoxels(0); a+=1)
+	{
+		for(int b = 0; b < getNumVoxels(1); b+=1)
+		{
+			for(int c = 0; c < getNumVoxels(2); c+=1)
+			{
+				int value = sumAngleReachabilities(a, b, c);
+				if (value>=maxValue)
+					maxValue = value;
+			}
+		}
+	}
+	return maxValue;
 }
 
 

@@ -272,6 +272,33 @@ public:
 
 	unsigned char getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f);
 
+	/*!
+		Sums all angle (x3,x4,x5) entries for the given position.
+	*/
+	int sumAngleReachabilities(int x0, int x1, int x2);
+
+	/*!
+		Searches all angle entries (x3,x4,x5) for maximum entry.
+		(x0,x1,x2) is the voxel position.
+	*/
+	int getMaxEntry(int x0, int x1, int x2);
+
+	/*!
+		Returns the maximum reachability entry that can be achieved by an arbitrary orientation at the given position.
+	*/
+	int getMaxEntry( const Eigen::Vector3f &position_global );
+
+	/*!
+		Get the corresponding voxel. 
+		If false is returned the pose is outside the covered workspace.
+	*/
+	bool getVoxelFromPose(const Eigen::Matrix4f &globalPose, unsigned int v[6]);
+
+	/*!
+		Returns the maximum that can be achieved by calling sumAngleReachabilities() 
+	*/
+	int getMaxSummedAngleReachablity();
+
 
 protected:
 	//! Specific methods to read/write strings from/to reachability files
@@ -291,9 +318,9 @@ protected:
 	//! Refetch the base joint's transformation, in case this joint has moved
 	void updateBaseTransformation();
 
-	int sumAngleReachabilities(int x0, int x1, int x2);
-
 	bool getVoxelFromPose(float x[6], unsigned int v[6]);
+
+
 	RobotPtr robot;
 	RobotNodePtr baseNode;
 	RobotNodePtr tcpNode;

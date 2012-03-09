@@ -1,16 +1,16 @@
-#include "ReachabilitySpace.h"
-#include "VirtualRobotException.h"
-#include "Robot.h"
-#include "CompressionRLE.h"
-#include "SceneObjectSet.h"
-#include "Nodes/RobotNode.h"
-#include "Visualization/Visualization.h"
-#include "Visualization/VisualizationFactory.h"
-#include "CollisionDetection/CollisionChecker.h"
-#include "Visualization/ColorMap.h"
-#include "ManipulationObject.h"
-#include "Grasp.h"
-#include "GraspSet.h"
+#include "WorkspaceRepresentation.h"
+#include "../VirtualRobotException.h"
+#include "../Robot.h"
+#include "../CompressionRLE.h"
+#include "../SceneObjectSet.h"
+#include "../Nodes/RobotNode.h"
+#include "../Visualization/Visualization.h"
+#include "../Visualization/VisualizationFactory.h"
+#include "../CollisionDetection/CollisionChecker.h"
+#include "../Visualization/ColorMap.h"
+#include "../ManipulationObject.h"
+#include "../Grasp.h"
+#include "../GraspSet.h"
 #include <fstream>
 #include <cmath>
 #include <float.h>
@@ -19,134 +19,22 @@
 namespace VirtualRobot
 {
 
-ReachabilitySpaceData::ReachabilitySpaceData(unsigned int size1, unsigned int size2, unsigned int size3,
-                                             unsigned int size4, unsigned int size5, unsigned int size6, bool adjustOnOverflow)
-{
-	unsigned long long size = (unsigned long long)size1 * (unsigned long long)size2 * (unsigned long long)size3 * (unsigned long long)size4 * (unsigned long long)size5 * (unsigned long long)size6;
-	if (size>UINT_MAX)
-	{
-		VR_ERROR << "Could not assign " << size << " bytes of memory (>UINT_MAX). Reduce size of reachability space..." << endl;
-	}
-	try
-	{
-	  data = new unsigned char[(unsigned int)size];
-	} catch (const std::exception &e)
-	{
-		VR_ERROR << "Exception: " << e.what() << endl << "Could not assign " << size << " bytes of memory. Reduce size of reachability space..." << endl;
-		throw;
-	} catch (...)
-	{
-		VR_ERROR << "Could not assign " << size << " bytes of memory. Reduce size of reachability space..." << endl;
-		throw;
-	}
-		
-
-    sizes[0] = size1;
-    sizes[1] = size2;
-    sizes[2] = size3;
-    sizes[3] = size4;
-    sizes[4] = size5;
-    sizes[5] = size6;
-	sizeX0 = sizes[1]*sizes[2]*sizes[3]*sizes[4]*sizes[5];
-	sizeX1 =  sizes[2]*sizes[3]*sizes[4]*sizes[5];
-	sizeX2 = sizes[3]*sizes[4]*sizes[5];
-	sizeX3 = sizes[4]*sizes[5];
-	sizeX4 = sizes[5];
-	maxEntry = 0;
-	voxelFilledCount = 0;
-	this->adjustOnOverflow = adjustOnOverflow;
-
-	memset(data,0,getSize()*sizeof(unsigned char));
-}
-
-ReachabilitySpaceData::~ReachabilitySpaceData()
-{
-	delete[] data;
-}
-
-int ReachabilitySpaceData::getSize()
-{
-	return sizes[0]*sizes[1]*sizes[2]*sizes[3]*sizes[4]*sizes[5];
-}
-
-void ReachabilitySpaceData::setData(unsigned char *data)
-{
-	memcpy(this->data, data, getSize()*sizeof(unsigned char));
-}
-
-const unsigned char *ReachabilitySpaceData::getData() const
-{
-	return data;
-}
-
-unsigned char ReachabilitySpaceData::getMaxEntry()
-{
-	return maxEntry;
-}
-
-unsigned int ReachabilitySpaceData::getVoxelFilledCount()
-{
-	return voxelFilledCount;
-}
-
-void ReachabilitySpaceData::binarize()
-{
-
-	for (unsigned int a=0;a<sizes[0];a++)
-	{
-		for (unsigned int b=0;b<sizes[1];b++)
-		{
-			for (unsigned int c=0;c<sizes[2];c++)
-			{
-				for (unsigned int d=0;d<sizes[3];d++)
-				{
-					for (unsigned int e=0;e<sizes[4];e++)
-					{
-						for (unsigned int f=0;f<sizes[5];f++)
-						{
-							unsigned int pos = getPos(a,b,c,d,e,f);
-							if (data[pos]>1)
-								data[pos] = 1;
-						}
-					}
-				}
-			}
-		}
-	}
-	maxEntry = 1;
-}
-
-void ReachabilitySpaceData::bisectData()
-{
-	for (unsigned int x0=0;x0<sizes[0];x0++)
-		for (unsigned int x1=0;x1<sizes[1];x1++)
-			for (unsigned int x2=0;x2<sizes[2];x2++)
-				for (unsigned int x3=0;x3<sizes[3];x3++)
-					for (unsigned int x4=0;x4<sizes[4];x4++)
-						for (unsigned int x5=0;x5<sizes[5];x5++)
-						{
-							unsigned char c = data[x0 * sizeX0 + x1 * sizeX1 + x2 * sizeX2 + x3 * sizeX3 + x4 * sizeX4 + x5];
-							if (c>1)
-								data[x0 * sizeX0 + x1 * sizeX1 + x2 * sizeX2 + x3 * sizeX3 + x4 * sizeX4 + x5] = c/2;
-						}
-	maxEntry = maxEntry / 2;
-}
 
 
-
-ReachabilitySpace::ReachabilitySpace(RobotPtr robot)
+WorkspaceRepresentation::WorkspaceRepresentation(RobotPtr robot)
 {
 	THROW_VR_EXCEPTION_IF(!robot,"Need a robot ptr here");
 	this->robot = robot;
+	type = "WorkspaceRepresentation";
 	reset();
 }
 
-void ReachabilitySpace::updateBaseTransformation()
+void WorkspaceRepresentation::updateBaseTransformation()
 {
 	baseTransformation = baseNode->getGlobalPose().inverse();
 }
 
-int ReachabilitySpace::sumAngleReachabilities(int x0, int x1, int x2)
+int WorkspaceRepresentation::sumAngleReachabilities(int x0, int x1, int x2) const
 {
 	int res = 0;
 	for(int d = 0; d < numVoxels[3]; d++)
@@ -161,7 +49,7 @@ int ReachabilitySpace::sumAngleReachabilities(int x0, int x1, int x2)
 }
 
 
-bool ReachabilitySpace::readString(std::string &res, std::ifstream &file)
+bool WorkspaceRepresentation::readString(std::string &res, std::ifstream &file)
 {
 	int length = read<int>(file);
     if(length <= 0)
@@ -178,37 +66,37 @@ bool ReachabilitySpace::readString(std::string &res, std::ifstream &file)
     return true;
 }
 
-void ReachabilitySpace::writeString(std::ofstream &file, const std::string &value)
+void WorkspaceRepresentation::writeString(std::ofstream &file, const std::string &value)
 {
 	int len = value.length();
 	file.write((char *)&len, sizeof(int));
 	file.write(value.c_str(), len);
 }
 
-template<typename T> T ReachabilitySpace::read(std::ifstream &file)
+template<typename T> T WorkspaceRepresentation::read(std::ifstream &file)
 {
 	T t;
 	file.read((char *)&t, sizeof(T));
 	return t;
 }
 
-template<typename T> void ReachabilitySpace::readArray(T *res, int num, std::ifstream &file)
+template<typename T> void WorkspaceRepresentation::readArray(T *res, int num, std::ifstream &file)
 {
 	file.read((char *)res, num * sizeof(T));
 }
 
-template<typename T> void ReachabilitySpace::write(std::ofstream &file, T value)
+template<typename T> void WorkspaceRepresentation::write(std::ofstream &file, T value)
 {
 	file.write((char *)&value, sizeof(T));
 }
 
-template<typename T> void ReachabilitySpace::writeArray(std::ofstream &file, const T *value, int num)
+template<typename T> void WorkspaceRepresentation::writeArray(std::ofstream &file, const T *value, int num)
 {
 	file.write((char *)value, num * sizeof(T));
 }
 
 
-void ReachabilitySpace::uncompressData(const unsigned char *source, int size, unsigned char *dest)
+void WorkspaceRepresentation::uncompressData(const unsigned char *source, int size, unsigned char *dest)
 {
 	unsigned char count;
 	unsigned char value;
@@ -224,7 +112,7 @@ void ReachabilitySpace::uncompressData(const unsigned char *source, int size, un
 	}
 }
 
-unsigned char *ReachabilitySpace::compressData(const unsigned char *source, int size, int &compressedSize)
+unsigned char *WorkspaceRepresentation::compressData(const unsigned char *source, int size, int &compressedSize)
 {
 	// on large arrays sometimes an out-of-memory exception is thrown, so in order to reduce the size of the array, we assume we can compress it
 	// hence, we have to check if the compressed size does not exceed the original size on every pos increase
@@ -235,11 +123,11 @@ unsigned char *ReachabilitySpace::compressData(const unsigned char *source, int 
 	}
 	catch (std::exception e)
 	{
-		VR_ERROR << "Error:" << e.what() << endl << "Could not assign " << size << " bytes of memory. Reduce size of reachability space..." << endl;
+		VR_ERROR << "Error:" << e.what() << endl << "Could not assign " << size << " bytes of memory. Reduce size of WorkspaceRepresentation data..." << endl;
 		throw;
 	} catch (...)
 	{
-		VR_ERROR << "Could not assign " << size << " bytes of memory. Reduce size of reachability space..." << endl;
+		VR_ERROR << "Could not assign " << size << " bytes of memory. Reduce size of WorkspaceRepresentation data..." << endl;
 		throw;
 	}
 	int pos = 0;
@@ -256,7 +144,7 @@ unsigned char *ReachabilitySpace::compressData(const unsigned char *source, int 
 				dest[pos] = 255;
 				dest[pos+1] = curValue;
 				pos += 2;
-				THROW_VR_EXCEPTION_IF(pos>=size, "Could not perform run-length compression. Data is too clutered!!!");
+				THROW_VR_EXCEPTION_IF(pos>=size, "Could not perform run-length compression. Data is too cluttered!!!");
 
 				count = 1;
 			}
@@ -268,7 +156,7 @@ unsigned char *ReachabilitySpace::compressData(const unsigned char *source, int 
 			dest[pos] = count;
 			dest[pos+1] = curValue;
 			pos += 2;
-			THROW_VR_EXCEPTION_IF(pos>=size, "Could not perform run-length compression. Data is too clutered!!!");
+			THROW_VR_EXCEPTION_IF(pos>=size, "Could not perform run-length compression. Data is too cluttered!!!");
 
 			curValue = source[i];
 			count = 1;
@@ -279,13 +167,13 @@ unsigned char *ReachabilitySpace::compressData(const unsigned char *source, int 
 		dest[pos] = count;
 		dest[pos+1] = curValue;
 		pos += 2;
-		THROW_VR_EXCEPTION_IF(pos>=size, "Could not perform run-length compression. Data is too clutered!!!");
+		THROW_VR_EXCEPTION_IF(pos>=size, "Could not perform run-length compression. Data is too cluttered!!!");
 	}
 	compressedSize = pos;
 	return dest;
 }
 
-void ReachabilitySpace::load(const std::string &filename)
+void WorkspaceRepresentation::load(const std::string &filename)
 {
 	std::ifstream file(filename.c_str(), std::ios::in | std::ios::binary);
 	THROW_VR_EXCEPTION_IF(!file, "File could not be read.");
@@ -293,10 +181,22 @@ void ReachabilitySpace::load(const std::string &filename)
 	try
 	{
 		std::string tmpString;
+		    
+		std::string tmpStr2 = type;
+		tmpStr2 += " Binary File";
 
 		// Check file type
 		readString(tmpString, file);
-		THROW_VR_EXCEPTION_IF(tmpString != "ReachabilitySpace Binary File", "Wrong file format.");
+		bool fileTypeOK = false;
+		if (tmpString == "WorkspaceRepresentation Binary File" ||
+		    tmpString == "Reachability Binary File" ||
+		    tmpString == "Manipulability Binary File" ||
+		    tmpString == "ReachabilitySpace Binary File" ||
+		    tmpString == tmpStr2)
+		    fileTypeOK = true;
+		    
+		    
+		THROW_VR_EXCEPTION_IF(!fileTypeOK, "Wrong file format.");
 
 		// Check version
 		int version[2];
@@ -382,7 +282,7 @@ void ReachabilitySpace::load(const std::string &filename)
 		THROW_VR_EXCEPTION_IF(tmpString != "DATA_START", "Bad file format, expecting DATA_START.");
 
 		int size = numVoxels[0]*numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5];
-		data.reset(new ReachabilitySpaceData(numVoxels[0], numVoxels[1], numVoxels[2], numVoxels[3], numVoxels[4], numVoxels[5],true));
+		data.reset(new WorkspaceData(numVoxels[0], numVoxels[1], numVoxels[2], numVoxels[3], numVoxels[4], numVoxels[5],true));
 		unsigned char *d = new unsigned char[size];
 
 		if(version[0] == 1 && version[1] <= 2)
@@ -421,9 +321,9 @@ void ReachabilitySpace::load(const std::string &filename)
 	file.close();
 }
 
-void ReachabilitySpace::save(const std::string &filename)
+void WorkspaceRepresentation::save(const std::string &filename)
 {
-	THROW_VR_EXCEPTION_IF(!data || !nodeSet, "No reachability space loaded");
+	THROW_VR_EXCEPTION_IF(!data || !nodeSet, "No WorkspaceRepresentation data loaded");
 
 	std::ofstream file;
 	file.open(filename.c_str(), std::ios::out | std::ios::binary);
@@ -432,7 +332,9 @@ void ReachabilitySpace::save(const std::string &filename)
 	try
 	{
 		// File type
-		writeString(file, "ReachabilitySpace Binary File");
+		std::string tmpStr = type;
+		tmpStr += " Binary File";
+		writeString(file, tmpStr);
 
 		// Version
 		write<int>(file, 2);
@@ -520,14 +422,14 @@ void ReachabilitySpace::save(const std::string &filename)
 	file.close();
 }
 
-int ReachabilitySpace::getMaxEntry()
+int WorkspaceRepresentation::getMaxEntry() const
 {
 	if (!data)
 		return 0;
 	return data->getMaxEntry();
 }
 
-int ReachabilitySpace::getMaxEntry( const Eigen::Vector3f &position_global )
+int WorkspaceRepresentation::getMaxEntry( const Eigen::Vector3f &position_global ) const
 {
 	Eigen::Matrix4f gp;
 	gp.setIdentity();
@@ -541,7 +443,7 @@ int ReachabilitySpace::getMaxEntry( const Eigen::Vector3f &position_global )
 	return getMaxEntry(v[0],v[1],v[2]);
 }
 
-int ReachabilitySpace::getMaxEntry( int x0, int x1, int x2 )
+int WorkspaceRepresentation::getMaxEntry( int x0, int x1, int x2 ) const
 {
 	int maxValue = 0;
 	for(int a = 0; a < getNumVoxels(3); a+=1)
@@ -560,7 +462,7 @@ int ReachabilitySpace::getMaxEntry( int x0, int x1, int x2 )
 
 }
 
-float ReachabilitySpace::getVoxelSize(int dim)
+float WorkspaceRepresentation::getVoxelSize(int dim) const
 {
 	if(dim < 0 || dim > 6)
 		return 0.0f;
@@ -569,23 +471,23 @@ float ReachabilitySpace::getVoxelSize(int dim)
 	return spaceSize[dim] / numVoxels[dim];
 }
 
-RobotNodePtr ReachabilitySpace::getBaseNode()
+RobotNodePtr WorkspaceRepresentation::getBaseNode()
 {
 	return baseNode;
 }
 
-RobotNodePtr ReachabilitySpace::getTCP()
+RobotNodePtr WorkspaceRepresentation::getTCP()
 {
 	return tcpNode;
 }
 
-RobotNodeSetPtr ReachabilitySpace::getNodeSet()
+RobotNodeSetPtr WorkspaceRepresentation::getNodeSet()
 {
 	return nodeSet;
 }
-void ReachabilitySpace::setCurrentTCPPoseEntryIfLower(unsigned char e)
+void WorkspaceRepresentation::setCurrentTCPPoseEntryIfLower(unsigned char e)
 {
-	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No reachability space loaded");
+	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No WorkspaceRepresentation data loaded");
 
 	Eigen::Matrix4f p = tcpNode->getGlobalPose();
 	if (baseNode)
@@ -616,37 +518,7 @@ void ReachabilitySpace::setCurrentTCPPoseEntryIfLower(unsigned char e)
 	buildUpLoops++;
 }
 
-void ReachabilitySpace::addCurrentTCPPose()
-{	
-	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No reachability space loaded");
-
-	Eigen::Matrix4f p = tcpNode->getGlobalPose();
-	if (baseNode)
-		p = baseNode->toLocalCoordinateSystem(p);
-
-	float x[6];
-	MathTools::eigen4f2rpy(p,x);
-
-	// check for achieved values
-	for (int i=0;i<6;i++)
-	{
-		if (x[i] < achievedMinValues[i])
-			achievedMinValues[i] = x[i];
-		if (x[i] > achievedMaxValues[i])
-			achievedMaxValues[i] = x[i];
-	}
-
-	// get voxels
-	unsigned int v[6];
-	if (getVoxelFromPose(x,v))
-	{
-		data->increaseDatum(v);
-	}
-
-	buildUpLoops++;
-}
-
-bool ReachabilitySpace::getVoxelFromPose(float x[6], unsigned int v[6])
+bool WorkspaceRepresentation::getVoxelFromPose(float x[6], unsigned int v[6]) const
 {
 	int a;
 	for (int i=0;i<6;i++)
@@ -661,7 +533,7 @@ bool ReachabilitySpace::getVoxelFromPose(float x[6], unsigned int v[6])
 	return true;
 }
 
-bool ReachabilitySpace::getVoxelFromPose( const Eigen::Matrix4f &globalPose, unsigned int v[6] )
+bool WorkspaceRepresentation::getVoxelFromPose( const Eigen::Matrix4f &globalPose, unsigned int v[6] ) const
 {
 	float x[6];
 
@@ -673,29 +545,7 @@ bool ReachabilitySpace::getVoxelFromPose( const Eigen::Matrix4f &globalPose, uns
 	return getVoxelFromPose(x,v);
 }
 
-void ReachabilitySpace::addRandomTCPPoses( unsigned int loops, bool checkForSelfCollisions )
-{
-	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "Reachability space not initialized");
-
-	std::vector<float> c;
-	nodeSet->getJointValues(c);
-	bool visuSate = robot->getUpdateVisualizationStatus();
-	robot->setUpdateVisualization(false);
-
-	updateBaseTransformation();
-
-	for (unsigned int i=0;i<loops;i++)
-	{
-		if (setRobotNodesToRandomConfig(checkForSelfCollisions))
-			addCurrentTCPPose();
-		else
-			VR_WARNING << "Could not find collision-free configuration...";
-	}
-	robot->setUpdateVisualization(visuSate);
-	nodeSet->setJointValues(c);
-}
-
-bool ReachabilitySpace::setRobotNodesToRandomConfig( bool checkForSelfCollisions /*= true*/ )
+bool WorkspaceRepresentation::setRobotNodesToRandomConfig( bool checkForSelfCollisions /*= true*/ )
 {
 	static const float randMult = (float)(1.0/(double)(RAND_MAX));
 	float rndValue;
@@ -725,10 +575,11 @@ bool ReachabilitySpace::setRobotNodesToRandomConfig( bool checkForSelfCollisions
 	return false;
 }
 
-void ReachabilitySpace::print()
+void WorkspaceRepresentation::print()
 {
 	cout << "-----------------------------------------------------------" << endl;
-	cout << "ReachabilitySpace - Status:" << endl;
+	cout << type << " - Status:" << endl;
+	
 	if (data)
 	{
 		if (nodeSet)
@@ -756,11 +607,11 @@ void ReachabilitySpace::print()
 		
 		cout << "Used " << buildUpLoops << " loops for building the random configs " << endl;
 		cout << "Discretization step sizes: Translation: " << discretizeStepTranslation << " - Rotation: " << discretizeStepRotation << endl;
-		cout << "ReachabilitySpace space extends: " << numVoxels[0] << "x" << numVoxels[1] << "x" << numVoxels[2] << "x" << numVoxels[3] << "x" << numVoxels[4] << "x" << numVoxels[5] << endl;
+		cout << type << " data extends: " << numVoxels[0] << "x" << numVoxels[1] << "x" << numVoxels[2] << "x" << numVoxels[3] << "x" << numVoxels[4] << "x" << numVoxels[5] << endl;
 		cout << "Filled " << data->getVoxelFilledCount() << " of " << (numVoxels[0]*numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5]) << " voxels" << endl;
 		cout << "Collisions: " << collisionConfigs << endl;
 		cout << "Maximum entry in a voxel: " << (int)data->getMaxEntry() << endl;
-		cout << "Reachability workspace extend (as defined on construction):" << endl;
+		cout << type << " workspace extend (as defined on construction):" << endl;
 		cout << "Min boundary: ";
 		for (int i=0;i<6;i++)
 			cout << minBounds[i] << ",";
@@ -780,13 +631,13 @@ void ReachabilitySpace::print()
 		cout << endl;
 	} else
 	{
-		cout << "ReachabilitySpace not created yet..." << endl;
+		cout << type << " not created yet..." << endl;
 	}
 	cout << "-----------------------------------------------------------" << endl;
 	cout << endl;
 }
 
-void ReachabilitySpace::reset()
+void WorkspaceRepresentation::reset()
 {
 	data.reset();
 	nodeSet.reset();
@@ -798,8 +649,6 @@ void ReachabilitySpace::reset()
 	collisionConfigs = 0;
 	discretizeStepTranslation = 0;
 	discretizeStepRotation = 0;
-	//voxelFilledCount = 0;
-	//maxVoxelEntry = 0;
 	for (int i=0;i<6;i++)
 	{
 		minBounds[i] = FLT_MAX;
@@ -812,7 +661,7 @@ void ReachabilitySpace::reset()
 	baseTransformation.setIdentity();
 }
 
-void ReachabilitySpace::initialize( RobotNodeSetPtr nodeSet, float discretizeStepTranslation, float discretizeStepRotation, 
+void WorkspaceRepresentation::initialize( RobotNodeSetPtr nodeSet, float discretizeStepTranslation, float discretizeStepRotation, 
 									float minBounds[6], float maxBounds[6],  
 									SceneObjectSetPtr staticCollisionModel,
 									SceneObjectSetPtr dynamicCollisionModel,
@@ -838,7 +687,7 @@ void ReachabilitySpace::initialize( RobotNodeSetPtr nodeSet, float discretizeSte
 	{
 		THROW_VR_EXCEPTION("Robot does not know basenode:" << baseNode->getName());
 	}
-	THROW_VR_EXCEPTION_IF (nodeSet->hasRobotNode(baseNode)," baseNode is part of RobotNodeSet! This is not a good idea, since the globalPose of the baseNode will change during buildup of reachability data...");
+	THROW_VR_EXCEPTION_IF (nodeSet->hasRobotNode(baseNode)," baseNode is part of RobotNodeSet! This is not a good idea, since the globalPose of the baseNode will change during buildup of WorkspaceRepresentation data...");
 	updateBaseTransformation();
 	this->staticCollisionModel = staticCollisionModel;
 	this->dynamicCollisionModel = dynamicCollisionModel;
@@ -866,17 +715,17 @@ void ReachabilitySpace::initialize( RobotNodeSetPtr nodeSet, float discretizeSte
 			numVoxels[i] = (int)(spaceSize[i] / discretizeStepRotation) + 1;
 		THROW_VR_EXCEPTION_IF( (numVoxels[i]<=0), " numVoxels <= 0 in dimension " << i);
 	}
-	data.reset(new ReachabilitySpaceData(numVoxels[0],numVoxels[1],numVoxels[2],numVoxels[3],numVoxels[4],numVoxels[5],adjustOnOverflow));
+	data.reset(new WorkspaceData(numVoxels[0],numVoxels[1],numVoxels[2],numVoxels[3],numVoxels[4],numVoxels[5],adjustOnOverflow));
 
 }
 
-void ReachabilitySpace::binarize()
+void WorkspaceRepresentation::binarize()
 {
 	if (data)
 		data->binarize();
 }
 
-unsigned char ReachabilitySpace::getEntry( const Eigen::Matrix4f &globalPose )
+unsigned char WorkspaceRepresentation::getEntry( const Eigen::Matrix4f &globalPose )
 {
 	if (!data)
 	{
@@ -891,34 +740,15 @@ unsigned char ReachabilitySpace::getEntry( const Eigen::Matrix4f &globalPose )
 		return data->get(v);
 	} else
 	{
-		// position is outside reachability data
+		// position is outside WorkspaceRepresentation data
 		return 0;
 	}
 
 
 }
 
-bool ReachabilitySpace::isReachable( const Eigen::Matrix4f &globalPose )
-{
-	return (getEntry(globalPose) > 0);
-}
 
-VirtualRobot::GraspSetPtr ReachabilitySpace::getReachableGrasps( GraspSetPtr grasps, ManipulationObjectPtr object )
-{
-	THROW_VR_EXCEPTION_IF(!object,"no object");
-	THROW_VR_EXCEPTION_IF(!grasps,"no grasps");
-
-	GraspSetPtr result(new GraspSet(grasps->getName(),grasps->getRobotType(),grasps->getEndEffector()));
-	for (unsigned int i=0; i<grasps->getSize(); i++)
-	{
-		Eigen::Matrix4f m = grasps->getGrasp(i)->getTcpPoseGlobal(object->getGlobalPose());
-		if (isReachable(m))
-			result->addGrasp(grasps->getGrasp(i));
-	}
-	return result;
-}
-
-Eigen::Matrix4f ReachabilitySpace::sampleReachablePose()
+Eigen::Matrix4f WorkspaceRepresentation::sampleCoveredPose()
 {
 	int maxLoops = 10000;
 	int i = 0;
@@ -953,7 +783,7 @@ Eigen::Matrix4f ReachabilitySpace::sampleReachablePose()
 	return m;
 }
 
-int ReachabilitySpace::fillHoles()
+int WorkspaceRepresentation::fillHoles()
 {
 	unsigned int x[6];
 	int res = 0;
@@ -998,33 +828,33 @@ int ReachabilitySpace::fillHoles()
 	return res;
 }
 
-int ReachabilitySpace::getNumVoxels( int dim )
+int WorkspaceRepresentation::getNumVoxels( int dim ) const
 {
 	VR_ASSERT((dim>=0 && dim<6));
 
 	return numVoxels[dim];
 }
 
-float ReachabilitySpace::getMinBound( int dim )
+float WorkspaceRepresentation::getMinBound( int dim ) const
 {
 	VR_ASSERT((dim>=0 && dim<6));
 
 	return minBounds[dim];
 }
 
-float ReachabilitySpace::getMaxBound( int dim )
+float WorkspaceRepresentation::getMaxBound( int dim ) const
 {
 	VR_ASSERT((dim>=0 && dim<6));
 
 	return maxBounds[dim];
 }
 
-unsigned char ReachabilitySpace::getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f)
+unsigned char WorkspaceRepresentation::getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f) const
 {
 	return data->get(a,b,c,d,e,f);
 }
 
-int ReachabilitySpace::getMaxSummedAngleReachablity()
+int WorkspaceRepresentation::getMaxSummedAngleReachablity()
 {
 	int maxValue = 0;
 	for(int a = 0; a < getNumVoxels(0); a+=1)
@@ -1042,5 +872,39 @@ int ReachabilitySpace::getMaxSummedAngleReachablity()
 	return maxValue;
 }
 
+bool WorkspaceRepresentation::isCovered( const Eigen::Matrix4f &globalPose )
+{
+	return (getEntry(globalPose) > 0);
+}
+
+void WorkspaceRepresentation::setCurrentTCPPoseEntry( unsigned char e )
+{
+	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No WorkspaceRepresentation data loaded");
+
+	Eigen::Matrix4f p = tcpNode->getGlobalPose();
+	if (baseNode)
+		p = baseNode->toLocalCoordinateSystem(p);
+
+	float x[6];
+	MathTools::eigen4f2rpy(p,x);
+
+	// check for achieved values
+	for (int i=0;i<6;i++)
+	{
+		if (x[i] < achievedMinValues[i])
+			achievedMinValues[i] = x[i];
+		if (x[i] > achievedMaxValues[i])
+			achievedMaxValues[i] = x[i];
+	}
+
+	// get voxels
+	unsigned int v[6];
+	if (getVoxelFromPose(x,v))
+	{
+		data->setDatum(v,e);
+	}
+
+	buildUpLoops++;
+}
 
 } // namespace VirtualRobot

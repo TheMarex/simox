@@ -1,7 +1,7 @@
 
 #include "stabilityWindow.h"
 #include "VirtualRobot/EndEffector/EndEffector.h"
-#include "VirtualRobot/ReachabilitySpace.h"
+#include "VirtualRobot/Workspace/Reachability.h"
 #include "VirtualRobot/XML/RobotIO.h"
 #include "VirtualRobot/Visualization/CoinVisualization/CoinVisualizationFactory.h"
 #include "VirtualRobot/Visualization/CoinVisualization/CoinVisualizationNode.h"

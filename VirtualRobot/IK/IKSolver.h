@@ -93,9 +93,9 @@ public:
 
 	/*!
 		When set, the reachability data is used to quickly decide if a given pose or grasp is reachable or not.
-		This option can be enabled by setting the reachability space and it can be disabled by setting an empty ReachabilitySpacePtr.
+		This option can be enabled by setting the reachability space and it can be disabled by setting an empty ReachabilityPtr.
 	*/
-	virtual void setReachabilityCheck(ReachabilitySpacePtr reachabilitySpace);
+	virtual void setReachabilityCheck(ReachabilityPtr reachabilitySpace);
 	
 	/*!
 	    This method solves the IK up to the specified max error. On success, the joints of the the corresponding RobotNodeSet are set to the IK solution.
@@ -162,7 +162,7 @@ protected:
 	float maxErrorPositionMM;
 	float maxErrorOrientationRad;
 
-	ReachabilitySpacePtr reachabilitySpace;
+	ReachabilityPtr reachabilitySpace;
 };
 
 typedef boost::shared_ptr<IKSolver> IKSolverPtr;

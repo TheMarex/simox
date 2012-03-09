@@ -1,7 +1,7 @@
 
 #include "reachabilityWindow.h"
 #include "VirtualRobot/EndEffector/EndEffector.h"
-#include "VirtualRobot/ReachabilitySpace.h"
+#include "VirtualRobot/Workspace/Reachability.h"
 #include "VirtualRobot/XML/RobotIO.h"
 #include "VirtualRobot/Visualization/CoinVisualization/CoinVisualizationFactory.h"
 #include <VirtualRobot/RuntimeEnvironment.h>
@@ -416,7 +416,7 @@ void reachabilityWindow::createReach()
 	}
 	if (diag.exec())
 	{
-		reachSpace.reset(new ReachabilitySpace(robot));
+		reachSpace.reset(new Reachability(robot));
 		float minB[6];// = {-1000.0f,-1000.0f,-1000.0f,(float)-M_PI,(float)-M_PI,(float)-M_PI};
 		float maxB[6];// ={1000.0f,1000.0f,1000.0f,(float)M_PI,(float)M_PI,(float)M_PI};
 		minB[0] = UICreate.doubleSpinBoxMinX->value();
@@ -487,7 +487,7 @@ void reachabilityWindow::loadReachFile(std::string filename)
 	if (!robot)
 		return;
 	reachFile = filename;
-	reachSpace.reset(new ReachabilitySpace(robot));
+	reachSpace.reset(new Reachability(robot));
 	reachSpace->load(reachFile);
 	reachSpace->print();
 	if (reachSpace->getNodeSet())

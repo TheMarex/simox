@@ -143,14 +143,15 @@ namespace VirtualRobot
 	class Visualization;
     class VisualizationNode;
     class VisualizationFactory;
-    class ReachabilitySpace;
-	class ReachabilitySpaceData;
 	class Scene;
 	class RobotConfig;
 	class Grasp;
 	class GraspSet;
 	class ManipulationObject;
 	class CDManager;
+	class Reachability;
+	class WorkspaceRepresentation;
+	class WorkspaceData;
 
     typedef boost::shared_ptr<RobotNode> RobotNodePtr;
     typedef boost::shared_ptr<RobotNodeSet> RobotNodeSetPtr;
@@ -170,8 +171,9 @@ namespace VirtualRobot
     typedef boost::shared_ptr<Visualization> VisualizationPtr;
     typedef boost::shared_ptr<VisualizationNode> VisualizationNodePtr;
     typedef boost::shared_ptr<VisualizationFactory> VisualizationFactoryPtr;
-    typedef boost::shared_ptr<ReachabilitySpace> ReachabilitySpacePtr;
-	typedef boost::shared_ptr<ReachabilitySpaceData> ReachabilitySpaceDataPtr;
+    typedef boost::shared_ptr<WorkspaceData> WorkspaceDataPtr;
+	typedef boost::shared_ptr<WorkspaceRepresentation> WorkspaceRepresentationPtr;
+	typedef boost::shared_ptr<Reachability> ReachabilityPtr;
 	typedef boost::shared_ptr<Scene> ScenePtr;
 	typedef boost::shared_ptr<RobotConfig> RobotConfigPtr;
 	typedef boost::shared_ptr<Grasp> GraspPtr;

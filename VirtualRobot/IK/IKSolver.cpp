@@ -9,7 +9,7 @@
 #include "../ManipulationObject.h"
 #include "../Grasp.h"
 #include "../GraspSet.h"
-#include "../ReachabilitySpace.h"
+#include "../Workspace/Reachability.h"
 #include "../EndEffector/EndEffector.h"
 #include "../RobotConfig.h"
 #include "../CollisionDetection/CollisionChecker.h"
@@ -207,18 +207,18 @@ void IKSolver::setMaximumError( float maxErrorPositionMM /*= 1.0f*/, float maxEr
 	this->maxErrorOrientationRad = maxErrorOrientationRad;
 }
 
-void IKSolver::setReachabilityCheck( ReachabilitySpacePtr reachabilitySpace )
+void IKSolver::setReachabilityCheck( ReachabilityPtr reachabilitySpace )
 {
 	this->reachabilitySpace = reachabilitySpace;
 	if (reachabilitySpace)
 	{
 		if (reachabilitySpace->getTCP() != tcp)
 		{
-			VR_ERROR << "Reachability Space has different tcp RobotNode (" << reachabilitySpace->getTCP()->getName() << ") than IK solver (" << tcp->getName() << ") ?! " << endl << "Reachability results may not be valid!" << endl;
+			VR_ERROR << "Reachability representation has different tcp RobotNode (" << reachabilitySpace->getTCP()->getName() << ") than IK solver (" << tcp->getName() << ") ?! " << endl << "Reachability results may not be valid!" << endl;
 		}
 		if (reachabilitySpace->getNodeSet() != rns)
 		{
-			VR_ERROR << "Reachability Space is defined for a different RobotNodeSet (" << reachabilitySpace->getNodeSet()->getName() << ") than IK solver uses (" << rns->getName() << ") ?! " << endl << "Reachability results may not be valid!" << endl;
+			VR_ERROR << "Reachability representation is defined for a different RobotNodeSet (" << reachabilitySpace->getNodeSet()->getName() << ") than IK solver uses (" << rns->getName() << ") ?! " << endl << "Reachability results may not be valid!" << endl;
 		}
 	}
 }

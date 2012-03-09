@@ -14,7 +14,7 @@
 #include <QtCore/QtGlobal>
 #include <QtGui/QtGui>
 #include <QtCore/QtCore>
-#include <VirtualRobot/ReachabilitySpace.h>
+#include <VirtualRobot/Workspace/Reachability.h>
 
 #include <Inventor/sensors/SoTimerSensor.h>
 #include <Inventor/nodes/SoEventCallback.h>
@@ -100,7 +100,7 @@ protected:
 	std::vector < VirtualRobot::RobotNodePtr > currentRobotNodes;
 	std::vector < VirtualRobot::RobotNodeSetPtr > robotNodeSets;	
 
-	VirtualRobot::ReachabilitySpacePtr reachSpace;
+	VirtualRobot::ReachabilityPtr reachSpace;
 	VirtualRobot::RobotNodePtr currentRobotNode;
 	/*
 

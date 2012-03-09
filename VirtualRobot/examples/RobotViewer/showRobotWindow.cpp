@@ -1,7 +1,7 @@
 
 #include "showRobotWindow.h"
 #include "VirtualRobot/EndEffector/EndEffector.h"
-#include "VirtualRobot/ReachabilitySpace.h"
+#include "VirtualRobot/Workspace/Reachability.h"
 #include <VirtualRobot/RuntimeEnvironment.h>
 
 #include <QFileDialog>

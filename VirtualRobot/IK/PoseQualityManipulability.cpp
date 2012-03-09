@@ -15,7 +15,7 @@ PoseQualityManipulability::PoseQualityManipulability(VirtualRobot::RobotNodeSetP
 {
 	jacobian.reset(new VirtualRobot::DifferentialIK(rns,rns->getTCP()));
 	jacobian->convertModelScalingtoM(convertMMtoM);
-	penalizeRotationFactor = 0.05f; // translation<->rotation factors
+	penalizeRotationFactor = 0.15f; // translation<->rotation factors
 }
 
 

@@ -1,7 +1,7 @@
 
 #include "GraspEditorWindow.h"
 #include "VirtualRobot/EndEffector/EndEffector.h"
-#include "VirtualRobot/ReachabilitySpace.h"
+#include "VirtualRobot/Workspace/Reachability.h"
 #include "VirtualRobot/ManipulationObject.h"
 #include "VirtualRobot/Grasp.h"
 #include "VirtualRobot/GraspSet.h"

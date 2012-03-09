@@ -20,11 +20,12 @@
 *             GNU Lesser General Public License
 *
 */
-#ifndef _VirtualRobot_ReachabilitySpace_h_
-#define _VirtualRobot_ReachabilitySpace_h_
+#ifndef _VirtualRobot_WorkspaceRepresentation_h_
+#define _VirtualRobot_WorkspaceRepresentation_h_
 
-#include "VirtualRobotImportExport.h"
-#include "Visualization/VisualizationFactory.h"
+#include "../VirtualRobotImportExport.h"
+#include "WorkspaceData.h"
+
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/type_traits/is_base_of.hpp>
@@ -38,166 +39,63 @@
 
 namespace VirtualRobot
 {
-class ReachabilitySpace;
-/*!
-	Stores a 6-dimensional array for the vertex data of a reachability space.
-*/
-class VIRTUAL_ROBOT_IMPORT_EXPORT ReachabilitySpaceData : public boost::enable_shared_from_this<ReachabilitySpaceData>
-{
-public:
-	friend class ReachabilitySpace;
-	/*!
-		Constructor, fills the data with 0
-	*/
-	ReachabilitySpaceData(unsigned int size1, unsigned int size2, unsigned int size3,
-						  unsigned int size4, unsigned int size5, unsigned int size6, bool adjustOnOverflow);
-	~ReachabilitySpaceData();
-
-	//! Return the amount of data in bytes
-	int getSize();
-
-	inline unsigned int getPos(unsigned int x0, unsigned int x1, unsigned int x2,
-								unsigned int x3, unsigned int x4, unsigned int x5)
-	{
-		return x0 * sizeX0 + x1 * sizeX1 + x2 * sizeX2 + x3 * sizeX3 + x4 * sizeX4 + x5;
-	}
-
-	inline unsigned int getPos( unsigned int x[6] )
-	{
-		return x[0] * sizeX0 + x[1] * sizeX1 + x[2] * sizeX2 + x[3] * sizeX3 + x[4] * sizeX4 + x[5];
-	}
-
-	inline void setDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
-		unsigned int x3, unsigned int x4, unsigned int x5, unsigned char value)
-	{
-		unsigned int pos = getPos(x0,x1,x2,x3,x4,x5);
-		if (data[pos]==0)
-			voxelFilledCount++;
-		data[pos] = value;
-		if (value >= maxEntry)
-			maxEntry = value;
-	}
-
-	inline void setDatum(unsigned int x[6], unsigned char value)
-	{
-		unsigned int pos = getPos(x);
-		if (data[pos]==0)
-			voxelFilledCount++;
-		data[pos] = value;
-		if (value >= maxEntry)
-			maxEntry = value;
-	}
-
-	inline void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
-								unsigned int x3, unsigned int x4, unsigned int x5)
-	{
-		unsigned int pos = getPos(x0,x1,x2,x3,x4,x5);
-		unsigned char e = data[pos];
-		if (e==0)
-			voxelFilledCount++;
-		if (e<UCHAR_MAX)
-		{
-			data[pos]++;
-			if (e >= maxEntry)
-				maxEntry = e+1;
-		} else if (adjustOnOverflow)
-			bisectData();
-	}
-	inline void increaseDatum(	unsigned int x[6] )
-	{
-		unsigned int pos = getPos(x);
-		unsigned char e = data[pos];
-		if (e==0)
-			voxelFilledCount++;
-		if (e<UCHAR_MAX)
-		{
-			data[pos]++;
-			if (e >= maxEntry)
-				maxEntry = e+1;
-		} else if (adjustOnOverflow)
-			bisectData();
-	}
-
-	void setData(unsigned char *data);
-	const unsigned char *getData() const;
-
-	//! Simulates a multi-dimensional array access
-	inline unsigned char get(unsigned int x0, unsigned int x1, unsigned int x2,
-		unsigned int x3, unsigned int x4, unsigned int x5) const
-	{
-		return data[x0 * sizeX0 + x1 * sizeX1 + x2 * sizeX2 + x3 * sizeX3 + x4 * sizeX4 + x5];
-	}
-
-	//! Simulates a multi-dimensional array access
-	inline unsigned char get( unsigned int x[6] ) const
-	{
-		return data[x[0] * sizeX0 + x[1] * sizeX1 + x[2] * sizeX2 + x[3] * sizeX3 + x[4] * sizeX4 + x[5]];
-	}
-
-	unsigned char getMaxEntry();
-	unsigned int getVoxelFilledCount();
-	void binarize();
-
-	void bisectData();
-private:
-	unsigned int sizes[6];
-	unsigned int sizeX0,sizeX1,sizeX2,sizeX3,sizeX4;
-	unsigned char *data;
-	unsigned char maxEntry;
-	unsigned int voxelFilledCount;
-	bool adjustOnOverflow;
-};
 
 /*!
-		This class represents an approximation of the reachability distribution of a kinematic chain (e.g. an arm).
-		Consists of voxels covering the 6D space for position (XYZ) and orientation (RPY).
-		Each voxels holds a counter with the number of successful IK solver calls.
-		The discretized reachability space can be written to and loaded from binary files.
+		This class represents a voxelized approximation of the workspace that is covered by a kinematic chain of a robot. 
+		The voxel grid covers the 6d Cartesian space: xyz translations (mm) and rpy orientations.
+		Each voxels holds a counter (uchar) that holds information, e.g. about reachbaility.
+		The discretized data can be written to and loaded from binary files.
 
-		The reachability space is linked to a base coordinate system which is defined by a robot joint.
-		This base system is used in order to use the reachability space when the robot is moving.
-		I.E. think of an arm of a humanoid where the reachability space is linked to the shoulder.
-		When the torso moves, the reachability also changes it's position according to the position of the shoulder.
+		The data is linked to a base coordinate system which is defined by a robot joint.
+		This base system is used to align the data when the robot is moving.
+		I.E. think of an arm of a humanoid where the workspace representation is linked to the shoulder.
+		When the torso moves, the data representation also changes it's position according to the position of the shoulder.
 */
-class VIRTUAL_ROBOT_IMPORT_EXPORT ReachabilitySpace : public boost::enable_shared_from_this<ReachabilitySpace>
+
+class VIRTUAL_ROBOT_IMPORT_EXPORT WorkspaceRepresentation : public boost::enable_shared_from_this<WorkspaceRepresentation>
 {
 public:
 	friend class CoinVisualizationFactory;
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-	ReachabilitySpace(RobotPtr robot);
+	WorkspaceRepresentation(RobotPtr robot);
 
 	/*!
 		Reset all data.
 	*/
-	void reset();
+	virtual void reset();
 
 	/*! 
 		Load the reachability data from a binary file.
 		Exceptions are thrown on case errors are detected.
 	*/
-	void load(const std::string &filename);
+	virtual void load(const std::string &filename);
 
 	/*! 
 		Store the reachability data to a binary file.
 		Exceptions are thrown on case errors are detected.
 	*/
-	void save(const std::string &filename);
+	virtual void save(const std::string &filename);
 
 	/*!
 		Return corresponding entry of reachability data 
 	*/
 	unsigned char getEntry(const Eigen::Matrix4f &globalPose);
 
-	bool isReachable(const Eigen::Matrix4f &globalPose);
-
-	GraspSetPtr getReachableGrasps(GraspSetPtr grasps, ManipulationObjectPtr object);
-
-	int getMaxEntry();
-	float getVoxelSize(int dim);
+    //! Returns the maximum entry of a voxel.
+	int getMaxEntry() const;
+	
+	//! returns the extends of a voxel at corresponding dimension.
+	float getVoxelSize(int dim) const;
+	
+	//! The base node of this reachability data
 	RobotNodePtr getBaseNode();
+	
+	//! The corresponding TCP
 	RobotNodePtr getTCP();
+	
+	//! The kinematic chain that is covered by this reachability data
 	RobotNodeSetPtr getNodeSet();
 
 	/*!
@@ -213,7 +111,7 @@ public:
 		\param tcpNode If given, the pose of this node is used for reachability calculations. If not given, the TCP node of the nodeSet is used.
 		\param adjustOnOverflow If set the 8bit data is divided by 2 when one voxel entry exceeds 255. Otherwise the entries remain at 255.
 	*/
-	void initialize(RobotNodeSetPtr nodeSet,
+	virtual void initialize(RobotNodeSetPtr nodeSet,
 					float discretizeStepTranslation, 
 					float discretizeStepRotation, 
 					float minBounds[6], 
@@ -225,79 +123,81 @@ public:
 					bool adjustOnOverflow = true);
 
 	/*!
-		Append current TCP pose to Reachability Data
-	*/
-	void addCurrentTCPPose();
-
-	/*!
 		Sets entry that corresponds to TCP pose to e, if current entry is lower than e.
+		Therefore the corresponding voxel of the current TCP pose is determined and its entry is adjusted. 
 	*/
-	void setCurrentTCPPoseEntryIfLower(unsigned char e);
-
+	virtual void setCurrentTCPPoseEntryIfLower(unsigned char e);
+	
 	/*!
-		Append a number of random TCP poses to Reachability Data
-		\param loops Number of poses that should be appended
-		\param checkForSelfCollisions Build a collision-free configuration. If true, random configs are generated until one is collision-free.
+		Sets entry that corresponds to TCP pose to e.
+		Therefore the corresponding voxel of the current TCP pose is determined and its entry is set. 
 	*/
-	void addRandomTCPPoses(unsigned int loops, bool checkForSelfCollisions = true);
+	virtual void setCurrentTCPPoseEntry(unsigned char e);
+
 
 	/*!
 		Generate a random configuration for the robot node set. This configuration is within the joint limits of the current robot node set.
 		\param checkForSelfCollisions Build a collision-free configuration. If true, random configs are generated until one is collision-free.
 	*/
-	bool setRobotNodesToRandomConfig(bool checkForSelfCollisions = true);
+	virtual bool setRobotNodesToRandomConfig(bool checkForSelfCollisions = true);
 
 	/*!
 		Cut all data >1 to 1. This reduces the file size when saving compressed data.
 	*/
-	void binarize();
+	virtual void binarize();
 
 	/*!
-		Checks for all voxels with entiry==0 if there are neighbors with entries>0.0 If so the entry is set to the averaged value of the neighbors
+		Checks for all voxels with entiry==0 if there are neighbors with entries>0. 
+		If so the entry is set to the averaged value of the neighbors
 		\return The number of changed voxels.
 	*/
-	int fillHoles();
+	virtual int fillHoles();
 
 	/*!
 	Print status information
 	*/
-	void print();
+	virtual void print();
 
-	//! returns a random pose that is reachable
-	Eigen::Matrix4f sampleReachablePose();
+	//! returns a random pose that is covered by the workspace data
+	Eigen::Matrix4f sampleCoveredPose();
+	    
+	/*!
+		Returns true, if the corresponding voxel entry is nun zero.
+	*/
+	bool isCovered(const Eigen::Matrix4f &globalPose);
 
-	int getNumVoxels(int dim);
-	float getMinBound(int dim);
-	float getMaxBound(int dim);
+	virtual int getNumVoxels(int dim) const;
+	virtual float getMinBound(int dim) const;
+	virtual float getMaxBound(int dim) const;
 
-	unsigned char getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f);
+	virtual unsigned char getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f) const;
 
 	/*!
 		Sums all angle (x3,x4,x5) entries for the given position.
 	*/
-	int sumAngleReachabilities(int x0, int x1, int x2);
+	virtual int sumAngleReachabilities(int x0, int x1, int x2) const;
 
 	/*!
 		Searches all angle entries (x3,x4,x5) for maximum entry.
 		(x0,x1,x2) is the voxel position.
 	*/
-	int getMaxEntry(int x0, int x1, int x2);
+	virtual int getMaxEntry(int x0, int x1, int x2) const;
 
 	/*!
 		Returns the maximum reachability entry that can be achieved by an arbitrary orientation at the given position.
 	*/
-	int getMaxEntry( const Eigen::Vector3f &position_global );
+	virtual int getMaxEntry( const Eigen::Vector3f &position_global ) const;
 
 	/*!
 		Get the corresponding voxel. 
 		If false is returned the pose is outside the covered workspace.
 	*/
-	bool getVoxelFromPose(const Eigen::Matrix4f &globalPose, unsigned int v[6]);
+	virtual bool getVoxelFromPose(const Eigen::Matrix4f &globalPose, unsigned int v[6]) const;
 
 	/*!
 		Returns the maximum that can be achieved by calling sumAngleReachabilities() 
 	*/
-	int getMaxSummedAngleReachablity();
+	virtual int getMaxSummedAngleReachablity();
 
 
 protected:
@@ -311,14 +211,15 @@ protected:
 	template<typename T> void write(std::ofstream &file, T value);
 	template<typename T> void writeArray(std::ofstream &file, const T *value, int num);
 
-	//! (Un-)compress the data
+	//! Uncompress the data
 	void uncompressData(const unsigned char *source, int size, unsigned char *dest);
+	//! Compress the data
 	unsigned char *compressData(const unsigned char *source, int size, int &compressedSize);
 
 	//! Refetch the base joint's transformation, in case this joint has moved
 	void updateBaseTransformation();
 
-	bool getVoxelFromPose(float x[6], unsigned int v[6]);
+	virtual bool getVoxelFromPose(float x[6], unsigned int v[6]) const;
 
 
 	RobotPtr robot;
@@ -335,7 +236,7 @@ protected:
 	// Number of reported collisions
 	int collisionConfigs;
 
-	// Tells how to discretize the reachability space
+	// Tells how to discretize the reachability data
 	float discretizeStepTranslation;
 	float discretizeStepRotation;
 	float minBounds[6];
@@ -351,13 +252,15 @@ protected:
 	// workspace extend in each dimension
 	float spaceSize[6];
 
-	ReachabilitySpaceDataPtr data;
+	WorkspaceDataPtr data;
 
 	bool adjustOnOverflow;
+	
+	std::string type;
 
 };
 
 
 } // namespace VirtualRobot
 
-#endif // _ReachabilitySpace_h_
+#endif // _VirtualRobot_WorkspaceRepresentation_h_

@@ -38,6 +38,9 @@ IK/GenericIKSolver.cpp
 IK/CoMIK.cpp
 IK/PoseQualityMeasurement.cpp
 IK/PoseQualityManipulability.cpp
+Workspace/WorkspaceData.cpp
+Workspace/WorkspaceRepresentation.cpp
+Workspace/Reachability.cpp
 MathTools.cpp
 Robot.cpp
 RobotConfig.cpp
@@ -49,7 +52,6 @@ SceneObjectSet.cpp
 Scene.cpp
 Obstacle.cpp
 VirtualRobotException.cpp
-ReachabilitySpace.cpp
 Grasp.cpp
 GraspSet.cpp
 ManipulationObject.cpp
@@ -92,6 +94,11 @@ IK/GenericIKSolver.h
 IK/CoMIK.h
 IK/PoseQualityMeasurement.h
 IK/PoseQualityManipulability.h
+Workspace/WorkspaceData.h
+Workspace/WorkspaceRepresentation.h
+Workspace/Reachability.h
+Workspace/VoxelTree6D.hpp
+Workspace/VoxelTree6DElement.hpp
 AbstractFactoryMethod.h
 VirtualRobot.h
 MathTools.h
@@ -107,7 +114,6 @@ Obstacle.h
 VirtualRobotException.h
 VirtualRobotImportExport.h
 VirtualRobotTest.h
-ReachabilitySpace.h
 Grasp.h
 GraspSet.h
 ManipulationObject.h
@@ -117,6 +123,7 @@ CompressionRLE.h
 )
 
 ADD_SUBDIRECTORY(Visualization/tests)
+ADD_SUBDIRECTORY(Workspace/tests)
 
 if (SIMOX_VISUALIZATION AND SIMOX_USE_COIN_VISUALIZATION)
 

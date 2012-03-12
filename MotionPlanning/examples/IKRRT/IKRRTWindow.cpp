@@ -1,13 +1,12 @@
 
 #include "IKRRTWindow.h"
 #include "VirtualRobot/EndEffector/EndEffector.h"
-#include "VirtualRobot/ReachabilitySpace.h"
+#include "VirtualRobot/Workspace/Reachability.h"
 #include "VirtualRobot/ManipulationObject.h"
 #include "VirtualRobot/Grasp.h"
 #include "VirtualRobot/IK/GenericIKSolver.h"
 #include "VirtualRobot/GraspSet.h"
 #include "VirtualRobot/CollisionDetection/CDManager.h"
-#include "VirtualRobot/ReachabilitySpace.h"
 #include "VirtualRobot/XML/ObjectIO.h"
 #include "VirtualRobot/XML/RobotIO.h"
 #include "VirtualRobot/Visualization/CoinVisualization/CoinVisualizationFactory.h"
@@ -472,8 +471,8 @@ void IKRRTWindow::loadReach()
 	reachabilitySep->removeAllChildren();
 	if (!robot)
 		return;
-	cout << "Loading ReachabilitySpace from " << reachFile << endl;
-	reachSpace.reset(new ReachabilitySpace(robot));
+	cout << "Loading Reachability from " << reachFile << endl;
+	reachSpace.reset(new Reachability(robot));
 
 	try
 	{

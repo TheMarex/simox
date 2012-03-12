@@ -104,7 +104,7 @@ protected:
 	VirtualRobot::RobotPtr robot;
 	std::vector< VirtualRobot::ObstaclePtr > obstacles;
 	VirtualRobot::ManipulationObjectPtr object;
-	VirtualRobot::ReachabilitySpacePtr reachSpace;
+	VirtualRobot::ReachabilityPtr reachSpace;
 
 	VirtualRobot::EndEffectorPtr eef;
 	Saba::CSpaceSampledPtr cspace;

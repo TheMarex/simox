@@ -596,6 +596,25 @@
 	<Endeffector name="Right Hand" base="Right Hand Init" tcp="Right Arm TCP" gcp="Right Arm GCP">
 	    <Preshape name="Grasp Preshape">
 	        <Node name="Right Hand Thumb Joint1" unit="radian" value="1.3"/>
+	        <Node name="Right Hand Thumb Joint2" unit="radian" value="0"/>
+	        <Node name="Right Hand Thumb Joint3" unit="radian" value="0"/>
+	        <Node name="Right Hand Thumb Joint4" unit="radian" value="0"/>
+	        <Node name="Right Hand Index Joint1" unit="radian" value="0"/>
+	        <Node name="Right Hand Index Joint2" unit="radian" value="0"/>
+	        <Node name="Right Hand Index Joint3" unit="radian" value="0"/>
+	        <Node name="Right Hand Index Joint4" unit="radian" value="0"/>
+	        <Node name="Right Hand Middle Joint1" unit="radian" value="0"/>
+	        <Node name="Right Hand Middle Joint2" unit="radian" value="0"/>
+	        <Node name="Right Hand Middle Joint3" unit="radian" value="0"/>
+	        <Node name="Right Hand Middle Joint4" unit="radian" value="0"/>
+	        <Node name="Right Hand Ring Joint1" unit="radian" value="0"/>
+	        <Node name="Right Hand Ring Joint2" unit="radian" value="0"/>
+	        <Node name="Right Hand Ring Joint3" unit="radian" value="0"/>
+	        <Node name="Right Hand Ring Joint4" unit="radian" value="0"/>
+	        <Node name="Right Hand Pinky Joint1" unit="radian" value="0"/>
+	        <Node name="Right Hand Pinky Joint2" unit="radian" value="0"/>
+	        <Node name="Right Hand Pinky Joint3" unit="radian" value="0"/>
+	        <Node name="Right Hand Pinky Joint4" unit="radian" value="0"/>
 	    </Preshape>
 		<Static>
 			<Node name="Right Hand Palm"/>

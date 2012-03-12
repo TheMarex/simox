@@ -262,10 +262,11 @@ void EndEffector::registerPreshape( RobotConfigPtr preshape )
 {
 	THROW_VR_EXCEPTION_IF(!preshape, "NULL data...");
 	std::vector< RobotNodePtr > nodes = preshape->getNodes();
-	for (size_t i=0;i<nodes.size();i++)
+	// don't be too strict!
+	/*for (size_t i=0;i<nodes.size();i++)
 	{
 		THROW_VR_EXCEPTION_IF(!hasNode(nodes[i]), "Node " << nodes[i]->getName() << " is not part of EEF " << getName() );
-	}
+	}*/
 	preshapes[preshape->getName()] = preshape;
 }
 

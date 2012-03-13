@@ -29,6 +29,7 @@
 
 #include <string>
 #include <vector>
+#include <iomanip>
 
 namespace VirtualRobot 
 {
@@ -78,10 +79,9 @@ public:
 			VR_INFO << "Creating Voxelized tree data structure. " << endl;
 			VR_INFO << "Extends (min/max/size):" << endl;
 			std::streamsize pr = std::cout.precision(2);
-			std::cout << std::fixed << v(0) << "," << v(1) << "," << v(2);
 			for (int i=0;i<6;i++)
 			{
-				cout << minExtend[i] << "," << maxExtend[i] << " -> " << size[i] << endl;
+				cout << std::fixed << minExtend[i] << "," << maxExtend[i] << " -> " << size[i] << endl;
 			}
 			std::cout << std::resetiosflags(std::ios::fixed);
 			std::cout.precision(pr);
@@ -128,6 +128,7 @@ protected:
 	float minExtend[6];
 	float maxExtend[6];
 	int maxLevels;
+	bool verbose;
 
 	VoxelTree6DElement<T> *root;
 

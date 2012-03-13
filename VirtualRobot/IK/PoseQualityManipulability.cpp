@@ -13,6 +13,7 @@ namespace VirtualRobot
 PoseQualityManipulability::PoseQualityManipulability(VirtualRobot::RobotNodeSetPtr rns, ManipulabilityIndexType i)
 :PoseQualityMeasurement(rns), manipulabilityType(i), penJointLimits(false),convertMMtoM(true)
 {
+	name = getTypeName();
 	jacobian.reset(new VirtualRobot::DifferentialIK(rns,rns->getTCP()));
 	jacobian->convertModelScalingtoM(convertMMtoM);
 	penalizeRotationFactor = 0.15f; // translation<->rotation factors
@@ -141,6 +142,16 @@ float PoseQualityManipulability::getJointLimitPenalizationFactor()
 	float result = 1.0f-exp(-penJointLimits_k*p);
 	//cout << "Pen factor:" << result << endl;
 	return result;
+}
+
+std::string PoseQualityManipulability::getTypeName()
+{
+	return std::string("PoseQualityManipulability");
+}
+
+bool PoseQualityManipulability::consideringJointLimits()
+{
+	return penJointLimits;
 }
 
 }

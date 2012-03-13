@@ -1141,7 +1141,7 @@ VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createArrow( const 
 }
 
 
-SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilityPtr reachSpace, int a, int b, int c, /*const Eigen::Vector3f &positionGlobal,*/ int nrBestEntries, SoSeparator* arrow, const VirtualRobot::ColorMap &cm, bool transformToGlobalPose, unsigned char minValue)
+SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace, int a, int b, int c, /*const Eigen::Vector3f &positionGlobal,*/ int nrBestEntries, SoSeparator* arrow, const VirtualRobot::ColorMap &cm, bool transformToGlobalPose, unsigned char minValue)
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();
@@ -1266,7 +1266,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilityPtr reachSpac
 	return res;
 }
 
-SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilityPtr reachSpace, const Eigen::Vector3f &fixedEEFOrientationGlobalRPY, VirtualRobot::ColorMap::type cmType, bool transformToGlobalPose, const Eigen::Vector3f &axis, unsigned char minValue, float arrowSize)
+SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace, const Eigen::Vector3f &fixedEEFOrientationGlobalRPY, VirtualRobot::ColorMap::type cmType, bool transformToGlobalPose, const Eigen::Vector3f &axis, unsigned char minValue, float arrowSize)
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();
@@ -1359,7 +1359,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilityPtr reachSpac
 	return res;
 }
 /*
-SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilityPtr reachSpace,  VirtualRobot::ColorMap::type cmType, const Eigen::Vector3f &axis, bool transformToGlobalPose, unsigned char minValue)
+SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace,  VirtualRobot::ColorMap::type cmType, const Eigen::Vector3f &axis, bool transformToGlobalPose, unsigned char minValue)
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();
@@ -1404,7 +1404,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilityPtr reachSpac
 }
 */
 
-SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilityPtr reachSpace, VirtualRobot::ColorMap::type cmType, const Eigen::Vector3f &axis, bool transformToGlobalPose, unsigned char minValue, float arrowSize)
+SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace, VirtualRobot::ColorMap::type cmType, const Eigen::Vector3f &axis, bool transformToGlobalPose, unsigned char minValue, float arrowSize)
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();
@@ -1450,7 +1450,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilityPtr reachSpac
 }
 
 
-SoNode* CoinVisualizationFactory::getCoinVisualization(ReachabilityPtr reachSpace, const VirtualRobot::ColorMap::type cmType, bool transformToGlobalPose)
+SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace, const VirtualRobot::ColorMap::type cmType, bool transformToGlobalPose)
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();

@@ -203,7 +203,7 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		readArray<int>(version, 2, file);
 		THROW_VR_EXCEPTION_IF(
 			(version[0] > 2) || 
-			(version[0] == 2 && !(version[1] == 0 || version[1] == 1)) || 
+			(version[0] == 2 && !(version[1] == 0 || version[1] == 1 || version[1] == 2)) || 
 			(version[0] == 1 && !(version[1] == 0 || version[1] == 2 || version[1] == 3)
 			),	"Wrong file format version");
 
@@ -276,6 +276,13 @@ void WorkspaceRepresentation::load(const std::string &filename)
 			achievedMinValues[i] = read<float>(file);
 			achievedMaxValues[i] = read<float>(file);
 		}
+		if ((version[0]>2) || (version[0] == 2 && version[1] >= 2))
+		{
+			if (!customLoad(file))
+			{
+				VR_ERROR << "Custom loading failed?!" << endl;
+			}
+		}
 
 		// Read Data
 		readString(tmpString, file);
@@ -338,7 +345,7 @@ void WorkspaceRepresentation::save(const std::string &filename)
 
 		// Version
 		write<int>(file, 2);
-		write<int>(file, 1);
+		write<int>(file, 2);
 
 		// Robot type
 		writeString(file, robot->getType());
@@ -399,6 +406,12 @@ void WorkspaceRepresentation::save(const std::string &filename)
 			write<float>(file, achievedMinValues[i]);
 			write<float>(file, achievedMaxValues[i]);
 		}
+
+		if (!customSave(file))
+		{
+			VR_ERROR << "Custom saving failed?!" << endl;
+		}
+
 
 		// Data
 		writeString(file, "DATA_START");
@@ -545,7 +558,7 @@ bool WorkspaceRepresentation::getVoxelFromPose( const Eigen::Matrix4f &globalPos
 	return getVoxelFromPose(x,v);
 }
 
-bool WorkspaceRepresentation::setRobotNodesToRandomConfig( bool checkForSelfCollisions /*= true*/ )
+bool WorkspaceRepresentation::setRobotNodesToRandomConfig( VirtualRobot::RobotNodeSetPtr nodeSet, bool checkForSelfCollisions /*= true*/ )
 {
 	static const float randMult = (float)(1.0/(double)(RAND_MAX));
 	float rndValue;
@@ -629,6 +642,7 @@ void WorkspaceRepresentation::print()
 		for (int i=0;i<6;i++)
 			cout << achievedMaxValues[i] << ",";
 		cout << endl;
+		customPrint();
 	} else
 	{
 		cout << type << " not created yet..." << endl;
@@ -905,6 +919,73 @@ void WorkspaceRepresentation::setCurrentTCPPoseEntry( unsigned char e )
 	}
 
 	buildUpLoops++;
+}
+
+bool WorkspaceRepresentation::checkForParameters( RobotNodeSetPtr nodeSet, float steps, float storeMinBounds[6], float storeMaxBounds[6],RobotNodePtr baseNode, RobotNodePtr tcpNode )
+{
+	if (!robot || !nodeSet || !nodeSet->isKinematicChain())
+	{
+		VR_WARNING << "invalid data" << endl;
+		return false;
+	}
+	if (!tcpNode)
+		tcpNode = nodeSet->getTCP();
+	if (!robot->hasRobotNode(tcpNode))
+	{
+		VR_ERROR << "robot does not know tcp:" << tcpNode->getName() << endl;
+		return false;
+	}
+	if (baseNode && !robot->hasRobotNode(baseNode))
+	{
+		VR_ERROR << "robot does not know baseNode:" << baseNode->getName() << endl;
+		return false;
+	}
+
+	for (int i=0;i<6;i++)
+	{
+		storeMinBounds[i] = FLT_MAX;
+		storeMaxBounds[i] = -FLT_MAX;
+	}
+	Eigen::VectorXf c;
+	nodeSet->getJointValues(c);
+	bool visuSate = robot->getUpdateVisualizationStatus();
+	robot->setUpdateVisualization(false);
+
+	for (int i=0;i<steps;i++)
+	{
+		setRobotNodesToRandomConfig(nodeSet,false);
+		Eigen::Matrix4f p = tcpNode->getGlobalPose();
+		if (baseNode)
+			p = baseNode->toLocalCoordinateSystem(p);
+
+		float x[6];
+		MathTools::eigen4f2rpy(p,x);
+
+		// check for achieved values
+		for (int i=0;i<6;i++)
+		{
+			if (x[i] < storeMinBounds[i])
+				storeMinBounds[i] = x[i];
+			if (x[i] > storeMaxBounds[i])
+				storeMaxBounds[i] = x[i];
+		}
+	}
+	nodeSet->setJointValues(c);
+
+	robot->setUpdateVisualization(visuSate);
+
+	// assume higher values
+	for (int i=0;i<6;i++)
+	{
+		float sizex = storeMaxBounds[i] - storeMinBounds[i];
+		float factor = 0.1f;
+		if (i>2)
+			factor = 0.05f; // adjustment for rotation is smaller
+		storeMinBounds[i] -= sizex * factor;
+		storeMaxBounds[i] += sizex * factor;
+	}
+	return true;
+
 }
 
 } // namespace VirtualRobot

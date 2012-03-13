@@ -152,6 +152,8 @@ namespace VirtualRobot
 	class Reachability;
 	class WorkspaceRepresentation;
 	class WorkspaceData;
+	class PoseQualityMeasurement;
+	class PoseQualityManipulability;
 
     typedef boost::shared_ptr<RobotNode> RobotNodePtr;
     typedef boost::shared_ptr<RobotNodeSet> RobotNodeSetPtr;
@@ -180,6 +182,8 @@ namespace VirtualRobot
 	typedef boost::shared_ptr<GraspSet> GraspSetPtr;
 	typedef boost::shared_ptr<ManipulationObject> ManipulationObjectPtr;
 	typedef boost::shared_ptr<CDManager> CDManagerPtr;
+	typedef boost::shared_ptr<PoseQualityMeasurement> PoseQualityMeasurementPtr;
+	typedef boost::shared_ptr<PoseQualityManipulability> PoseQualityManipulabilityPtr;
 
 
 #define VR_INFO std::cout <<__FILE__ << ":" << __LINE__ << ": "

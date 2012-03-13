@@ -40,7 +40,8 @@ public:
 
 	/*!
 	*/
-	VoxelTree6D(float minExtend[6], float maxExtend[6], float discretizationTransl, float discretizationRot)
+	VoxelTree6D(float minExtend[6], float maxExtend[6], float discretizationTransl, float discretizationRot, bool verbose = true):
+	  verbose(verbose)
 	{
 		memcpy (&(this->minExtend[0]),&(minExtend[0]),sizeof(float)*6);
 		memcpy (&(this->maxExtend[0]),&(maxExtend[0]),sizeof(float)*6);
@@ -52,6 +53,7 @@ public:
 		for (int i=0;i<6;i++)
 		{
 			size[i] = maxExtend[i] - minExtend[i];
+			THROW_VR_EXCEPTION_IF(size[i]<=0.0f,"Invalid extend parameters?!");
 		}
 
 		float maxSize = 0;
@@ -71,6 +73,22 @@ public:
 		if (steps2 > steps)
 			steps = steps2;
 		maxLevels = steps;
+		if (verbose)
+		{
+			VR_INFO << "Creating Voxelized tree data structure. " << endl;
+			VR_INFO << "Extends (min/max/size):" << endl;
+			std::streamsize pr = std::cout.precision(2);
+			std::cout << std::fixed << v(0) << "," << v(1) << "," << v(2);
+			for (int i=0;i<6;i++)
+			{
+				cout << minExtend[i] << "," << maxExtend[i] << " -> " << size[i] << endl;
+			}
+			std::cout << std::resetiosflags(std::ios::fixed);
+			std::cout.precision(pr);
+			VR_INFO << "discretizationTransl:" << discretizationTransl << ". Max translation levels:" << steps << endl;
+			VR_INFO << "discretizationRot:" << discretizationRot << ". Max rotation levels:" << steps2 << endl;
+			VR_INFO << "--> Max Levels:" << maxLevels << endl;
+		}
 		THROW_VR_EXCEPTION_IF (steps<=0,"Invalid parameters...");
 		root = new VoxelTree6DElement<T>(minExtend,size,0,maxLevels);
 

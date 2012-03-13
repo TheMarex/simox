@@ -49,10 +49,28 @@ public:
 	PoseQualityMeasurement(VirtualRobot::RobotNodeSetPtr rns);
 	~PoseQualityMeasurement();
 
+	/*!
+		The main method for determining the pose quality. 
+		The current configuration of the corresponding RNS is analyzed and the quality is returned.
+		See derived classes for details.
+	*/
 	virtual float getPoseQuality();
 	void setVerbose(bool v);
-protected:
 
+	/*!
+		Returns the RobtoNodeSte that is used for computing the manipulability.
+	*/
+	VirtualRobot::RobotNodeSetPtr getRNS();
+
+	//! A string that identifies the type of pose quality measure.
+	std::string getName();
+
+	//! Indicates if joint limits are considered.
+	virtual bool consideringJointLimits();
+
+
+protected:
+	std::string name;
     VirtualRobot::RobotNodeSetPtr rns;
 	bool verbose;
 };

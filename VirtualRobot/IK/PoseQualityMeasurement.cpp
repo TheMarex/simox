@@ -14,6 +14,7 @@ PoseQualityMeasurement::PoseQualityMeasurement(VirtualRobot::RobotNodeSetPtr rns
 :rns(rns)
 {
 	THROW_VR_EXCEPTION_IF( (!rns || !rns->getTCP()), "NULL data");
+	name = "PoseQualityMeasurement";
 	verbose = false;
 }
 
@@ -31,6 +32,21 @@ float PoseQualityMeasurement::getPoseQuality()
 void PoseQualityMeasurement::setVerbose( bool v )
 {
 	verbose = v;
+}
+
+std::string PoseQualityMeasurement::getName()
+{
+	return name;
+}
+
+VirtualRobot::RobotNodeSetPtr PoseQualityMeasurement::getRNS()
+{
+	return rns;
+}
+
+bool PoseQualityMeasurement::consideringJointLimits()
+{
+	return false;
 }
 
 }

@@ -36,7 +36,7 @@ namespace VirtualRobot
 *
 * This measurement computes the Yoshikawa's manipulability index by computing the Singular value Decomposition (SVD) of the Jacobian.
 * Two modes are offered: Either all singular values are multiplied
-* or the ratio of minimum and maximum singular Value is returned (also known as Condition number).
+* or the ratio of minimum and maximum singular Value is returned (also known as (inverted) Condition number).
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT PoseQualityManipulability :  public PoseQualityMeasurement
 {
@@ -46,12 +46,15 @@ public:
 	enum ManipulabilityIndexType
 	{
 		eMultiplySV,	// multiply all singular values
-		eMinMaxRatio	// ratio of max and min singular value (aka Condition number)
+		eMinMaxRatio	// ratio of max and min singular value (aka (inverted) Condition number)
 	};
 
 	PoseQualityManipulability(VirtualRobot::RobotNodeSetPtr rns, ManipulabilityIndexType i = eMinMaxRatio);
 	~PoseQualityManipulability();
 
+	/*!
+		Returns the manipulability of the current configuration.
+	*/
 	virtual float getPoseQuality();
 	virtual float getManipulability(ManipulabilityIndexType i);
 	/*!
@@ -81,6 +84,10 @@ public:
 		The joint limits are given by l_i^- and l_i^+  and k is a factor that can be used to adjust the behavior
 	*/
 	virtual void penalizeJointLimits(bool enable, float k = 50.0f);
+
+	virtual bool consideringJointLimits();
+
+	static std::string getTypeName();
 protected:
 
 	float getJointLimitPenalizationFactor();
@@ -93,7 +100,7 @@ protected:
 
 	float penalizeRotationFactor; // to align translational and rotational components
 
-	//! is set, the Jacobian is computed in [m], while assuming the kinematic definitions to be in [mm]
+	//! if set, the Jacobian is computed in [m], while assuming the kinematic definitions to be in [mm]
 	bool convertMMtoM;
 };
 

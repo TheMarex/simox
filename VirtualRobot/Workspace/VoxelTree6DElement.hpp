@@ -98,13 +98,12 @@ public:
 		{
 			if (!covers(p))
 			{
-				return -false;
+				return false;
 			}	
 			if (entry)
 				return true;
 			else
-				return
-				false;
+				return false;
 		}
 
 		int indx = getChildIndx(p);

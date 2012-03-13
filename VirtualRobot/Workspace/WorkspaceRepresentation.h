@@ -67,19 +67,19 @@ public:
 	virtual void reset();
 
 	/*! 
-		Load the reachability data from a binary file.
+		Load the workspace data from a binary file.
 		Exceptions are thrown on case errors are detected.
 	*/
 	virtual void load(const std::string &filename);
 
 	/*! 
-		Store the reachability data to a binary file.
+		Store the workspace data to a binary file.
 		Exceptions are thrown on case errors are detected.
 	*/
 	virtual void save(const std::string &filename);
 
 	/*!
-		Return corresponding entry of reachability data 
+		Return corresponding entry of workspace data 
 	*/
 	unsigned char getEntry(const Eigen::Matrix4f &globalPose);
 
@@ -89,27 +89,27 @@ public:
 	//! returns the extends of a voxel at corresponding dimension.
 	float getVoxelSize(int dim) const;
 	
-	//! The base node of this reachability data
+	//! The base node of this workspace data
 	RobotNodePtr getBaseNode();
 	
 	//! The corresponding TCP
 	RobotNodePtr getTCP();
 	
-	//! The kinematic chain that is covered by this reachability data
+	//! The kinematic chain that is covered by this workspace data
 	RobotNodeSetPtr getNodeSet();
 
 	/*!
 		Initialize and reset all data.
-		\param nodeSet The robot node set that should be considered for reachability analysis.
-		\param discretizeStepTranslation The extend of a voxel dimension in translational dimensions (x,y,z)
-		\param discretizeStepRotation The extend of a voxel dimension in rotational dimensions (roll, pitch, yaw)
-		\param minBounds The minimum workspace poses (x,y,z,ro,pi,ya) given in baseNode's coordinate system
-		\param maxBounds The maximum workspace poses (x,y,z,ro,pi,ya) given in baseNode's coordinate system
+		\param nodeSet The robot node set that should be considered for workspace (e.g. reachability) analysis.
+		\param discretizeStepTranslation The extend of a voxel dimension in translational dimensions (x,y,z) [mm]
+		\param discretizeStepRotation The extend of a voxel dimension in rotational dimensions (roll, pitch, yaw) [rad]
+		\param minBounds The minimum workspace poses (x,y,z,ro,pi,ya) given in baseNode's coordinate system [mm and rad]
+		\param maxBounds The maximum workspace poses (x,y,z,ro,pi,ya) given in baseNode's coordinate system [mm and rad]
 		\param staticCollisionModel The static collision model of the robot. This model does not move when changing the configuration of the RobotNodeSet. If not set no collisions will be checked when building the reachability data
 		\param dynamicCollisionModel The dynamic collision model of the robot. This model does move when changing the configuration of the RobotNodeSet. If not set no collisions will be checked when building the reachability data.
 		\param baseNode Perform the computations in the coordinate system of this node. If not set, the global pose is used (be careful, when the robot moves around global poses may not be meaningful!)
-		\param tcpNode If given, the pose of this node is used for reachability calculations. If not given, the TCP node of the nodeSet is used.
-		\param adjustOnOverflow If set the 8bit data is divided by 2 when one voxel entry exceeds 255. Otherwise the entries remain at 255.
+		\param tcpNode If given, the pose of this node is used for workspace calculations. If not given, the TCP node of the nodeSet is used.
+		\param adjustOnOverflow If set, the 8bit data is divided by 2 when one voxel entry exceeds 255. Otherwise the entries remain at 255.
 	*/
 	virtual void initialize(RobotNodeSetPtr nodeSet,
 					float discretizeStepTranslation, 
@@ -139,7 +139,7 @@ public:
 		Generate a random configuration for the robot node set. This configuration is within the joint limits of the current robot node set.
 		\param checkForSelfCollisions Build a collision-free configuration. If true, random configs are generated until one is collision-free.
 	*/
-	virtual bool setRobotNodesToRandomConfig(bool checkForSelfCollisions = true);
+	virtual bool setRobotNodesToRandomConfig(VirtualRobot::RobotNodeSetPtr nodeSet, bool checkForSelfCollisions = true);
 
 	/*!
 		Cut all data >1 to 1. This reduces the file size when saving compressed data.
@@ -170,6 +170,9 @@ public:
 	virtual float getMinBound(int dim) const;
 	virtual float getMaxBound(int dim) const;
 
+	/*!
+		get entry of given voxel.
+	*/
 	virtual unsigned char getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f) const;
 
 	/*!
@@ -184,7 +187,7 @@ public:
 	virtual int getMaxEntry(int x0, int x1, int x2) const;
 
 	/*!
-		Returns the maximum reachability entry that can be achieved by an arbitrary orientation at the given position.
+		Returns the maximum workspace entry that can be achieved by an arbitrary orientation at the given position.
 	*/
 	virtual int getMaxEntry( const Eigen::Vector3f &position_global ) const;
 
@@ -200,8 +203,25 @@ public:
 	virtual int getMaxSummedAngleReachablity();
 
 
+	virtual bool checkForParameters(RobotNodeSetPtr nodeSet,
+									float steps,
+									float storeMinBounds[6], 
+									float storeMaxBounds[6],
+									RobotNodePtr baseNode = RobotNodePtr(), 
+									RobotNodePtr tcpNode = RobotNodePtr());
+
 protected:
-	//! Specific methods to read/write strings from/to reachability files
+	/*!
+		Derived classes may implement some custom data access.
+	*/
+	virtual bool customLoad(std::ifstream &file){return true;}
+	/*!
+		Derived classes may implement some custom data access.
+	*/
+	virtual bool customSave(std::ofstream &file){return true;}
+	virtual void customPrint(){}
+
+	//! Specific methods to read/write strings from/to workspace data files
 	bool readString(std::string &res, std::ifstream &file);
 	void writeString(std::ofstream &file, const std::string &value);
 
@@ -236,7 +256,7 @@ protected:
 	// Number of reported collisions
 	int collisionConfigs;
 
-	// Tells how to discretize the reachability data
+	// Tells how to discretize the workspace data
 	float discretizeStepTranslation;
 	float discretizeStepRotation;
 	float minBounds[6];

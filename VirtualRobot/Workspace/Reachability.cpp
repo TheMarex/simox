@@ -62,7 +62,7 @@ void Reachability::addRandomTCPPoses( unsigned int loops, bool checkForSelfColli
 
 	for (unsigned int i=0;i<loops;i++)
 	{
-		if (setRobotNodesToRandomConfig(checkForSelfCollisions))
+		if (setRobotNodesToRandomConfig(nodeSet, checkForSelfCollisions))
 			addCurrentTCPPose();
 		else
 			VR_WARNING << "Could not find collision-free configuration...";

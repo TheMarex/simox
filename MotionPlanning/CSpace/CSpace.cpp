@@ -256,13 +256,11 @@ void CSpace::checkForBorderlessDimensions(bool enable)
 	} 
 }
 
-inline
 float CSpace::calcDist(const Eigen::VectorXf &c1, const Eigen::VectorXf &c2, bool forceDisablingMetricWeights)
 {
 	return sqrtf(calcDist2(c1,c2,forceDisablingMetricWeights));
 }
 
-inline
 float CSpace::calcDist2(const Eigen::VectorXf &c1, const Eigen::VectorXf &c2, bool forceDisablingMetricWeights)
 {
 	SABA_ASSERT (c1.rows()==dimension)
@@ -528,7 +526,6 @@ Eigen::VectorXf CSpace::interpolate(const Eigen::VectorXf &q1, const Eigen::Vect
 	return res;
 }
 
-inline
 float CSpace::interpolate(const Eigen::VectorXf &q1, const Eigen::VectorXf &q2, int dim, float step)
 {
 	SABA_ASSERT (q1.rows()==dimension)
@@ -557,13 +554,11 @@ float CSpace::interpolate(const Eigen::VectorXf &q1, const Eigen::VectorXf &q2, 
 
 }
 
-inline
 float CSpace::interpolateLinear(float a, float b, float step)
 {
   return (a + step * (b - a));
 }
 
-inline
 float CSpace::interpolateRotational(float a, float b, float step)
 {
   //return (a + step * (b - a));

@@ -3,6 +3,7 @@
 #include "VirtualRobotException.h"
 #include "ManipulationObject.h"
 #include "SceneObjectSet.h"
+#include "XML/BaseIO.h"
 
 namespace VirtualRobot 
 {
@@ -444,6 +445,77 @@ VirtualRobot::SceneObjectSetPtr Scene::getSceneObjectSet( const std::string &nam
 std::vector< SceneObjectSetPtr > Scene::getSceneObjectSets()
 {
 	return sceneObjectSets;
+}
+
+std::string Scene::getXMLString( const std::string &basePath )
+{
+	std::stringstream ss;
+	ss << "<Scene";
+	if (!name.empty())
+		ss << " name='" << name << "'";
+	ss << ">\n";
+	ss << "\n";
+
+	// process robots
+	for (size_t i=0;i<robots.size();i++)
+	{
+		std::string rob = robots[i]->getName();
+		RobotConfigPtr currentConfig = robots[i]->getConfig();
+		ss << "\t<Robot name='" << rob << "' initConfig='" << currentConfig->getName() << "'>\n";
+		std::string robFile = robots[i]->getFilename();
+		if (!basePath.empty())
+			BaseIO::makeRelativePath(basePath,robFile);
+
+		ss << "\t\t<File>" << robFile << "</File>\n";
+
+		// store global pose (if not identity)
+		Eigen::Matrix4f gp = robots[i]->getGlobalPose();
+		if (!gp.isIdentity())
+		{
+			ss << "\t\t<GlobalPose>\n";
+			ss << "\t\t\t<Transform>\n";
+			ss << MathTools::getTransformXMLString(gp,4);
+			ss << "\t\t\t</Transform>\n";
+			ss << "\t\t</GlobalPose>\n";
+		}
+		// store current config
+		ss << currentConfig->getXMLString(2);
+
+		// store all other configs for robot
+		std::vector<RobotConfigPtr> rc = getRobotConfigs(robots[i]);
+		for (size_t j=0;j<rc.size();j++)
+		{
+			ss << rc[j]->getXMLString(2);
+		}
+		ss << "\t</Robot>\n";
+		ss << "\n";
+	}
+
+	// process manipulation objects
+	for (size_t i=0;i<manipulationObjects.size();i++)
+	{
+		ss << manipulationObjects[i]->getXMLString(basePath,1,true);
+		ss << "\n";
+	}
+
+	// process obstacles
+	for (size_t i=0;i<obstacles.size();i++)
+	{
+		ss << obstacles[i]->getXMLString(basePath,1);
+		ss << "\n";
+	}
+
+
+	// process sceneObjectSets
+	for (size_t i=0;i<sceneObjectSets.size();i++)
+	{
+		ss << sceneObjectSets[i]->getXMLString(1);
+		ss << "\n";
+	}
+
+	ss << "</Scene>\n";
+
+	return ss.str();
 }
 
 

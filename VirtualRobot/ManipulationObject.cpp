@@ -76,54 +76,44 @@ VirtualRobot::GraspSetPtr ManipulationObject::getGraspSet( const std::string &ro
 	return GraspSetPtr();
 }
 
-std::string ManipulationObject::getXMLString(const std::string &basePath)
+std::string ManipulationObject::getXMLString(const std::string &basePath, int tabs, bool storeLinkToFile)
 {
 	std::stringstream ss;
 	std::string t = "\t";
+	std::string pre = "";
+	for (int i=0;i<tabs;i++)
+		pre += "\t";
 
-	ss << "<ManipulationObject name='" << name << "'>\n";
-	if (visualizationModel)
+	ss << pre << "<ManipulationObject name='" << name << "'>\n";
+	
+	if (storeLinkToFile)
 	{
-		ss << t << "<Visualization";
-		if (visualizationModel->usedBoundingBoxVisu())
+		std::string relFile = filename;
+		if (!basePath.empty())
 		{
-			ss << " BoundingBox='true'";
+			BaseIO::makeRelativePath(basePath,relFile);
 		}
-		ss << ">\n";
-		std::string fnV = visualizationModel->getFilename();
-		if (!fnV.empty())
+		ss << pre << t << "<File>" << relFile << "</File>\n";
+		Eigen::Matrix4f gp = getGlobalPose();
+		if (!gp.isIdentity())
 		{
-			if (!basePath.empty())
-				BaseIO::makeRelativePath(basePath,fnV);
-			ss << t << t << "<File type='" << visualizationModel->getType() << "'>" << fnV << "</File>\n";
+			ss << pre << t << "<GlobalPose>\n";
+			ss << pre << t  << t  << "<Transform>\n";
+			ss << MathTools::getTransformXMLString(gp,tabs+3);
+			ss << pre << t  << t  << "</Transform>\n";
+			ss << pre << t << "</GlobalPose>\n";
 		}
-		ss << t << "</Visualization>\n";
-	}
+	} else
+	{
 
-	if (collisionModel && collisionModel->getVisualization())
-	{
-
-		ss << t << "<CollisionModel";
-		if (collisionModel->getVisualization()->usedBoundingBoxVisu())
+		ss << getSceneObjectXMLString(basePath,tabs+1);
+	
+		for (size_t i=0;i<graspSets.size();i++)
 		{
-			ss << " BoundingBox='true'";
+			ss << graspSets[i]->getXMLString(tabs+1) << "\n";
 		}
-		ss << ">\n";
-		std::string fnC = collisionModel->getVisualization()->getFilename();
-		if (!fnC.empty())
-		{
-			if (!basePath.empty())
-				BaseIO::makeRelativePath(basePath,fnC);
-			ss << t << t << "<File type='" << collisionModel->getVisualization()->getType() << "'>" << fnC << "</File>\n";
-		}
-		ss << t << "</CollisionModel>\n";
 	}
-	ss << "\n";
-	for (size_t i=0;i<graspSets.size();i++)
-	{
-		ss << graspSets[i]->getXMLString() << "\n";
-	}
-	ss << "</ManipulationObject>\n";
+	ss << pre << "</ManipulationObject>\n";
 
 	return ss.str();
 }
@@ -150,6 +140,16 @@ ManipulationObjectPtr ManipulationObject::clone( const std::string &name, Collis
 	}
 
 	return result;
+}
+
+void ManipulationObject::setFilename( const std::string &filename )
+{
+	this->filename = filename;
+}
+
+std::string ManipulationObject::getFilename()
+{
+	return filename;
 }
 
 

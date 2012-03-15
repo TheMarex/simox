@@ -216,7 +216,30 @@ bool RobotConfig::applyToRobot( RobotPtr r )
 	return true;
 }
 
+std::string RobotConfig::getXMLString(int tabs)
+{
+	std::stringstream ss;
+	std::string t;
+	for (int i=0;i<tabs;i++)
+		t += "\t";
+	std::string tt = t;
+	tt += "\t";
+	std::string ttt = tt;
+	ttt += "\t";
 
+	ss << t << "<Configuration name='" << name << "'>\n";
+
+	std::map < std::string, float > jv = getRobotNodeJointvalueMap();
+	std::map< std::string, float >::const_iterator i = jv.begin();
+	while (i != jv.end())
+	{
+		ss << tt << "<Node name='" << i->first << "' unit='radian' value='" << i->second << "'/>\n";
+		i++;
+	}
+	ss << t << "</Configuration>\n";
+
+	return ss.str();
+}
 
 
 

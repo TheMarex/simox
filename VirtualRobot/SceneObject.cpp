@@ -457,5 +457,37 @@ Eigen::Matrix3f SceneObject::getInertiaMatrix()
 	return physics.intertiaMatrix;
 }
 
+std::string SceneObject::getSceneObjectXMLString(const std::string &basePath, int tabs)
+{
+	std::stringstream ss;
+	std::string t = "\t";
+	std::string pre = "";
+	for (int i=0;i<tabs;i++)
+		pre += "\t";
 
+	if (visualizationModel)
+	{
+		ss << visualizationModel->getXMLString(basePath,tabs);
+	}
+
+	if (collisionModel && collisionModel->getVisualization())
+	{
+		ss << collisionModel->getXMLString(basePath,tabs);
+	}
+	Eigen::Matrix4f gp = getGlobalPose();
+	if (!gp.isIdentity())
+	{
+		ss << pre << "<GlobalPose>\n";
+		ss << pre << "\t<Transform>\n";
+		ss << MathTools::getTransformXMLString(gp,tabs+2);
+		ss << pre << "\t</Transform>\n";
+		ss << pre << "</GlobalPose>\n";
+	}
+	if (physics.isSet())
+	{
+		ss << physics.getXMLString(tabs);
+	}
+
+	return ss.str();
+}
 } // namespace

@@ -11,6 +11,7 @@
 
 #include "VirtualRobot/VirtualRobot.h"
 #include "VirtualRobot/VirtualRobotException.h"
+#include "VirtualRobot/XML/BaseIO.h"
 
 namespace VirtualRobot {
 
@@ -116,6 +117,33 @@ bool VisualizationNode::usedBoundingBoxVisu()
 std::string VisualizationNode::getFilename()
 {
 	return filename;
+}
+
+
+std::string VisualizationNode::getXMLString(const std::string &basePath, int tabs)
+{
+	std::stringstream ss;
+	std::string t = "\t";
+	std::string pre = "";
+	for (int i=0;i<tabs;i++)
+		pre += "\t";
+
+	ss << pre << "<Visualization";
+	if (usedBoundingBoxVisu())
+	{
+		ss << " BoundingBox='true'";
+	}
+	ss << ">\n";
+	std::string fnV = getFilename();
+	if (!fnV.empty())
+	{
+		if (!basePath.empty())
+			BaseIO::makeRelativePath(basePath,fnV);
+		ss << pre << t << "<File type='" << getType() << "'>" << fnV << "</File>\n";
+	}
+	ss << pre << "</Visualization>\n";
+
+	return ss.str();
 }
 
 } // namespace VirtualRobot

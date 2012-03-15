@@ -244,6 +244,24 @@ VirtualRobot::SceneObjectPtr SceneObjectSet::getSceneObject( unsigned int nr )
 	return sceneObjects[nr];
 }
 
+std::string SceneObjectSet::getXMLString( int tabs )
+{
+	std::stringstream ss;
+	std::string t = "\t";
+	std::string pre = "";
+	for (int i=0;i<tabs;i++)
+		pre += "\t";
+
+	ss << pre << "<SceneObjectSet name='" << name << "'>\n";
+	for (size_t i=0;i<sceneObjects.size();i++)
+	{
+		ss << pre << t << "<SceneObject name='" << sceneObjects[i]->getName() << "'/>\n";
+	}
+
+	ss << pre << "</SceneObjectSet>\n";
+	return ss.str();
+}
+
 
 
 } // namespace VirtualRobot

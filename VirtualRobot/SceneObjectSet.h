@@ -100,6 +100,7 @@ public:
 	//! fills the current globalPose of all associated sceneobjects to map.
 	bool getCurrentSceneObjectConfig( std::map< SceneObjectPtr, Eigen::Matrix4f > &storeConfig );
 
+	std::string getXMLString( int tabs);
 
 protected:
 

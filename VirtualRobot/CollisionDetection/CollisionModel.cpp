@@ -3,6 +3,7 @@
 #include "CollisionChecker.h"
 #include "../Visualization/TriMeshModel.h"
 #include "../Visualization/VisualizationNode.h"
+#include "../XML/BaseIO.h"
 #include <algorithm>
 
 namespace VirtualRobot {
@@ -168,7 +169,30 @@ VirtualRobot::VisualizationNodePtr CollisionModel::getModelDataVisualization()
 	return modelVisualization;
 }
 
+std::string CollisionModel::getXMLString(const std::string &basePath, int tabs)
+{
+	std::stringstream ss;
+	std::string t = "\t";
+	std::string pre = "";
+	for (int i=0;i<tabs;i++)
+		pre += "\t";
 
+	ss << pre << "<CollisionModel";
+	if (getVisualization()->usedBoundingBoxVisu())
+	{
+		ss << " BoundingBox='true'";
+	}
+	ss << ">\n";
+	std::string fnC = getVisualization()->getFilename();
+	if (!fnC.empty())
+	{
+		if (!basePath.empty())
+			BaseIO::makeRelativePath(basePath,fnC);
+		ss << pre << t << "<File type='" << getVisualization()->getType() << "'>" << fnC << "</File>\n";
+	}
+	ss << pre << "</CollisionModel>\n";
+	return ss.str();
+}
 
 /*
 void CollisionModel::GetAABB( SbBox3f& store_aabb )

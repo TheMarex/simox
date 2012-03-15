@@ -69,6 +69,34 @@ public:
 			std::cout << " ** local CoM [mm]: " <<  localCoM(0) << localCoM(1) << localCoM(2) << std::endl;
 			std::cout << " ** inertia matrix [kg*m^2] :\n " << intertiaMatrix  << std::endl;
 		}
+
+		bool isSet()
+		{
+			return (massKg!=0.0f || comLocation!=eCustom || !localCoM.isZero() || !intertiaMatrix.isIdentity());
+		}
+
+		std::string getXMLString(int tabs)
+		{
+			std::string ta;
+			std::stringstream ss;
+			for (int i=0;i<tabs;i++)
+				ta += "\t";
+			ss << ta << "<Physics>\n";
+			ss << ta << "\t<Mass unit='kg' value='" << massKg << "'/>\n";
+			ss << ta << "\t<CoM location=";
+			if (comLocation==eVisuBBoxCenter)
+				ss << "'VisualizationBBoxCenter'/>\n";
+			else
+			{
+				ss << "'Custom' x='" << localCoM(0) << "' y='" << localCoM(1) << "' z='" << localCoM(2) << "'/>\n";
+			}
+			ss << ta << "\t<InertiaMatrix>\n";
+			ss << MathTools::getTransformXMLString(intertiaMatrix,tabs+2,true);
+			ss << ta << "\t</InertiaMatrix>\n";
+			ss << ta << "</Physics>\n";
+			return ss.str();
+		}
+
 		Eigen::Vector3f localCoM;	//!< Defined in the local coordinate system of this object [mm]
 		float massKg;				//!< The mass of this object
 		CoMLocation comLocation;	//!< Where is the CoM located
@@ -255,6 +283,10 @@ public:
 
 protected:
 	SceneObject(){};
+
+	//! basic data, used by Obstacle and ManipulationObject
+	std::string getSceneObjectXMLString(const std::string &basePath, int tabs);
+
 	///////////////////////// SETUP ////////////////////////////////////
 	std::string name;
 	bool initialized;														//< Invalid object when false

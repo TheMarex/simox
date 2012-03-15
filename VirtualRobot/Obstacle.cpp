@@ -113,6 +113,23 @@ ObstaclePtr Obstacle::clone( const std::string &name, CollisionCheckerPtr colChe
 	return result;
 }
 
+std::string Obstacle::getXMLString(const std::string &basePath, int tabs)
+{
+	std::stringstream ss;
+	std::string t = "\t";
+	std::string pre = "";
+	for (int i=0;i<tabs;i++)
+		pre += "\t";
+
+	ss << pre << "<Obstacle name='" << name << "'>\n";
+
+	ss << getSceneObjectXMLString(basePath,tabs);
+	
+	ss << pre << "</Obstacle>\n";
+
+	return ss.str();
+}
+
 } //  namespace
 
 

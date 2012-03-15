@@ -165,6 +165,13 @@ public:
 	*/
 	template <typename T> boost::shared_ptr<T> getVisualization(SceneObject::VisualizationType visuType = SceneObject::Full);
 
+
+	/*!
+		Creates an XML string that describes this scene. 
+		\param basePath All paths to robots or objects are stored relative to this path.
+		\return The xml string.
+	*/
+	std::string getXMLString(const std::string &basePath);
 protected:
 
 	std::string name;

@@ -120,14 +120,16 @@ std::string GraspSet::getEndEffector()
 	return eef;
 }
 
-std::string GraspSet::getXMLString()
+std::string GraspSet::getXMLString(int tabs)
 {
 	std::stringstream ss;
-	std::string t = "\t";
+	std::string t;
+	for (int i=0;i<tabs;i++)
+		t += "\t";
 
 	ss << t << "<GraspSet name='" << name << "' RobotType='" << robotType << "' EndEffector='" << eef << "'>\n";
 	for (size_t i=0;i<grasps.size();i++)
-		ss << grasps[i]->getXMLString();
+		ss << grasps[i]->getXMLString(tabs+1);
 	ss << t << "</GraspSet>\n";
 
 	return ss.str();

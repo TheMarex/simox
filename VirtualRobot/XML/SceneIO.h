@@ -42,15 +42,23 @@ class VIRTUAL_ROBOT_IMPORT_EXPORT SceneIO : public BaseIO
 public:
 
 	/*!
-        Loads scene from file.
-		@param xmlFile The file
-        @return Returns an empty pointer, when file access failed.
+        Load scene from file.
+		\param xmlFile The file
+        \return Returns an empty pointer, when file access failed.
 	*/
-    static ScenePtr loadScene(const std::string &xmlFile);
+	static ScenePtr loadScene(const std::string &xmlFile);
+
+	/*!
+		Save a scene to file.
+		\param s The scen to be saved.
+		\param xmlFile The absolute filename.
+		\return true on success.
+	*/
+	static bool saveScene(ScenePtr s, const std::string &xmlFile);
 	
 	/*!
         Creates scene from string.
-        @param basePath If any robot tags are given, the base path for searching the robot files can be specified.
+        \param basePath If any robot tags are given, the base path for searching the robot files can be specified.
     */
     static ScenePtr createSceneFromString(const std::string &xmlString, const std::string &basePath = "");
 

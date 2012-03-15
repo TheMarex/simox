@@ -118,6 +118,7 @@ public:
 
 	virtual std::string getType(){return VisualizationFactory::getName();}
 
+	std::string getXMLString(const std::string &basePath, int tabs);
 protected:
 	bool boundingBox; //!< Indicates, if the bounding box model was used
 	std::string filename; //!< if the visualization was build from a file, the filename is stored here

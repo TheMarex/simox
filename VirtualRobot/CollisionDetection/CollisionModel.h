@@ -118,11 +118,12 @@ public:
 
 	TriMeshModelPtr getTriMeshModel(){return collisionModelImplementation->getTriMeshModel();}
 
+	std::string getXMLString(const std::string &basePath, int tabs);
+
 protected:
 
 	//! delete all data
 	void destroyData();  
-
 	VisualizationNodePtr visualization;			// this is the original visualization
 	VisualizationNodePtr modelVisualization;	// this is the visualization of the trimeshmodel
 	bool updateVisualization;

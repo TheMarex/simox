@@ -620,15 +620,46 @@ Eigen::Matrix4f MathTools::quat2eigen4f( float x, float y, float z, float w )
 	//m(3,3) = w*w + x*x + y*y + z*z;*/
 }
 
-std::string MathTools::getTransformXMLString(const Eigen::Matrix4f &m, const std::string &tabs)
+std::string MathTools::getTransformXMLString(const Eigen::Matrix3f &m, int tabs, bool skipMatrixTag)
+{
+	std::string t;
+	for (int i=0;i<tabs;i++)
+		t += "\t";
+	return getTransformXMLString(m,t,skipMatrixTag);
+}
+
+std::string MathTools::getTransformXMLString(const Eigen::Matrix4f &m, int tabs, bool skipMatrixTag)
+{
+	std::string t;
+	for (int i=0;i<tabs;i++)
+		t += "\t";
+	return getTransformXMLString(m,t,skipMatrixTag);
+}
+
+std::string MathTools::getTransformXMLString(const Eigen::Matrix4f &m, const std::string &tabs, bool skipMatrixTag)
 {
 	std::stringstream ss;
-	ss << tabs << "<Matrix4x4>\n";
+	if (!skipMatrixTag)
+		ss << tabs << "<Matrix4x4>\n";
 	ss << tabs << "\t<row1 c1='" << m(0,0) << "' c2='" << m(0,1) << "' c3='" << m(0,2) << "' c4='" << m(0,3) << "'/>\n";
 	ss << tabs << "\t<row2 c1='" << m(1,0) << "' c2='" << m(1,1) << "' c3='" << m(1,2) << "' c4='" << m(1,3) << "'/>\n";
 	ss << tabs << "\t<row3 c1='" << m(2,0) << "' c2='" << m(2,1) << "' c3='" << m(2,2) << "' c4='" << m(2,3) << "'/>\n";
 	ss << tabs << "\t<row4 c1='" << m(3,0) << "' c2='" << m(3,1) << "' c3='" << m(3,2) << "' c4='" << m(3,3) << "'/>\n";
-	ss << tabs << "</Matrix4x4>\n";
+	if (!skipMatrixTag)
+		ss << tabs << "</Matrix4x4>\n";
+	return ss.str();
+}
+
+std::string MathTools::getTransformXMLString(const Eigen::Matrix3f &m, const std::string &tabs, bool skipMatrixTag)
+{
+	std::stringstream ss;
+	if (!skipMatrixTag)
+		ss << tabs << "<Matrix3x3>\n";
+	ss << tabs << "\t<row1 c1='" << m(0,0) << "' c2='" << m(0,1) << "' c3='" << m(0,2) << "'/>\n";
+	ss << tabs << "\t<row2 c1='" << m(1,0) << "' c2='" << m(1,1) << "' c3='" << m(1,2) << "'/>\n";
+	ss << tabs << "\t<row3 c1='" << m(2,0) << "' c2='" << m(2,1) << "' c3='" << m(2,2) << "'/>\n";
+	if (!skipMatrixTag)
+		ss << tabs << "</Matrix3x3>\n";
 	return ss.str();
 }
 

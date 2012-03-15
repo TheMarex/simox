@@ -39,7 +39,7 @@ VirtualRobot::ManipulationObjectPtr ObjectIO::loadManipulationObject( const std:
 
 	VirtualRobot::ManipulationObjectPtr res = createManipulationObjectFromString(objectXML, basePath);
 	THROW_VR_EXCEPTION_IF (!res,"Error while parsing file " << xmlFile);
-
+	res->setFilename(xmlFile);
 	return res;
 }
 

@@ -227,6 +227,9 @@ public:
 	*/
 	RobotPtr clone(const std::string &name, CollisionCheckerPtr collisionChecker = CollisionCheckerPtr());
 
+	void setFilename(const std::string &filename);
+	std::string getFilename();
+
 protected:
 	Robot();
 	/*!
@@ -236,7 +239,7 @@ protected:
 	*/
 	void createVisualizationFromCollisionModels();
 
-
+	std::string filename; // RobotIO stores the filename here
 	std::string name;
 	std::string type;
 

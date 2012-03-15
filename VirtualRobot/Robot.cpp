@@ -666,6 +666,16 @@ bool Robot::setConfig( RobotConfigPtr c )
 	return false;
 }
 
+void Robot::setFilename( const std::string &filename )
+{
+	this->filename = filename;
+}
+
+std::string Robot::getFilename()
+{
+	return filename;
+}
+
 
 } // namespace VirtualRobot
 

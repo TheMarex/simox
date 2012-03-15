@@ -67,14 +67,26 @@ public:
 	*/
 	GraspSetPtr getGraspSet(const std::string &robotType,const std::string &eefName);
 
-	std::string getXMLString(const std::string &basePath = std::string());
+	/*!
+		Creates an XML representation of this object.
+		\param basePath If set, all visualization and collision model files are made relative to this path.
+		\param tabs Create indention at the beginning of each line.
+		\param storeLinkToFile If set, the data (e.g. grasps) are not explicitly listed, but an xml tag directing to the XML file, 
+				from which this instance was loaded, is set. If not set a deep description is created.
+	*/
+	std::string getXMLString(const std::string &basePath = std::string(), int tabs = 0, bool storeLinkToFile = false);
 
 	/*!
 		Clones this object. If no col checker is given, the one of the original object is used.
 	*/
 	ManipulationObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() );
 
+	void setFilename(const std::string &filename);
+	std::string getFilename();
+
 protected:
+
+	std::string filename;
 		
 	std::vector< GraspSetPtr > graspSets;
 };

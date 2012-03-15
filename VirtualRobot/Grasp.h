@@ -97,7 +97,7 @@ public:
 	*/
 	Eigen::Matrix4f getTransformation();
 
-	std::string getXMLString();
+	std::string getXMLString(int tabs=2);
 
 
 	GraspPtr clone();

@@ -235,6 +235,7 @@ void RrtGuiWindow::loadScene()
 		VR_ERROR << " no scene ..." << endl;
 		return;
 	}
+	//SceneIO::saveScene(scene,"testSaveScene.xml");
 	std::vector< RobotPtr > robots = scene->getRobots();
 	if (robots.size()!=1)
 	{

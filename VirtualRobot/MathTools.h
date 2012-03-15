@@ -349,7 +349,10 @@ namespace MathTools
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print (const std::vector<ContactPoint> &points);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print( const Eigen::Vector3f &v, bool endline = true );
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print( const std::vector<float> &v, bool endline = true);
-	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix4f &m, const std::string &tabs);
+	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix4f &m, int tabs, bool skipMatrixTag = false);
+	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix4f &m, const std::string &tabs, bool skipMatrixTag = false);
+	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix3f &m, int tabs, bool skipMatrixTag = false);
+	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix3f &m, const std::string &tabs, bool skipMatrixTag = false);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT convertMM2M( const std::vector<ContactPoint> points, std::vector<ContactPoint> &storeResult );
 
 

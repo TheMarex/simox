@@ -1046,6 +1046,7 @@ VirtualRobot::RobotPtr RobotIO::loadRobot(const std::string &xmlFile, RobotDescr
 	}
 
 	res->applyJointValues();
+	res->setFilename(xmlFile);
 	return res;
 }
 

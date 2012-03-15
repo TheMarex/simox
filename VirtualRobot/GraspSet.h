@@ -73,7 +73,7 @@ public:
 
 	void print();
 
-	std::string getXMLString();
+	std::string getXMLString(int tabs=1);
 
 	GraspSetPtr clone();
 

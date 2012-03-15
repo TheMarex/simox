@@ -319,5 +319,32 @@ VirtualRobot::ScenePtr SceneIO::createSceneFromString( const std::string &xmlStr
 	return scene;
 }
 
+bool SceneIO::saveScene( ScenePtr s, const std::string &xmlFile )
+{
+	if (!s)
+	{
+		VR_ERROR << "NULL data..." << endl;
+		return false;
+	}
+
+	boost::filesystem::path filenameBaseComplete(xmlFile);
+	filenameBaseComplete = boost::filesystem::complete(filenameBaseComplete);
+	boost::filesystem::path filenameBasePath = filenameBaseComplete.branch_path();
+	std::string basePath = filenameBasePath.string();
+
+	std::string xmlString = s->getXMLString(basePath);
+
+	// save file
+	std::ofstream out(xmlFile.c_str());
+
+	if (!out.is_open())
+		return false;
+
+	out << xmlString;
+	out.close();
+
+	return true;
+}
+
 
 } // namespace VirtualRobot

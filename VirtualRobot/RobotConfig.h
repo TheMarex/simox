@@ -101,6 +101,8 @@ public:
 		apply the joint values to a cloned robot. Therefore this method can be used.
 	*/
 	bool applyToRobot(RobotPtr r);
+
+	std::string getXMLString(int tabs=0);
 protected:
 
 

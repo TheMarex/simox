@@ -82,20 +82,23 @@ void Grasp::setName( const std::string &name )
 	this->name = name;
 }
 
-std::string Grasp::getXMLString()
+std::string Grasp::getXMLString(int tabs)
 {
 	std::stringstream ss;
-	std::string t = "\t";
-	std::string tt = "\t\t";
-	std::string ttt = "\t\t\t";
-	std::string tttt = "\t\t\t\t";
+	std::string t;
+	for (int i=0;i<tabs;i++)
+		t += "\t";
+	std::string tt = t;
+	tt += "\t";
+	std::string ttt = tt;
+	ttt += "\t";
+	
+	ss << t << "<Grasp name='" << name << "' quality='" << quality << "' Creation='" << creation << "'>\n";
+	ss << tt<< "<Transform>\n";
+	ss << MathTools::getTransformXMLString(poseTcp, ttt);
+	ss << tt << "</Transform>\n";
 
-	ss << tt << "<Grasp name='" << name << "' quality='" << quality << "' Creation='" << creation << "'>\n";
-	ss << ttt<< "<Transform>\n";
-	ss << MathTools::getTransformXMLString(poseTcp, tttt);
-	ss << ttt << "</Transform>\n";
-
-	ss << tt << "</Grasp>\n";
+	ss << t << "</Grasp>\n";
 
 	return ss.str();
 }

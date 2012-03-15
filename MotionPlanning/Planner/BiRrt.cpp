@@ -298,13 +298,13 @@ bool BiRrt::createSolution(bool bQuiet)
 	// Create the CSpacePath, first start node till bridgeover node, then bridgeover node till goal node
 	solution.reset(new CSpacePath(cspace));
 	for (unsigned int i=0;i<tmpSol.size();i++)
-		solution->addPathPoint(tree->getNode(tmpSol[i])->configuration);
+		solution->addPoint(tree->getNode(tmpSol[i])->configuration);
 	
 	for (unsigned int i=0;i<tmpSol2.size();i++)
-		solution->addPathPoint(tree2->getNode(tmpSol2[i])->configuration);
+		solution->addPoint(tree2->getNode(tmpSol2[i])->configuration);
 	       
 	if (!bQuiet)
-		SABA_INFO << "Created solution with " << solution->getNrOfPathPoints() << " nodes." << std::endl;
+		SABA_INFO << "Created solution with " << solution->getNrOfPoints() << " nodes." << std::endl;
 	//solution->checkDistance(tree->getColCheckSamplingSize());
 	return true;
 }

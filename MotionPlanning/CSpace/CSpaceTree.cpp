@@ -171,7 +171,7 @@ bool CSpaceTree::appendPathUntilCollision(CSpaceNodePtr startNode, const Eigen::
 
 	float dist;
 	CSpacePathPtr res = cspace->createPathUntilInvalid(startNode->configuration, config, dist);
-	if (res->getNrOfPathPoints()<=1)
+	if (res->getNrOfPoints()<=1)
 		return false;
 	res->erasePosition(0);
 	bool appOK = appendPath(startNode, res, storeLastAddedID);
@@ -185,7 +185,7 @@ bool CSpaceTree::appendPath(CSpaceNodePtr startNode, CSpacePathPtr path, int *st
 	SABA_ASSERT (hasNode(startNode))
 	SABA_ASSERT (path)
 	CSpaceNodePtr n = startNode;
-	const std::vector<Eigen::VectorXf > data = path->getPathData();
+	const std::vector<Eigen::VectorXf > data = path->getData();
 	std::vector<Eigen::VectorXf >::const_iterator it;
 	for (it=data.begin(); it!=data.end(); it++)
 	{
@@ -205,7 +205,7 @@ bool CSpaceTree::appendPath(CSpaceNodePtr startNode, const Eigen::VectorXf &conf
 	SABA_ASSERT (config.rows()==dimension)
 
 	CSpacePathPtr res = cspace->createPath(startNode->configuration, config);
-	if (res->getNrOfPathPoints()<=1)
+	if (res->getNrOfPoints()<=1)
 		return false;
 	res->erasePosition(0);
 	return appendPath(startNode, res, storeLastAddedID);
@@ -351,7 +351,7 @@ bool CSpaceTree::createPath (CSpaceNodePtr startNode, CSpaceNodePtr goalNode, CS
 		if (actNode)
 		{
 			tmpSol.push_back(actID);
-			//fillPath->addPathPoint(actNode->configuration);
+			//fillPath->addPoint(actNode->configuration);
 			if (actID == startNode->ID)
 			{ 
 				found = true;
@@ -369,7 +369,7 @@ bool CSpaceTree::createPath (CSpaceNodePtr startNode, CSpaceNodePtr goalNode, CS
 		// revert path
 		for ( int i=( int)tmpSol.size()-1;i>=0;i--)
 		{
-			fillPath->addPathPoint(getNode(tmpSol[i])->configuration);
+			fillPath->addPoint(getNode(tmpSol[i])->configuration);
 		}
 	}
 

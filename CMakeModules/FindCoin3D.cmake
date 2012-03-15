@@ -8,6 +8,7 @@
 #  COIN3D_INCLUDE_DIRS  - where the Inventor include directory can be found
 #  COIN3D_LIBRARIES     - Link to this to use Coin3D
 #
+# The Coin directory can be defined by the environment variable <Coin3D_DIR>
 
 #=============================================================================
 # Copyright 2008-2009 Kitware, Inc.
@@ -32,14 +33,20 @@ IF (WIN32)
 
     FIND_PATH(COIN3D_INCLUDE_DIRS Inventor/So.h
       "[HKEY_LOCAL_MACHINE\\SOFTWARE\\SIM\\Coin3D\\2;Installation Path]/include"
+      $ENV{Coin3D_DIR}/include
+      $ENV{COINDIR}/include
     )
 
-    FIND_LIBRARY(COIN3D_LIBRARY_DEBUG coin2d
+    FIND_LIBRARY(COIN3D_LIBRARY_DEBUG coin3d
       "[HKEY_LOCAL_MACHINE\\SOFTWARE\\SIM\\Coin3D\\2;Installation Path]/lib"
+      $ENV{Coin3D_DIR}/lib
+      $ENV{COINDIR}/lib
     )
 
-    FIND_LIBRARY(COIN3D_LIBRARY_RELEASE coin2
+    FIND_LIBRARY(COIN3D_LIBRARY_RELEASE coin3
       "[HKEY_LOCAL_MACHINE\\SOFTWARE\\SIM\\Coin3D\\2;Installation Path]/lib"
+      $ENV{Coin3D_DIR}/lib
+      $ENV{COINDIR}/lib
     )
 
     IF (COIN3D_LIBRARY_DEBUG AND COIN3D_LIBRARY_RELEASE)

@@ -33,10 +33,10 @@ int ShortcutProcessor::tryRandomShortcut(int maxSolutionPathDist)
 
 	if (verbose)
 	{
-		SABA_INFO << "Path length: " << optimizedPath->getPathLength() << std::endl;
-		SABA_INFO << "Path nr of nodes: " << optimizedPath->getNrOfPathPoints() << std::endl;
+		SABA_INFO << "Path length: " << optimizedPath->getLength() << std::endl;
+		SABA_INFO << "Path nr of nodes: " << optimizedPath->getNrOfPoints() << std::endl;
 	}
-	int startNodeIndex = (int)(rand()%(optimizedPath->getNrOfPathPoints()-1));
+	int startNodeIndex = (int)(rand()%(optimizedPath->getNrOfPoints()-1));
 
 	int dist = rand()%(2*maxSolutionPathDist)-maxSolutionPathDist;
 	if (dist==0)
@@ -56,22 +56,22 @@ int ShortcutProcessor::tryRandomShortcut(int maxSolutionPathDist)
 
 	if (startNodeIndex<0)
 		startNodeIndex = 0;
-	if (endNodeIndex>(int)optimizedPath->getNrOfPathPoints()-1) // last node should remain unchanged 
-		endNodeIndex = (int)optimizedPath->getNrOfPathPoints()-1;
+	if (endNodeIndex>(int)optimizedPath->getNrOfPoints()-1) // last node should remain unchanged 
+		endNodeIndex = (int)optimizedPath->getNrOfPoints()-1;
 	if ((endNodeIndex-startNodeIndex)<=1)
 		return 0;
 
 	if (verbose)
 		SABA_INFO << "-- start: " << startNodeIndex << ", end: " << endNodeIndex << std::endl;
 
-	Eigen::VectorXf s = optimizedPath->getPathEntry(startNodeIndex);
-	Eigen::VectorXf e = optimizedPath->getPathEntry(endNodeIndex);
+	Eigen::VectorXf s = optimizedPath->getPoint(startNodeIndex);
+	Eigen::VectorXf e = optimizedPath->getPoint(endNodeIndex);
 	Eigen::VectorXf d = e - s;
 
 	// test line between start and end
 
 	float distShortcut = d.norm();
-	float distPath = optimizedPath->getPathLength(startNodeIndex,endNodeIndex);
+	float distPath = optimizedPath->getLength(startNodeIndex,endNodeIndex);
 
 	// -------------------------------------------------------------------
 	// DEBUG
@@ -114,7 +114,7 @@ int ShortcutProcessor::tryRandomShortcut(int maxSolutionPathDist)
 			}
 			if (verbose)
 			{
-				float distPathtest = optimizedPath->getPathLength(startNodeIndex,startNodeIndex+1);
+				float distPathtest = optimizedPath->getLength(startNodeIndex,startNodeIndex+1);
 				std::cout << "-- erased intermediate positions, distPath startIndex to (startIndex+1): " << distPathtest << std::endl;
 			}
 			/*cout << "all2:" << endl;
@@ -123,18 +123,18 @@ int ShortcutProcessor::tryRandomShortcut(int maxSolutionPathDist)
 
 			CSpacePathPtr intermediatePath = cspace->createPath(s, e);
 			int newP = 0;
-			if (intermediatePath->getNrOfPathPoints()>2)
+			if (intermediatePath->getNrOfPoints()>2)
 			{
-				newP = intermediatePath->getNrOfPathPoints()-2;
+				newP = intermediatePath->getNrOfPoints()-2;
 				/*cout << "before:" << endl;
 				optimizedPath->print();
 				cout << "interm path:" << endl;
 				intermediatePath->print();*/
-				intermediatePath->erasePosition(intermediatePath->getNrOfPathPoints()-1);
+				intermediatePath->erasePosition(intermediatePath->getNrOfPoints()-1);
 				intermediatePath->erasePosition(0);
 				/*cout << "interm path without start end:" << endl;
 				intermediatePath->print();*/
-				optimizedPath->insertPath(startNodeIndex+1,intermediatePath);
+				optimizedPath->insertTrajectory(startNodeIndex+1,intermediatePath);
 				/*cout << "after:" << endl;
 				optimizedPath->print();	*/
 			}
@@ -144,7 +144,7 @@ int ShortcutProcessor::tryRandomShortcut(int maxSolutionPathDist)
 				float sum = 0.0f;
 				for (int u=startNodeIndex; u<=startNodeIndex+newP; u++)
 				{
-					float distPathtest2 = optimizedPath->getPathLength(u,u+1);
+					float distPathtest2 = optimizedPath->getLength(u,u+1);
 					sum += distPathtest2;
 					std::cout << "---- intermediate position: " << u << ", distPath to next pos: " << distPathtest2 << ", sum:" << sum << std::endl;
 				}
@@ -181,12 +181,12 @@ CSpacePathPtr ShortcutProcessor::shortenSolutionRandom(int shortenLoops /*=300*/
 		std::cout << "ShortcutProcessor::ShortenSolutionRandom: Wrong parameters or no path to smooth..." << std::endl;
 		return CSpacePathPtr();
 	}
-	if (optimizedPath->getNrOfPathPoints()<=2)
+	if (optimizedPath->getNrOfPoints()<=2)
 	    return optimizedPath;
 	    
 	int result = 0;
-	int beforeCount = (int)optimizedPath->getNrOfPathPoints();
-	float beforeLength = optimizedPath->getPathLength();
+	int beforeCount = (int)optimizedPath->getNrOfPoints();
+	float beforeLength = optimizedPath->getLength();
 	if (verbose)
 	{
 	    SABA_INFO << ": solution size before shortenSolutionRandom:" << beforeCount << std::endl;
@@ -208,8 +208,8 @@ CSpacePathPtr ShortcutProcessor::shortenSolutionRandom(int shortenLoops /*=300*/
 	{
 		SABA_INFO << "optimization was stopped" << std::endl;
 	}
-	int afterCount = (int)optimizedPath->getNrOfPathPoints();
-	float afterLength = optimizedPath->getPathLength();
+	int afterCount = (int)optimizedPath->getNrOfPoints();
+	float afterLength = optimizedPath->getLength();
 	clock_t endT = clock();
 	float timems = (float)(endT - startT) / (float)CLOCKS_PER_SEC * 1000.0f;
 	if (verbose)
@@ -227,10 +227,10 @@ void ShortcutProcessor::doPathPruning()
 	optimizedPath = path->clone();
 
     unsigned int i = 0;
-    while (i < optimizedPath->getNrOfPathPoints()-2)
+    while (i < optimizedPath->getNrOfPoints()-2)
     {
-        Eigen::VectorXf startConfig = optimizedPath->getPathEntry(i);
-        Eigen::VectorXf endConfig = optimizedPath->getPathEntry(i+2);
+        Eigen::VectorXf startConfig = optimizedPath->getPoint(i);
+        Eigen::VectorXf endConfig = optimizedPath->getPoint(i+2);
         if(cspace->isPathValid(startConfig,endConfig) )
         {
             optimizedPath->erasePosition(i+1);

@@ -157,13 +157,13 @@ bool CSpace::checkSolution(CSpacePathPtr solution, bool bVerbose)
 		std::cout << "NULL solution..." << std::endl;
 		return false;
 	}
-	unsigned int s = solution->getNrOfPathPoints();
+	unsigned int s = solution->getNrOfPoints();
 	if (bVerbose)
 		SABA_INFO << "Checking " << s << " segments:" << endl;
 	for (unsigned int i = s-1; i > 0; i--)
 	{
 		clock_t t1 = clock();
-		bool bColFree = isPathValid(solution->getPathEntry(i),solution->getPathEntry(i-1));
+		bool bColFree = isPathValid(solution->getPoint(i),solution->getPoint(i-1));
 		clock_t t2 = clock();
 		
 		if (bVerbose && t2-t1>0)
@@ -693,8 +693,8 @@ CSpacePathPtr CSpace::createPath( const Eigen::VectorXf &start, const Eigen::Vec
 	SABA_ASSERT (start.rows() == dimension)
 	SABA_ASSERT (goal.rows() == dimension)
 	CSpacePathPtr p(new CSpacePath(shared_from_this()));
-	p->addPathPoint(start);
-	p->addPathPoint(goal);
+	p->addPoint(start);
+	p->addPoint(goal);
 	return p;
 }
 
@@ -704,10 +704,10 @@ Saba::CSpacePathPtr CSpace::createPathUntilInvalid( const Eigen::VectorXf &start
 	SABA_ASSERT (goal.rows() == dimension);
 	CSpacePathPtr p(new CSpacePath(shared_from_this()));
 	storeAddedLength = 0.5f;
-	p->addPathPoint(start);
+	p->addPoint(start);
 	if (isConfigValid(goal))
 	{
-		p->addPathPoint(goal);
+		p->addPoint(goal);
 		storeAddedLength = 1.0f;
 	}
 	return p;

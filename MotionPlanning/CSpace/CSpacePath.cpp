@@ -8,7 +8,7 @@ using namespace std;
 namespace Saba
 {
 
-CSpacePath::CSpacePath(CSpacePtr cspace)
+CSpacePath::CSpacePath(CSpacePtr cspace, const std::string &name):Trajectory(cspace?cspace->getRobotNodeSet():VirtualRobot::RobotNodeSetPtr(),name)
 {
 	this->cspace = cspace;
 	if (!cspace)
@@ -22,69 +22,24 @@ CSpacePath::~CSpacePath()
 	reset();
 }
 
-void CSpacePath::reset()
-{
-	path.clear();
-}
-
-void CSpacePath::addPathPoint(const Eigen::VectorXf &c)
-{
-	SABA_ASSERT (c.rows() == dimension)
-	path.push_back(c);
-}
-
-unsigned int CSpacePath::getNrOfPathPoints() const
-{
-	return (unsigned int)path.size();
-}
 
 
-Eigen::VectorXf CSpacePath::getPathEntry( unsigned int nr ) const
-{
-	if (nr>=path.size())
-	{
-		SABA_ERROR << "CSpacePath::getPathEntry: " << nr << " >= " << (unsigned int)path.size() << std::endl;
-		if (path.size()>0)
-			return path[path.size()-1];
-		else 
-		{
-			Eigen::VectorXf x(dimension);
-			x.setZero(dimension);
-			return x;
-		}
-	}
-	return path[nr];
-}
 
 CSpacePathPtr CSpacePath::clone() const
 {
-	CSpacePathPtr res(new CSpacePath(cspace));
-	for (unsigned int i=0;i<getNrOfPathPoints();i++)
+	CSpacePathPtr res(new CSpacePath(cspace,name));
+	for (unsigned int i=0;i<getNrOfPoints();i++)
 	{
-		res->addPathPoint(getPathEntry(i));
+		res->addPoint(getPoint(i));
 	}
 	return res;
 }
 
-CSpacePathPtr CSpacePath::createSubPath(unsigned int startIndex, unsigned int endIndex) const
-{
-	if (startIndex>=getNrOfPathPoints() || endIndex>=getNrOfPathPoints())
-	{
-		SABA_ERROR << "CSpacePath::createSubPath: wrong start or end pos" << std::endl;
-		return CSpacePathPtr();
-	}
-	CSpacePathPtr res(new CSpacePath(cspace));
-	for (unsigned int i=startIndex;i<=endIndex;i++)
-	{
-		res->addPathPoint(getPathEntry(i));
-	}
-	return res;
-}
 
 /*
 bool CSpacePath::movePosition(unsigned int pos, const Eigen::VectorXf &moveVector, int sideSteps)
 {
-	if (pos>=getNrOfPathPoints())
+	if (pos>=getNrOfPoints())
 	{
 		SABA_ERROR << "CSpacePath::movePosition: wrong pos" << std::endl;
 		return false;
@@ -95,7 +50,7 @@ bool CSpacePath::movePosition(unsigned int pos, const Eigen::VectorXf &moveVecto
 		return false;
 	}
 
-	Eigen::VectorXf c = getPathEntry(pos);
+	Eigen::VectorXf c = getPoint(pos);
 
 	for (unsigned int i=0;i<dimension;i++)
 	{
@@ -124,7 +79,7 @@ bool CSpacePath::movePosition(unsigned int pos, const Eigen::VectorXf &moveVecto
 			// left
 			if (posA>=0)
 			{
-				cA = GetPathEntry(posA);
+				cA = getPoint(posA);
 				for (unsigned int i=0;i<dimension;i++)
 				{
 					cA[i] += tmp[i];
@@ -132,9 +87,9 @@ bool CSpacePath::movePosition(unsigned int pos, const Eigen::VectorXf &moveVecto
 			}
 
 			// right
-			if (posB<(int)getNrOfPathPoints())
+			if (posB<(int)getNrOfPoints())
 			{
-				cB = GetPathEntry(posB);
+				cB = getPoint(posB);
 				for (unsigned int i=0;i<dimension;i++)
 				{
 					cB[i] += tmp[i];
@@ -149,17 +104,21 @@ bool CSpacePath::movePosition(unsigned int pos, const Eigen::VectorXf &moveVecto
 
 
 
-float CSpacePath::getPathLength(bool useMetricWeights) const
+float CSpacePath::getLength() const
 {
-	return getPathLength(0,(int)path.size()-1, useMetricWeights);
+	return getLength(true);
+}
+float CSpacePath::getLength(bool useCSpaceWeights) const
+{
+	return getLength(0,(int)path.size()-1, useCSpaceWeights);
 }
 
 // be careful, this method calculates the c-space length of the path, not the workspace length!
-float CSpacePath::getPathLength(unsigned int startIndex, unsigned int endIndex, bool forceDisablingMetricWeights) const
+float CSpacePath::getLength(unsigned int startIndex, unsigned int endIndex, bool useCSpaceWeights) const
 {
 	if (endIndex<startIndex || endIndex>=path.size())
 	{
-		SABA_ERROR << "CSpacePath::getPathLength: wrong index..." << std::endl;
+		SABA_ERROR << "CSpacePath::getLength: wrong index..." << std::endl;
 		return 0.0f;
 	}
 	float pathLength = 0.0f;
@@ -170,113 +129,10 @@ float CSpacePath::getPathLength(unsigned int startIndex, unsigned int endIndex, 
 		c1 = path[i];
 		c2 = path[i+1];
 
-		l = cspace->calcDist(c1, c2, forceDisablingMetricWeights);
+		l = cspace->calcDist(c1, c2, useCSpaceWeights);
 		pathLength += l;
 	}
 	return pathLength;
-}
-
-bool CSpacePath::getPathEntries(unsigned int start, unsigned int end , std::vector<Eigen::VectorXf> &storePosList) const
-{
-	if (start > end || end>=path.size())
-	{
-		SABA_ERROR << "CSpacePath::getPathEntries: wrong start or end.." << std::endl;
-		return false;
-	}
-	unsigned int i = start;
-	Eigen::VectorXf  data;
-	while (i<=end)
-	{
-		data = getPathEntry(i);
-		storePosList.push_back(data);
-		i++;
-	}
-	return true;
-}
-
-
-void CSpacePath::erasePosition(unsigned int pos)
-{
-	if (pos>=path.size())
-	{
-		SABA_ERROR << "CSpacePath::erasePosition: pos not valid ?!" << std::endl;
-		return;
-	}
-
-	std::vector<Eigen::VectorXf>::iterator iter = path.begin();
-	iter += pos;
-
-	path.erase( iter );
-}
-
-
-unsigned int CSpacePath::removePositions(unsigned int startPos, unsigned int endPos)
-{
-	if (startPos>=path.size() || endPos>=path.size() )
-	{
-		SABA_ERROR << "CSpacePath::removePositions: pos not valid ?!" << std::endl;
-		return 0;
-	}
-	if (startPos>endPos)
-	  return 0;
-
-	std::vector<Eigen::VectorXf>::iterator iter = path.begin();
-	iter += startPos;
-	unsigned int result = 0;
-	for (unsigned int i=startPos; i<=endPos; i++)
-	{
-		if (iter==path.end())
-		{
-			SABA_ERROR << "Internal error in CSpacePath::removePositions..." << std::endl;
-			return result;
-		}
-	    //delete *iter;
-	    iter = path.erase( iter );
-	    result++;
-	  }
-	return result;
-}
-
-// inserts at position before pos
-void CSpacePath::insertPosition(unsigned int pos, const Eigen::VectorXf &c)
-{	
-	if (pos > path.size())
-	{
-		std::cout << "CSpacePath::insertPosition: pos not valid ?!" << std::endl;
-		return;
-	}
-
-	// copy config and insert it
-	std::vector<Eigen::VectorXf>::iterator iter = path.begin();
-	iter += pos;
-
-	path.insert( iter,  c );
-}
-
-void CSpacePath::insertPosition(unsigned int pos, std::vector<Eigen::VectorXf> &newConfigurations)
-{
-	std::vector<Eigen::VectorXf>::iterator iter = newConfigurations.begin();
-	while (iter!=newConfigurations.end())
-	{
-		insertPosition(pos,*iter);
-		pos++;
-		iter++;
-	}
-}
-
-void CSpacePath::insertPath(unsigned int pos, CSpacePathPtr pathToInsert)
-{
-	if (!pathToInsert)
-	{
-		SABA_ERROR << "null data" << endl;
-		return;
-	}
-	int i = pathToInsert->getNrOfPathPoints()-1;
-	while (i >= 0)
-	{
-		insertPosition(pos,pathToInsert->getPathEntry(i));
-		i--;
-	}
 }
 /*
 int CSpacePath::checkIntermediatePositions(unsigned int startPos, const float *samplingDist)
@@ -385,26 +241,26 @@ int CSpacePath::checkIntermediatePositions(unsigned int startPos, float sampling
 
 float CSpacePath::getTime(unsigned int nr)
 {
-	if (getNrOfPathPoints()==0)
+	if (getNrOfPoints()==0)
 	{
 		SABA_ERROR << " no Path.." << std::endl;
 	}
-	if(nr < 0 || nr > getNrOfPathPoints()-1)
+	if(nr < 0 || nr > getNrOfPoints()-1)
 	{
 		SABA_ERROR << " path entry " << nr << " doesnt exist" << std::endl;
 		if(nr < 0) nr = 0;
-		if(nr > getNrOfPathPoints()-1) nr = getNrOfPathPoints() - 1;
+		if(nr > getNrOfPoints()-1) nr = getNrOfPoints() - 1;
 	}
 
 	float t = 0.0f;
 
-	float l = getPathLength();
+	float l = getLength();
 
-	Eigen::VectorXf c1 = getPathEntry(0);
+	Eigen::VectorXf c1 = getPoint(0);
 
 	for(unsigned int i = 0; i < nr; i++)
 	{
-		Eigen::VectorXf c2 = getPathEntry(i+1);
+		Eigen::VectorXf c2 = getPoint(i+1);
 		t += cspace->calcDist(c1,c2)/l;
 		//t += MathHelpers::calcDistRotational(c1, c2, dimension, m_rotationalDimension)/l;
 		c1 = c2;
@@ -414,7 +270,7 @@ float CSpacePath::getTime(unsigned int nr)
 }
 
 // returns position on path for time t (0<=t<=1)
-void CSpacePath::interpolatePath( float t, Eigen::VectorXf &storePathPos, int *storeIndex /*= NULL*/ ) const
+void CSpacePath::interpolate( float t, Eigen::VectorXf &storePathPos, int *storeIndex /*= NULL*/ ) const
 {
 	storePathPos.resize(dimension);
 	if (t<0 || t>1.0f)
@@ -430,39 +286,39 @@ void CSpacePath::interpolatePath( float t, Eigen::VectorXf &storePathPos, int *s
 			t = 1.0f;
 	}
 
-	if (getNrOfPathPoints()==0)
+	if (getNrOfPoints()==0)
 	{
 		SABA_WARNING << "CSpacePath::interpolatePath: no Path.." << std::endl;
 	}
 	if (t==0.0f)
 	{
-		storePathPos = getPathEntry(0);
+		storePathPos = getPoint(0);
 		if (storeIndex!=NULL)
 			*storeIndex = 0;
 		return;
 	}
 	else if (t==1.0f)
 	{
-		storePathPos = getPathEntry(getNrOfPathPoints()-1);
+		storePathPos = getPoint(getNrOfPoints()-1);
 		if (storeIndex!=NULL)
 			*storeIndex = (int)path.size();
 		return;
 	}
 
 
-	float l = getPathLength();
+	float l = getLength();
 	float wantedLength = l * t;
 	float actLength = 0.0f;
 	unsigned int startIndex = 0;
-	Eigen::VectorXf c1 = getPathEntry(startIndex);
+	Eigen::VectorXf c1 = getPoint(startIndex);
 	Eigen::VectorXf c2 = c1;
 	float lastLength = 0.0f;
 	// search path segment for wantedLength
-	while (actLength < wantedLength && startIndex<getNrOfPathPoints()-1)
+	while (actLength < wantedLength && startIndex<getNrOfPoints()-1)
 	{
 		c1 = c2;
 		startIndex++;
-		c2 = getPathEntry(startIndex);
+		c2 = getPoint(startIndex);
 		lastLength = cspace->calcDist(c1,c2);
 		//lastLength = MathHelpers::calcDistRotational(c1, c2, dimension, m_rotationalDimension);
 		actLength += lastLength;
@@ -500,12 +356,7 @@ void CSpacePath::interpolatePath( float t, Eigen::VectorXf &storePathPos, int *s
 		*storeIndex = startIndex;
 
 }
-
-void CSpacePath::reverse()
-{
-  std::reverse(path.begin(), path.end());
-}
-
+/*
 void CSpacePath::print() const
 {
 	std::cout << "<CSpacePath size='" << path.size() << "' dim='" << dimension << "'>" << std::endl << std::endl;
@@ -521,40 +372,27 @@ void CSpacePath::print() const
 	}
 
 	std::cout << "</CSpacePath>" << std::endl;
-}
+}*/
 
-const std::vector <Eigen::VectorXf>& CSpacePath::getPathData() const
+Saba::CSpacePtr CSpacePath::getCSpace()
 {
-	return path;
+	return cspace;
 }
 
 std::vector<Eigen::Matrix4f > CSpacePath::createWorkspacePath( VirtualRobot::RobotNodePtr r )
 {
-	VR_ASSERT(r);
 	VR_ASSERT(cspace);
-	VirtualRobot::RobotNodeSetPtr rns = cspace->getRobotNodeSet();
-	VR_ASSERT(rns);
+
 	std::vector<Eigen::Matrix4f > result;
 
 	if (cspace->hasExclusiveRobotAccess())
 		CSpace::lock();
 
-	for (size_t i = 0; i < path.size(); i++)
-	{
-		// get tcp coords:
-		rns->setJointValues(path[i]);
-		Eigen::Matrix4f m;
-		result.push_back(r->getGlobalPose());
-	}
+	result = VirtualRobot::Trajectory::createWorkspaceTrajectory(r);
 
 	if (cspace->hasExclusiveRobotAccess())
 		CSpace::unlock();
 	return result;
-}
-
-Saba::CSpacePtr CSpacePath::getCSpace()
-{
-	return cspace;
 }
 
 } // namespace Saba

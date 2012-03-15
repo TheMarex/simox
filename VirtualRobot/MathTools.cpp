@@ -660,6 +660,22 @@ void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::convertMM2M( const std::vector<Conta
 	}
 }
 
+void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const std::vector<float> &v, bool endline )
+{
+	std::streamsize pr = std::cout.precision(2);
+	std::cout << std::fixed;
+	for (size_t i=0;i<v.size();i++)
+	{
+		cout << v[i];
+		if (i!=v.size()-1)
+			cout << ",";
+	}
+	if (endline)
+		cout << endl;
+	std::cout << std::resetiosflags(std::ios::fixed);
+	std::cout.precision(pr);
+}
+
 void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const Eigen::Vector3f &v, bool endline )
 {
 	std::streamsize pr = std::cout.precision(2);

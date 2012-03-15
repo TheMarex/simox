@@ -309,7 +309,7 @@ namespace MathTools
 	//! perform the Gram-Schmidt method for building an orthonormal basis
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT GramSchmidt(std::vector< Eigen::VectorXf > & basis);
 
-	//! Searches a vector that is linearly independent ot the given basis.
+	//! Searches a vector that is linearly independent of the given basis.
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT randomLinearlyIndependentVector(const std::vector< Eigen::VectorXf > basis, Eigen::VectorXf &storeResult);
 
 	//! Checks if m contains a col vector equal to v (distance up to 1e-8 are considered as equal)
@@ -348,6 +348,7 @@ namespace MathTools
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print (const ContactPoint &p);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print (const std::vector<ContactPoint> &points);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print( const Eigen::Vector3f &v, bool endline = true );
+	void VIRTUAL_ROBOT_IMPORT_EXPORT print( const std::vector<float> &v, bool endline = true);
 	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix4f &m, const std::string &tabs);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT convertMM2M( const std::vector<ContactPoint> points, std::vector<ContactPoint> &storeResult );
 

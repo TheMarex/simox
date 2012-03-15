@@ -571,7 +571,7 @@ void RrtGuiWindow::sliderSolution( int pos )
 		s = solutionOptimized;
 	float p = (float)pos/1000.0f;
 	Eigen::VectorXf iPos;
-	s->interpolatePath(p,iPos);
+	s->interpolate(p,iPos);
 	rns->setJointValues(iPos);
 	redraw();
 }

@@ -416,11 +416,11 @@ bool Rrt::createSolution(bool bQuiet)
 		// store solution in correct order
 		for ( int i=( int)tmpSol.size()-1;i>=0;i--)
 		{
-			solution->addPathPoint(tree->getNode(tmpSol[i])->configuration);
+			solution->addPoint(tree->getNode(tmpSol[i])->configuration);
 		}
 
 		if (!bQuiet)
-			SABA_INFO << "Created solution with " << solution->getNrOfPathPoints() << " nodes." << std::endl;
+			SABA_INFO << "Created solution with " << solution->getNrOfPoints() << " nodes." << std::endl;
 
 		return true;
 	} else

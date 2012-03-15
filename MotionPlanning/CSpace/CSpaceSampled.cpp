@@ -84,7 +84,7 @@ CSpacePathPtr CSpaceSampled::createPath( const Eigen::VectorXf &start, const Eig
 	SABA_ASSERT (start.rows() == dimension);
 	SABA_ASSERT (goal.rows() == dimension);
 	CSpacePathPtr p(new CSpacePath(shared_from_this()));
-	p->addPathPoint(start);
+	p->addPoint(start);
 
 	float dist = 0.0f;
 	dist = calcDist (start,goal);
@@ -113,7 +113,7 @@ CSpacePathPtr CSpaceSampled::createPath( const Eigen::VectorXf &start, const Eig
 			factor = samplingSize / dist;
 			lastConfig = interpolate(lastConfig,goal,factor);
 		}
-		p->addPathPoint(lastConfig);
+		p->addPoint(lastConfig);
 		dist = calcDist (lastConfig,goal);
 		if (dist<samplingSize)
 		{
@@ -131,7 +131,7 @@ Saba::CSpacePathPtr CSpaceSampled::createPathUntilInvalid( const Eigen::VectorXf
 	SABA_ASSERT (start.rows() == dimension);
 	SABA_ASSERT (goal.rows() == dimension);
 	CSpacePathPtr p(new CSpacePath(shared_from_this()));
-	p->addPathPoint(start);
+	p->addPoint(start);
 	LOCAL_DEBUG ("Start:" << endl << start << endl);
 	LOCAL_DEBUG ("Goal:" << endl << goal << endl);
 	storeAddedLength = 0.0f;
@@ -173,7 +173,7 @@ Saba::CSpacePathPtr CSpaceSampled::createPathUntilInvalid( const Eigen::VectorXf
 			}
 			LOCAL_DEBUG ("col free" << endl);
 			storeAddedLength = 1.0f;
-			p->addPathPoint(goal);
+			p->addPoint(goal);
 			endLoop = true;
 		} else
 		{
@@ -187,11 +187,11 @@ Saba::CSpacePathPtr CSpaceSampled::createPathUntilInvalid( const Eigen::VectorXf
 			if (nodeDist>=samplingSizePaths)
 			{
 				// create a new node with config, store it in nodeList and set parentID
-				p->addPathPoint(tmpConfig);
+				p->addPoint(tmpConfig);
 				storeAddedLength = (origDist - dist) / origDist;
-				LOCAL_DEBUG ("AddPathPoint (length: " << storeAddedLength << ") " <<endl << tmpConfig << endl);
+				LOCAL_DEBUG ("addPoint (length: " << storeAddedLength << ") " <<endl << tmpConfig << endl);
 				nodeDist -= samplingSizePaths;
-				LOCAL_DEBUG ("AddPathPoint (nodeDist: " << nodeDist << ")" << endl);
+				LOCAL_DEBUG ("addPoint (nodeDist: " << nodeDist << ")" << endl);
 			}
 			float distT = calcDist (tmpConfig,goal);
 			SABA_ASSERT (distT < dist);

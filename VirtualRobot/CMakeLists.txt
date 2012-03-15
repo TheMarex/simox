@@ -45,6 +45,7 @@ MathTools.cpp
 Robot.cpp
 RobotConfig.cpp
 RobotNodeSet.cpp
+Trajectory.cpp
 KinematicChain.cpp
 RobotFactory.cpp
 SceneObject.cpp
@@ -105,6 +106,7 @@ MathTools.h
 Robot.h
 RobotConfig.h
 RobotNodeSet.h
+Trajectory.h
 KinematicChain.h
 RobotFactory.h
 SceneObject.h

@@ -71,6 +71,9 @@ public:
 
 	void print() const;
 
+	/*!
+		The number of associated robot nodes.
+	*/
 	unsigned int getSize() const;
 
 	std::vector<float> getJointValues() const;

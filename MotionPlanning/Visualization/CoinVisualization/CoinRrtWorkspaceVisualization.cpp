@@ -165,9 +165,9 @@ bool CoinRrtWorkspaceVisualization::addCSpacePath(CSpacePathPtr path, CoinRrtWor
 	comple->value = pathRenderComplexity;
 	sep->addChild(comple);
 
-	for (unsigned int i = 0; i < path->getNrOfPathPoints(); i++)
+	for (unsigned int i = 0; i < path->getNrOfPoints(); i++)
 	{
-		actConfig = path->getPathEntry(i);
+		actConfig = path->getPoint(i);
 
 		// create 3D model for nodes
 		SoSeparator *s = new SoSeparator();

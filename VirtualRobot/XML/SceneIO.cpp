@@ -208,7 +208,8 @@ bool SceneIO::processSceneTrajectory(rapidxml::xml_node<char>* sceneXMLNode, Sce
 {
 	THROW_VR_EXCEPTION_IF(!sceneXMLNode || !scene, "NULL data in processSceneTrajectory");
 
-	TrajectoryPtr o = BaseIO::processTrajectory(sceneXMLNode, scene->getRobots());
+	std::vector<RobotPtr> robs = scene->getRobots();
+	TrajectoryPtr o = BaseIO::processTrajectory(sceneXMLNode, robs);
 	if (!o)
 		return false;
 

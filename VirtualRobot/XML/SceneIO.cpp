@@ -6,6 +6,7 @@
 #include <boost/filesystem.hpp>
 #include "RobotIO.h"
 #include "ObjectIO.h"
+#include "../Trajectory.h"
 #include "../SceneObjectSet.h"
 
 namespace VirtualRobot {
@@ -203,6 +204,18 @@ bool SceneIO::processSceneObstacle(rapidxml::xml_node<char>* sceneXMLNode, Scene
 	return true;
 }
 
+bool SceneIO::processSceneTrajectory(rapidxml::xml_node<char>* sceneXMLNode, ScenePtr scene )
+{
+	THROW_VR_EXCEPTION_IF(!sceneXMLNode || !scene, "NULL data in processSceneTrajectory");
+
+	TrajectoryPtr o = BaseIO::processTrajectory(sceneXMLNode, scene->getRobots());
+	if (!o)
+		return false;
+
+	scene->registerTrajectory(o);
+	return true;
+}
+
 ScenePtr SceneIO::processScene(rapidxml::xml_node<char>* sceneXMLNode, const std::string& basePath)
 {
 	THROW_VR_EXCEPTION_IF(!sceneXMLNode, "No <Scene> tag in XML definition");
@@ -213,6 +226,7 @@ ScenePtr SceneIO::processScene(rapidxml::xml_node<char>* sceneXMLNode, const std
 
 	// process xml nodes
 	std::vector<rapidxml::xml_node<char>* > sceneSetNodes;
+	std::vector<rapidxml::xml_node<char>* > trajectoryNodes;
 
 	
 	rapidxml::xml_node<> *XMLNode = sceneXMLNode->first_node(NULL,0,false);
@@ -245,6 +259,9 @@ ScenePtr SceneIO::processScene(rapidxml::xml_node<char>* sceneXMLNode, const std
 				std::string failedNodeName = processNameAttribute(XMLNode);
 				THROW_VR_EXCEPTION("Failed to create ManipulationObject " << failedNodeName << " in scene " << scene->getName() << endl);
 			}
+		} else if (nodeName=="trajectory")
+		{
+			trajectoryNodes.push_back(XMLNode);
 		} else if (nodeName=="sceneobjectset")
 		{
 			sceneSetNodes.push_back(XMLNode);
@@ -264,6 +281,18 @@ ScenePtr SceneIO::processScene(rapidxml::xml_node<char>* sceneXMLNode, const std
 		{
 			std::string failedNodeName = processNameAttribute(XMLNode);
 			THROW_VR_EXCEPTION("Failed to create SceneObjectSet " << failedNodeName << " in scene " << scene->getName() << endl);
+		}
+	}
+	
+
+	// process all trajectories
+	for (size_t i=0;i<trajectoryNodes.size();i++)
+	{
+		bool r = processSceneTrajectory(trajectoryNodes[i], scene);
+		if (!r)
+		{
+			std::string failedNodeName = processNameAttribute(XMLNode);
+			THROW_VR_EXCEPTION("Failed to create trajectory " << failedNodeName << " in scene " << scene->getName() << endl);
 		}
 	}
 	
@@ -335,15 +364,7 @@ bool SceneIO::saveScene( ScenePtr s, const std::string &xmlFile )
 	std::string xmlString = s->getXMLString(basePath);
 
 	// save file
-	std::ofstream out(xmlFile.c_str());
-
-	if (!out.is_open())
-		return false;
-
-	out << xmlString;
-	out.close();
-
-	return true;
+	return BaseIO::writeXMLFile(xmlFile,xmlString,true);
 }
 
 

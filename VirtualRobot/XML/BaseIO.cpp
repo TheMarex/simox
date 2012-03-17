@@ -1,7 +1,9 @@
 
 #include "BaseIO.h"
+#include "../Robot.h"
 #include "../RobotFactory.h"
 #include "../RobotNodeSet.h"
+#include "../Trajectory.h"
 #include "../RuntimeEnvironment.h"
 #include "../VirtualRobotException.h"
 #include "../EndEffector/EndEffector.h"
@@ -56,6 +58,21 @@ float BaseIO::convertToFloat(const char* s)
 	if (!(floatStream >> result))
 	{
 		THROW_VR_EXCEPTION("The string can not be parsed into a float value");
+	}
+
+	return result;
+}
+
+int BaseIO::convertToInt(const char* s)
+{
+	THROW_VR_EXCEPTION_IF(NULL == s, "Passing Null string to convertToInt()");
+	std::stringstream intStream;
+	intStream << std::string(s);
+	int result;
+
+	if (!(intStream >> result))
+	{
+		THROW_VR_EXCEPTION("The string can not be parsed into an int value");
 	}
 
 	return result;
@@ -970,6 +987,134 @@ RobotNodeSetPtr BaseIO::processRobotNodeSet(rapidxml::xml_node<char>* setXMLNode
 	RobotNodeSetPtr rns = RobotNodeSet::createRobotNodeSet(robo, nodeSetName, nodeList, kinRoot, tcp, true);
 
 	return rns;
+}
+
+bool BaseIO::processFloatValueTags(rapidxml::xml_node<char> *XMLNode, int dim, Eigen::VectorXf &stroreResult)
+{
+	if (!XMLNode || dim<=0)
+		return false;
+	stroreResult.resize(dim);
+	int entry = 0;
+	rapidxml::xml_node<>* node = XMLNode->first_node();
+	while (node)
+	{
+		std::string nodeName = getLowerCase(node->name());
+		if (nodeName == "c")
+		{
+			THROW_VR_EXCEPTION_IF(entry>=dim, "Too many entries in trajectory's point definition..." << endl);
+			stroreResult(entry) = getFloatByAttributeName(node,"value");
+		} else
+		{
+			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in trajectory point definition" << endl);
+		}
+		entry++;
+		node = node->next_sibling();
+	}
+	THROW_VR_EXCEPTION_IF(entry<dim, "Not enough entries in trajectory's point definition..." << endl);
+	return true;
+}
+
+TrajectoryPtr BaseIO::processTrajectory(rapidxml::xml_node<char> *trajectoryXMLNode, std::vector<RobotPtr> &robots)
+{
+	THROW_VR_EXCEPTION_IF(!trajectoryXMLNode, "NULL data for trajectoryXMLNode");
+
+	std::string robotName;
+	std::string nodeSetName;
+	std::string trajName;
+	int dim = -1;
+
+	// get name and root
+	rapidxml::xml_attribute<> *attr = trajectoryXMLNode->first_attribute();
+	while (attr)
+	{
+		std::string name = getLowerCase(attr->name());
+		if (name=="name")
+		{
+			THROW_VR_EXCEPTION_IF(!trajName.empty(), "Trajectory contains multiple definitions of attribute name. First value  is: " << trajName);
+			trajName = attr->value();
+		} else if (name=="robot")
+		{
+			THROW_VR_EXCEPTION_IF(!robotName.empty(), "Trajectory contains multiple definitions of attribute Robot. First value is: " << robotName);
+			robotName = attr->value();
+		} else if (name=="robotnodeset")
+		{
+			THROW_VR_EXCEPTION_IF(!nodeSetName.empty(), "Trajectory contains multiple definitions of attribute RobotNodeSet. First value is: " << nodeSetName);
+			nodeSetName = attr->value();
+		} else if (name=="dim" || name=="dimension")
+		{
+			THROW_VR_EXCEPTION_IF(dim!=-1, "Trajectory contains multiple definitions of attribute dim. First value of dim: " << dim);
+			dim = convertToInt(attr->value());
+		}
+		attr = attr->next_attribute();
+	}
+
+	THROW_VR_EXCEPTION_IF(robotName.empty(),"Invalid or missing Robot attribute");
+	THROW_VR_EXCEPTION_IF(nodeSetName.empty(),"Invalid or missing RobotNodeSet attribute");
+
+	if (trajName.empty())
+	{
+		trajName = "Trajectory";
+		VR_WARNING << "Trajectory definition expects attribute 'RobotNodeSet'. Setting to " << trajName << endl;
+	}
+	RobotPtr r;
+	for (size_t i=0;i<robots.size();i++)
+	{
+		if (robots[i]->getType() == robotName)
+		{
+			r = robots[i];
+			break;
+		}
+	}
+	THROW_VR_EXCEPTION_IF(!r,"Could not find robot with name " << robotName);
+	RobotNodeSetPtr rns = r->getRobotNodeSet(nodeSetName);
+	THROW_VR_EXCEPTION_IF(!rns,"Could not find RNS with name " << nodeSetName << " in robot " << robotName);
+	if (dim != rns->getSize())
+	{
+		VR_WARNING << " Invalid dim attribute (" << dim << "). Setting dimension to " << rns->getSize() << endl;
+		dim = rns->getSize();
+	}
+
+	TrajectoryPtr res(new Trajectory(rns,trajName));
+	rapidxml::xml_node<>* node = trajectoryXMLNode->first_node();
+	while (node)
+	{
+		std::string nodeName = getLowerCase(node->name());
+		if (nodeName == "point")
+		{
+			Eigen::VectorXf p;
+
+			if (!processFloatValueTags(node,dim,p))
+			{
+				VR_ERROR << "Error in processing configuration. Skipping entry" << endl;
+			} else
+			{
+				res->addPoint(p);
+			}
+
+		} else
+		{
+			THROW_VR_EXCEPTION ("XML definition <" << nodeName << "> not supported in trajectory definition with name '" << trajName << "'." << endl);
+		}
+
+		node = node->next_sibling();
+	}
+	return res;
+}
+
+bool BaseIO::writeXMLFile(const std::string &filename, const std::string &content, bool overwrite)
+{
+	if (!overwrite && boost::filesystem::exists(filename))
+		return false;
+
+	// save file
+	std::ofstream out(filename.c_str(),std::ios::out|std::ios::trunc);
+
+	if (!out.is_open())
+		return false;
+
+	out << content;
+	out.close();
+	return true;
 }
 
 

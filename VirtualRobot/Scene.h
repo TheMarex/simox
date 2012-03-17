@@ -29,6 +29,7 @@
 #include "RobotConfig.h"
 #include "Nodes/RobotNode.h"
 #include "Obstacle.h"
+#include "Trajectory.h"
 #include "ManipulationObject.h"
 #include "RobotConfig.h"
 #include <string>
@@ -127,6 +128,25 @@ public:
 	std::vector< ObstaclePtr > getObstacles();
 
 
+	/*!
+		Registers the Trajectory to this scene. If an Trajectory with the same name is already registered nothing happens. 
+	*/
+	void registerTrajectory(TrajectoryPtr t);
+
+	/*!
+		Removes the Trajectory to from this scene. If the Trajectory is not registered nothing happens. 
+	*/
+	void deRegisterTrajectory(TrajectoryPtr t);
+	void deRegisterTrajectory(const std::string &name);
+
+	bool hasTrajectory(TrajectoryPtr t) const;
+	bool hasTrajectory(const std::string &name) const;
+
+	TrajectoryPtr getTrajectory(const std::string &name);
+
+	std::vector< TrajectoryPtr > getTrajectories();
+
+
 
 	
 	/*!
@@ -181,6 +201,7 @@ protected:
 	std::vector< ObstaclePtr > obstacles;
 	std::vector< ManipulationObjectPtr > manipulationObjects;
 	std::vector< SceneObjectSetPtr > sceneObjectSets;
+	std::vector< TrajectoryPtr > trajectories;
 
 };
 
@@ -198,19 +219,22 @@ boost::shared_ptr<T> Scene::getVisualization(SceneObject::VisualizationType visu
 	std::vector<VirtualRobot::RobotPtr> collectedRobots = getRobots();
 	std::vector<VirtualRobot::ObstaclePtr> collectedObstacles = getObstacles();
 	std::vector<VirtualRobot::ManipulationObjectPtr> collectedManipulationObjects = getManipulationObjects();
+	std::vector<VirtualRobot::TrajectoryPtr> collectedTrajectories = getTrajectories();
 
 	// collect all robotnodes
 	std::vector<VirtualRobot::RobotNodePtr> collectedRobotNodes;
 	for (size_t i=0;i<collectedRobots.size();i++)
 		collectedRobots[i]->getRobotNodes(collectedRobotNodes,false);
 
-	std::vector<VisualizationNodePtr> collectedVisualizationNodes(collectedRobotNodes.size() + collectedObstacles.size() + collectedManipulationObjects.size());
+	std::vector<VisualizationNodePtr> collectedVisualizationNodes(collectedRobotNodes.size() + collectedObstacles.size() + collectedManipulationObjects.size() + collectedTrajectories.size());
 	for (size_t i=0;i<collectedRobotNodes.size();i++)
 		collectedVisualizationNodes[i] = collectedRobotNodes[i]->getVisualization(visuType);
 	for (size_t i=0;i<collectedObstacles.size();i++)
 		collectedVisualizationNodes[i+collectedRobotNodes.size()] = collectedObstacles[i]->getVisualization(visuType);
 	for (size_t i=0;i<collectedManipulationObjects.size();i++)
 		collectedVisualizationNodes[i+collectedRobotNodes.size()+collectedObstacles.size()] = collectedManipulationObjects[i]->getVisualization(visuType);
+	for (size_t i=0;i<collectedTrajectories.size();i++)
+		collectedVisualizationNodes[i+collectedRobotNodes.size()+collectedObstacles.size()+collectedManipulationObjects.size()] = collectedTrajectories[i]->getVisualization(T::getFactoryName());
 	
 
 	boost::shared_ptr<T> visualization(new T(collectedVisualizationNodes));

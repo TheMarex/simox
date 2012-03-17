@@ -35,7 +35,7 @@ namespace VirtualRobot {
 /*!
     A representation of a trajectory in joint space, associated with a RobotNodeSet.
 */
-class VIRTUAL_ROBOT_IMPORT_EXPORT Trajectory
+class VIRTUAL_ROBOT_IMPORT_EXPORT Trajectory : public boost::enable_shared_from_this<Trajectory>
 {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -135,7 +135,7 @@ public:
 	//! For quick access to data.
 	const std::vector <Eigen::VectorXf >& getData() const;
 
-	
+	VirtualRobot::RobotNodeSetPtr getRobotNodeSet();
 
 	/*!
 		Creates the corresponding trajectory in workspace.
@@ -150,12 +150,21 @@ public:
 	*/
 	virtual std::string getXMLString(int tabs = 0) const;
 
+	std::string getName() const;
+
+	/*!
+		Gte a visualization for this trajectory.
+		\param visualizationFactoryName The string that identifies the factory. If not given, the first registered factory (which is usually the only one) is used.
+	*/
+	VisualizationNodePtr getVisualization(std::string visualizationFactoryName = "");
+
 protected:
     std::vector < Eigen::VectorXf > path; //!< vector with configurations which represent the path
     RobotNodeSetPtr rns;
     std::string name;
 	unsigned int dimension;		//!< dimension of rns
 };
+
 
 } // namespace VirtualRobot
 

@@ -274,7 +274,7 @@ private: // Use the private setters and getters instead
 	float jointValue;							//< The joint value
 	std::vector<std::string> childrenNames;
 	std::vector< RobotNodePtr > children;
-	RobotNodePtr parent;
+	RobotNodeWeakPtr parent;
 	Eigen::Matrix4f preJointTransformation;
 	Eigen::Matrix4f postJointTransformation;
 
@@ -290,7 +290,7 @@ protected:
 
 	//Stefan
 	virtual std::vector<std::string> getChildrenNames() const {return childrenNames;};
-	virtual std::string getParentName() const {if (parent) return parent->getName(); else return std::string();};
+	virtual std::string getParentName() const {RobotNodePtr p = parent.lock();if (p) return p->getName(); else return std::string();};
 
 	float jointValueOffset;
 	float jointLimitLo,jointLimitHi;

@@ -334,15 +334,7 @@ bool ObjectIO::saveManipulationObject( ManipulationObjectPtr object, const std::
 	std::string xmlString = object->getXMLString(basePath);
 
 	// save file
-	std::ofstream out(xmlFile.c_str());
-
-	if (!out.is_open())
-		return false;
-
-	out << xmlString;
-	out.close();
-
-	return true;
+	return BaseIO::writeXMLFile(xmlFile,xmlString,true);
 }
 
 

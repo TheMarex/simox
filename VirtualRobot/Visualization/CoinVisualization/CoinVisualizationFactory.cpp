@@ -12,6 +12,7 @@
 #include "CoinVisualization.h"
 #include "../../Robot.h"
 #include "../../Grasp.h"
+#include "../../Trajectory.h"
 #include "../../GraspSet.h"
 #include "../../SceneObject.h"
 #include "../TriMeshModel.h"
@@ -804,6 +805,7 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInf
 			}
 		}
 	}*/
+	result->unrefNoDelete();
 	return result;
 }
 
@@ -1140,6 +1142,14 @@ VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createArrow( const 
 	return node;
 }
 
+VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createTrajectory(TrajectoryPtr t, Color colorNode, Color colorLine, float nodeSize, float lineSize )
+{
+	SoNode *res = getCoinVisualization(t,colorNode,colorLine,nodeSize,lineSize);
+
+	VisualizationNodePtr node(new CoinVisualizationNode(res));
+	return node;
+}
+
 
 SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace, int a, int b, int c, /*const Eigen::Vector3f &positionGlobal,*/ int nrBestEntries, SoSeparator* arrow, const VirtualRobot::ColorMap &cm, bool transformToGlobalPose, unsigned char minValue)
 {
@@ -1446,6 +1456,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 			}
 		}
 	}
+	res->unrefNoDelete();
 	return res;
 }
 
@@ -1521,6 +1532,99 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 			}
 		}
 	}
+	res->unrefNoDelete();
+	return res;
+}
+
+SoNode * CoinVisualizationFactory::getCoinVisualization( TrajectoryPtr t, Color colorNode, Color colorLine, float nodeSize, float lineSize )
+{
+	SoSeparator *res = new SoSeparator;
+	if (!t)
+		return res;
+	res->ref();
+	RobotNodeSetPtr rns = t->getRobotNodeSet();
+	Eigen::VectorXf c;
+	rns->getJointValues(c);
+	std::vector<Eigen::Matrix4f> ws = t->createWorkspaceTrajectory();
+
+	SoMaterial *materialNodeSolution = new SoMaterial();
+	SoMaterial *materialLineSolution = new SoMaterial();
+	materialNodeSolution->ambientColor.setValue(colorNode.r,colorNode.g,colorNode.b);
+	materialNodeSolution->diffuseColor.setValue(colorNode.r,colorNode.g,colorNode.b);
+	materialLineSolution->ambientColor.setValue(colorLine.r,colorLine.g,colorLine.b);
+	materialLineSolution->diffuseColor.setValue(colorLine.r,colorLine.g,colorLine.b);
+	SoSphere *sphereNodeSolution = new SoSphere();
+	sphereNodeSolution->radius.setValue(nodeSize);
+	SoDrawStyle *lineSolutionStyle = new SoDrawStyle();
+	lineSolutionStyle->lineWidth.setValue(lineSize);
+
+	Eigen::VectorXf actConfig;
+	Eigen::VectorXf parentConfig;
+	float x,y,z;
+	float x2 = 0.0f,y2 = 0.0f,z2 = 0.0f;
+
+	SoSeparator *sep = new SoSeparator();
+
+	SoComplexity *comple;
+	comple = new SoComplexity();
+	comple->value = 1.0f;
+	sep->addChild(comple);
+
+
+	for (size_t i = 0; i <ws.size(); i++)
+	{
+		// create 3D model for nodes
+		SoSeparator *s = new SoSeparator();
+		s->addChild(materialNodeSolution);
+		SoTranslation *t = new SoTranslation();
+
+		Eigen::Matrix4f m;
+		m = ws[i];
+		x = m(0,3);
+		y = m(1,3);
+		z = m(2,3);
+
+		t->translation.setValue(x,y,z);
+		s->addChild(t);
+		// display a solution node different
+		s->addChild(sphereNodeSolution);
+		sep->addChild(s);
+
+		if (i>0) // lines for all configurations
+		{
+			// create line to parent
+			SoSeparator *s2 = new SoSeparator();
+
+			SbVec3f points[2];
+			points[0].setValue(x2,y2,z2);
+			points[1].setValue(x,y,z);
+
+			s2->addChild(lineSolutionStyle);
+			s2->addChild(materialLineSolution);
+
+			SoCoordinate3* coordinate3 = new SoCoordinate3;
+			coordinate3->point.set1Value(0,points[0]);
+			coordinate3->point.set1Value(1,points[1]);
+			s2->addChild(coordinate3);
+
+			SoLineSet* lineSet = new SoLineSet;
+			lineSet->numVertices.setValue(2);
+			lineSet->startIndex.setValue(0);
+			s2->addChild(lineSet);
+
+			sep->addChild(s2);
+		}
+		x2 = x;
+		y2 = y;
+		z2 = z;
+	} // for
+
+
+	res->addChild(sep);
+
+	rns->setJointValues(c);
+
+	res->unrefNoDelete();
 	return res;
 }
 

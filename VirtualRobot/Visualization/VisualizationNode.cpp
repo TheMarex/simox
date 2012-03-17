@@ -24,6 +24,7 @@ VisualizationNode::VisualizationNode()
 	
 VisualizationNode::~VisualizationNode()
 {
+	attachedVisualizations.clear();
 }
 
 VirtualRobot::VisualizationNodePtr VisualizationNode::clone(bool deepCopy)

@@ -1,4 +1,5 @@
 #include "Trajectory.h"
+#include "Robot.h"
 #include "VirtualRobotException.h"
 #include <iostream>
 #include <sstream>
@@ -322,7 +323,12 @@ std::string Trajectory::getXMLString(int tabs) const
 	for (int i=0;i<tabs;i++)
 		tab += "\t";
 
-	ss << tab << "<Trajectory RobotNodeSet='" << rns->getName() << "' name='" << name << "' dim=" << dimension << ">\n";
+	RobotPtr robot = rns->getRobot();
+
+	THROW_VR_EXCEPTION_IF(( !robot || !rns),"Need a valid robot and rns");
+
+
+	ss << tab << "<Trajectory Robot='" << robot->getType() << "' RobotNodeSet='" << rns->getName() << "' name='" << name << "' dim='" << dimension << "'>\n";
 
 	for (unsigned int i = 0; i < path.size(); i++)
 	{
@@ -342,6 +348,32 @@ void Trajectory::print() const
 {
 	std::string s = getXMLString(0);
 	VR_INFO << s << endl;
+}
+
+std::string Trajectory::getName() const
+{
+	return name;
+}
+
+VirtualRobot::RobotNodeSetPtr Trajectory::getRobotNodeSet()
+{
+	return rns;
+}
+
+VisualizationNodePtr Trajectory::getVisualization(std::string visualizationFactoryName)
+{
+	VisualizationFactoryPtr visualizationFactory;
+	if (visualizationFactoryName.empty())
+		visualizationFactory=VisualizationFactory::first(NULL);
+	else
+		visualizationFactory = VisualizationFactory::fromName(visualizationFactoryName, NULL);
+	if (!visualizationFactory)
+	{
+		VR_ERROR << "Could not create factory for visu type " << visualizationFactoryName << endl;
+		return VisualizationNodePtr();
+	}
+
+	return visualizationFactory->createTrajectory(shared_from_this());
 }
 
 }

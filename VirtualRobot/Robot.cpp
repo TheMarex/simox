@@ -19,11 +19,17 @@ Robot::Robot()
 {
 }
 
-Robot::~Robot(){}
+Robot::~Robot()
+{
+}
 
 LocalRobot::~LocalRobot()
 {
+	//int i = (int)rootNode.use_count();
 	robotNodeSetMap.clear();
+	robotNodeMap.clear();
+	rootNode.reset();
+	//i = (int)rootNode.use_count();
 }
 
 LocalRobot::LocalRobot(const std::string &name, const std::string &type) : Robot (name, type){

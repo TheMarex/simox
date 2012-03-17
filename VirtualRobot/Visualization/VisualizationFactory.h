@@ -70,6 +70,7 @@ public:
 	virtual VisualizationNodePtr createPlane(const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createPlane(const MathTools::Plane &plane, float extend, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return createPlane(plane.p, plane.n,extend,transparency,colorR,colorG,colorB);}
 	virtual VisualizationNodePtr createArrow(const Eigen::Vector3f &n, float length = 50.0f, float width = 2.0f, const Color &color = Color::Gray()){return VisualizationNodePtr();}
+	virtual VisualizationNodePtr createTrajectory(TrajectoryPtr t, Color colorNode = Color::Blue(), Color colorLine = Color::Gray(), float nodeSize = 15.0f, float lineSize = 4.0f){return VisualizationNodePtr();}
 
 	/*!
 		Create an empty VisualizationNode.

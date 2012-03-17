@@ -3,6 +3,7 @@
 #include "VirtualRobotException.h"
 #include "ManipulationObject.h"
 #include "SceneObjectSet.h"
+#include "Trajectory.h"
 #include "XML/BaseIO.h"
 
 namespace VirtualRobot 
@@ -17,6 +18,12 @@ Scene::Scene(const std::string &name)
 
 Scene::~Scene()
 {
+	robots.clear();
+	robotConfigs.clear();
+	obstacles.clear();
+	manipulationObjects.clear();
+	sceneObjectSets.clear();
+	trajectories.clear();
 }
 
 void Scene::registerRobot( RobotPtr robot )
@@ -93,6 +100,44 @@ void Scene::deRegisterObstacle( const std::string &name )
 	}
 }
 
+
+
+void Scene::registerTrajectory( TrajectoryPtr t )
+{
+	THROW_VR_EXCEPTION_IF(!t,"NULL data");
+	if (hasTrajectory(t))
+		return;
+	trajectories.push_back(t);
+}
+
+void Scene::deRegisterTrajectory( TrajectoryPtr t )
+{
+	THROW_VR_EXCEPTION_IF(!t,"NULL data");
+	if (!hasTrajectory(t))
+		return;
+	for (std::vector< TrajectoryPtr >::iterator i=trajectories.begin();i!=trajectories.end();i++)
+	{
+		if ( (*i) == t )
+		{
+			trajectories.erase(i);
+			break;
+		}
+	}
+}
+
+void Scene::deRegisterTrajectory( const std::string &name )
+{
+	if (!hasTrajectory(name))
+		return;
+	for (std::vector< TrajectoryPtr >::iterator i=trajectories.begin();i!=trajectories.end();i++)
+	{
+		if ((*i)->getName() == name)
+		{
+			trajectories.erase(i);
+			break;
+		}
+	}
+}
 
 void Scene::registerManipulationObject( ManipulationObjectPtr manipulationObject )
 {
@@ -174,6 +219,29 @@ bool Scene::hasObstacle( const std::string &name ) const
 }
 
 
+
+bool Scene::hasTrajectory( TrajectoryPtr t ) const
+{
+	THROW_VR_EXCEPTION_IF(!t,"NULL data");
+	for (std::vector< TrajectoryPtr >::const_iterator i=trajectories.begin();i!=trajectories.end();i++)
+	{
+		if (*i == t)
+			return true;
+	}
+	return false;
+}
+
+bool Scene::hasTrajectory( const std::string &name ) const
+{
+	for (std::vector< TrajectoryPtr >::const_iterator i=trajectories.begin();i!=trajectories.end();i++)
+	{
+		if ((*i)->getName() == name)
+			return true;
+	}
+	return false;
+}
+
+
 bool Scene::hasManipulationObject( ManipulationObjectPtr manipulationObject ) const
 {
 	THROW_VR_EXCEPTION_IF(!manipulationObject,"NULL data");
@@ -217,6 +285,18 @@ VirtualRobot::ObstaclePtr Scene::getObstacle( const std::string &name )
 
 	VR_WARNING << "No obstacle with name " << name << " registered in scene " << this->name << endl;
 	return ObstaclePtr();
+}
+
+VirtualRobot::TrajectoryPtr Scene::getTrajectory( const std::string &name )
+{
+	for (std::vector< TrajectoryPtr >::const_iterator i=trajectories.begin();i!=trajectories.end();i++)
+	{
+		if ((*i)->getName() == name)
+			return *i;
+	}
+
+	VR_WARNING << "No Trajectory with name " << name << " registered in scene " << this->name << endl;
+	return TrajectoryPtr();
 }
 
 VirtualRobot::ManipulationObjectPtr Scene::getManipulationObject( const std::string &name )
@@ -347,6 +427,11 @@ std::vector< RobotPtr > Scene::getRobots()
 std::vector< ObstaclePtr > Scene::getObstacles()
 {
 	return obstacles;
+}
+
+std::vector< TrajectoryPtr > Scene::getTrajectories()
+{
+	return trajectories;
 }
 
 std::vector< ManipulationObjectPtr > Scene::getManipulationObjects()
@@ -505,11 +590,17 @@ std::string Scene::getXMLString( const std::string &basePath )
 		ss << "\n";
 	}
 
-
 	// process sceneObjectSets
 	for (size_t i=0;i<sceneObjectSets.size();i++)
 	{
 		ss << sceneObjectSets[i]->getXMLString(1);
+		ss << "\n";
+	}
+
+	// process trajectories
+	for (size_t i=0;i<trajectories.size();i++)
+	{
+		ss << trajectories[i]->getXMLString(1);
 		ss << "\n";
 	}
 

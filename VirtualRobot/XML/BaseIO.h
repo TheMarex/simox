@@ -54,6 +54,14 @@ public:
 	static void makeAbsolutePath( const std::string &basePath, std::string &filename );
 	static void makeRelativePath( const std::string &basePath, std::string &filename );
 
+	/*!
+		Create a file and store XML content. 
+		\param filename The filename
+		\param content The XML content as string. No checks are performed.
+		\param overwrite If true, a potentionally existing file is silently overwritten.
+		\return True on success
+	*/
+	static bool writeXMLFile(const std::string &filename, const std::string &content, bool overwrite = true);
 protected:
 
 	// instantiation not allowed
@@ -62,6 +70,7 @@ protected:
 	
 	static bool isTrue(const char* s);
 	static float convertToFloat(const char* s);
+	static int convertToInt(const char* s);
  	static void processNodeList(rapidxml::xml_node<char>* parentNode, RobotPtr robot, std::vector<RobotNodePtr>& nodeList, bool clearList = true);
 	static void processLimitsNode(rapidxml::xml_node<char> *limitsXMLNode, float &jointLimitLo, float &jointLimitHi);
 	static std::string processFileNode(rapidxml::xml_node<char> *fileNode, const std::string &basePath);
@@ -82,7 +91,9 @@ protected:
 	static CollisionModelPtr processCollisionTag(rapidxml::xml_node<char> *colXMLNode, const std::string &tagName, const std::string &basePath);
 	static void processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const std::string &nodeName, SceneObject::Physics &physics);
 	static RobotNodeSetPtr processRobotNodeSet(rapidxml::xml_node<char>* setXMLNode, RobotPtr robo, const std::string& robotRootNode, int& robotNodeSetCounter );
+	static TrajectoryPtr processTrajectory(rapidxml::xml_node<char> *trajectoryXMLNode,std::vector<RobotPtr> &robots);
 	static Eigen::Matrix3f process3x3Matrix(rapidxml::xml_node<char> *matrixXMLNode);
+	static bool processFloatValueTags(rapidxml::xml_node<char> *XMLNode, int dim, Eigen::VectorXf &stroreResult);
 	static bool hasUnitsAttribute(rapidxml::xml_node<char> *node);
 	static std::vector< Units > getUnitsAttributes(rapidxml::xml_node<char> *node);
 	static void getAllAttributes(rapidxml::xml_node<char> *node, const std::string &attrString, std::vector<std::string> &storeValues);

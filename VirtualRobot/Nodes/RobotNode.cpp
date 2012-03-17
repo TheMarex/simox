@@ -549,7 +549,8 @@ std::vector<RobotNodePtr> RobotNode::getAllParents( RobotNodeSetPtr rns )
 
 VirtualRobot::RobotNodePtr RobotNode::getParent()
 {
-	return parent;
+	RobotNodePtr p = parent.lock();
+	return p;
 }
 
 void RobotNode::setJointLimits( float lo, float hi )

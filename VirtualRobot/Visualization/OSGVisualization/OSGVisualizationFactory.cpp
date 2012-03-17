@@ -305,6 +305,12 @@ VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createPlane( const E
 	return VisualizationNodePtr();
 }
 
+VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createTrajectory(TrajectoryPtr t, Color colorNode = Color::Blue(), Color colorLine = Color::Gray(), float nodeSize = 15.0f, float lineSize = 4.0f)
+{
+	VR_INFO << "init nyi..." << endl;
+	return VisualizationNodePtr();
+}
+
 void OSGVisualizationFactory::switchToWireframe( osg::Node *srcNode )
 {
 		if( !srcNode )

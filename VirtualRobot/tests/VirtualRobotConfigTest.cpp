@@ -57,7 +57,8 @@ BOOST_AUTO_TEST_CASE(testRobotConfigSetInvalidConfig)
 	BOOST_REQUIRE(c);
 
 	const std::string node2 = "JointNotPresent";
-	BOOST_REQUIRE_THROW(c->setConfig(node2,0.0f),VirtualRobot::VirtualRobotException);
+	bool ok = c->setConfig(node2,0.0f);
+	BOOST_REQUIRE(!ok);
 }
 
 

@@ -37,6 +37,11 @@ EndEffector::EndEffector(const std::string& nameString, const std::vector<EndEff
 	}
 }
 
+EndEffector::~EndEffector()
+{
+
+}
+
 EndEffectorPtr EndEffector::clone(RobotPtr newRobot)
 {
 	if(!newRobot)

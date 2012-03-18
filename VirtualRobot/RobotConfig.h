@@ -46,11 +46,11 @@ public:
 		float value;		//!< The corresponding value
 	};
 
-	RobotConfig(RobotPtr robot, const std::string &name);
-	RobotConfig(RobotPtr robot, const std::string &name, const std::map< RobotNodePtr, float > &configs);
-	RobotConfig(RobotPtr robot, const std::string &name, const std::vector< Configuration > &configs);
-	RobotConfig(RobotPtr robot, const std::string &name, const std::vector< std::string > &robotNodes, const std::vector< float > &values);
-	RobotConfig(RobotPtr robot, const std::string &name, const std::vector< RobotNodePtr > &robotNodes, const std::vector< float > &values);
+	RobotConfig(RobotWeakPtr robot, const std::string &name);
+	RobotConfig(RobotWeakPtr robot, const std::string &name, const std::map< RobotNodePtr, float > &configs);
+	RobotConfig(RobotWeakPtr robot, const std::string &name, const std::vector< Configuration > &configs);
+	RobotConfig(RobotWeakPtr robot, const std::string &name, const std::vector< std::string > &robotNodes, const std::vector< float > &values);
+	RobotConfig(RobotWeakPtr robot, const std::string &name, const std::vector< RobotNodePtr > &robotNodes, const std::vector< float > &values);
 
 	/*!
 		Creates a copy of this object with the given robot
@@ -65,20 +65,26 @@ public:
 
 	void print() const;
 
+	/*!
+		The robot.
+		\return A shared_ptr instance of the internally stored weak pointer.
+	*/
 	RobotPtr getRobot();
 
 	/*!
-		Appends a configuration to this instance
+		Appends a configuration to this instance.
+		\param True on success. False if robot is not present any more (may happen due to the use of weak pointers).
 	*/
-	void setConfig (const Configuration &c);
-	void setConfig (RobotNodePtr node, float value);
-	void setConfig (const std::string &node, float value);
+	bool setConfig (const Configuration &c);
+	bool setConfig (RobotNodePtr node, float value);
+	bool setConfig (const std::string &node, float value);
 
 	/*!
 		Apply the stored configurations to the corresponding robot.
 		RobotNodes that are not stored in this RobotConfig are not affected.
+		\param True on success. False if robot is not present any more (may happen due to the use of weak pointers).
 	*/
-	void setJointValues();
+	bool setJointValues();
 
 	/*!
 		Check if a configuration for a RobotNode with name is stored.
@@ -109,7 +115,7 @@ protected:
 	std::string name;
 
 	std::map< RobotNodePtr, float > configs;
-	RobotPtr robot;
+	RobotWeakPtr robot;
 };
 
 

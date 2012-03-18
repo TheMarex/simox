@@ -7,40 +7,40 @@
 namespace VirtualRobot
 {
 
-RobotConfig::RobotConfig(RobotPtr robot, const std::string &name)
+RobotConfig::RobotConfig(RobotWeakPtr robot, const std::string &name)
 	: name(name),
 	robot(robot)
 {
-	THROW_VR_EXCEPTION_IF(!robot,"NULL robot in RobotConfig");
+	THROW_VR_EXCEPTION_IF(!robot.lock(),"NULL robot in RobotConfig");
 }
 
-RobotConfig::RobotConfig(RobotPtr robot, const std::string &name, const std::vector< Configuration > &configs)
+RobotConfig::RobotConfig(RobotWeakPtr robot, const std::string &name, const std::vector< Configuration > &configs)
 	: name(name),
 	robot(robot)
 {
-	THROW_VR_EXCEPTION_IF(!robot,"NULL robot in RobotConfig");
+	THROW_VR_EXCEPTION_IF(!robot.lock(),"NULL robot in RobotConfig");
 	for (std::vector< Configuration >::const_iterator i=configs.begin(); i!=configs.end(); i++ )
 	{
 		setConfig((*i));
 	}
 }
 
-RobotConfig::RobotConfig(RobotPtr robot, const std::string &name, const std::map< RobotNodePtr, float > &configs)
+RobotConfig::RobotConfig(RobotWeakPtr robot, const std::string &name, const std::map< RobotNodePtr, float > &configs)
 	: name(name),
 	robot(robot)
 {
-	THROW_VR_EXCEPTION_IF(!robot,"NULL robot in RobotConfig");
+	THROW_VR_EXCEPTION_IF(!robot.lock(),"NULL robot in RobotConfig");
 	for (std::map< RobotNodePtr, float >::const_iterator i=configs.begin(); i!=configs.end(); i++ )
 	{
 		setConfig(i->first,i->second);
 	}
 }
 
-RobotConfig::RobotConfig(RobotPtr robot, const std::string &name, const std::vector< std::string > &robotNodes, const std::vector< float > &values)
+RobotConfig::RobotConfig(RobotWeakPtr robot, const std::string &name, const std::vector< std::string > &robotNodes, const std::vector< float > &values)
 	: name(name),
 	robot(robot)
 {
-	THROW_VR_EXCEPTION_IF(!robot,"NULL robot in RobotConfig");
+	THROW_VR_EXCEPTION_IF(!robot.lock(),"NULL robot in RobotConfig");
 	THROW_VR_EXCEPTION_IF(robotNodes.size() != values.size(),"Vector sizes have to be equal in RobotConfig");
 	for (size_t i=0;i<robotNodes.size();i++)
 	{
@@ -48,11 +48,11 @@ RobotConfig::RobotConfig(RobotPtr robot, const std::string &name, const std::vec
 	}
 }
 
-RobotConfig::RobotConfig(RobotPtr robot, const std::string &name, const std::vector< RobotNodePtr > &robotNodes, const std::vector< float > &values)
+RobotConfig::RobotConfig(RobotWeakPtr robot, const std::string &name, const std::vector< RobotNodePtr > &robotNodes, const std::vector< float > &values)
 	: name(name),
 	robot(robot)
 {
-	THROW_VR_EXCEPTION_IF(!robot,"NULL robot in RobotConfig");
+	THROW_VR_EXCEPTION_IF(!robot.lock(),"NULL robot in RobotConfig");
 	THROW_VR_EXCEPTION_IF(robotNodes.size() != values.size(),"Vector sizes have to be equal in RobotConfig");
 	for (size_t i=0;i<robotNodes.size();i++)
 	{
@@ -71,31 +71,48 @@ void RobotConfig::print() const
 	}
 }
 
-void RobotConfig::setConfig( const Configuration &c )
+bool RobotConfig::setConfig( const Configuration &c )
 {
-	THROW_VR_EXCEPTION_IF(!robot,"Null data");
-	setConfig(c.name,c.value);
+	return setConfig(c.name,c.value);
 }
 
-void RobotConfig::setConfig( const std::string &node, float value )
+bool RobotConfig::setConfig( const std::string &node, float value )
 {
-	THROW_VR_EXCEPTION_IF(!robot,"Null data");
-	RobotNodePtr rn = robot->getRobotNode(node);
-	THROW_VR_EXCEPTION_IF(!rn,"Did not find robot node with name " << node);
+	RobotPtr r = robot.lock();
+	if (!r)
+	{
+		VR_WARNING << "Robot is already deleted, skipping update..." << endl;
+		return false;
+	}
+	RobotNodePtr rn = r->getRobotNode(node);
+	if (!rn)
+	{
+		VR_WARNING << "Did not find robot node with name " << node << endl;
+		return false;
+	}
 	configs[rn] = value;
+	return true;
 }
 
-void RobotConfig::setConfig( RobotNodePtr node, float value )
+bool RobotConfig::setConfig( RobotNodePtr node, float value )
 {
-	THROW_VR_EXCEPTION_IF(!robot,"Null data");
 	THROW_VR_EXCEPTION_IF(!node,"Null data");
-	THROW_VR_EXCEPTION_IF(!robot->hasRobotNode(node),"Robot node with name " << node->getName() << " does not belong to robot " << robot->getName());
+	
+	RobotPtr r = robot.lock();
+	if (!r)
+	{
+		VR_WARNING << "Robot is already deleted, skipping update..." << endl;
+		return false;
+	}
+	THROW_VR_EXCEPTION_IF(!r->hasRobotNode(node),"RobotNode with name " << r->getName() << " does not belong to robot " << r->getName());
+
 	configs[node] = value;
+	return true;
 }
 
 VirtualRobot::RobotPtr RobotConfig::getRobot()
 {
-	return robot;
+	return robot.lock();
 }
 
 std::string RobotConfig::getName() const
@@ -106,7 +123,9 @@ std::string RobotConfig::getName() const
 RobotConfigPtr RobotConfig::clone( RobotPtr newRobot )
 {
 	if (!newRobot)
-		newRobot = robot;
+		newRobot = robot.lock();
+	VR_ASSERT (newRobot);
+	
 	std::map< RobotNodePtr, float > newConfigs;
 	std::map< RobotNodePtr, float >::iterator i = configs.begin();
 	while (i!=configs.end())
@@ -126,14 +145,20 @@ RobotConfigPtr RobotConfig::clone( RobotPtr newRobot )
 }
 
 
-void RobotConfig::setJointValues()
+bool RobotConfig::setJointValues()
 {
-	THROW_VR_EXCEPTION_IF(!robot,"Null data");
+	RobotPtr r = robot.lock();
+	if (!r)
+	{
+		VR_WARNING << "Robot is already deleted, skipping update..." << endl;
+		return false;
+	}
 	for (std::map< RobotNodePtr, float >::const_iterator i=configs.begin(); i!=configs.end(); i++ )
 	{
 		i->first->setJointValue(i->second, false, true);
 	}
-	robot->applyJointValues();
+	r->applyJointValues();
+	return true;
 }
 
 bool RobotConfig::hasConfig( const std::string & name ) const
@@ -151,7 +176,13 @@ float RobotConfig::getConfig( const std::string & name ) const
 {
 	if (!hasConfig(name))
 		return 0.0f;
-	RobotNodePtr rn = robot->getRobotNode(name);
+	RobotPtr r = robot.lock();
+	if (!r)
+	{
+		VR_WARNING << "Robot is already deleted..." << endl;
+		return 0.0f;
+	}
+	RobotNodePtr rn = r->getRobotNode(name);
 	THROW_VR_EXCEPTION_IF(!rn,"Did not find robot node with name " << name);
 	std::map< RobotNodePtr, float >::const_iterator i = configs.find(rn);
 	if (i==configs.end())
@@ -209,10 +240,10 @@ bool RobotConfig::applyToRobot( RobotPtr r )
 		RobotNodePtr rn = r->getRobotNode(i->first);
 		if (!rn)
 			return false;
-		rn->setJointValue(i->second);
+		rn->setJointValue(i->second,false);
 		i++;
 	}
-	robot->applyJointValues();
+	r->applyJointValues();
 	return true;
 }
 

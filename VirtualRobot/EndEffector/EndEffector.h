@@ -56,6 +56,7 @@ public:
 
 	EndEffector(const std::string& nameString, const std::vector<EndEffectorActorPtr>& actorsVector, const std::vector<RobotNodePtr>& staticPartVector, RobotNodePtr baseNodePtr, RobotNodePtr tcpNodePtr, RobotNodePtr gcpNodePtr = RobotNodePtr(), std::vector< RobotConfigPtr > preshapes = std::vector< RobotConfigPtr >());
 
+	virtual ~EndEffector();
 	/*!
 		Clones this eef and performs all necessary registrations.
 		(Be careful: no need to call registerEEF with newly created eef, since this is already done)

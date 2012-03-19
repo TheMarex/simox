@@ -39,7 +39,9 @@
 
 namespace VirtualRobot
 {
-
+/*!
+	This implementation encapsulates the PQP collision checker.
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT CollisionCheckerPQP : public CollisionCheckerImplementation
 {
 public:
@@ -50,8 +52,6 @@ public:
 
 	virtual float calculateDistance (CollisionModelPtr model1, CollisionModelPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
 	virtual bool checkCollision (CollisionModelPtr model1, CollisionModelPtr model2);//, Eigen::Vector3f *storeContact = NULL);
-	//virtual bool GetAllCollisonTriangles (SceneObjectSet *model1, SceneObjectSet *model2, std::vector<int> &storePairs);
-	//virtual bool GetAllCollisonTriangles (CollisionModel *model1, CollisionModel *model2, std::vector<int> &storePairs);
 
 	/*!
 	If continuous collision detection (CCD) is supported, this method can be used to detect collisions on the path
@@ -61,16 +61,6 @@ public:
 	//bool CheckContinuousCollision (CollisionModel *model1, Eigen::Matrix4f &mGoalPose1, CollisionModel *model2, Eigen::Matrix4f &mGoalPose2, float &fStoreTOC);
 
 
-	/*!
-	if appendModelData is set, the caller is responsible for calling colMod->BeginModel() and colMod->endModel()
-	(useful if you want to create a PQP::PQP_Model from more than one IV model)
-	*/
-	//int oiv2ColMod(SoNode *oivMod, PQP::PQP_Model *colMod, int id, bool appendModelData = false);
-	//int oivBox2ColMod(SoNode *oivMod, PQP::PQP_Model *colMod, int id, bool appendModelData = false);
-
-
-	//float GetMinDistance(PQP::PQP_Model *m1, PQP::PQP_Model *m2);
-	//float GetMinDistance(PQP::PQP_Model *m1, PQP::PQP_Model *m2, float storeP1[3], float storeP2[3], int *storeID1, int *storeID2);
 	float getMinDistance(boost::shared_ptr<PQP::PQP_Model> m1, boost::shared_ptr<PQP::PQP_Model> m2, const Eigen::Matrix4f &mat1, const Eigen::Matrix4f &mat2);
 	float getMinDistance(boost::shared_ptr<PQP::PQP_Model> m1, boost::shared_ptr<PQP::PQP_Model> m2, const Eigen::Matrix4f &mat1, const Eigen::Matrix4f &mat2, Eigen::Vector3f &storeP1, Eigen::Vector3f &storeP2, int *storeID1, int *storeID2);
 

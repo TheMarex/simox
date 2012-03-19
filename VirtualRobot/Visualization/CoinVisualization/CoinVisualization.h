@@ -32,7 +32,9 @@ class SoNode;
 
 namespace VirtualRobot
 {
-
+/*!
+	A Coin3D based implementation of a visualization.
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT CoinVisualization : public Visualization
 {
 public:

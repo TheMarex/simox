@@ -41,6 +41,9 @@ namespace VirtualRobot
 class CollisionChecker;
 class CollisionCheckerPQP;
 
+/*!
+	A PQP related implementaion of a collision model.
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT CollisionModelPQP : public CollisionModelImplementation
 {
 public:

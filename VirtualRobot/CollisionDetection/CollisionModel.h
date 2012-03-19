@@ -42,14 +42,22 @@ namespace VirtualRobot {
 
 class CollisionChecker;
 
+/*!
+	An abstract representation of an object that can be used for collision queries.
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT CollisionModel
 {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 		
 
-	/*!Standard Constructor
-	* If collision checks should be done in parallel, different CollisionCheckers can be specified.
+	/*!
+		Standard Constructor
+		If collision checks should be done in parallel, different CollisionCheckers can be specified.
+		\param visu A visualization that is used for creating an internal triangle based representation of the object.
+		\param name The name of this object.
+		\param colChecker If not specified, the global singleton instance is used. Only useful, when parallel collision checks should be performed.
+		\param id A user id.
 	*/
 	CollisionModel(const VisualizationNodePtr visu, const std::string &name = "", CollisionCheckerPtr colChecker = CollisionCheckerPtr(), int id = 666);
 
@@ -68,11 +76,6 @@ public:
 	*/
 	BoundingBox getBoundingBox(bool global = true);
 
-	//! store axis aligned bounding box to store_aabb
-	//virtual void GetAABB(SbBox3f& store_aabb);
-
-	//! store object oriented bounding box of contained model to store_oobb along with iv model
-	//virtual void GetOOBB(SbXfBox3f& store_oobb);
 
 	/*!
 	The global pose defines the position of the joint in the world. This value is used for visualization.

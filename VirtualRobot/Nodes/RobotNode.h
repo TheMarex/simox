@@ -101,8 +101,6 @@ public:
 	*/
 	virtual void applyJointValue(const Eigen::Matrix4f &globalPos);
 
-	/// Checks if the given node is one of the own parents. 
-	//bool isParent(RobotNodePtr parent){return false;};
 
 	/*!
 		All children and their children (and so on) are collected.
@@ -148,20 +146,23 @@ public:
 
 	/*
 		The global pose of a joint is not identical with the pose of it's visualization, 
-		since the visualization is linked to the joint coordinate system but the complete transformation of the robot node must consider the post-joint transformation.
-		So, the ScenObject's getGlobalPose method is overwritten in order to serve the global pose that everyone would expect.
+		since the visualization is linked to the joint coordinate system but the complete 
+		transformation of the robot node must consider the post-joint transformation.
+		So, the ScenObject's getGlobalPose method is overwritten in order to serve the valid global pose.
 	*/
 	virtual Eigen::Matrix4f getGlobalPose() const {return globalPosePostJoint;}
 
 	/*!
-		The visualization is linked to the globalPose of this node.
-		The end point of this node additionally considers the postJointTransformation (@see getGlobalPose()).
+		The visualization is linked to this globalPose of this node.
+		The end point of this node additionally considers the postJointTransformation.
+		@see getGlobalPose()
 	*/
 	virtual Eigen::Matrix4f getGlobalPoseVisualization() const {return globalPose;}
 
 	/*!
-		The joint of this robot node is located at globalPose.
-		The end point of this node additionally considers the postJointTransformation (@see getGlobalPose()).
+		The joint of this robot node is located this pose.
+		The end point of this node additionally considers the postJointTransformation 
+		@see getGlobalPose()
 	*/
 	virtual Eigen::Matrix4f getGlobalPoseJoint() const {return globalPose;}
 

@@ -32,6 +32,13 @@ namespace VirtualRobot
 {
 class Robot;
 
+/*!
+	A RobtoNodeSet is a sub-set of RobotNodes of a Robot.
+	Additionally to the list of RobotNodes, a RobotNodeSet holds information about
+	- the kinematic root (the topmost RobotNode of the Robot's kinematic tree that has to be updated in order to update all covered RobotNodes)
+	- the Tool Cenetr point (TCP)
+	- teh Grasp Center Point (GCP), which may be different to the TCP
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNodeSet : public boost::enable_shared_from_this<RobotNodeSet>
 {
 public:
@@ -59,9 +66,11 @@ public:
 	const std::vector< RobotNodePtr > getAllRobotNodes() const;
 
 	/*!
-		Returns the first node of the robot's kinematic tree to be used for updating all members of this set.
+		Returns the topmost node of the robot's kinematic tree to be used for updating all members of this set.
+		This node is usually defined in the RobotNodeSet's XML definition.
 	*/
 	RobotNodePtr getKinematicRoot() const;
+
 	RobotNodePtr getTCP() const;
 
 	/*!
@@ -80,9 +89,13 @@ public:
 	void getJointValues(std::vector<float> &fillVector) const;
 	void getJointValues(Eigen::VectorXf &fillVector) const;
 	void getJointValues(RobotConfigPtr fillVector) const;
-		
+	
+	/*!
+	Cut 
+	*/
 	void respectJointLimits(std::vector<float> &jointValues) const;
 	void respectJointLimits(Eigen::VectorXf &jointValues) const;
+
 	/*!
 		Checks if the jointValues are within the current joint limits.
 		\param jointValues A vector of correct size.

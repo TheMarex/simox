@@ -184,7 +184,7 @@ namespace MathTools
 		int id[6];// position in vertice vector (x,y,z,nx,ny,nz)
 		ContactPoint normal;
 
-		// these values are set by the ConvexHull algorithm (@see GraspStudio)
+		// these values are set by the ConvexHull algorithm (see GraspStudio)
 		float distNormZero;		// distance of facet to origin
 		float distNormCenter;	// distance of facet to center of convex hull 
 		float distPlaneZero;	// distance of plane defined by facet to origin

@@ -36,6 +36,9 @@ namespace VirtualRobot
 {
 class Robot;
 
+/*!
+	A RobotConfig is a set of joint values, associated with a robot.
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT RobotConfig
 {
 public:
@@ -46,6 +49,11 @@ public:
 		float value;		//!< The corresponding value
 	};
 
+	/*!
+		Constructor
+		\param robot The associated robot.
+		\param name A name, which identifies this object.
+	*/
 	RobotConfig(RobotWeakPtr robot, const std::string &name);
 	RobotConfig(RobotWeakPtr robot, const std::string &name, const std::map< RobotNodePtr, float > &configs);
 	RobotConfig(RobotWeakPtr robot, const std::string &name, const std::vector< Configuration > &configs);
@@ -100,6 +108,9 @@ public:
 	*/
 	std::vector< RobotNodePtr > getNodes() const;
 
+	/*!
+		Returns map of RobotNodeNames with corresponding joint values.
+	*/
 	std::map < std::string, float > getRobotNodeJointvalueMap();
 
 	/*!
@@ -108,6 +119,9 @@ public:
 	*/
 	bool applyToRobot(RobotPtr r);
 
+	/*!
+		Create an XML string that defines this object.
+	*/
 	std::string getXMLString(int tabs=0);
 protected:
 

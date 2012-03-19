@@ -45,6 +45,9 @@ namespace VirtualRobot
 {
 class VisualizationNode;
 
+/*!
+	A Coin3D based implementation of a VisualizationFactory.
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT CoinVisualizationFactory  : public VisualizationFactory
 {
 public:
@@ -148,9 +151,41 @@ public:
 	static SoMatrixTransform* getMatrixTransform(Eigen::Matrix4f &m);
 	static SoNode* createCoinLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width, float colorR, float colorG, float colorB);
 
+	/*!
+		Create an offscreen renderer object with the given width and height.
+
+		\see renderOffscreen
+	*/
 	static SoOffscreenRenderer* createOffscreenRenderer(int width, int height);
-	static bool renderOffscreen( SoOffscreenRenderer* renderer, SoCamera* cam, SoNode* scene, unsigned char **buffer);
+
+	/*!
+		The cam node has to be oriented as follows:
+		The camera is pointing along the positive z axis and the positive x axis is pointing upwards.
+
+		\param renderer The renderer should have been created with the createOffscreenRenderer method
+		\param camNode The node of the robot that defines the position of the camera. Any node of the robot can host a camera.
+		\param scene The scene that should be rendered.
+		\param buffer The result is stored here. The origin of the 2D image is at the left bottom! 
+		The resulting buffer has the size width*height*3, with the extends as defined in the createOffscreenRenderer method.
+
+		\return true on success
+
+		\see createOffscreenRenderer
+	*/
 	static bool renderOffscreen( SoOffscreenRenderer* renderer, RobotNodePtr camNode, SoNode* scene, unsigned char **buffer );
+
+	/*!
+	Use a custom camera for rendering
+	\param renderer The renderer should have been created with the createOffscreenRenderer method
+	\param cam The camera.
+	\param scene The scene that should be rendered.
+	\param buffer The result is stored here. The origin of the 2D image is at the left bottom! 
+	The resulting buffer has the size width*height*3, with the extends as defined in the createOffscreenRenderer method.
+	\return true on success
+
+	\see createOffscreenRenderer
+	*/
+	static bool renderOffscreen( SoOffscreenRenderer* renderer, SoCamera* cam, SoNode* scene, unsigned char **buffer);
 protected:
 	static void GetVisualizationFromSoInput(SoInput& soInput, VisualizationNodePtr& visualizationNode, bool bbox = false);
 

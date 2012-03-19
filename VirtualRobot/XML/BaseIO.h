@@ -47,7 +47,10 @@ namespace rapidxml
 
 namespace VirtualRobot
 {
-
+/*!
+	Several basic XML IO methods.
+	\see RobotIO, SceneIO, ObjectIO
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT BaseIO
 {
 public:

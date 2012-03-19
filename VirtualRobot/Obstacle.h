@@ -33,7 +33,10 @@
 
 namespace VirtualRobot 
 {
-
+/*!
+	An obstacle is an object that owns a visualization and a collision model.
+	It can be moved around and used for collision detection.
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT Obstacle : public SceneObject
 {
 public:

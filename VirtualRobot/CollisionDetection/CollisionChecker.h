@@ -38,6 +38,17 @@
 
 namespace VirtualRobot {
 
+/*!
+	A CollisionChecker is an instance that handles collision and distance queries. 
+	Internally the requests are passed to the underlying engine (e.g. the PQP library).
+	All objects that should be considered for collision detection (called CollisionModels)
+	must be registered here. Usually the objects take care of registering on their own.
+
+	When collision detection should not be performed in parallel, the global CollisionChecker 
+	singleton can be used. It can be retrieved with CollisionChecker::getGlobalCollisionChecker().
+
+
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT CollisionChecker : public boost::enable_shared_from_this<CollisionChecker>
 {
 public:
@@ -127,7 +138,7 @@ public:
 #endif
 
 private:
-	// see http://en.wikipedia.org/wiki/Singleton_pattern for details about correct implementaions of simgeltons in C++
+	// see http://en.wikipedia.org/wiki/Singleton_pattern for details about correct implementations of singletons in C++
 	friend class Cleanup;
 	class Cleanup
 	{

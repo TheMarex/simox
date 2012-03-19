@@ -1666,7 +1666,7 @@ bool CoinVisualizationFactory::renderOffscreen( SoOffscreenRenderer* renderer, R
 	Eigen::Vector3f camPos = MathTools::getTranslation(camPose);
 	cam->position.setValue(camPos[0],camPos[1],camPos[2]);
 	SbRotation align(SbVec3f(1,0,0),(float)(M_PI)); // first align from  default direction -z to +z by rotating with 180 degree around x axis
-	SbRotation align2(SbVec3f(0,0,1),(float)(M_PI/2.0)); // align up vector by rotating with 90 degree around z axis
+	SbRotation align2(SbVec3f(0,0,1),(float)(-M_PI/2.0)); // align up vector by rotating with -90 degree around z axis
 	SbRotation trans(CoinVisualizationFactory::getSbMatrix(camPose)); // get rotation from global pose
 	cam->orientation.setValue( align2*align*trans ); // perform total transformation
 

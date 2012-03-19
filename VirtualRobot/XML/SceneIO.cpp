@@ -358,7 +358,7 @@ bool SceneIO::saveScene( ScenePtr s, const std::string &xmlFile )
 	}
 
 	boost::filesystem::path filenameBaseComplete(xmlFile);
-	filenameBaseComplete = boost::filesystem::complete(filenameBaseComplete);
+	filenameBaseComplete = boost::filesystem::system_complete(filenameBaseComplete);
 	boost::filesystem::path filenameBasePath = filenameBaseComplete.branch_path();
 	std::string basePath = filenameBasePath.string();
 

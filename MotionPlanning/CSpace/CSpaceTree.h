@@ -82,8 +82,9 @@ public:
 	virtual bool saveAllNodes(char const* filename);
 
 	/*! 
-		consider child vector list (@see CSpaceNode) when adding nodes to the tree
+		consider child vector list when adding nodes to the tree
 		(standard: false)
+		@see CSpaceNode
 	*/
 	void setUpdateChildren(bool enable){updateChildren = enable;};
 	bool getUpdateChildren(){return updateChildren;}

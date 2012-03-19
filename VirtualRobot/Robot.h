@@ -46,6 +46,11 @@ namespace VirtualRobot
 {
 class Visualization;
 
+/*!
+	This is the main object defining the kinematic structure of a robot.
+
+	\see RobtoIO, RobotNode, RobotNodeSet, EndEffector
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT Robot : public boost::enable_shared_from_this<Robot>
 {
 	friend class RobotIO;
@@ -74,7 +79,7 @@ public:
 	/** Configures the robot to threadsafe or not.
 	 * Per default the robot is threadsafe, i.e., updating the 
 	 * robot state and reading the Poses from the nodes is mutual 
-	 * exclusive. This feature can be turned of, however, in 
+	 * exclusive. This feature can be turned off, however, in 
 	 * order to be make data access faster in single threaded
 	 * applications.
 	 */ 
@@ -227,7 +232,14 @@ public:
 	*/
 	RobotPtr clone(const std::string &name, CollisionCheckerPtr collisionChecker = CollisionCheckerPtr());
 
+	/*!
+		Just storing the filename.
+	*/
 	void setFilename(const std::string &filename);
+	
+	/*!
+		Retrieve the stored filename.
+	*/
 	std::string getFilename();
 
 protected:

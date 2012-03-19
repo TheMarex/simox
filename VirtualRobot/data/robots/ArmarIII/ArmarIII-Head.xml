@@ -110,14 +110,14 @@
 
     <RobotNode name="Eye_Left_Dummy">
         <Joint type="fixed">
-            <DH a="0" d="-46.5" theta="0" alpha="-90" units="degree"/>
+            <DH a="0" d="46.5" theta="0" alpha="-90" units="degree"/>
         </Joint>
         <Child name="Eye_Left"/>
     </RobotNode>
 
     <RobotNode name="Eye_Right_Dummy">
         <Joint type="fixed">
-          <DH a="0" d="46.5" theta="0" alpha="-90" units="degree"/>
+          <DH a="0" d="-46.5" theta="0" alpha="-90" units="degree"/>
         </Joint>
         <Child name="Eye_Right"/>
       </RobotNode>

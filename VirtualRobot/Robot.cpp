@@ -25,9 +25,10 @@ Robot::~Robot()
 
 LocalRobot::~LocalRobot()
 {
-	//int i = (int)rootNode.use_count();
+	int i = (int)rootNode.use_count();
 	robotNodeSetMap.clear();
 	robotNodeMap.clear();
+	i = (int)rootNode.use_count();
 	rootNode.reset();
 	//i = (int)rootNode.use_count();
 }

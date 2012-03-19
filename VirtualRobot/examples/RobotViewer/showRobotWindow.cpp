@@ -56,6 +56,7 @@ showRobotWindow::showRobotWindow(std::string &sRobotFilename, Qt::WFlags flags)
 
 showRobotWindow::~showRobotWindow()
 {
+	robot.reset();
 	sceneSep->unref();
 }
 

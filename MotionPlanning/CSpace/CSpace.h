@@ -42,16 +42,19 @@ namespace Saba {
  The RobotNodeSet specifies the dimension and the borders of the CSpace.
  The collision manager is used to check configurations for collisions. Here,
  multiple sets of objects can be defined which are internally mutually checked for 
- collisions. This allows to specify complex collision queries (@see VirtualRobot::CDManager).
+ collisions. This allows to specify complex collision queries.
  When performing sampling-based motion planning, usually paths in c-space have to be verified
  if constraints are violated or collisions occur. Therefore this class provides an interface,
  in order to combine various planning approaches with different collision detection methods 
- (@see MotionPlanner, Rrt, BiRrt).
-
+ 
  Please note:
  This implementation is not able to determine the collision status of path segments. 
- Use CSpaceSampled for discrete collision detection (@see CSpaceSampled).
- *
+ Use CSpaceSampled for discrete collision detection.
+ 
+ @see VirtualRobot::CDManager
+ @see MotionPlanner, Rrt, BiRrt
+ @see CSpaceSampled
+ 
  */
 class SABA_IMPORT_EXPORT CSpace : public boost::enable_shared_from_this<CSpace>
 {

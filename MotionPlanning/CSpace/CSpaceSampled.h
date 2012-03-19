@@ -39,7 +39,7 @@ namespace Saba {
  The RobotNodeSet specifies the dimension and the borders of the CSpace.
  The collision manager is used to check configurations for collisions. Here,
  multiple sets of objects can be defined which are internally mutually checked for 
- collisions. This allows to specify complex collision queries (@see VirtualRobot::CDManager).
+ collisions. This allows to specify complex collision queries.
  The sampling-based c-space relies on two parameters: The sampling size, which specifies
  the (c-space) distance between two succeeding configurations on a path segment. This 
  parameter affects how many intermediate configurations are added when creating new paths.
@@ -56,7 +56,7 @@ namespace Saba {
   @see CSpace
   @see Rrt
   @see BiRrt
- 
+  @see VirtualRobot::CDManager
  */
 class SABA_IMPORT_EXPORT CSpaceSampled : public CSpace
 {

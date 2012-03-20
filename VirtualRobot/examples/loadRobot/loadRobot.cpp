@@ -4,6 +4,7 @@
 #include <VirtualRobot/Nodes/RobotNodeRevoluteFactory.h>
 #include <VirtualRobot/Transformation/DHParameter.h>
 #include <VirtualRobot/XML/RobotIO.h>
+#include <VirtualRobot/RuntimeEnvironment.h>
 
 #include <boost/shared_ptr.hpp>
 #include <string>
@@ -31,8 +32,20 @@ int main(int argc, char *argv[])
 	cout << "First robot:" << endl;
 	robot->print();
 
+	VirtualRobot::RuntimeEnvironment::considerKey("robot");
+	VirtualRobot::RuntimeEnvironment::processCommandLine(argc,argv);
+	VirtualRobot::RuntimeEnvironment::print();
 
 	std::string filename(VR_BASE_DIR "/examples/loadRobot/RobotExample.xml");
+	if (VirtualRobot::RuntimeEnvironment::hasValue("robot"))
+	{
+		std::string robFile = VirtualRobot::RuntimeEnvironment::getValue("robot");
+		if (VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robFile))
+		{
+			filename = robFile;
+		}
+	}
+	cout << "Using robot at " << filename << endl;
 	RobotPtr rob;
 	try
 	{

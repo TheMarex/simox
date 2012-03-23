@@ -181,7 +181,6 @@ bool RobotNodeRevolute::isRotationalJoint() const
 Eigen::Vector3f RobotNodeRevolute::getJointRotationAxis(const SceneObjectPtr coordSystem) const
 {
 	ReadLock lock(mutex,use_mutex);
-	//Eigen::Vector3f res = toGlobalCoordinateSystem(jointRotationAxis);
 	Eigen::Vector4f result4f = Eigen::Vector4f::Zero();
 	result4f.segment(0,3) = jointRotationAxis;
 	result4f = getGlobalPoseJoint()*result4f;

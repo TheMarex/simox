@@ -142,8 +142,8 @@ bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, std::vector<
 		{
 			int id1,id2;
 			newContacts[i].distance = colChecker->calculateDistance(newContacts[i].robotNode->getCollisionModel(), newContacts[i].obstacle->getCollisionModel(), newContacts[i].contactPointFingerGlobal, newContacts[i].contactPointObstacleGlobal,&id1,&id2);
-			newContacts[i].contactPointFingerLocal = newContacts[i].obstacle->toLocalCoordinateSystem(newContacts[i].contactPointFingerGlobal);
-			newContacts[i].contactPointObstacleLocal = newContacts[i].obstacle->toLocalCoordinateSystem(newContacts[i].contactPointObstacleGlobal);
+			newContacts[i].contactPointFingerLocal = newContacts[i].obstacle->toLocalCoordinateSystemVec(newContacts[i].contactPointFingerGlobal);
+			newContacts[i].contactPointObstacleLocal = newContacts[i].obstacle->toLocalCoordinateSystemVec(newContacts[i].contactPointObstacleGlobal);
 			storeContacts.push_back(newContacts[i]);
 		}
 	}
@@ -165,19 +165,6 @@ bool EndEffectorActor::isColliding(EndEffectorPtr eef, SceneObjectSetPtr obstacl
 				((*o)->getCollisionModel()) &&
 				colChecker->checkCollision(n->robotNode->getCollisionModel(), (*o)->getCollisionModel()))
 			{
-				/*col = true;
-				// create contact info
-				EndEffector::ContactInfo ci;
-				ci.eef = eef;
-				ci.actor = shared_from_this();
-				ci.robotNode = n->robotNode;
-				ci.contactPointFingerGlobal = contact;
-				ci.contactPointObstacleGlobal = contact;
-				ci.contactPointFingerLocal = (*o)->toLocalCoordinateSystem(contact);
-				ci.contactPointObstacleLocal = (*o)->toLocalCoordinateSystem(contact);
-				ci.obstacle = *o;
-
-				storeContacts.push_back(ci);*/
 
 				col = true;
 				// create contact info
@@ -189,8 +176,8 @@ bool EndEffectorActor::isColliding(EndEffectorPtr eef, SceneObjectSetPtr obstacl
 
 				int id1,id2;
 				ci.distance = colChecker->calculateDistance(ci.robotNode->getCollisionModel(), ci.obstacle->getCollisionModel(), ci.contactPointFingerGlobal, ci.contactPointObstacleGlobal,&id1,&id2);
-				ci.contactPointFingerLocal = ci.obstacle->toLocalCoordinateSystem(ci.contactPointFingerGlobal);
-				ci.contactPointObstacleLocal = ci.obstacle->toLocalCoordinateSystem(ci.contactPointObstacleGlobal);
+				ci.contactPointFingerLocal = ci.obstacle->toLocalCoordinateSystemVec(ci.contactPointFingerGlobal);
+				ci.contactPointObstacleLocal = ci.obstacle->toLocalCoordinateSystemVec(ci.contactPointObstacleGlobal);
 	
 				storeContacts.push_back(ci);
 			}
@@ -312,16 +299,12 @@ bool EndEffectorActor::isColliding( EndEffectorPtr eef, SceneObjectPtr obstacle,
 			ci.eef = eef;
 			ci.actor = shared_from_this();
 			ci.robotNode = n->robotNode;
-			/*ci.contactPointFingerGlobal = contact;
-			ci.contactPointObstacleGlobal = contact;
-			ci.contactPointFingerLocal = obstacle->toLocalCoordinateSystem(contact);
-			ci.contactPointObstacleLocal = obstacle->toLocalCoordinateSystem(contact);*/
 			ci.obstacle = obstacle;
 
 			int id1,id2;
 			ci.distance = colChecker->calculateDistance(ci.robotNode->getCollisionModel(), ci.obstacle->getCollisionModel(), ci.contactPointFingerGlobal, ci.contactPointObstacleGlobal,&id1,&id2);
-			ci.contactPointFingerLocal = ci.obstacle->toLocalCoordinateSystem(ci.contactPointFingerGlobal);
-			ci.contactPointObstacleLocal = ci.obstacle->toLocalCoordinateSystem(ci.contactPointObstacleGlobal);
+			ci.contactPointFingerLocal = ci.obstacle->toLocalCoordinateSystemVec(ci.contactPointFingerGlobal);
+			ci.contactPointObstacleLocal = ci.obstacle->toLocalCoordinateSystemVec(ci.contactPointObstacleGlobal);
 	
 
 			storeContacts.push_back(ci);

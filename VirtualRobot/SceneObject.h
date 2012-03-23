@@ -197,14 +197,14 @@ public:
         @return The transformed pose.
     */
     Eigen::Matrix4f toLocalCoordinateSystem(const Eigen::Matrix4f &poseGlobal) const;
-	Eigen::Vector3f toLocalCoordinateSystem(const Eigen::Vector3f &positionGlobal) const;
+	Eigen::Vector3f toLocalCoordinateSystemVec(const Eigen::Vector3f &positionGlobal) const;
     /*!
         Transforms the pose, given in local coordinate system, to the global coordinate system.
         @param poseLocal The pose, given in local coordinate system of this joint, that should be transformed to the global coordinate system.
         @return The transformed pose.
     */
     Eigen::Matrix4f toGlobalCoordinateSystem(const Eigen::Matrix4f &poseLocal) const;
-	Eigen::Vector3f toGlobalCoordinateSystem(const Eigen::Vector3f &positionLocal) const;
+	Eigen::Vector3f toGlobalCoordinateSystemVec(const Eigen::Vector3f &positionLocal) const;
 
  	/*!
 		Returns the transformation matrix from this object to otherObject

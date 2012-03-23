@@ -92,8 +92,8 @@ public:
 	*/
 	static SoSeparator* Colorize( SoNode *model, VisualizationFactory::Color c);
 
-	static SbMatrix getSbMatrix(Eigen::Matrix4f &m);
-	static SbMatrix getSbMatrix(const Eigen::Vector3f &m);
+	static SbMatrix getSbMatrix(const Eigen::Matrix4f &m);
+	static SbMatrix getSbMatrixVec(const Eigen::Vector3f &m);
 
 	/*!
 		Create a visualization of a set of grasps.

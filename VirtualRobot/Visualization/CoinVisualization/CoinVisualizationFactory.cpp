@@ -1020,7 +1020,7 @@ SoSeparator* CoinVisualizationFactory::CreatePointVisualization( const MathTools
 	SoSeparator *res = new SoSeparator;
 	
 	SoMatrixTransform *mt = new SoMatrixTransform;
-	mt->matrix.setValue(getSbMatrix(point.p));
+	mt->matrix.setValue(getSbMatrixVec(point.p));
 	res->addChild(mt);
 
 	SoSphere *s = new SoSphere;
@@ -1047,13 +1047,13 @@ SoSeparator* CoinVisualizationFactory::CreatePointsVisualization( const std::vec
 	return res;
 }
 
-SbMatrix CoinVisualizationFactory::getSbMatrix( Eigen::Matrix4f &m )
+SbMatrix CoinVisualizationFactory::getSbMatrix( const Eigen::Matrix4f &m )
 {
-	SbMatrix res(reinterpret_cast<SbMat*>(m.data()));
+	SbMatrix res(reinterpret_cast<const SbMat*>(m.data()));
 	return res;
 }
 
-SbMatrix CoinVisualizationFactory::getSbMatrix( const Eigen::Vector3f &p )
+SbMatrix CoinVisualizationFactory::getSbMatrixVec( const Eigen::Vector3f &p )
 {
 	SbMatrix res;
 	res.makeIdentity();
@@ -1164,22 +1164,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 	//float x[6];
 	unsigned int v[6];
 	Eigen::Matrix4f m;
-/*	MathTools::posrpy2eigen4f(positionGlobal,Eigen::Vector3f::Zero(),m);
-	Eigen::Vector3f posLocal = positionGlobal;
-	if (reachSpace->baseNode)
-	{
-		m = reachSpace->baseNode->toLocalCoordinateSystem(m);
-		posLocal = reachSpace->baseNode->toLocalCoordinateSystem(posLocal);
-	}
-	MathTools::eigen4f2rpy(m,x);
-	// get voxels
-	if (!reachSpace->getVoxelFromPose(x,v))
-	{
-		VR_ERROR << "could not get voxel from pose " << m << endl;
-		res->unrefNoDelete();
-		return NULL;
-	}
-*/
+
 	v[0] = a;
 	v[1] = b;
 	v[2] = c;
@@ -1210,20 +1195,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 
 			for(unsigned int f = 0; f < (unsigned int)reachSpace->numVoxels[5]; f++)
 			{
-				//voxelOrientationLocal(2) = reachSpace->minBounds[5] + (f + 0.5f)*size(2);
-				v[5] = f;//reachSpace->minBounds[5] + (f + 0.5f)*size(2);
-				/*
-				Eigen::Matrix4f m;
-				Eigen::Vector3f oGlobal = voxelOrientationLocal;
-				MathTools::rpy2eigen4f(voxelOrientationLocal(0),voxelOrientationLocal(1),voxelOrientationLocal(2),m);
-				if (reachSpace->baseNode)
-				{
-					m = reachSpace->baseNode->toGlobalCoordinateSystem(m);
-					MathTools::eigen4f2rpy(m,oGlobal);
-				}
-				MathTools::posrpy2eigen4f(positionGlobal,oGlobal,m);
-				unsigned int entry = reachSpace->getEntry(m);
-				*/
+				v[5] = f;//reachSpace->minBounds[5] + (f + 0.5f)*size(2);	
 				unsigned int entry = reachSpace->data->get(v);
 				if (entry>0)
 					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d + 0.5f)*size(0),reachSpace->minBounds[4] + ((float)e + 0.5f)*size(1),reachSpace->minBounds[5] + ((float)f + 0.5f)*size(2)));
@@ -1516,7 +1488,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 				{
 					if(transformToGlobalPose && reachSpace->baseNode)
 					{
-						voxelPosition = reachSpace->baseNode->toGlobalCoordinateSystem(voxelPosition);
+						voxelPosition = reachSpace->baseNode->toGlobalCoordinateSystemVec(voxelPosition);
 					}
 					float intensity = (float)value;
 					if (maxValue>0)

@@ -206,7 +206,7 @@ Eigen::Matrix4f SceneObject::toGlobalCoordinateSystem(const Eigen::Matrix4f &pos
 	return getGlobalPose() * poseLocal;
 }
 
-Eigen::Vector3f SceneObject::toLocalCoordinateSystem(const Eigen::Vector3f &positionGlobal) const
+Eigen::Vector3f SceneObject::toLocalCoordinateSystemVec(const Eigen::Vector3f &positionGlobal) const
 {
 	Eigen::Matrix4f t;
 	t.setIdentity();
@@ -217,7 +217,7 @@ Eigen::Vector3f SceneObject::toLocalCoordinateSystem(const Eigen::Vector3f &posi
 }
 
 
-Eigen::Vector3f SceneObject::toGlobalCoordinateSystem(const Eigen::Vector3f &positionLocal) const
+Eigen::Vector3f SceneObject::toGlobalCoordinateSystemVec(const Eigen::Vector3f &positionLocal) const
 {
 	Eigen::Matrix4f t;
 	t.setIdentity();
@@ -290,7 +290,7 @@ Eigen::Vector3f SceneObject::getCoMLocal()
 Eigen::Vector3f SceneObject::getCoMGlobal()
 {
 	Eigen::Vector3f result = getCoMLocal();
-	return toGlobalCoordinateSystem(result);
+	return toGlobalCoordinateSystemVec(result);
 }
 
 float SceneObject::getMass()

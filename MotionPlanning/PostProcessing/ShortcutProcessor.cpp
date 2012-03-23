@@ -74,7 +74,7 @@ int ShortcutProcessor::doShortcut( int startIndex, int endIndex )
 	optimizedPath->print();*/
 
 	Eigen::VectorXf s = optimizedPath->getPoint(startIndex);
-	Eigen::VectorXf e = optimizedPath->getPoint(endIndex);
+	Eigen::VectorXf e = optimizedPath->getPoint(startIndex+1);
 
 	// create intermediate path		
 	CSpacePathPtr intermediatePath = cspace->createPath(s, e);

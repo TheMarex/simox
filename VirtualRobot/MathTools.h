@@ -114,7 +114,18 @@ namespace MathTools
 	Eigen::Matrix3f VIRTUAL_ROBOT_IMPORT_EXPORT axisangle2eigen3f(const Eigen::Vector3f &axis, float angle);
 	Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT axisangle2quat(const Eigen::Vector3f &axis, float angle);
 
+	/*!
+		Compute the delta of two poses.
+		\param m1 The first pose.
+		\param m2 The second pose.
+		\param storeDetalPos The position delta is stored here.
+		\param storeDeltaRot The orientation delta is stored here [radian]
+	*/
+	void VIRTUAL_ROBOT_IMPORT_EXPORT getDelta(const Eigen::Matrix4f &m1, const Eigen::Matrix4f &m2, float &storeDetalPos, float &storeDeltaRot);
 
+
+	float VIRTUAL_ROBOT_IMPORT_EXPORT rad2deg (float rad);
+	float VIRTUAL_ROBOT_IMPORT_EXPORT deg2rad (float deg);
 
 	/************************************************************************/
 	/* GEOMETRY                                                             */
@@ -347,7 +358,7 @@ namespace MathTools
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT isValid (const Eigen::MatrixXf &v);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print (const ContactPoint &p);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print (const std::vector<ContactPoint> &points);
-	void VIRTUAL_ROBOT_IMPORT_EXPORT print( const Eigen::Vector3f &v, bool endline = true );
+	void VIRTUAL_ROBOT_IMPORT_EXPORT print( const Eigen::VectorXf &v, bool endline = true );
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print( const std::vector<float> &v, bool endline = true);
 	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix4f &m, int tabs, bool skipMatrixTag = false);
 	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix4f &m, const std::string &tabs, bool skipMatrixTag = false);

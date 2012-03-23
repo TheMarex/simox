@@ -1,5 +1,5 @@
 /**
-* @package    VirtualRobot
+* @package    Saba
 * @author     Nikolaus Vahrenkamp
 * @copyright  2010 Nikolaus Vahrenkamp
 */
@@ -24,7 +24,7 @@
 BOOST_AUTO_TEST_SUITE(CSpace)
 
 
-BOOST_AUTO_TEST_CASE(testCollisionModel)
+BOOST_AUTO_TEST_CASE(testCSpace)
 {
 	const std::string robotString =
 		"<Robot Type='MyDemoRobotType' StandardName='ExampleRobo' RootNode='Joint1'>"

@@ -15,10 +15,6 @@ using namespace std;
 //#define LOCAL_DEBUG(a) {SABA_INFO << a;};
 #define LOCAL_DEBUG(a)
 
-//#define DO_THE_TESTS
-
-// if changing this value, be sure to update CSpaceVariableDim
-//#define RECURSIVE_DEPTH 1000
 namespace Saba
 {
 
@@ -99,26 +95,36 @@ CSpacePathPtr CSpaceSampled::createPath( const Eigen::VectorXf &start, const Eig
 	float samplingSize = getSamplingSize();
 	bool endLoop = false;
 	bool lastNode = false;
+	LOCAL_DEBUG("Start create path with sampling size:" << samplingSize)
 	float factor;
 
 	if (dist<samplingSize)
 		lastNode = true;
 	do
 	{
+		LOCAL_DEBUG("-------------------------------------------------------" << endl);
+		LOCAL_DEBUG("DIST:" << dist << endl);
 		if (lastNode)
 		{
+			LOCAL_DEBUG("LAST NODE" << endl);
 			lastConfig = goal;
 		} else
 		{
 			factor = samplingSize / dist;
+			LOCAL_DEBUG("dist:" << dist << ", factor:" << factor << endl)
 			lastConfig = interpolate(lastConfig,goal,factor);
+			LOCAL_DEBUG ("lastConfig:" << lastConfig << endl);
 		}
 		p->addPoint(lastConfig);
 		dist = calcDist (lastConfig,goal);
-		if (dist<samplingSize)
+		if (dist<=samplingSize*1.05f)
 		{
-			if (lastNode || dist<1e-10)
+			LOCAL_DEBUG("dist<samplingSize" << endl);
+			if (lastNode || dist<1e-6)
+			{
+				LOCAL_DEBUG("END LOOP" << endl)
 				endLoop = true;
+			}
 			lastNode = true;
 		}
 

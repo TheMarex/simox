@@ -28,140 +28,91 @@ int ShortcutProcessor::tryRandomShortcut(int maxSolutionPathDist)
         return 0;
     }
 
-	if (maxSolutionPathDist<2)
-		maxSolutionPathDist = 2;
-
 	if (verbose)
 	{
 		SABA_INFO << "Path length: " << optimizedPath->getLength() << std::endl;
 		SABA_INFO << "Path nr of nodes: " << optimizedPath->getNrOfPoints() << std::endl;
 	}
-	int startNodeIndex = (int)(rand()%(optimizedPath->getNrOfPoints()-1));
-
-	int dist = rand()%(2*maxSolutionPathDist)-maxSolutionPathDist;
-	if (dist==0)
-		dist++;
-	if (dist==1)
-		dist++;
-	if (dist==-1)
-		dist--;
-
-	int endNodeIndex = startNodeIndex+dist;
-	if (startNodeIndex>endNodeIndex)
-	{
-		int tmp = startNodeIndex;
-		startNodeIndex = endNodeIndex;
-		endNodeIndex = tmp;
-	}
-
-	if (startNodeIndex<0)
-		startNodeIndex = 0;
-	if (endNodeIndex>(int)optimizedPath->getNrOfPoints()-1) // last node should remain unchanged 
-		endNodeIndex = (int)optimizedPath->getNrOfPoints()-1;
-	if ((endNodeIndex-startNodeIndex)<=1)
+	
+	int startNodeIndex,endNodeIndex;
+	if (!selectCandidatesRandom(startNodeIndex,endNodeIndex,maxSolutionPathDist))
 		return 0;
 
 	if (verbose)
 		SABA_INFO << "-- start: " << startNodeIndex << ", end: " << endNodeIndex << std::endl;
 
-	Eigen::VectorXf s = optimizedPath->getPoint(startNodeIndex);
-	Eigen::VectorXf e = optimizedPath->getPoint(endNodeIndex);
-	Eigen::VectorXf d = e - s;
+	if (!validShortcut(startNodeIndex,endNodeIndex))
+		return 0;
 
-	// test line between start and end
-
-	float distShortcut = d.norm();
-	float distPath = optimizedPath->getLength(startNodeIndex,endNodeIndex);
-
-	// -------------------------------------------------------------------
-	// DEBUG
 	if (verbose)
-		std::cout << "-- distShortcut: " << distShortcut << " distPath: " << distPath << std::endl;
-	// -------------------------------------------------------------------
+		std::cout << "Creating direct shortcut from node " << startNodeIndex << " to node " << endNodeIndex << std::endl;
 
-	if (distShortcut<distPath*0.99f)
+	// complete path valid and dist is shorter
+	return doShortcut(startNodeIndex,endNodeIndex); 
+} 
+
+int ShortcutProcessor::doShortcut( int startIndex, int endIndex )
+{
+	if (!optimizedPath)
+		if (!initSolution())
+			return 0;
+
+	if (!optimizedPath || !cspace || startIndex<0 || endIndex<0 || startIndex>=(int)optimizedPath->getNrOfPoints() || endIndex>=(int)optimizedPath->getNrOfPoints())
+		return 0;
+
+	for (int i=endIndex-1; i>=startIndex+1;i--)
 	{
-		// -------------------------------------------------------------------
-		// DEBUG
-		if (verbose)
-			std::cout << "ShortcutProcessor: tryRandomShortcut: Shortcut Path shorter!" << std::endl;
-		// -------------------------------------------------------------------
+		// erase solution positions
+		optimizedPath->erasePosition(i);
+	}
+	if (verbose)
+	{
+		float distPathtest = optimizedPath->getLength(startIndex,startIndex+1);
+		std::cout << "-- erased intermediate positions, distPath startIndex to (startIndex+1): " << distPathtest << std::endl;
+	}
+	/*cout << "all2:" << endl;
+	optimizedPath->print();*/
 
-		//bool pathOK = m_pTree->checkPathSampled(startConfig,endConfig);
-		// first check sampled, the validate with freeBubbles 
-		// (if sampled check failed we don't need to do the expensive freeBubble check)
-		//bool pathOK = m_pTree->checkPathSampled(startConfig,endConfig);
-		bool pathOK = cspace->isPathValid(s,e);
-		if (pathOK)
-		{
-			/*cout << "start:" << endl << s << endl;
-			cout << "end:" << endl << e << endl;
-			cout << "all:" << endl;
-			optimizedPath->print();*/
-			// -------------------------------------------------------------------
-			// DEBUG
-			if (verbose)
-				std::cout << "ShortcutProcessor::tryRandomShortcut: pathOK!" << std::endl;
-			// -------------------------------------------------------------------
+	Eigen::VectorXf s = optimizedPath->getPoint(startIndex);
+	Eigen::VectorXf e = optimizedPath->getPoint(endIndex);
 
-			// complete path valid and dist is shorter
-			if (verbose)
-				std::cout << "Creating direct shortcut from node " << startNodeIndex << " to node " << endNodeIndex << std::endl;
-			for (int i=endNodeIndex-1; i>=startNodeIndex+1;i--)
-			{
-				// erase solution positions
-				optimizedPath->erasePosition(i);
-			}
-			if (verbose)
-			{
-				float distPathtest = optimizedPath->getLength(startNodeIndex,startNodeIndex+1);
-				std::cout << "-- erased intermediate positions, distPath startIndex to (startIndex+1): " << distPathtest << std::endl;
-			}
-			/*cout << "all2:" << endl;
-			optimizedPath->print();*/
-			// create intermediate path		
-
-			CSpacePathPtr intermediatePath = cspace->createPath(s, e);
-			int newP = 0;
-			if (intermediatePath->getNrOfPoints()>2)
-			{
-				newP = intermediatePath->getNrOfPoints()-2;
-				/*cout << "before:" << endl;
-				optimizedPath->print();
-				cout << "interm path:" << endl;
-				intermediatePath->print();*/
-				intermediatePath->erasePosition(intermediatePath->getNrOfPoints()-1);
-				intermediatePath->erasePosition(0);
-				/*cout << "interm path without start end:" << endl;
-				intermediatePath->print();*/
-				optimizedPath->insertTrajectory(startNodeIndex+1,intermediatePath);
-				/*cout << "after:" << endl;
-				optimizedPath->print();	*/
-			}
+	// create intermediate path		
+	CSpacePathPtr intermediatePath = cspace->createPath(s, e);
+	int newP = 0;
+	if (intermediatePath->getNrOfPoints()>2)
+	{
+		newP = intermediatePath->getNrOfPoints()-2;
+		/*cout << "before:" << endl;
+		optimizedPath->print();
+		cout << "interm path:" << endl;
+		intermediatePath->print();*/
+		intermediatePath->erasePosition(intermediatePath->getNrOfPoints()-1);
+		intermediatePath->erasePosition(0);
+		/*cout << "interm path without start end:" << endl;
+		intermediatePath->print();*/
+		optimizedPath->insertTrajectory(startIndex+1,intermediatePath);
+		/*cout << "after:" << endl;
+		optimizedPath->print();	*/
+	}
 		
-			if (verbose)
-			{
-				float sum = 0.0f;
-				for (int u=startNodeIndex; u<=startNodeIndex+newP; u++)
-				{
-					float distPathtest2 = optimizedPath->getLength(u,u+1);
-					sum += distPathtest2;
-					std::cout << "---- intermediate position: " << u << ", distPath to next pos: " << distPathtest2 << ", sum:" << sum << std::endl;
-				}
-			}
-			int nodes = endNodeIndex-startNodeIndex-1 + newP;
-			if (verbose)
-			{
-				std::cout << "-- end, nodes: " << nodes << std::endl;
-			}
+	if (verbose)
+	{
+		float sum = 0.0f;
+		for (int u=startIndex; u<=startIndex+newP; u++)
+		{
+			float distPathtest2 = optimizedPath->getLength(u,u+1);
+			sum += distPathtest2;
+			std::cout << "---- intermediate position: " << u << ", distPath to next pos: " << distPathtest2 << ", sum:" << sum << std::endl;
+		}
+	}
+	int nodes = endIndex-startIndex-1 + newP;
+	if (verbose)
+	{
+		std::cout << "-- end, nodes: " << nodes << std::endl;
+	}
 
 
-			return nodes;
-		} 
-	} // dist reduced
-
-	// path not valid
-	return 0;
+	return nodes;
 }
 
 
@@ -174,13 +125,8 @@ CSpacePathPtr ShortcutProcessor::shortenSolutionRandom(int shortenLoops /*=300*/
 {
 	stopOptimization = false;
 	THROW_VR_EXCEPTION_IF((!cspace || !path), "NULL data");	
+	THROW_VR_EXCEPTION_IF(!initSolution(),"Could not init...");
 	int counter = 0;
-	optimizedPath = path->clone();
-	if (!optimizedPath)
-	{
-		std::cout << "ShortcutProcessor::ShortenSolutionRandom: Wrong parameters or no path to smooth..." << std::endl;
-		return CSpacePathPtr();
-	}
 	if (optimizedPath->getNrOfPoints()<=2)
 	    return optimizedPath;
 	    
@@ -224,7 +170,7 @@ CSpacePathPtr ShortcutProcessor::shortenSolutionRandom(int shortenLoops /*=300*/
 
 void ShortcutProcessor::doPathPruning()
 {
-	optimizedPath = path->clone();
+	THROW_VR_EXCEPTION_IF(!initSolution(),"Could not init");
 
     unsigned int i = 0;
     while (i < optimizedPath->getNrOfPoints()-2)
@@ -241,6 +187,91 @@ void ShortcutProcessor::doPathPruning()
           i++;
         }
     }
+}
+
+bool ShortcutProcessor::selectCandidatesRandom( int &storeStartIndex, int &storeEndIndex, int maxSolutionPathDist )
+{
+	if (!optimizedPath)
+		if (!initSolution())
+			return false;
+	if (!optimizedPath || optimizedPath->getNrOfPoints()<=2)
+		return false;
+
+	if (maxSolutionPathDist<2)
+		maxSolutionPathDist = 2;
+
+	storeStartIndex = (int)(rand()%(optimizedPath->getNrOfPoints()-2));
+
+	int remainig = optimizedPath->getNrOfPoints()-2 - storeStartIndex;
+	if (remainig>maxSolutionPathDist)
+		remainig = maxSolutionPathDist;
+	
+	if (remainig<=0)
+		return false;
+
+	int dist = 2 + rand()%(remainig);
+	storeEndIndex = storeStartIndex+dist;
+
+	if (storeStartIndex<0 || storeEndIndex<0)
+		return false;
+	if (storeEndIndex>(int)optimizedPath->getNrOfPoints()-1)
+		return false;
+	if (storeStartIndex>(int)optimizedPath->getNrOfPoints()-1)
+		return false;
+	if ((storeEndIndex-storeStartIndex)<=1)
+		return false;
+	return true;
+}
+
+bool ShortcutProcessor::validShortcut( int startIndex, int endIndex )
+{
+	if (!optimizedPath)
+		if (!initSolution())
+			return false;
+	Eigen::VectorXf s = optimizedPath->getPoint(startIndex);
+	Eigen::VectorXf e = optimizedPath->getPoint(endIndex);
+	Eigen::VectorXf d = e - s;
+
+	// test line between start and end
+	float distShortcut = d.norm();
+	float distPath = optimizedPath->getLength(startIndex,endIndex);
+
+	// -------------------------------------------------------------------
+	// DEBUG
+	if (verbose)
+		std::cout << "-- distShortcut: " << distShortcut << " distPath: " << distPath << std::endl;
+	// -------------------------------------------------------------------
+
+	if (distShortcut>=distPath*0.99f)
+	{
+		if (verbose)
+			cout << "Path is not shorter..." << endl;
+		return false;
+	}
+
+	// -------------------------------------------------------------------
+	// DEBUG
+	if (verbose)
+		std::cout << ": Shortcut Path shorter!" << std::endl;
+	// -------------------------------------------------------------------
+
+	return cspace->isPathValid(s,e);
+}
+
+bool ShortcutProcessor::initSolution()
+{
+	if (!path)
+	{
+		VR_ERROR << "Wrong parameters or no path to smooth..." << std::endl;
+		return false;
+	}
+	optimizedPath = path->clone();
+	if (!optimizedPath)
+	{
+		VR_ERROR << "Wrong parameters or no path to smooth..." << std::endl;
+		return false;
+	}
+	return true;
 }
 
 

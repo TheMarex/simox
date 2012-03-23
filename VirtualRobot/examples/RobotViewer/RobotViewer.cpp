@@ -30,7 +30,9 @@ bool useColModel = false;
 int main(int argc, char *argv[])
 {
 	SoDB::init();
-	SoQt::init(argc,argv,"showRobot");
+	SoQt::init(argc,argv,"RobotViewer");
+
+	
 	VirtualRobot::RuntimeEnvironment::considerKey("robot");
 	VirtualRobot::RuntimeEnvironment::processCommandLine(argc,argv);
 	VirtualRobot::RuntimeEnvironment::print();
@@ -55,8 +57,6 @@ int main(int argc, char *argv[])
 	cout << "Using robot at " << filename << endl;
 
 	showRobotWindow rw(filename);
-
-	rw.main();
 
 	return 0;
 

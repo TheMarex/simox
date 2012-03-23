@@ -60,7 +60,28 @@ public:
 	*/
 	void doPathPruning();
 
+
+	/*!
+		This method randomly choses a start and endpoint. The linear path between can be checked for validity in order to check for a shortcut.
+	*/
+	bool selectCandidatesRandom(int &storeStartIndex, int &storeEndIndex, int maxSolutionPathDist = 30);
+
+	/*!
+		Checks linear path between start and end index. Therefore the cspace is queried.
+		\return If true is returned the shortcut is valid.
+	*/
+	bool validShortcut(int startIndex, int endIndex);
+
+	/*!
+		Erase all intermediate points and add a straight line shortcut instead.
+		\return Number of saved points.
+	*/
+	int doShortcut(int startIndex, int endIndex);
+
+
 protected:
+
+	bool initSolution();
 
 	// returns number of kicked nodes
 	int tryRandomShortcut(int maxSolutionPathDist);

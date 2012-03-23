@@ -707,10 +707,16 @@ void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const std::vector<float> &v, 
 	std::cout.precision(pr);
 }
 
-void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const Eigen::Vector3f &v, bool endline )
+void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const Eigen::VectorXf &v, bool endline )
 {
 	std::streamsize pr = std::cout.precision(2);
-	std::cout << std::fixed << v(0) << "," << v(1) << "," << v(2);
+	std::cout << std::fixed;
+	for (int i=0;i<v.rows();i++)
+	{
+		cout << v(0);
+		if (i!=v.rows()-1)
+			cout << ",";
+	}
 	if (endline)
 		cout << endl;
 	std::cout << std::resetiosflags(std::ios::fixed);
@@ -1091,6 +1097,16 @@ MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getDelta( const Qua
 	return multiplyQuaternions(q2,q1I);
 }
 
+void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getDelta( const Eigen::Matrix4f &m1, const Eigen::Matrix4f &m2, float &storeDetalPos, float &storeDeltaRot )
+{
+	Eigen::Matrix4f deltaPose = m1.inverse() * m2;
+
+	storeDetalPos = getTranslation(deltaPose).norm();
+	Eigen::Vector3f tmp;
+	eigen4f2axisangle(deltaPose,tmp,storeDeltaRot);
+
+}
+
 MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getInverse( const Quaternion &q )
 {
 	float tmpQ = (q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
@@ -1270,10 +1286,17 @@ float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::distPointLine( const Line &l, const
 	return (p2-p).norm();
 }
 
+float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::rad2deg( float rad )
+{
+	static const float c = (float)(180.0/M_PI);
+	return rad * c;
+}
 
-
-
-
+float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::deg2rad( float deg )
+{
+	static const float c = (float)(M_PI/180.0);
+	return deg * c;
+}
 
 
 } // namespace

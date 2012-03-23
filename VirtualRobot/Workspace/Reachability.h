@@ -63,7 +63,7 @@ public:
 
 
 	/*!
-		Append current TCP pose of the ocrresponding robot to reachability data. 
+		Append current TCP pose of the corresponding robot to reachability data. 
 		This means that the entry of the corresponding WorkspaceData voxel is increased by 1.
 	*/
 	void addCurrentTCPPose();
@@ -75,7 +75,7 @@ public:
 	*/
 	void addRandomTCPPoses(unsigned int loops, bool checkForSelfCollisions = true);
 
-	//! returns a random pose that is covered by the workspace data
+	//! returns a random pose that is covered by the workspace data.
 	Eigen::Matrix4f sampleReachablePose();
 	    
 protected:

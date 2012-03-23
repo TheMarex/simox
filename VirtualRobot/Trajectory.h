@@ -96,7 +96,7 @@ public:
 	virtual void erasePosition(unsigned int pos);
 
 
-		/*!
+	/*!
 	   Erases all points from start to end in trajectory (including start&end).
 	  \param startPos start position of point in trajectory array
 	  \param endPos end position of point in trajectory array
@@ -113,7 +113,7 @@ public:
 	virtual void insertTrajectory(unsigned int pos, TrajectoryPtr trajectoryToInsert);
 
 	/*!
-		Returns the euclidean length of the complete trajetcory.
+		Returns the euclidean length of the complete trajectory.
 	*/
 	virtual float getLength() const;
 
@@ -153,7 +153,7 @@ public:
 	std::string getName() const;
 
 	/*!
-		Gte a visualization for this trajectory.
+		Get a visualization for this trajectory.
 		\param visualizationFactoryName The string that identifies the factory. If not given, the first registered factory (which is usually the only one) is used.
 	*/
 	VisualizationNodePtr getVisualization(std::string visualizationFactoryName = "");

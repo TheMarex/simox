@@ -20,3 +20,4 @@ ADD_VR_TEST( VirtualRobotConfigTest )
 ADD_VR_TEST( VirtualRobotMathToolsTest )
 
 ADD_VR_TEST( VirtualRobotThreadsafetyTest )
+ADD_VR_TEST( VirtualRobotTrajectoryTest )

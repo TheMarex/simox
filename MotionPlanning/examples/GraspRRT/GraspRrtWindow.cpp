@@ -49,11 +49,11 @@ GraspRrtWindow::GraspRrtWindow(const std::string &sceneFile, const std::string &
 	allSep = new SoSeparator;
 	allSep->ref();
 	sceneFileSep = new SoSeparator;
-	startGoalSep = new SoSeparator;
+	graspsSep = new SoSeparator;
 	rrtSep = new SoSeparator;
 	
 	allSep->addChild(sceneFileSep);
-	allSep->addChild(startGoalSep);
+	allSep->addChild(graspsSep);
 	allSep->addChild(rrtSep);
 
 	planSetA.rns = rns;
@@ -129,7 +129,7 @@ void GraspRrtWindow::setupUI()
 	viewer->setAntialiasing(true, 4);
 
 	viewer->setGLRenderAction(new SoLineHighlightRenderAction);
-	viewer->setTransparencyType(SoGLRenderAction::BLEND);
+	viewer->setTransparencyType(SoGLRenderAction::SORTED_LAYERS_BLEND);
 	viewer->setFeedbackVisibility(true);
 	viewer->setSceneGraph(allSep);
 	viewer->viewAll();
@@ -140,7 +140,7 @@ void GraspRrtWindow::setupUI()
 	connect(UI.checkBoxShowSolution, SIGNAL(clicked()), this, SLOT(buildVisu()));
 	connect(UI.checkBoxShowSolutionOpti, SIGNAL(clicked()), this, SLOT(buildVisu()));
 	connect(UI.checkBoxShowRRT, SIGNAL(clicked()), this, SLOT(buildVisu()));
-	connect(UI.checkBoxStartGoal, SIGNAL(clicked()), this, SLOT(buildVisu()));
+	connect(UI.checkBoxGrasps, SIGNAL(clicked()), this, SLOT(buildVisu()));
 	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(colModel()));
 	connect(UI.pushButtonPlan, SIGNAL(clicked()), this, SLOT(plan()));
 	connect(UI.horizontalSliderPos, SIGNAL(sliderMoved(int)), this, SLOT(sliderSolution(int)));
@@ -189,8 +189,23 @@ void GraspRrtWindow::buildVisu()
 			sceneFileSep->addChild(visualisationNode);
     }
 
-	startGoalSep->removeAllChildren();
-	if (UI.checkBoxStartGoal->isChecked())
+	graspsSep->removeAllChildren();
+	if (UI.checkBoxGrasps->isChecked())
+	{
+		SoSeparator* eefVisu = CoinVisualizationFactory::CreateEndEffectorVisualization(eef);
+
+		for (size_t i=0;i<grasps.size();i++)
+		{
+
+			Eigen::Matrix4f m = grasps[i]->getTcpPoseGlobal(targetObject->getGlobalPose());
+			SoSeparator *sep1 = new SoSeparator();
+			SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransform(m);
+			sep1->addChild(mt);
+			sep1->addChild(eefVisu);
+			graspsSep->addChild(sep1);
+		}
+	}
+	/*if (UI.checkBoxStartGoal->isChecked())
 	{
 		if (robotStart)
 		{
@@ -204,7 +219,7 @@ void GraspRrtWindow::buildVisu()
 			if (go)
 				startGoalSep->addChild(go);
 		}
-	}
+	}*/
 	buildRRTVisu();
 	
 	redraw();
@@ -250,8 +265,8 @@ void GraspRrtWindow::loadScene()
 		return;
 	}
 	robot = robots[0];
-	robotStart = robot->clone("StartConfig");
-	robotGoal = robot->clone("GoalConfig");
+	//robotStart = robot->clone("StartConfig");
+	//robotGoal = robot->clone("GoalConfig");
 
 	// setup start Config combo box
 	configs = scene->getRobotConfigs(robot);
@@ -473,8 +488,8 @@ void GraspRrtWindow::selectStart(int nr)
 {
 	if (nr<0 || nr>=(int)configs.size())
 		return;
-	if (robotStart)
-		configs[nr]->applyToRobot(robotStart);
+	//if (robotStart)
+	//	configs[nr]->applyToRobot(robotStart);
 	if (robot)
 		configs[nr]->applyToRobot(robot);
 	configs[nr]->setJointValues();
@@ -629,8 +644,8 @@ void GraspRrtWindow::testGraspPose()
 	VirtualRobot::ObstaclePtr o = VirtualRobot::Obstacle::createBox(10,10,10);
 	o->setGlobalPose(globalGrasp);
 	o->showCoordinateSystem(true);
-	startGoalSep->removeAllChildren();
-	startGoalSep->addChild(VirtualRobot::CoinVisualizationFactory::getCoinVisualization(o, VirtualRobot::SceneObject::Full));
+	graspsSep->removeAllChildren();
+	graspsSep->addChild(VirtualRobot::CoinVisualizationFactory::getCoinVisualization(o, VirtualRobot::SceneObject::Full));
 
 	// move towards object
 	Eigen::Matrix4f p = eef->getGCP()->getGlobalPose();
@@ -669,7 +684,7 @@ void GraspRrtWindow::plan()
 		cdm->addCollisionModel(colModelRobB);
 	if (colModelEnv)
 		cdm->addCollisionModel(colModelEnv);
-
+	cdm->addCollisionModel(targetObject);
 	cspace.reset(new Saba::CSpaceSampled(robot,cdm,rns));
 	float sampl = (float)UI.doubleSpinBoxCSpaceSampling->value();
 	float samplDCD = (float)UI.doubleSpinBoxColChecking->value();
@@ -690,6 +705,15 @@ void GraspRrtWindow::plan()
 		Saba::ShortcutProcessorPtr postProcessing(new Saba::ShortcutProcessor(solution,cspace,false));
 		solutionOptimized = postProcessing->optimize(100);
 		tree = graspRrt->getTree();
+		std::vector<Saba::GraspRrt::GraspInfo, Eigen::aligned_allocator<Saba::GraspRrt::GraspInfo> > vStoreGraspInfo;
+		graspRrt->getGraspInfoResult(vStoreGraspInfo);
+		grasps.clear();
+		for (size_t i=0;i<vStoreGraspInfo.size();i++)
+		{
+			cout << "processing grasp " << i << endl;
+			VirtualRobot::GraspPtr g(new VirtualRobot::Grasp("GraspRrt Grasp",robot->getType(),eef->getName(),vStoreGraspInfo[i].handToObjectTransform,"GraspRrt",vStoreGraspInfo[i].graspScore));
+			grasps.push_back(g);
+		}
 	} else
 		VR_INFO << " Planning failed" << endl;
 

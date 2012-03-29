@@ -101,7 +101,7 @@
          <string>Postprocessed Solution</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBoxStartGoal">
+       <widget class="QCheckBox" name="checkBoxGrasps">
         <property name="geometry">
          <rect>
           <x>130</x>
@@ -111,7 +111,7 @@
          </rect>
         </property>
         <property name="text">
-         <string>Start/Goal</string>
+         <string>Grasps</string>
         </property>
        </widget>
       </widget>
@@ -563,14 +563,14 @@
        <widget class="QPushButton" name="pushButtonGraspPose">
         <property name="geometry">
          <rect>
-          <x>240</x>
-          <y>350</y>
-          <width>81</width>
+          <x>200</x>
+          <y>370</y>
+          <width>121</width>
           <height>21</height>
          </rect>
         </property>
         <property name="text">
-         <string>grasppose</string>
+         <string>test approach</string>
         </property>
        </widget>
       </widget>

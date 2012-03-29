@@ -837,7 +837,9 @@ float GraspRrt::calculateGraspScore(const Eigen::VectorXf &c, int nId, bool bSto
 		//info.contacts = (int)contacts.size();
 		Eigen::Matrix4f mMat;
 		
-		mMat = eef->getGCP()->toLocalCoordinateSystem(targetObject->getGlobalPose());
+		// we store the grasps relatively to the tcp instead the gcp, since this is expected this way in Simox
+		//mMat = eef->getGCP()->toLocalCoordinateSystem(targetObject->getGlobalPose());
+		mMat = eef->getTcp()->toLocalCoordinateSystem(targetObject->getGlobalPose());
 		//CFeasibleGrasp::ComputeObjectPoseInHandFrame(m_pManipulationObject,m_pEndEffector,mMat);
 		info.handToObjectTransform = mMat;
 		info.contacts = contacts;

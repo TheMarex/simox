@@ -117,12 +117,12 @@ protected:
 		
 	SoSeparator *allSep;
 	SoSeparator *sceneFileSep;
-	SoSeparator *startGoalSep;
+	SoSeparator *graspsSep;
 	SoSeparator *rrtSep;
 
 	VirtualRobot::RobotPtr robot;
-	VirtualRobot::RobotPtr robotStart;
-	VirtualRobot::RobotPtr robotGoal;
+	//VirtualRobot::RobotPtr robotStart;
+	//VirtualRobot::RobotPtr robotGoal;
 
 	Saba::CSpaceSampledPtr cspace;
 	Eigen::VectorXf startConfig;
@@ -137,6 +137,8 @@ protected:
 	std::vector< VirtualRobot::RobotConfigPtr > configs;
 	std::vector< VirtualRobot::ObstaclePtr > obstacles;
 	VirtualRobot::ObstaclePtr targetObject;
+
+	std::vector<VirtualRobot::GraspPtr> grasps;
 	
 	std::string sceneFile;
 	VirtualRobot::ScenePtr scene;

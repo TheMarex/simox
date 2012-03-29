@@ -29,58 +29,18 @@ namespace Saba {
 CoinRrtWorkspaceVisualization::CoinRrtWorkspaceVisualization(VirtualRobot::RobotPtr robot, CSpacePtr cspace, const std::string &TCPName) :
 RrtWorkspaceVisualization(robot,cspace,TCPName)
 {
-	init();
 }
 
 CoinRrtWorkspaceVisualization::CoinRrtWorkspaceVisualization(VirtualRobot::RobotPtr robot, VirtualRobot::RobotNodeSetPtr robotNodeSet, const std::string &TCPName) :
 RrtWorkspaceVisualization(robot,robotNodeSet,TCPName)
 {
-	init();
 }
 
 void CoinRrtWorkspaceVisualization::init()
 {
+	RrtWorkspaceVisualization::init();
 	visualization = new SoSeparator();
 	visualization->ref();
-	setPathStyle();
-	setTreeStyle();
-
-	RenderColors red;
-	red.nodeR = 1.0f;
-	red.nodeG = 0;
-	red.nodeB = 0;
-	red.lineR = 0.5f;
-	red.lineG = 0.5f;
-	red.lineB = 0.5f;
-	colors[CoinRrtWorkspaceVisualization::eRed] = red;
-
-	RenderColors blue;
-	blue.nodeR = 0;
-	blue.nodeG = 0;
-	blue.nodeB = 1.0f;
-	blue.lineR = 0.5f;
-	blue.lineG = 0.5f;
-	blue.lineB = 0.5f;
-	colors[CoinRrtWorkspaceVisualization::eBlue] = blue;
-
-	RenderColors green;
-	green.nodeR = 0;
-	green.nodeG = 1.0f;
-	green.nodeB = 0;
-	green.lineR = 0.5f;
-	green.lineG = 0.5f;
-	green.lineB = 0.5f;
-	colors[CoinRrtWorkspaceVisualization::eGreen] = green;
-
-	RenderColors custom;
-	custom.nodeR = 1.0f;
-	custom.nodeG = 1.0f;
-	custom.nodeB = 0;
-	custom.lineR = 0.5f;
-	custom.lineG = 0.5f;
-	custom.lineB = 0.5f;
-	colors[CoinRrtWorkspaceVisualization::eCustom] = custom;
-
 }
 
 /**
@@ -102,33 +62,6 @@ SoSeparator* CoinRrtWorkspaceVisualization::getCoinVisualization()
 {
 	return visualization;
 }
-
-void CoinRrtWorkspaceVisualization::setPathStyle(float lineSize, float nodeSize, float renderComplexity)
-{
-	pathLineSize = lineSize;
-	pathNodeSize = nodeSize;
-	pathRenderComplexity = renderComplexity;
-}
-
-void CoinRrtWorkspaceVisualization::setTreeStyle(float lineSize, float nodeSize, float renderComplexity)
-{
-	treeLineSize = lineSize;
-	treeNodeSize = nodeSize;
-	treeRenderComplexity = renderComplexity;
-}
-
-void CoinRrtWorkspaceVisualization::setCustomColor(float nodeR, float nodeG, float nodeB, float lineR, float lineG, float lineB )
-{
-	RenderColors custom;
-	custom.nodeR = nodeR;
-	custom.nodeG = nodeG;
-	custom.nodeB = nodeB;
-	custom.lineR = lineR;
-	custom.lineG = lineG;
-	custom.lineB = lineB;
-	colors[CoinRrtWorkspaceVisualization::eCustom] = custom;
-}
-
 
 bool CoinRrtWorkspaceVisualization::addCSpacePath(CSpacePathPtr path, CoinRrtWorkspaceVisualization::ColorSet colorSet)
 {
@@ -255,6 +188,19 @@ bool CoinRrtWorkspaceVisualization::addTree(CSpaceTreePtr tree, CoinRrtWorkspace
 	materialLine->diffuseColor.setValue(colors[colorSet].lineR,colors[colorSet].lineG,colors[colorSet].lineB);
 	materialNode->ambientColor.setValue(colors[colorSet].nodeR,colors[colorSet].nodeG,colors[colorSet].nodeB);
 	materialNode->diffuseColor.setValue(colors[colorSet].nodeR,colors[colorSet].nodeG,colors[colorSet].nodeB);
+	std::map<int,SoMaterial*> statusMaterials;
+	std::map<int,ColorSet>::iterator it = treeNodeStatusColor.begin();
+	bool considerStatus = false;
+	while (it != treeNodeStatusColor.end())
+	{
+		SoMaterial *materialNodeStatus = new SoMaterial();
+		materialNodeStatus->ambientColor.setValue(colors[it->second].nodeR,colors[it->second].nodeG,colors[it->second].nodeB);
+		materialNodeStatus->diffuseColor.setValue(colors[it->second].nodeR,colors[it->second].nodeG,colors[it->second].nodeB);
+		statusMaterials[it->first] = materialNodeStatus;
+		considerStatus = true;
+		it++;
+	}
+
 
 	SoSphere *sphereNode = new SoSphere();
 	sphereNode->radius.setValue(treeNodeSize);
@@ -303,8 +249,10 @@ bool CoinRrtWorkspaceVisualization::addTree(CSpaceTreePtr tree, CoinRrtWorkspace
 		// create 3D model for nodes
 		SoSeparator *s = new SoSeparator();
 
-	
-		s->addChild(materialNode);
+		if (considerStatus && statusMaterials.find(actualNode->status)!=statusMaterials.end())
+			s->addChild(statusMaterials[actualNode->status]);
+		else
+			s->addChild(materialNode);
 
 		// get tcp coords
 		p = tcpCoords[actualNode];

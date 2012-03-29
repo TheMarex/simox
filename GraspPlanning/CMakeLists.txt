@@ -39,7 +39,7 @@ Visualization/ConvexHullVisualization.h
 ${GRASPSTUDIO_SimoxDir}/VirtualRobot/definesVR.h
 )
 
-if (SIMOX_USE_COIN_VISUALIZATION)
+if (SIMOX_VISUALIZATION AND SIMOX_USE_COIN_VISUALIZATION)
 	SET(SOURCES
 	${SOURCES}
 	Visualization/CoinVisualization/CoinConvexHullVisualization.cpp
@@ -49,7 +49,7 @@ if (SIMOX_USE_COIN_VISUALIZATION)
 	${INCLUDES}
 	Visualization/CoinVisualization/CoinConvexHullVisualization.h
 	)
-endif (SIMOX_USE_COIN_VISUALIZATION)
+endif ()
 
 
 INCLUDE_DIRECTORIES(${GRASPSTUDIO_VirtualRobotDir}/..)

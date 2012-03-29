@@ -165,7 +165,8 @@ void MotionPlanner::reset()
 	goalConfig.setZero(1);
 	startValid = false;
 	goalValid = false;
-	cspace.reset();
+	if (cspace)
+		cspace->reset();
 
 	planningTime = 0;
 	cycles = 0;

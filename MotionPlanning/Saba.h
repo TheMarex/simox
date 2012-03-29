@@ -85,7 +85,9 @@ namespace Saba
 	class Rrt;
 	class BiRrt;
 	class GraspIkRrt;
+	class GraspRrt;
 	class ShortcutProcessor;
+	class ApproachDiscretization;
 
 	typedef boost::shared_ptr<CSpace> CSpacePtr;
 	typedef boost::shared_ptr<CSpaceSampled> CSpaceSampledPtr;
@@ -96,8 +98,10 @@ namespace Saba
 	typedef boost::shared_ptr<Rrt> RrtPtr;
 	typedef boost::shared_ptr<BiRrt> BiRrtPtr;
 	typedef boost::shared_ptr<GraspIkRrt> GraspIkRrtPtr;
+	typedef boost::shared_ptr<GraspRrt> GraspRrtPtr;
 	typedef boost::shared_ptr<ShortcutProcessor> ShortcutProcessorPtr;
 	typedef boost::shared_ptr<ConfigurationConstraint> ConfigurationConstraintPtr;
+	typedef boost::shared_ptr<ApproachDiscretization> ApproachDiscretizationPtr;
 
 #define SABA_INFO VR_INFO
 #define SABA_WARNING VR_WARNING

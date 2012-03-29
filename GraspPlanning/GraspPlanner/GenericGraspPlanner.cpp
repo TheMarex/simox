@@ -1,5 +1,5 @@
 #include "GenericGraspPlanner.h"
-#include <VirtualRobot/Grasp.h>
+#include <VirtualRobot/Grasping/Grasp.h>
 #include <VirtualRobot/Robot.h>
 #include <VirtualRobot/Nodes/RobotNode.h>
 #include <iostream>

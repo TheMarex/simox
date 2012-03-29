@@ -47,36 +47,28 @@ public:
 
 	~CoinRrtWorkspaceVisualization();
 
-	enum ColorSet
-	{
-		eRed,
-		eGreen,
-		eBlue,
-		eCustom
-	};
-	
 
 	/*!
 		Add visualization of a path in cspace.
 	*/
-	virtual bool addCSpacePath(CSpacePathPtr path, CoinRrtWorkspaceVisualization::ColorSet colorSet = eBlue);
-	void setPathStyle(float lineSize = 4.0f, float nodeSize= 15.0f, float renderComplexity = 1.0f);
+	virtual bool addCSpacePath(CSpacePathPtr path, RrtWorkspaceVisualization::ColorSet colorSet = eBlue);
+	//void setPathStyle(float lineSize = 4.0f, float nodeSize= 15.0f, float renderComplexity = 1.0f);
 
 	/*!
-		Add visualization of a path in cspace.
+		Add visualization of a tree (e.g an RRT) in cspace.
 	*/
-	virtual bool addTree(CSpaceTreePtr tree, CoinRrtWorkspaceVisualization::ColorSet colorSet = eRed);
-	void setTreeStyle(float lineSize = 1.0f, float nodeSize= 15.0f, float renderComplexity = 0.1f);
+	virtual bool addTree(CSpaceTreePtr tree, RrtWorkspaceVisualization::ColorSet colorSet = eRed);
+	//void setTreeStyle(float lineSize = 1.0f, float nodeSize= 15.0f, float renderComplexity = 0.1f);
 	
 	/*!
 		Add visualization of a configuration in cspace.
 	*/
-	virtual bool addConfiguration(const Eigen::VectorXf &c, CoinRrtWorkspaceVisualization::ColorSet colorSet = eGreen, float nodeSizeFactor = 1.0f);
+	virtual bool addConfiguration(const Eigen::VectorXf &c, RrtWorkspaceVisualization::ColorSet colorSet = eGreen, float nodeSizeFactor = 1.0f);
 
 	/*!
 		Set the custom line and node color. Does not affect already added trees or paths.
 	*/
-	void setCustomColor(float nodeR, float nodeG, float nodeB, float lineR = 0.5f, float lineG = 0.5f, float lineB = 0.5f);
+	//void setCustomColor(float nodeR, float nodeG, float nodeB, float lineR = 0.5f, float lineG = 0.5f, float lineB = 0.5f);
 
 	/*!
 		Clears all visualizations.
@@ -88,20 +80,9 @@ public:
 
 protected:
 
-	void init();
+	virtual void init();
 	
 	SoSeparator* visualization;
-
-	float pathLineSize, pathNodeSize, pathRenderComplexity;
-	float treeLineSize, treeNodeSize, treeRenderComplexity;
-
-	struct RenderColors
-	{
-		float nodeR, nodeG, nodeB, lineR, lineG, lineB;
-	};
-
-
-	std::map<ColorSet, RenderColors> colors;
 };
 
 typedef boost::shared_ptr<CoinRrtWorkspaceVisualization> CoinRrtWorkspaceVisualizationPtr;

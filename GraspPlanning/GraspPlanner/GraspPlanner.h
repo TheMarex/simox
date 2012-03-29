@@ -26,7 +26,7 @@
 #include "GraspStudio.h"
 #include <VirtualRobot/EndEffector/EndEffector.h>
 #include <VirtualRobot/SceneObject.h>
-#include <VirtualRobot/GraspSet.h>
+#include <VirtualRobot/Grasping/GraspSet.h>
 #include <vector>
 
 namespace GraspStudio

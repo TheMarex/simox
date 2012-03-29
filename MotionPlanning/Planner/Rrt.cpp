@@ -434,7 +434,6 @@ void Rrt::reset()
 	goalNode.reset();
 	if (tree)
 		tree->reset();
-	cspace->reset();
 }
 
 

@@ -53,6 +53,7 @@ public:
 	bool allocated;
 
 	// optional
+	int status;
 	float obstacleDistance;					//!< work space distance to obstacles (-1 if the dist was not calculated)
 	float dynDomRadius;						//!< radius for this node (used by dynamic domain RRTs)
 	std::vector<CSpaceNodePtr> children;	//!< children of this node

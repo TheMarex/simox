@@ -101,9 +101,9 @@ protected:
 	CSpaceTreePtr tree;					//!< the rrt on which are operating
 
 	
-	ExtensionResult extend(Eigen::VectorXf &c, CSpaceTreePtr tree, int &storeLastAddedID);
-	ExtensionResult connectComplete(Eigen::VectorXf &c, CSpaceTreePtr tree, int &storeLastAddedID);
-	ExtensionResult connectUntilCollision(Eigen::VectorXf &c, CSpaceTreePtr tree, int &storeLastAddedID);
+	virtual ExtensionResult extend(Eigen::VectorXf &c, CSpaceTreePtr tree, int &storeLastAddedID);
+	virtual ExtensionResult connectComplete(Eigen::VectorXf &c, CSpaceTreePtr tree, int &storeLastAddedID);
+	virtual ExtensionResult connectUntilCollision(Eigen::VectorXf &c, CSpaceTreePtr tree, int &storeLastAddedID);
 
 	CSpaceNodePtr startNode;		//!< start node (root of RRT)
 	CSpaceNodePtr goalNode;			//!< goal node (set when RRT weas successfully connected to goalConfig)

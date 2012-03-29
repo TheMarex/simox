@@ -65,13 +65,15 @@ float GraspQualityMeasureWrenchSpace::getGraspQuality()
 
 bool GraspQualityMeasureWrenchSpace::isGraspForceClosure()
 {
+	if (!GWSCalculated)
+		calculateGWS();
 	return isOriginInGWSHull();
 }
 
-void GraspQualityMeasureWrenchSpace::calculateOWS()
+void GraspQualityMeasureWrenchSpace::calculateOWS(int samplePoints)
    {
 	bool printAll = false;
-	bool bRes = sampleObjectPoints();
+	bool bRes = sampleObjectPoints(samplePoints);
 	if (!bRes)
 		return;
 	//Rotate generic friction cone to align with object normals

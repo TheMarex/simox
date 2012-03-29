@@ -23,7 +23,7 @@
 #ifndef __GRASP_QUALTIY_MEASURE_WRENCH_H__
 #define __GRASP_QUALTIY_MEASURE_WRENCH_H__
 
-#include "GraspStudio.h"
+#include "../GraspStudio.h"
 #include "GraspQualityMeasure.h"
 
 #include <Eigen/Core>
@@ -87,7 +87,7 @@ public:
 	*/
 	virtual VirtualRobot::MathTools::ConvexHull6DPtr getConvexHullGWS(){return convexHullGWS;}
 
-	void calculateOWS();
+	void calculateOWS(int samplePoints = 400);
 	void calculateGWS();
 	bool OWSExists(){return OWSCalculated;}
 	bool GWSExists(){return GWSCalculated;}

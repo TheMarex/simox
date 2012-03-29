@@ -51,24 +51,17 @@ public:
 	RrtWorkspaceVisualization(VirtualRobot::RobotPtr robot, CSpacePtr cspace, const std::string &TCPName);
 	RrtWorkspaceVisualization(VirtualRobot::RobotPtr robot, VirtualRobot::RobotNodeSetPtr robotNodeSet, const std::string &TCPName);
 
+	enum ColorSet
+	{
+		eRed,
+		eGreen,
+		eBlue,
+		eCustom
+	};
+
 	/*!
 	*/
 	virtual ~RrtWorkspaceVisualization();
-
-	/*!
-		Add visualization of a path in cspace.
-	*/
-	//virtual bool addCSpacePath(CSpacePathPtr path);
-
-	/*!
-		Add visualization of a path in cspace.
-	*/
-	//virtual bool addTree(CSpaceTreePtr tree);
-
-	/*!
-		Add visualization of a path in cspace.
-	*/
-	//virtual bool addConfig(const Eigen::VectorXf &c);
 
 	/*!
 		Clears all visualizations.
@@ -80,13 +73,52 @@ public:
 	*/
 	void setTCPName(const std::string TCPName);
 
+	
+	/*!
+		Add visualization of a path in cspace.
+	*/
+	virtual bool addCSpacePath(CSpacePathPtr path, RrtWorkspaceVisualization::ColorSet colorSet = eBlue) = 0;
+	virtual void setPathStyle(float lineSize = 4.0f, float nodeSize= 15.0f, float renderComplexity = 1.0f);
+
+	/*!
+		Add visualization of a tree (e.g an RRT) in cspace.
+	*/
+	virtual bool addTree(CSpaceTreePtr tree, RrtWorkspaceVisualization::ColorSet colorSet = eRed) = 0;
+	virtual void setTreeStyle(float lineSize = 1.0f, float nodeSize= 15.0f, float renderComplexity = 0.1f);
+	
+	/*!
+		Add visualization of a configuration in cspace.
+	*/
+	virtual bool addConfiguration(const Eigen::VectorXf &c, RrtWorkspaceVisualization::ColorSet colorSet = eGreen, float nodeSizeFactor = 1.0f) = 0;
+
+	/*!
+		Set the custom line and node color. Does not affect already added trees or paths.
+	*/
+	virtual void setCustomColor(float nodeR, float nodeG, float nodeB, float lineR = 0.5f, float lineG = 0.5f, float lineB = 0.5f);
+
+	/*!
+		Set tree nodes with status flag equal to given paramter to the specified color.
+	*/
+	virtual void colorizeTreeNodes(int status, ColorSet colorSet);
 protected:
+	virtual void init();
 	VirtualRobot::RobotPtr robot;
 	CSpacePtr cspace;
 	VirtualRobot::RobotNodeSetPtr robotNodeSet;
 	VirtualRobot::RobotNodePtr TCPNode;
 
 	std::string TCPName;
+
+	float pathLineSize, pathNodeSize, pathRenderComplexity;
+	float treeLineSize, treeNodeSize, treeRenderComplexity;
+
+	struct RenderColors
+	{
+		float nodeR, nodeG, nodeB, lineR, lineG, lineB;
+	};
+
+	std::map<ColorSet, RenderColors> colors;
+	std::map<int, ColorSet> treeNodeStatusColor;
 
 };
 

@@ -2,3 +2,7 @@
 ADD_SUBDIRECTORY(RRT)
 ADD_SUBDIRECTORY(RrtGui)
 ADD_SUBDIRECTORY(IKRRT)
+
+# todo: check whether GraspStudio is present
+#ADD_SUBDIRECTORY(graspRRT)
+

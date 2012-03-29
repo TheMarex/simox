@@ -6,7 +6,7 @@
 #include "../CSpace/CSpacePath.h"
 #include <VirtualRobot/Robot.h>
 #include <VirtualRobot/RobotNodeSet.h>
-#include <VirtualRobot/GraspSet.h>
+#include <VirtualRobot/Grasping/GraspSet.h>
 #include <time.h>
 #include <boost/pointer_cast.hpp>
 

@@ -22,9 +22,11 @@ Planner/MotionPlanner.cpp
 Planner/Rrt.cpp
 Planner/BiRrt.cpp
 Planner/GraspIkRrt.cpp
+Planner/GraspRrt.cpp
 Visualization/RrtWorkspaceVisualization.cpp
 PostProcessing/PathProcessor.cpp
 PostProcessing/ShortcutProcessor.cpp
+ApproachDiscretization.cpp
 )
 
 SET(INCLUDES
@@ -40,9 +42,11 @@ Planner/MotionPlanner.h
 Planner/Rrt.h
 Planner/BiRrt.h
 Planner/GraspIkRrt.h
+Planner/GraspRrt.h
 Visualization/RrtWorkspaceVisualization.h
 PostProcessing/PathProcessor.h
 PostProcessing/ShortcutProcessor.h
+ApproachDiscretization.h
 ${SABA_SimoxDir}/VirtualRobot/definesVR.h
 )
 

@@ -92,7 +92,7 @@ void SphereApproximator::initBasePolyhedron(EPolyhedronType nBaseType, GraphData
 			break;
 			
 		default:
-			printf("Wrong base type\n");
+			VR_ERROR << "Wrong base type\n";
 			break;
 	}
 }

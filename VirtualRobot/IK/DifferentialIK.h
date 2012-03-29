@@ -173,7 +173,8 @@ public:
 		// by the angle in radians.
 		Matrix4f orientation = targets_pose * actual_pose.inverse();
 		AngleAxis<float> aa(orientation.block<3,3>(0,0));
-		error.segment(3,3) = aa.axis()*aa.angle();	
+		e.segment(3,3) = aa.axis()*aa.angle();
+		// or
 		AngleAxis orientation( target_pose * actual_pose.inverse()   )
 		e.block(3,3) = orientation.axis() * orientation.angle();
 

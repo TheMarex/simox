@@ -41,6 +41,9 @@ IK/PoseQualityManipulability.cpp
 Workspace/WorkspaceData.cpp
 Workspace/WorkspaceRepresentation.cpp
 Workspace/Reachability.cpp
+Grasping/Grasp.cpp
+Grasping/GraspSet.cpp
+Grasping/BasicGraspQualityMeasure.cpp
 MathTools.cpp
 Robot.cpp
 RobotConfig.cpp
@@ -53,13 +56,12 @@ SceneObjectSet.cpp
 Scene.cpp
 Obstacle.cpp
 VirtualRobotException.cpp
-Grasp.cpp
-GraspSet.cpp
 ManipulationObject.cpp
 BoundingBox.cpp
 RuntimeEnvironment.cpp
 CompressionRLE.cpp
 LinkedCoordinate.cpp
+SphereApproximator.cpp
 )
 
 SET(INCLUDES
@@ -100,6 +102,9 @@ Workspace/WorkspaceRepresentation.h
 Workspace/Reachability.h
 Workspace/VoxelTree6D.hpp
 Workspace/VoxelTree6DElement.hpp
+Grasping/Grasp.h
+Grasping/GraspSet.h
+Grasping/BasicGraspQualityMeasure.h
 AbstractFactoryMethod.h
 VirtualRobot.h
 MathTools.h
@@ -116,12 +121,11 @@ Obstacle.h
 VirtualRobotException.h
 VirtualRobotImportExport.h
 VirtualRobotTest.h
-Grasp.h
-GraspSet.h
 ManipulationObject.h
 BoundingBox.h
 RuntimeEnvironment.h
 CompressionRLE.h
+SphereApproximator.h
 )
 
 ADD_SUBDIRECTORY(Visualization/tests)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Robot Type="MyDemoRobotType" StandardName="ExampleRobo" RootNode="Left Arm Base">
+<Robot Type="ArmarIII LeftArm" RootNode="Left Arm Base">
 
 	<RobotNode name="Left Arm Base"> <!-- Trafo BTo0; COS 0; DOF q1 -->
 		<Joint type="fixed">
@@ -89,7 +89,8 @@
 	<RobotNode name="Underarm L">
 		<Joint type="revolute">
 			<DH a="0" d="-240" theta="90" alpha="-90" units="degree"/>
-			<Limits unit="degree" lo="-57.29" hi="174.48"/>
+			<!--Limits unit="degree" lo="-57.29" hi="174.48"/-->
+			<Limits unit="degree" lo="-108.25" hi="69.65"/>
 		</Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>

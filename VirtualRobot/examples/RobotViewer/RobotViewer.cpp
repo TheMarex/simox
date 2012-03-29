@@ -58,6 +58,8 @@ int main(int argc, char *argv[])
 
 	showRobotWindow rw(filename);
 
+	rw.main();
+
 	return 0;
 
 }

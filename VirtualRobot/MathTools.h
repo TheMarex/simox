@@ -39,7 +39,6 @@ namespace VirtualRobot
 
 namespace MathTools
 {
-
 	/************************************************************************/
 	/* QUATERNIONS                                                          */
 	/************************************************************************/
@@ -184,6 +183,10 @@ namespace MathTools
 			std::swap(id3, id1);
 			normal *= -1.0f;
 		}
+		void set (unsigned int id1, unsigned int id2, unsigned int id3)
+		{
+			this->id1 = id1; this->id2 = id2; this->id3 = id3;
+		}
 		// id == position in vertex array
 		unsigned int id1;
 		unsigned int id2;
@@ -243,6 +246,20 @@ namespace MathTools
 		Returns true, if point is on the side of plane in which the normal vector is pointing.
 	*/
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT onNormalPointingSide(const Eigen::Vector3f &point, const Plane &p);
+
+	/*!
+		Returns angle between v1 and v2 [rad].
+	*/
+	float VIRTUAL_ROBOT_IMPORT_EXPORT getAngle(const Eigen::Vector3f &v1, const Eigen::Vector3f &v2);
+
+	/*!
+		This method unites the translational and rotational difference of two Cartesian poses to one metric value.
+		The translational distance is the norm in mm (counts 1)
+		The rotational distance is the approximated angle between the two orientations in degrees (counts 3, or whatever you specify with rotInfluence)
+		In the standard setting -> 3mm equals 1 degree in this metric
+		The angle is approximated by replacing the costly eq alpha=2*acos(q0) with a linear term: alpha = 180-(q0+1)*90
+	*/
+	float VIRTUAL_ROBOT_IMPORT_EXPORT getCartesianPoseDiff(const Eigen::Matrix4f &p1, const Eigen::Matrix4f &p2, float rotInfluence = 3.0f);
 
 
 	/************************************************************************/

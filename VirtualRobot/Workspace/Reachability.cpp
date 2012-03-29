@@ -2,8 +2,8 @@
 #include "../VirtualRobotException.h"
 #include "../Robot.h"
 #include "../ManipulationObject.h"
-#include "../Grasp.h"
-#include "../GraspSet.h"
+#include "../Grasping/Grasp.h"
+#include "../Grasping/GraspSet.h"
 #include <fstream>
 #include <cmath>
 #include <float.h>

@@ -11,9 +11,9 @@
 #include "../../VirtualRobotException.h"
 #include "CoinVisualization.h"
 #include "../../Robot.h"
-#include "../../Grasp.h"
+#include "../../Grasping/Grasp.h"
 #include "../../Trajectory.h"
-#include "../../GraspSet.h"
+#include "../../Grasping/GraspSet.h"
 #include "../../SceneObject.h"
 #include "../TriMeshModel.h"
 #include "../../Workspace/Reachability.h"
@@ -223,7 +223,7 @@ boost::shared_ptr<VisualizationFactory> CoinVisualizationFactory::createInstance
     return coinFactory;
 }
 
-VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createBox( float width, float height, float depth, float colorR, float colorG, float colorB, CollisionCheckerPtr colChecker )
+VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createBox( float width, float height, float depth, float colorR, float colorG, float colorB )
 {
 	SoSeparator *s = new SoSeparator();
 	s->ref();
@@ -301,7 +301,7 @@ VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createLine( const E
 	return createLine(from,to,width,colorR,colorG,colorB);
 }
 
-VisualizationNodePtr CoinVisualizationFactory::createSphere(float radius, float colorR, float colorG, float colorB, CollisionCheckerPtr colChecker)
+VisualizationNodePtr CoinVisualizationFactory::createSphere(float radius, float colorR, float colorG, float colorB)
 {
 	SoSeparator *s = new SoSeparator();
 	s->ref();
@@ -330,7 +330,7 @@ VisualizationNodePtr CoinVisualizationFactory::createCoordSystem(float scaling, 
 	return visualizationNode;
 }
 
-VisualizationNodePtr CoinVisualizationFactory::createVisualization(CollisionCheckerPtr colChecker)
+VisualizationNodePtr CoinVisualizationFactory::createVisualization()
 {
 	SoSeparator *s = new SoSeparator();
 	VisualizationNodePtr visualizationNode(new CoinVisualizationNode(s));

@@ -102,6 +102,12 @@ public:
 
 	std::string getXMLString( int tabs);
 
+	/*!
+		Create a copy of this set.
+		\param newName The name of the newly created set.
+	 */
+	SceneObjectSetPtr clone(const std::string &newName = "");
+
 protected:
 
 	//! delete all data

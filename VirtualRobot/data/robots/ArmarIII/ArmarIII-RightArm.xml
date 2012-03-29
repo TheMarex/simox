@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>	
 
-<Robot Type="MyDemoRobotType" StandardName="ExampleRobo" RootNode="Right Arm Base">	
+<Robot Type="ArmarIII Right Arm" RootNode="Right Arm Base">	
 
 <RobotNode name="Right Arm Base">
 		<Joint type="fixed">

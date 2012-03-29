@@ -28,7 +28,7 @@ DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem) 
 	for (size_t i=0; i<nodes.size();i++)
 	{
 		std::vector<RobotNodePtr> p = nodes[i]->getAllParents(rns);
-		p.push_back(nodes[i]);// if the tcp is not fixed, it must be considered for calculating hte Jacobian
+		p.push_back(nodes[i]);// if the tcp is not fixed, it must be considered for calculating the Jacobian
 		parents[nodes[i]] = p;
 	}
 	convertMMtoM = false;

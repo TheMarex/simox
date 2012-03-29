@@ -262,6 +262,16 @@ std::string SceneObjectSet::getXMLString( int tabs )
 	return ss.str();
 }
 
+VirtualRobot::SceneObjectSetPtr SceneObjectSet::clone( const std::string &newName /*= ""*/ )
+{
+	SceneObjectSetPtr result(new SceneObjectSet(newName,colChecker));
+	for (size_t i=0;i<sceneObjects.size();i++)
+	{
+		result->addSceneObject(sceneObjects[i]);
+	}
+	return result;
+}
+
 
 
 } // namespace VirtualRobot

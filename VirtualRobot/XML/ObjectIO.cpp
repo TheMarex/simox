@@ -5,8 +5,8 @@
 #include <boost/pointer_cast.hpp>
 #include <boost/filesystem.hpp>
 #include "RobotIO.h"
-#include "../Grasp.h"
-#include "../GraspSet.h"
+#include "../Grasping/Grasp.h"
+#include "../Grasping/GraspSet.h"
 #include "../ManipulationObject.h"
 
 namespace VirtualRobot {

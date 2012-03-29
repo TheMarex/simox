@@ -146,7 +146,7 @@ public:
 
 
 	/*!
-		Create sXML string. All lines are indented with tabs tab stops.
+		Create an XML string. All lines are indented with tabs tab stops.
 	*/
 	virtual std::string getXMLString(int tabs = 0) const;
 

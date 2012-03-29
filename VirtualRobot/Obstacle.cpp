@@ -45,7 +45,7 @@ int Obstacle::getID()
 	return id;
 }
 
-VirtualRobot::ObstaclePtr Obstacle::createBox( float width, float height, float depth, float colorR /*= 1.0f*/, float colorG /*= 0.0f*/, float colorB/*=0.0f*/, std::string visualizationType , CollisionCheckerPtr colChecker )
+VirtualRobot::ObstaclePtr Obstacle::createBox( float width, float height, float depth, VisualizationFactory::Color color, std::string visualizationType , CollisionCheckerPtr colChecker )
 {
 	ObstaclePtr result;
 	VisualizationFactoryPtr visualizationFactory;
@@ -58,7 +58,7 @@ VirtualRobot::ObstaclePtr Obstacle::createBox( float width, float height, float 
 		VR_ERROR << "Could not create factory for visu type " << visualizationType << endl;
 		return result;
 	}
-	VisualizationNodePtr visu = visualizationFactory->createBox(width,height,depth,colorR,colorG,colorB);
+	VisualizationNodePtr visu = visualizationFactory->createBox(width,height,depth,color.r,color.g,color.b);
 	if (!visu)
 	{
 		VR_ERROR << "Could not create box visualization with visu type " << visualizationType << endl;
@@ -72,6 +72,43 @@ VirtualRobot::ObstaclePtr Obstacle::createBox( float width, float height, float 
 
 	std::stringstream ss;
 	ss << "Box_" << id;
+
+	std::string name = ss.str();
+
+	CollisionModelPtr colModel(new CollisionModel(visu,name,colChecker,id));
+	result.reset(new Obstacle(name,visu,colModel, SceneObject::Physics(), colChecker));
+
+	return result;
+}
+
+
+VirtualRobot::ObstaclePtr Obstacle::createSphere( float radius, VisualizationFactory::Color color, std::string visualizationType , CollisionCheckerPtr colChecker )
+{
+	ObstaclePtr result;
+	VisualizationFactoryPtr visualizationFactory;
+	if (visualizationType.empty())
+		visualizationFactory=VisualizationFactory::first(NULL);
+	else
+		visualizationFactory = VisualizationFactory::fromName(visualizationType, NULL);
+	if (!visualizationFactory)
+	{
+		VR_ERROR << "Could not create factory for visu type " << visualizationType << endl;
+		return result;
+	}
+	VisualizationNodePtr visu = visualizationFactory->createSphere(radius,color.r,color.g,color.b);
+	if (!visu)
+	{
+		VR_ERROR << "Could not create sphere visualization with visu type " << visualizationType << endl;
+		return result;
+	}
+
+	//TriMeshModelPtr trimesh = visu->getTriMeshModel();
+
+	int id = idCounter;
+	idCounter++;
+
+	std::stringstream ss;
+	ss << "Sphere_" << id;
 
 	std::string name = ss.str();
 

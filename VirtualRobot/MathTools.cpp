@@ -1091,6 +1091,16 @@ float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getAngle( const Quaternion &q )
 	return (float)(2.0f*acosf(q.w*n));
 }
 
+float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getAngle( const Eigen::Vector3f &v1, const Eigen::Vector3f &v2 )
+{
+	float res = v1.dot(v2);
+	if (res<-1.0f)
+		res = -1.0f;
+	if (res>1.0f)
+		res = 1.0f;
+	return acosf(res);
+}
+
 MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getDelta( const Quaternion &q1, const Quaternion &q2 )
 {
 	Quaternion q1I = getInverse(q1);
@@ -1296,6 +1306,27 @@ float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::deg2rad( float deg )
 {
 	static const float c = (float)(M_PI/180.0);
 	return deg * c;
+}
+
+float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getCartesianPoseDiff( const Eigen::Matrix4f &p1, const Eigen::Matrix4f &p2, float rotInfluence /*= 3.0f*/ )
+{
+	float tr = (p2.block(0,3,3,1) - p1.block(0,3,3,1)).norm();
+	Quaternion q1 = eigen4f2quat(p1);
+	Quaternion q2 = eigen4f2quat(p2);
+	Quaternion d = getDelta(q1,q2);
+	float ro = 180.0f - (d.w+1.0f)*90.0f;
+	if (ro<0)
+	{
+		if (ro<-0.001) // no output on rounding errors
+			VR_WARNING << "oops,calcCartesianPoseDiff: rotdist<0:" << ro << std::endl;
+		ro = fabs (ro);
+	}
+	if (ro>180.0f)
+	{
+		VR_WARNING << "oops,calcCartesianPoseDiff: rotdist>180:" << ro << std::endl;
+		ro = 180.0f;
+	}
+	return (tr+ro*rotInfluence);
 }
 
 

@@ -94,7 +94,7 @@ boost::shared_ptr<VisualizationFactory> OSGVisualizationFactory::createInstance(
     return OSGFactory;
 }
 
-VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createBox( float width, float height, float depth, float colorR, float colorG, float colorB, CollisionCheckerPtr colChecker )
+VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createBox( float width, float height, float depth, float colorR, float colorG, float colorB)
 {
 	osg::Box* b = new osg::Box(osg::Vec3(0,0,0),width,height,depth);
 	osg::ShapeDrawable* bd = new osg::ShapeDrawable(b);
@@ -137,7 +137,7 @@ VisualizationNodePtr OSGVisualizationFactory::createLine(const Eigen::Matrix4f &
 	return visualizationNode;
 }
 
-VisualizationNodePtr OSGVisualizationFactory::createSphere(float radius, float colorR, float colorG, float colorB, CollisionCheckerPtr colChecker)
+VisualizationNodePtr OSGVisualizationFactory::createSphere(float radius, float colorR, float colorG, float colorB)
 {
 	osg::Sphere* b = new osg::Sphere(osg::Vec3(0,0,0),radius);
 	osg::ShapeDrawable* bd = new osg::ShapeDrawable(b);
@@ -531,7 +531,7 @@ osg::Node* OSGVisualizationFactory::CreateArrow( const Eigen::Vector3f &n, float
 	return res;
 }
 
-VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createVisualization( CollisionCheckerPtr colChecker /*= CollisionCheckerPtr()*/ )
+VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createVisualization( )
 {
 	osg::Group* s = new osg::Group;
 	VisualizationNodePtr visualizationNode(new OSGVisualizationNode(s));

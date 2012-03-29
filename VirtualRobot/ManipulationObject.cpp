@@ -2,7 +2,7 @@
 #include "ManipulationObject.h"
 #include "VirtualRobotException.h"
 #include "Visualization/VisualizationNode.h"
-#include "GraspSet.h"
+#include "Grasping/GraspSet.h"
 #include "XML/BaseIO.h"
 
 namespace VirtualRobot 

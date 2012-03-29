@@ -60,9 +60,22 @@ public:
 
 	/*!
 		Create a standard obstacle. 
-
+		\param width The width of the box.
+		\param height The height of the box.
+		\param depth The depth of the box.
+		\param color Specify the color.
+		\param visualizationType Here the typo of visualization can be specified (e.g. "Inventor"). If empty, the first registered visualization type (which is usually the only one) is used.
+		\param colChecker Only needed if you plan to use the collision checker in parallel. If not given, the object is registered with the global singleton collision checker.
 	*/
-	static ObstaclePtr createBox(float width, float height, float depth, float colorR = 1.0f, float colorG = 0.0f, float colorB=0.0f, std::string visualizationType = "", CollisionCheckerPtr colChecker = CollisionCheckerPtr());
+	static ObstaclePtr createBox(float width, float height, float depth, VisualizationFactory::Color color = VisualizationFactory::Color::Red(), std::string visualizationType = "", CollisionCheckerPtr colChecker = CollisionCheckerPtr());
+	/*!
+		Create a standard obstacle. 
+		\param radius The radius of the sphere.
+		\param color Specify the color.
+		\param visualizationType Here the typo of visualization can be specified (e.g. "Inventor"). If empty, the first registered visualization type (which is usually the only one) is used.
+		\param colChecker Only needed if you plan to use the collision checker in parallel. If not given, the object is registered with the global singleton collision checker.
+	*/
+	static ObstaclePtr createSphere(float radius, VisualizationFactory::Color color = VisualizationFactory::Color::Red(), std::string visualizationType = "", CollisionCheckerPtr colChecker = CollisionCheckerPtr());
 	std::string getXMLString(const std::string &basePath, int tabs=0);
 protected:
 

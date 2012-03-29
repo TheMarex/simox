@@ -23,6 +23,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
+      <zorder>groupBox</zorder>
      </widget>
     </item>
     <item row="0" column="1">
@@ -118,7 +119,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>550</y>
+         <y>540</y>
          <width>331</width>
          <height>111</height>
         </rect>
@@ -158,8 +159,8 @@
        <widget class="QLCDNumber" name="lcdNumber">
         <property name="geometry">
          <rect>
-          <x>240</x>
-          <y>70</y>
+          <x>150</x>
+          <y>50</y>
           <width>64</width>
           <height>23</height>
          </rect>
@@ -193,14 +194,43 @@
        <widget class="QRadioButton" name="radioButtonSolutionOpti">
         <property name="geometry">
          <rect>
-          <x>140</x>
+          <x>100</x>
           <y>20</y>
-          <width>161</width>
+          <width>131</width>
           <height>20</height>
          </rect>
         </property>
         <property name="text">
          <string>Postprocessed Sol.</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButtonClose">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>20</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>close hand</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButtonOpen">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>60</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>open hand</string>
         </property>
        </widget>
       </widget>

@@ -80,7 +80,7 @@ public:
 
 protected:
 
-	virtual void init();
+	void coinInit();
 	
 	SoSeparator* visualization;
 };

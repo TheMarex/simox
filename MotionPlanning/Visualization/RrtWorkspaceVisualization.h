@@ -97,11 +97,12 @@ public:
 	virtual void setCustomColor(float nodeR, float nodeG, float nodeB, float lineR = 0.5f, float lineG = 0.5f, float lineB = 0.5f);
 
 	/*!
-		Set tree nodes with status flag equal to given paramter to the specified color.
+		Set tree nodes with status flag equal to given parameter to the specified color.
 	*/
 	virtual void colorizeTreeNodes(int status, ColorSet colorSet);
 protected:
-	virtual void init();
+	void init(); // is called by constructor
+
 	VirtualRobot::RobotPtr robot;
 	CSpacePtr cspace;
 	VirtualRobot::RobotNodeSetPtr robotNodeSet;

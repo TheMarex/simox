@@ -157,6 +157,9 @@ void GraspRrtWindow::setupUI()
 
 	connect(UI.pushButtonGraspPose, SIGNAL(clicked()), this, SLOT(testGraspPose()));
 
+	connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openEEF()));
+	connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeEEF()));
+
 }
 
 
@@ -564,8 +567,9 @@ void GraspRrtWindow::buildRRTVisu()
 	{
 		if (tree)
 		{
-			w->addTree(tree);
+			w->setCustomColor(0.5f,0.5f,0.5f);
 			w->colorizeTreeNodes(2,Saba::RrtWorkspaceVisualization::eRed);
+			w->addTree(tree,Saba::RrtWorkspaceVisualization::eCustom);
 		}
 	}
 	if (UI.checkBoxShowSolution->isChecked() && solution)
@@ -745,5 +749,24 @@ void GraspRrtWindow::selectPlanSet(int nr)
 		selectColModelEnv(planSetB.colModelEnv);
 		selectStart(UI.comboBoxStart->currentIndex());
 	}
+}
+
+
+void GraspRrtWindow::closeEEF()
+{
+	if (eef)
+	{
+		eef->closeActors(targetObject);
+	}
+	redraw();
+}
+
+void GraspRrtWindow::openEEF()
+{
+	if (eef)
+	{
+		eef->openActors();
+	}
+	redraw();
 }
 

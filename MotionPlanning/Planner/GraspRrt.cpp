@@ -73,8 +73,7 @@ GraspRrt::GraspRrt( CSpaceSampledPtr cspace,
 
 GraspRrt::~GraspRrt()
 {
-	reset();
-	gcpOject.reset();
+
 }
 
 
@@ -201,7 +200,7 @@ bool GraspRrt::doPlanningCycle()
 		cspace->getRandomConfig(tmpConfig);
 		ExtensionResult extendStatus = connectComplete(tmpConfig,tree,lastAddedID);
 
-		if (extendStatus == eError)
+		if (extendStatus == Rrt::eError)
 			stopSearch = true;	
 	}
 	cycles++;
@@ -403,20 +402,9 @@ bool GraspRrt::calculateGlobalGraspPose(const Eigen::VectorXf &c, Eigen::Matrix4
 
 	mRotMat = VirtualRobot::MathTools::axisangle2eigen4f(rotAxis_local,fAngle);
 
-	/*
-	MathHelpers::crossProduct(vecZ_local,vecTarget_local,rotAxis_local);
-	SbVec3f rotVec3f(rotAxis_local[0],rotAxis_local[1],rotAxis_local[2]);
-	SbRotation sbRot(rotVec3f,fAngle);
-	mRotMat.makeIdentity();
-	mRotMat.setRotate(sbRot);
-	*/
-
 	// construct global grasp pose
 	mMat = eef->getGCP()->toGlobalCoordinateSystem(mRotMat);
 	mMat.block(0,3,3,1) = P1;
-	//mMat[3][0] = P1[0];
-	//mMat[3][1] = P1[1];
-	//mMat[3][2] = P1[2];
 
 	storeGoal = mMat;
 	return true;

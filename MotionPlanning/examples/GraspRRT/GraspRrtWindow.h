@@ -76,6 +76,9 @@ public slots:
 
 	void testGraspPose();
 
+	void openEEF();
+	void closeEEF();
+
 protected:
 
 	struct planSet

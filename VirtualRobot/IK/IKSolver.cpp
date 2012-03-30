@@ -40,7 +40,7 @@ void IKSolver::collisionDetection(SceneObjectPtr avoidCollisionsWith)
 	{
 	    cdm.reset(new CDManager(avoidCollisionsWith->getCollisionChecker()));
 	    cdm->addCollisionModel(avoidCollisionsWith);
-	    cdm->addCollisionModel(rns->createSceneObjectSet());
+	    cdm->addCollisionModel(rns);
 	}
 }
 
@@ -58,7 +58,7 @@ void IKSolver::collisionDetection(SceneObjectSetPtr avoidCollisionsWith)
 	{
 		cdm.reset(new CDManager(avoidCollisionsWith->getCollisionChecker()));
 		cdm->addCollisionModel(avoidCollisionsWith);
-		cdm->addCollisionModel(rns->createSceneObjectSet());
+		cdm->addCollisionModel(rns);
 	}
 }
 

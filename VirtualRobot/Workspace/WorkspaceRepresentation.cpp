@@ -249,12 +249,12 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		// Static collision model
 		readString(tmpString, file);
 		if(tmpString != "" && tmpString != "not set")
-			staticCollisionModel = robot->getSceneObjectSet(tmpString);
+			staticCollisionModel = robot->getRobotNodeSet(tmpString);
 
 		// Dynamic collision model
 		readString(tmpString, file);
 		if(tmpString != "" && tmpString != "not set")
-			dynamicCollisionModel = robot->getSceneObjectSet(tmpString);
+			dynamicCollisionModel = robot->getRobotNodeSet(tmpString);
 
 		buildUpLoops = read<int>(file);
 		collisionConfigs = read<int>(file);

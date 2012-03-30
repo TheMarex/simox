@@ -17,8 +17,8 @@ RobotNodeSet::RobotNodeSet(const std::string &name,
 						   const std::vector< RobotNodePtr > &robotNodes, 
 						   const RobotNodePtr kinematicRoot /*= RobotNodePtr()*/,
 						   const RobotNodePtr tcp /*= RobotNodePtr()*/)
+						   :SceneObjectSet(name,robotNodes.size()>0?robotNodes[0]->getCollisionChecker():CollisionCheckerPtr())
 {
-	this->name = name;
 	this->robotNodes = robotNodes;
 	this->kinematicRoot = kinematicRoot;
 	this->tcp = tcp;
@@ -32,6 +32,22 @@ RobotNodeSet::RobotNodeSet(const std::string &name,
 	kinematicRootIsRobotRoot = false;
 	if (kinematicRoot && rob && kinematicRoot == rob->getRootNode())
 		kinematicRootIsRobotRoot = true;
+
+	// now, the objects are stored in the parent's (SceneObjectSet) data structure, so that the methods of SceneObjectSet do work
+	for(size_t i = 0; i < robotNodes.size(); i++)
+	{
+		SceneObjectPtr cm = boost::dynamic_pointer_cast<SceneObject>(robotNodes[i]);
+		if (cm)
+		{
+			if (colChecker != cm->getCollisionChecker())
+			{
+				VR_WARNING << "col model of " << robotNodes[i]->getName() << " belongs to different instance of collision checker, in: " << getName().c_str() << endl;
+			} else
+			{
+				sceneObjects.push_back(cm);
+			}
+		}
+	}
 
 }
 
@@ -187,12 +203,6 @@ bool RobotNodeSet::hasRobotNode(RobotNodePtr robotNode) const
 	return false;
 }
 
-CollisionCheckerPtr RobotNodeSet::getCollisionChecker()
-{
-	if (robotNodes.size() == 0)
-		return CollisionChecker::getGlobalCollisionChecker();
-	return robotNodes[0]->getCollisionChecker();
-}
 	
 const std::vector< RobotNodePtr > RobotNodeSet::getAllRobotNodes() const 
 {
@@ -207,11 +217,6 @@ RobotNodePtr RobotNodeSet::getKinematicRoot() const
 unsigned int RobotNodeSet::getSize() const
 {
 	return robotNodes.size();
-}
-
-std::string RobotNodeSet::getName() const
-{
-	return name;
 }
 
 void RobotNodeSet::print() const
@@ -393,7 +398,7 @@ int RobotNodeSet::getNumFaces(bool collisionModel)
 	}
 	return res;
 }
-
+/*
 VirtualRobot::SceneObjectSetPtr RobotNodeSet::createSceneObjectSet()
 {
 	CollisionCheckerPtr cc = getCollisionChecker();
@@ -401,8 +406,7 @@ VirtualRobot::SceneObjectSetPtr RobotNodeSet::createSceneObjectSet()
 	SceneObjectSetPtr cms(new SceneObjectSet(name,cc));
 	cms->addSceneObjects(shared_from_this());
 	return cms;
-
-}
+}*/
 
 float RobotNodeSet::getMaximumExtension()
 {
@@ -524,8 +528,38 @@ bool RobotNodeSet::checkJointLimits( Eigen::VectorXf &jointValues, bool verbose 
 		res = res & robotNodes[i]->checkJointLimits(jointValues[i],verbose);
 	}
 	if (!res && verbose)
-		VR_INFO << "RobtoNodeSet: " << getName() << ": joint limits are violated" << endl; 
+		VR_INFO << "RobotNodeSet: " << getName() << ": joint limits are violated" << endl; 
 	return res;
+}
+
+bool RobotNodeSet::addSceneObject( SceneObjectPtr sceneObject )
+{
+	THROW_VR_EXCEPTION("Not allowed for RobotNodeSets.");
+	return false;
+}
+
+bool RobotNodeSet::addSceneObjects( SceneObjectSetPtr sceneObjectSet )
+{
+	THROW_VR_EXCEPTION("Not allowed for RobotNodeSets.");
+	return false;
+}
+
+bool RobotNodeSet::addSceneObjects( RobotNodeSetPtr robotNodeSet )
+{
+	THROW_VR_EXCEPTION("Not allowed for RobotNodeSets.");
+	return false;
+}
+
+bool RobotNodeSet::addSceneObjects( std::vector<RobotNodePtr> robotNodes )
+{
+	THROW_VR_EXCEPTION("Not allowed for RobotNodeSets.");
+	return false;
+}
+
+bool RobotNodeSet::removeSceneObject( SceneObjectPtr sceneObject )
+{
+	THROW_VR_EXCEPTION("Not allowed for RobotNodeSets.");
+	return false;
 }
 
 

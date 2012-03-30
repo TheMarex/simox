@@ -58,7 +58,7 @@ public:
 	void setVerbose(bool v);
 
 	/*!
-		Returns the RobtoNodeSte that is used for computing the manipulability.
+		Returns the RobotNodeSte that is used for computing the manipulability.
 	*/
 	VirtualRobot::RobotNodeSetPtr getRNS();
 

@@ -49,7 +49,7 @@ class Visualization;
 /*!
 	This is the main object defining the kinematic structure of a robot.
 
-	\see RobtoIO, RobotNode, RobotNodeSet, EndEffector
+	\see RobotIO, RobotNode, RobotNodeSet, EndEffector
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT Robot : public boost::enable_shared_from_this<Robot>
 {
@@ -131,7 +131,7 @@ public:
 	*/
 	RobotConfigPtr getConfig();
 	/*!
-		Sets the configuration according to the RobtoNodes, defined in c. All other nodes are not affected.
+		Sets the configuration according to the RobotNodes, defined in c. All other nodes are not affected.
 	*/
 	bool setConfig(RobotConfigPtr c);
 	
@@ -167,11 +167,6 @@ public:
 	std::vector<EndEffectorPtr> getEndEffectors();
 	virtual void getEndEffectors(std::vector<EndEffectorPtr> &storeEEF)=0;
 
-	/*!
-		Use this method to automatically build a SceneObjectSet out of a RobotNodeSet (e.g. to be used for collision detection)
-		This method will create a new SceneObjectSet!
-	*/
-	SceneObjectSetPtr getSceneObjectSet(const std::string &robotNodeSet);
 	std::vector< CollisionModelPtr > getCollisionModels();
 		
 	CollisionCheckerPtr getCollisionChecker();

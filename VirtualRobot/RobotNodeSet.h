@@ -25,6 +25,7 @@
 
 #include "VirtualRobotImportExport.h"
 #include "Nodes/RobotNode.h"
+#include "SceneObjectSet.h"
 #include <string>
 #include <vector>
 
@@ -33,13 +34,12 @@ namespace VirtualRobot
 class Robot;
 
 /*!
-	A RobtoNodeSet is a sub-set of RobotNodes of a Robot.
+	A RobotNodeSet is a sub-set of RobotNodes of a Robot.
 	Additionally to the list of RobotNodes, a RobotNodeSet holds information about
 	- the kinematic root (the topmost RobotNode of the Robot's kinematic tree that has to be updated in order to update all covered RobotNodes)
-	- the Tool Cenetr point (TCP)
-	- teh Grasp Center Point (GCP), which may be different to the TCP
+	- the Tool Center point (TCP)
 */
-class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNodeSet : public boost::enable_shared_from_this<RobotNodeSet>
+class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNodeSet : public SceneObjectSet, public boost::enable_shared_from_this<RobotNodeSet>
 {
 public:
 	friend class RobotFactory;
@@ -71,19 +71,18 @@ public:
 	*/
 	RobotNodePtr getKinematicRoot() const;
 
+	/*!
+		Returns the TCP.
+	*/
 	RobotNodePtr getTCP() const;
 
-	/*!
-		Returns name of this kinematic chain.
-	*/
-	std::string getName() const;
-
+	//! Print out some information.
 	void print() const;
 
 	/*!
 		The number of associated robot nodes.
 	*/
-	unsigned int getSize() const;
+	virtual unsigned int getSize() const;
 
 	std::vector<float> getJointValues() const;
 	void getJointValues(std::vector<float> &fillVector) const;
@@ -119,7 +118,7 @@ public:
 
 	RobotPtr getRobot();
 
-	CollisionCheckerPtr getCollisionChecker();
+	//CollisionCheckerPtr getCollisionChecker();
 
 	/*!
 		Checks if this set of robot nodes form a valid kinematic chain.
@@ -146,7 +145,7 @@ public:
 	/*!
 		Creates a SceneObjectSet with the RobotNodes of this RobotNodeSet.
 	*/
-	SceneObjectSetPtr createSceneObjectSet();
+	//SceneObjectSetPtr createSceneObjectSet();
 
 	/*!
 		Compute an upper bound of the extension of the kinematic chain formed by this RobotNodeSet.
@@ -164,8 +163,21 @@ public:
 	*/
 	float getMass();
 
-	//! Returns true, if nodes (only name strings are checked)  are sufficient for building this eef
+	//! Returns true, if nodes (only name strings are checked)  are sufficient for building this rns
 	bool nodesSufficient(std::vector<RobotNodePtr> nodes) const;
+
+
+	//! this is forbidden for RobotNodeSets, a call will throw an exception
+	virtual bool addSceneObject(SceneObjectPtr sceneObject);
+	//! this is forbidden for RobotNodeSets, a call will throw an exception
+	virtual bool addSceneObjects(SceneObjectSetPtr sceneObjectSet);
+	//! this is forbidden for RobotNodeSets, a call will throw an exception
+	virtual bool addSceneObjects(RobotNodeSetPtr robotNodeSet);
+	//! this is forbidden for RobotNodeSets, a call will throw an exception
+	virtual bool addSceneObjects(std::vector<RobotNodePtr> robotNodes);
+	//! this is forbidden for RobotNodeSets, a call will throw an exception
+	virtual bool removeSceneObject(SceneObjectPtr sceneObject);
+
 
 protected:
 	/*!
@@ -179,8 +191,6 @@ protected:
 		\param tcp The tcp.
 	*/
 	RobotNodeSet(const std::string &name, RobotWeakPtr robot, const std::vector< RobotNodePtr > &robotNodes, const RobotNodePtr kinematicRoot = RobotNodePtr(), const RobotNodePtr tcp = RobotNodePtr() );
-
-	std::string name;
 
 	std::vector< RobotNodePtr > robotNodes;
 	RobotWeakPtr robot;

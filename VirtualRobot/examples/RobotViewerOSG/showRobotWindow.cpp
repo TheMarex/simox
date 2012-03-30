@@ -77,22 +77,6 @@ void CShowRobotWindow::saveScreenshot()
 void showRobotWindow::setupUI()
 {
 	 UI.setupUi(this);
-	 //centralWidget()->setLayout(UI.gridLayoutViewer);
-	 //m_pExViewer = new SoQtExaminerViewer(UI.frameViewer,"",TRUE,SoQtExaminerViewer::BUILD_POPUP);
-
-	// setup
-	 //m_pExViewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
-	 //m_pExViewer->setAccumulationBuffer(true);
-#ifdef WIN32
-//#ifndef _DEBUG
-	 //m_pExViewer->setAntialiasing(true, 4);
-//#endif
-#endif
-	 //m_pExViewer->setGLRenderAction(new SoLineHighlightRenderAction);
-	 //m_pExViewer->setTransparencyType(SoGLRenderAction::BLEND);
-	 //m_pExViewer->setFeedbackVisibility(true);
-	 //m_pExViewer->setSceneGraph(sceneSep);
-	 //m_pExViewer->viewAll();
 	 this->show();
 
 	 /*osg::Box *box = new osg::Box(osg::Vec3(0,0,0),1.0f);

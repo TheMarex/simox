@@ -417,15 +417,6 @@ std::vector<RobotNodeSetPtr> Robot::getRobotNodeSets()
 }
 
 
-SceneObjectSetPtr Robot::getSceneObjectSet(const std::string &robotNodeSet)
-{
-	RobotNodeSetPtr rns = getRobotNodeSet(robotNodeSet);
-	if (!rns)
-		return SceneObjectSetPtr();
-	return rns->createSceneObjectSet();
-}
-
-
 void Robot::highlight (VisualizationPtr visualization, bool enable)
 {
 	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();

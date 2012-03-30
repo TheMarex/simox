@@ -133,7 +133,7 @@ RobotConfigPtr RobotConfig::clone( RobotPtr newRobot )
 		RobotNodePtr rn = newRobot->getRobotNode(i->first->getName());
 		if (!rn)
 		{
-			VR_WARNING << "Could not completely clone RobotConfig " << name << " because new robot does not know a RobtoNode with name " << i->first->getName() << endl;
+			VR_WARNING << "Could not completely clone RobotConfig " << name << " because new robot does not know a RobotNode with name " << i->first->getName() << endl;
 		} else
 		{
 			newConfigs[rn] = i->second;

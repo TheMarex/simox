@@ -2,6 +2,7 @@
 #include "CollisionChecker.h"
 #include "CollisionModel.h"
 #include "../SceneObjectSet.h"
+#include "../SceneObject.h"
 #include "../VirtualRobotException.h"
 
 #include <cfloat>
@@ -72,26 +73,47 @@ CollisionChecker::~CollisionChecker()
 
 float CollisionChecker::calculateDistance (SceneObjectSetPtr model1, SceneObjectSetPtr model2)
 {
-	Eigen::Vector3f v1;
-	Eigen::Vector3f v2;
-	return calculateDistance(model1,model2,v1,v2,NULL,NULL);
+	VR_ASSERT(model1 && model2);
+	return calculateDistance(model1,model2,tmpV1,tmpV2,NULL,NULL);
 }
 
 float CollisionChecker::calculateDistance (CollisionModelPtr model1, SceneObjectSetPtr model2)
 {
-	Eigen::Vector3f v1;
-	Eigen::Vector3f v2;
-	return calculateDistance(model1,model2,v1,v2,NULL,NULL);
+	VR_ASSERT(model1 && model2);
+	return calculateDistance(model1,model2,tmpV1,tmpV2,NULL,NULL);
 }
 
 float CollisionChecker::calculateDistance (CollisionModelPtr model1, CollisionModelPtr model2)
 {
-	Eigen::Vector3f v1;
-	Eigen::Vector3f v2;
-	return calculateDistance(model1,model2,v1,v2,NULL,NULL);
+	VR_ASSERT(model1 && model2);
+	return calculateDistance(model1,model2,tmpV1,tmpV2,NULL,NULL);
 }
 
 
+float CollisionChecker::calculateDistance (SceneObjectPtr model1, SceneObjectSetPtr model2)
+{
+	VR_ASSERT(model1 && model2);
+	return calculateDistance(model1->getCollisionModel(),model2,tmpV1,tmpV2,NULL,NULL);
+}
+
+float CollisionChecker::calculateDistance (SceneObjectPtr model1, SceneObjectPtr model2)
+{
+	VR_ASSERT(model1 && model2);
+	return calculateDistance(model1->getCollisionModel(),model2->getCollisionModel(),tmpV1,tmpV2,NULL,NULL);
+}
+
+
+float CollisionChecker::calculateDistance (SceneObjectPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2)
+{
+	VR_ASSERT(model1 && model2);
+	return calculateDistance(model1->getCollisionModel(),model2,P1,P2,trID1,trID2);
+}
+
+float CollisionChecker::calculateDistance (SceneObjectPtr model1, SceneObjectPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2)
+{
+	VR_ASSERT(model1 && model2);
+	return calculateDistance(model1->getCollisionModel(),model2->getCollisionModel(),P1,P2,trID1,trID2);
+}
 
 float CollisionChecker::calculateDistance (SceneObjectSetPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2)
 {
@@ -226,6 +248,13 @@ bool CollisionChecker::checkCollision (SceneObjectSetPtr model1, SceneObjectSetP
 	return false;
 }
 
+bool CollisionChecker::checkCollision (SceneObjectPtr model1, SceneObjectSetPtr model2)
+{
+	VR_ASSERT(model1 && model2);
+	return checkCollision(model1->getCollisionModel(),model2);
+}
+
+
 bool CollisionChecker::checkCollision (CollisionModelPtr model1, SceneObjectSetPtr model2)
 {
 	THROW_VR_EXCEPTION_IF((!model1 || !model2), "NULL data");
@@ -252,7 +281,13 @@ bool CollisionChecker::checkCollision (CollisionModelPtr model1, SceneObjectSetP
 	return false;
 }
 
-bool CollisionChecker::checkCollision (CollisionModelPtr model1, CollisionModelPtr model2)//, Eigen::Vector3f *storeContact)
+bool CollisionChecker::checkCollision (SceneObjectPtr model1, SceneObjectPtr model2)
+{
+	VR_ASSERT(model1 && model2);
+	return checkCollision(model1->getCollisionModel(),model2->getCollisionModel());
+}
+
+bool CollisionChecker::checkCollision (CollisionModelPtr model1, CollisionModelPtr model2)
 {
 	if (!model1 || !model2)
 	{

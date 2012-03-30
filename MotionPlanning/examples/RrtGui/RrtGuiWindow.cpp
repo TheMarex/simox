@@ -428,7 +428,7 @@ void RrtGuiWindow::selectColModelRobA(int nr)
 	std::vector< RobotNodeSetPtr > rnss = robot->getRobotNodeSets();
 	if (nr<0 || nr>=(int)rnss.size())
 		return;
-	this->colModelRobA = robot->getSceneObjectSet(rnss[nr]->getName());
+	this->colModelRobA = robot->getRobotNodeSet(rnss[nr]->getName());
 }
 void RrtGuiWindow::selectColModelRobB(int nr)
 {
@@ -438,7 +438,7 @@ void RrtGuiWindow::selectColModelRobB(int nr)
 	std::vector< RobotNodeSetPtr > rnss = robot->getRobotNodeSets();
 	if (nr<0 || nr>=(int)rnss.size())
 		return;
-	this->colModelRobB = robot->getSceneObjectSet(rnss[nr]->getName());
+	this->colModelRobB = robot->getRobotNodeSet(rnss[nr]->getName());
 }
 void RrtGuiWindow::selectColModelEnv(int nr)
 {

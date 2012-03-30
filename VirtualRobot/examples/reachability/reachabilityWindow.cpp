@@ -438,8 +438,8 @@ void reachabilityWindow::createReach()
 		{
 			std::string staticM = std::string(UICreate.comboBoxColModelStatic->currentText().toAscii());
 			std::string dynM = std::string(UICreate.comboBoxColModelDynamic->currentText().toAscii());
-			staticModel = robot->getSceneObjectSet(staticM);
-			dynamicModel = robot->getSceneObjectSet(dynM);
+			staticModel = robot->getRobotNodeSet(staticM);
+			dynamicModel = robot->getRobotNodeSet(dynM);
 		}
 		float discrTr = UICreate.doubleSpinBoxDiscrTrans->value();
 		float discrRo = UICreate.doubleSpinBoxDiscrRot->value();

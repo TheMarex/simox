@@ -104,6 +104,22 @@ public:
 	//! This is the global collision checker singleton
 	static CollisionCheckerPtr getGlobalCollisionChecker();
 
+	/*! 
+		Convenient methods
+	*/
+	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectSetPtr model2);
+	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectPtr model2);
+	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
+	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
+	/*! 
+		Test if the two models are colliding.
+		Returns true on collision.
+	*/
+	virtual bool checkCollision (SceneObjectPtr model1, SceneObjectSetPtr model2);
+	virtual bool checkCollision (SceneObjectPtr model1, SceneObjectPtr model2);
+
+
+
 	/*!
 		Does the underlying collision detection library support discrete collision detection.
 	*/
@@ -151,6 +167,10 @@ private:
 	static CollisionCheckerPtr globalCollisionChecker;
 
 	bool automaticSizeCheck;
+
+	Eigen::Vector3f tmpV1;
+	Eigen::Vector3f tmpV2;
+
 
 #if defined(VR_COLLISION_DETECTION_PQP)
 	boost::shared_ptr<CollisionCheckerPQP> collisionCheckerImplementation;

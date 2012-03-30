@@ -218,7 +218,7 @@ public:
 
 
 	/*!
-		Find all robot nodes whose movements affect this RobtoNode
+		Find all robot nodes whose movements affect this RobotNode
 	*/
 	std::vector<RobotNodePtr> getAllParents( RobotNodeSetPtr rns );
  

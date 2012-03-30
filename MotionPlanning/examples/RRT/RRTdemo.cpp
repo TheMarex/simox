@@ -87,7 +87,7 @@ void startRRTVisualization()
 
 	// setup collision detection
 	std::string colModelName("CollisionModel");
-	SceneObjectSetPtr cms = robot->getSceneObjectSet(colModelName);
+	SceneObjectSetPtr cms = robot->getRobotNodeSet(colModelName);
 	CDManagerPtr cdm(new CDManager());
 	cdm->addCollisionModel(cms);
 	cdm->addCollisionModel(o);

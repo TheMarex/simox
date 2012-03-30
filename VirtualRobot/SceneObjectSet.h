@@ -24,7 +24,6 @@
 #define _VirtualRobot_SceneObjectSet_h_
 
 #include "VirtualRobotImportExport.h"
-#include "RobotNodeSet.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -56,7 +55,7 @@ public:
 
 	/*! Returns name of this model
 	*/
-	std::string getName();
+	std::string getName() const;
 
 	//! store axis aligned bounding box covering all CollisionModels to store_aabb
 	//virtual void GetAABB(SbBox3f& store_aabb);
@@ -69,19 +68,19 @@ public:
 
 
 	//! append a single object
-	bool addSceneObject(SceneObjectPtr sceneObject);
+	virtual bool addSceneObject(SceneObjectPtr sceneObject);
 
 	//! append a set of collision models
-	bool addSceneObjects(SceneObjectSetPtr sceneObjectSet);
+	virtual bool addSceneObjects(SceneObjectSetPtr sceneObjectSet);
 
 	/*! 
 		Append all associated object of the given robotNodeSet.
 	*/
-	bool addSceneObjects(RobotNodeSetPtr robotNodeSet);
-	bool addSceneObjects(std::vector<RobotNodePtr> robotNodes);
+	virtual bool addSceneObjects(RobotNodeSetPtr robotNodeSet);
+	virtual bool addSceneObjects(std::vector<RobotNodePtr> robotNodes);
 
 	//! remove a single col model from this Set
-	bool removeCollisionModel(SceneObjectPtr sceneObject);
+	virtual bool removeSceneObject(SceneObjectPtr sceneObject);
 
 	CollisionCheckerPtr getCollisionChecker(){return colChecker;}
 
@@ -91,16 +90,16 @@ public:
 	std::vector< CollisionModelPtr > getCollisionModels();
 	std::vector< SceneObjectPtr > getSceneObjects();
 
-	unsigned int getSize();
-	SceneObjectPtr getSceneObject(unsigned int nr);
+	virtual unsigned int getSize() const;
+	virtual SceneObjectPtr getSceneObject(unsigned int nr);
 
 	//! Returns true, if sceneObject is part of this set
-	bool hasSceneObject(SceneObjectPtr sceneObject);
+	virtual bool hasSceneObject(SceneObjectPtr sceneObject);
 
 	//! fills the current globalPose of all associated sceneobjects to map.
-	bool getCurrentSceneObjectConfig( std::map< SceneObjectPtr, Eigen::Matrix4f > &storeConfig );
+	virtual bool getCurrentSceneObjectConfig( std::map< SceneObjectPtr, Eigen::Matrix4f > &storeConfig );
 
-	std::string getXMLString( int tabs);
+	virtual std::string getXMLString( int tabs);
 
 	/*!
 		Create a copy of this set.

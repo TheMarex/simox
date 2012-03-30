@@ -15,7 +15,7 @@ namespace VirtualRobot
 	class Robot;
 
 	/*!
-		A KinematicChain is a RobtoNodeSet that fulfills some constraints on the covered RobotNodes.
+		A KinematicChain is a RobotNodeSet that fulfills some constraints on the covered RobotNodes.
 		The nodes form a kinematic chain, which means that two successive nodes are uniquely connected in the kinematic tree of the robot.
 		E.g. node i and node i+1 are parent and child or node i+1 is child of a child of node i, etc.
 		\see RobotNodeSet

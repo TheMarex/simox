@@ -2,7 +2,7 @@
 #include "SceneObjectSet.h"
 #include "CollisionDetection/CollisionModel.h"
 #include "CollisionDetection/CollisionChecker.h"
-
+#include "RobotNodeSet.h"
 #include <boost/pointer_cast.hpp>
 
 namespace VirtualRobot {
@@ -36,7 +36,7 @@ void SceneObjectSet::destroyData()
 }
 
 
-std::string SceneObjectSet::getName()
+std::string SceneObjectSet::getName() const
 {
 	return name;
 }
@@ -123,7 +123,7 @@ bool SceneObjectSet::addSceneObjects(std::vector<RobotNodePtr> robotNodes)
 	return true;
 }
 
-bool SceneObjectSet::removeCollisionModel(SceneObjectPtr sceneObject)
+bool SceneObjectSet::removeSceneObject(SceneObjectPtr sceneObject)
 {
 	if (!sceneObject)
 		return false;
@@ -233,7 +233,7 @@ std::vector< SceneObjectPtr > SceneObjectSet::getSceneObjects()
 	return sceneObjects;
 }
 
-unsigned int SceneObjectSet::getSize()
+unsigned int SceneObjectSet::getSize() const
 {
 	return (unsigned int)sceneObjects.size();
 }

@@ -500,10 +500,10 @@ void IKRRTWindow::planIKRRT()
 	CDManagerPtr cdm;
 	if (UI.checkBoxColCheckIK->checkState() == Qt::Checked)
 	{
-		SceneObjectSetPtr colModelSet = robot->getSceneObjectSet(colModelName);
+		SceneObjectSetPtr colModelSet = robot->getRobotNodeSet(colModelName);
 		SceneObjectSetPtr colModelSet2;
 		if (!colModelNameRob.empty())
-			colModelSet2 = robot->getSceneObjectSet(colModelNameRob);
+			colModelSet2 = robot->getRobotNodeSet(colModelNameRob);
 		if (colModelSet)
 		{
 			cdm.reset(new CDManager());
@@ -577,7 +577,7 @@ void IKRRTWindow::searchIK()
 	// setup collision detection
 	if (UI.checkBoxColCheckIK->checkState() == Qt::Checked)
 	{
-		SceneObjectSetPtr colModelSet = robot->getSceneObjectSet(colModelName);
+		SceneObjectSetPtr colModelSet = robot->getRobotNodeSet(colModelName);
 		if (colModelSet)
 		{
 			CDManagerPtr cdm(new CDManager());

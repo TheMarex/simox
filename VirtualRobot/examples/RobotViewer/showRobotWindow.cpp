@@ -50,7 +50,7 @@ showRobotWindow::showRobotWindow(std::string &sRobotFilename, Qt::WFlags flags)
 	
 	loadRobot();
 
-	m_pExViewer->viewAll();
+	viewer->viewAll();
 }
 
 
@@ -69,9 +69,9 @@ void CShowRobotWindow::saveScreenshot()
 	framefile.sprintf("MPL_Render_Frame%06d.png", counter);
 	counter++;
 
-	m_pExViewer->getSceneManager()->render();
-	m_pExViewer->getSceneManager()->scheduleRedraw();
-	QGLWidget* w = (QGLWidget*)m_pExViewer->getGLWidget();
+	viewer->getSceneManager()->render();
+	viewer->getSceneManager()->scheduleRedraw();
+	QGLWidget* w = (QGLWidget*)viewer->getGLWidget();
 
 	QImage i = w->grabFrameBuffer();
 	bool bRes = i.save(framefile.getString(), "PNG");
@@ -86,21 +86,21 @@ void showRobotWindow::setupUI()
 {
 	 UI.setupUi(this);
 	 //centralWidget()->setLayout(UI.gridLayoutViewer);
-	m_pExViewer = new SoQtExaminerViewer(UI.frameViewer,"",TRUE,SoQtExaminerViewer::BUILD_POPUP);
+	viewer = new SoQtExaminerViewer(UI.frameViewer,"",TRUE,SoQtExaminerViewer::BUILD_POPUP);
 
 	// setup
-	m_pExViewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
-	m_pExViewer->setAccumulationBuffer(true);
+	viewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
+	viewer->setAccumulationBuffer(true);
 #ifdef WIN32
 //#ifndef _DEBUG
-	m_pExViewer->setAntialiasing(true, 4);
+	viewer->setAntialiasing(true, 4);
 //#endif
 #endif
-	m_pExViewer->setGLRenderAction(new SoLineHighlightRenderAction);
-	m_pExViewer->setTransparencyType(SoGLRenderAction::BLEND);
-	m_pExViewer->setFeedbackVisibility(true);
-	m_pExViewer->setSceneGraph(sceneSep);
-	m_pExViewer->viewAll();
+	viewer->setGLRenderAction(new SoLineHighlightRenderAction);
+	viewer->setTransparencyType(SoGLRenderAction::BLEND);
+	viewer->setFeedbackVisibility(true);
+	viewer->setSceneGraph(sceneSep);
+	viewer->viewAll();
 
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));
 	connect(UI.pushButtonLoad, SIGNAL(clicked()), this, SLOT(selectRobot()));
@@ -445,7 +445,7 @@ void showRobotWindow::loadRobot()
 	// build visualization
 	collisionModel();
 	robotStructure();
-	m_pExViewer->viewAll();
+	viewer->viewAll();
 }
 
 void showRobotWindow::robotStructure()
@@ -464,8 +464,8 @@ void showRobotWindow::robotCoordSystems()
 	if (!robot)
 		return;
 
-	bool robtoAllCoordsEnabled = UI.checkBoxRobotCoordSystems->checkState() == Qt::Checked;
-	robot->showCoordinateSystems(robtoAllCoordsEnabled);
+	bool robotAllCoordsEnabled = UI.checkBoxRobotCoordSystems->checkState() == Qt::Checked;
+	robot->showCoordinateSystems(robotAllCoordsEnabled);
 	// rebuild visualization
 	collisionModel();
 }

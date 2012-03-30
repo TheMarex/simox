@@ -62,7 +62,7 @@ public slots:
 	void selectRobot();
 
 
-	SoQtExaminerViewer* getExaminerViewer(){return m_pExViewer;};
+	SoQtExaminerViewer* getExaminerViewer(){return viewer;};
 
 protected:
 	void setupUI();
@@ -72,7 +72,7 @@ protected:
 	void updateEEFBox();
 	void displayTriangles();
 	Ui::MainWindowShowRobot UI;
-	SoQtExaminerViewer *m_pExViewer; /*!< Viewer to display the 3D model of the robot and the environment. */
+	SoQtExaminerViewer *viewer; /*!< Viewer to display the 3D model of the robot and the environment. */
 		
 	SoSeparator *sceneSep;
 	SoSeparator *robotSep;

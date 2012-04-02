@@ -467,8 +467,8 @@ void showRobotWindow::robotCoordSystems()
 	if (!robot)
 		return;
 
-	bool robtoAllCoordsEnabled = UI.checkBoxRobotCoordSystems->checkState() == Qt::Checked;
-	robot->showCoordinateSystems(robtoAllCoordsEnabled);
+	bool robotAllCoordsEnabled = UI.checkBoxRobotCoordSystems->checkState() == Qt::Checked;
+	robot->showCoordinateSystems(robotAllCoordsEnabled);
 	// rebuild visualization
 	collisionModel();
 }

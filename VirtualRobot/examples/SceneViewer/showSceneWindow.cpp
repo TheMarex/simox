@@ -28,18 +28,19 @@ showSceneWindow::showSceneWindow(std::string &sSceneFile, Qt::WFlags flags)
 {
 	VR_INFO << " start " << endl;
 
-	m_sSceneFile = sSceneFile;
+	sceneFile = sSceneFile;
 	sceneSep = new SoSeparator;
 	sceneSep->ref();
 	sceneVisuSep = new SoSeparator;
-
 	sceneSep->addChild(sceneVisuSep);
+	graspVisu = new SoSeparator;
+	sceneSep->addChild(graspVisu);
 
 	setupUI();
 	
 	loadScene();
 
-	m_pExViewer->viewAll();
+	viewer->viewAll();
 }
 
 
@@ -52,25 +53,27 @@ showSceneWindow::~showSceneWindow()
 void showSceneWindow::setupUI()
 {
 	 UI.setupUi(this);
-	 m_pExViewer = new SoQtExaminerViewer(UI.frameViewer,"",TRUE,SoQtExaminerViewer::BUILD_POPUP);
+	 viewer = new SoQtExaminerViewer(UI.frameViewer,"",TRUE,SoQtExaminerViewer::BUILD_POPUP);
 
 	// setup
-	m_pExViewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
-	m_pExViewer->setAccumulationBuffer(true);
-#ifdef WIN32
-#ifndef _DEBUG
-	m_pExViewer->setAntialiasing(true, 4);
-#endif
-#endif
-	m_pExViewer->setGLRenderAction(new SoLineHighlightRenderAction);
-	m_pExViewer->setTransparencyType(SoGLRenderAction::BLEND);
-	m_pExViewer->setFeedbackVisibility(true);
-	m_pExViewer->setSceneGraph(sceneSep);
-	m_pExViewer->viewAll();
+	viewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
+	viewer->setAccumulationBuffer(true);
+	viewer->setAntialiasing(true, 4);
+
+	viewer->setGLRenderAction(new SoLineHighlightRenderAction);
+	viewer->setTransparencyType(SoGLRenderAction::BLEND);
+	viewer->setFeedbackVisibility(true);
+	viewer->setSceneGraph(sceneSep);
+	viewer->viewAll();
 
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));
 	connect(UI.pushButtonLoad, SIGNAL(clicked()), this, SLOT(selectScene()));
+	connect(UI.comboBoxRobot, SIGNAL(activated(int)), this, SLOT(selectRobot(int)));
+	connect(UI.comboBoxObject, SIGNAL(activated(int)), this, SLOT(selectObject(int)));
+	connect(UI.comboBoxRobotConfig, SIGNAL(activated(int)), this, SLOT(selectRobotConfig(int)));
+	connect(UI.comboBoxTrajectory, SIGNAL(activated(int)), this, SLOT(selectTrajectory(int)));
 
+	connect(UI.horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(sliderMoved(int)));
 
 	/*connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeHand()));
 	connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openHand()));
@@ -109,7 +112,8 @@ QString showSceneWindow::formatString(const char *s, float f)
 
 void showSceneWindow::resetSceneryAll()
 {
-
+	updateGui();
+	buildVisu();
 }
 
 
@@ -127,8 +131,6 @@ void showSceneWindow::buildVisu()
 	if (!scene)
 		return;
 	sceneVisuSep->removeAllChildren();
-	//setRobotModelShape(UI.checkBoxColModel->state() == QCheckBox::On);
-	//useColModel = UI.checkBoxColModel->checkState() == Qt::Checked;
 	visualization = scene->getVisualization<CoinVisualization>();
 	SoNode* visualisationNode = NULL;
 	if (visualization)
@@ -154,133 +156,32 @@ void showSceneWindow::quit()
 	SoQt::exitMainLoop();
 }
 
-/*
-void showSceneWindow::updateJointBox()
-{
-	UI.comboBoxJoint->clear();
 
-	for (unsigned int i=0;i<currentRobotNodes.size();i++)
-	{
-		UI.comboBoxJoint->addItem(QString(currentRobotNodes[i]->getName().c_str()));
-	}
-}
-
-void showSceneWindow::updateRNSBox()
-{
-	UI.comboBoxRobotNodeSet->clear();
-	UI.comboBoxRobotNodeSet->addItem(QString("<All>"));
-
-	for (unsigned int i=0;i<robotNodeSets.size();i++)
-	{
-		UI.comboBoxRobotNodeSet->addItem(QString(robotNodeSets[i]->getName().c_str()));
-	}
-}
-
-void showSceneWindow::selectRNS(int nr)
-{
-	currentRobotNodeSet.reset();
-	cout << "Selecting RNS nr " << nr << endl;
-	if (nr<=0)
-	{
-		// all joints
-		currentRobotNodes = allRobotNodes;
-	} else
-	{
-		nr--;
-		if (nr>=(int)robotNodeSets.size())
-			return;
-		currentRobotNodeSet = robotNodeSets[nr];
-		currentRobotNodes = currentRobotNodeSet->getAllRobotNodes();
-	}
-	updateJointBox();
-	selectJoint(0);
-	displayTriangles();
-}
-
-void showSceneWindow::selectJoint(int nr)
-{
-	currentRobotNode.reset();
-	cout << "Selecting Joint nr " << nr << endl;
-	if (nr<0 || nr>=(int)currentRobotNodes.size())
-		return;
-	currentRobotNode = currentRobotNodes[nr];
-	currentRobotNode->print();
-	float mi = currentRobotNode->getJointLimitLo();
-	float ma = currentRobotNode->getJointLimitHi();
-	QString qMin = QString::number(mi);
-	QString qMax = QString::number(ma);
-	UI.labelMinPos->setText(qMin);
-	UI.labelMaxPos->setText(qMax);
-	float j = currentRobotNode->getJointValue();
-	UI.lcdNumberJointValue->display((double)j);
-	if (fabs(ma-mi)>0 && (currentRobotNode->isTranslationalJoint() || currentRobotNode->isRotationalJoint()) )
-	{
-		UI.horizontalSliderPos->setEnabled(true);
-		int pos = (int)((j-mi)/(ma-mi) * 1000.0f);
-		UI.horizontalSliderPos->setValue(pos);
-	} else
-	{
-		UI.horizontalSliderPos->setValue(500);
-		UI.horizontalSliderPos->setEnabled(false);
-	}
-	if (currentRobotNodes[nr]->showCoordinateSystemState())
-		UI.checkBoxShowCoordSystem->setCheckState(Qt::Checked);
-	else
-		UI.checkBoxShowCoordSystem->setCheckState(Qt::Unchecked);
-
-    cout << "HIGHLIGHTING node " << currentRobotNodes[nr]->getName() << endl;
-
-    if (visualization)
-    {
-        m_pRobot->highlight(visualization,false);
-        currentRobotNode->highlight(visualization,true);
-    }
-	displayTriangles();
-}
-
-void showSceneWindow::jointValueChanged(int pos)
+void showSceneWindow::sliderMoved(int pos)
 {	
-	int nr = UI.comboBoxJoint->currentIndex();
-	if (nr<0 || nr>=(int)currentRobotNodes.size())
-		return;
-	float fPos = currentRobotNodes[nr]->getJointLimitLo() + (float)pos / 1000.0f * (currentRobotNodes[nr]->getJointLimitHi() - currentRobotNodes[nr]->getJointLimitLo());
-	currentRobotNodes[nr]->setJointValue(fPos);
-	UI.lcdNumberJointValue->display((double)fPos);
-
-}
-
-void showSceneWindow::showCoordSystem()
-{	
-	float size = 0.75f;
-	int nr = UI.comboBoxJoint->currentIndex();
-	if (nr<0 || nr>=(int)currentRobotNodes.size())
+	if (!currentTrajectory)
 		return;
 
-	// first check if robot node has a visualization 
-
-
-	currentRobotNodes[nr]->showCoordinateSystem(UI.checkBoxShowCoordSystem->checkState() == Qt::Checked, size);
-	// rebuild visualization
-	collisionModel();
+	float fpos = (float)pos / 999.0f;
+	currentTrajectory->apply(fpos);
 }
 
-*/
 
 void showSceneWindow::selectScene()
 {
 	QString fi = QFileDialog::getOpenFileName(this, tr("Open Scene File"), QString(), tr("XML Files (*.xml)"));
-	m_sSceneFile = std::string(fi.toAscii());
+	sceneFile = std::string(fi.toAscii());
 	loadScene();
 }
 
 void showSceneWindow::loadScene()
 {
 	sceneVisuSep->removeAllChildren();
-	cout << "Loading Scene from " << m_sSceneFile << endl;
+	cout << "Loading Scene from " << sceneFile << endl;
 
 	try
 	{
-		scene = SceneIO::loadScene(m_sSceneFile);
+		scene = SceneIO::loadScene(sceneFile);
 	}
 	catch (VirtualRobotException &e)
 	{
@@ -344,31 +245,111 @@ void showSceneWindow::loadScene()
 	// build visualization
 	collisionModel();
 	robotStructure();*/
+	updateGui();
 	buildVisu();
-	m_pExViewer->viewAll();
+	viewer->viewAll();
 }
 
-/*
-void showSceneWindow::robotStructure()
+void showSceneWindow::selectRobot(int nr)
 {
-	if (!m_pRobot)
+	UI.comboBoxRobotConfig->clear();
+	UI.comboBoxTrajectory->clear();
+	currentRobot.reset();
+	if (nr<0 || nr>=UI.comboBoxRobot->count() || !scene)
 		return;
+	currentRobot = scene->getRobot(UI.comboBoxRobot->currentText().toStdString());
+	if (!currentRobot)
+		return;
+	std::vector<VirtualRobot::RobotConfigPtr> roc = scene->getRobotConfigs(currentRobot);
+	for (size_t i=0;i<roc.size();i++)
+	{
+		QString rn = roc[i]->getName().c_str();
+		UI.comboBoxRobotConfig->addItem(rn);
+	}
+	if (roc.size()>0)
+		UI.comboBoxRobotConfig->setCurrentIndex(0);
+	std::vector<VirtualRobot::TrajectoryPtr> tr = scene->getTrajectories(currentRobot->getName());
+	for (size_t i=0;i<tr.size();i++)
+	{
+		QString rn = tr[i]->getName().c_str();
+		UI.comboBoxTrajectory->addItem(rn);
+	}
+	if (tr.size()>0)
+		UI.comboBoxTrajectory->setCurrentIndex(0);
 
-	structureEnabled = UI.checkBoxStructure->checkState() == Qt::Checked;
-	m_pRobot->showStructure(structureEnabled);
-	// rebuild visualization
-	collisionModel();
+	selectRobotConfig(0);
+	selectTrajectory(0);
 }
 
-void showSceneWindow::robotCoordSystems()
+void showSceneWindow::selectRobotConfig(int nr)
 {
-	if (!m_pRobot)
+	if (nr<0 || nr>=UI.comboBoxRobotConfig->count() || !scene || !currentRobot)
 		return;
-
-	bool robtoAllCoordsEnabled = UI.checkBoxRobotCoordSystems->checkState() == Qt::Checked;
-	m_pRobot->showCoordinateSystems(robtoAllCoordsEnabled);
-	// rebuild visualization
-	collisionModel();
+	VirtualRobot::RobotConfigPtr rc = scene->getRobotConfig(currentRobot->getName(), UI.comboBoxRobotConfig->currentText().toStdString());
+	if (!rc)
+		return;
+	rc->setJointValues();
 }
 
-*/
+void showSceneWindow::selectTrajectory(int nr)
+{
+	UI.horizontalSlider->setSliderPosition(0);
+	if (nr<0 || nr>=UI.comboBoxTrajectory->count() || !scene)
+	{
+		currentTrajectory.reset();
+		UI.horizontalSlider->setEnabled(false);
+		return;
+	}
+	UI.horizontalSlider->setEnabled(true);
+	
+	currentTrajectory = scene->getTrajectory(UI.comboBoxTrajectory->currentText().toStdString());
+	sliderMoved(0);
+}
+
+void showSceneWindow::selectObject(int nr)
+{
+	if (nr<0 || nr>=UI.comboBoxObject->count())
+		return;
+}
+
+void showSceneWindow::updateGui()
+{
+	UI.comboBoxObject->clear();
+	UI.comboBoxRobot->clear();
+	UI.comboBoxRobotConfig->clear();
+	UI.comboBoxTrajectory->clear();
+
+	currentRobot.reset();
+	if (!scene)
+		return;
+	std::vector<VirtualRobot::RobotPtr> robs = scene->getRobots();
+	for (size_t i=0;i<robs.size();i++)
+	{
+		QString rn = robs[i]->getName().c_str();
+		UI.comboBoxRobot->addItem(rn);
+	}
+	std::vector<VirtualRobot::ManipulationObjectPtr> mos = scene->getManipulationObjects();
+	for (size_t i=0;i<mos.size();i++)
+	{
+		QString mn = mos[i]->getName().c_str();
+		UI.comboBoxObject->addItem(mn);
+	}
+
+	std::vector<VirtualRobot::ObstaclePtr> obs = scene->getObstacles();
+	for (size_t i=0;i<obs.size();i++)
+	{
+		QString on = obs[i]->getName().c_str();
+		UI.comboBoxObject->addItem(on);
+	}
+	if (robs.size()>0)
+	{
+		UI.comboBoxRobot->setCurrentIndex(0);
+		selectRobot(0);
+	}
+	if (obs.size()>0)
+	{
+		UI.comboBoxRobot->setCurrentIndex(0);
+		selectObject(0);
+	}
+}
+

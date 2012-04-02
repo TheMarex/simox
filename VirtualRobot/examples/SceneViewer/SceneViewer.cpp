@@ -31,9 +31,7 @@ int main(int argc, char *argv[])
 	SoQt::init(argc,argv,"showRobot");
 	cout << " --- START --- " << endl;
 	std::string filename(VR_BASE_DIR "/examples/SceneViewer/scene1.xml");
-	// --scene scenes/lego.xml
-	//std::string filename(VR_BASE_DIR "/examples/showScene/sceneiCub.xml");
-
+	
 	VirtualRobot::RuntimeEnvironment::considerKey("scene");
 	VirtualRobot::RuntimeEnvironment::processCommandLine(argc,argv);
 	VirtualRobot::RuntimeEnvironment::print();

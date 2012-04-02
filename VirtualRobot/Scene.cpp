@@ -434,6 +434,17 @@ std::vector< TrajectoryPtr > Scene::getTrajectories()
 	return trajectories;
 }
 
+std::vector< TrajectoryPtr > Scene::getTrajectories( const std::string &robotName )
+{
+	std::vector< TrajectoryPtr > res;
+	for (size_t i=0;i<trajectories.size();i++)
+	{
+		if (trajectories[i]->getRobotName() == robotName)
+			res.push_back(trajectories[i]);
+	}
+	return res;
+}
+
 std::vector< ManipulationObjectPtr > Scene::getManipulationObjects()
 {
 	return manipulationObjects;

@@ -44,51 +44,36 @@ public slots:
 	void closeEvent(QCloseEvent *event);
 
 	void resetSceneryAll();
-	//void collisionModel();
-	//void showRobot();
 	void loadScene();
-	/*void selectJoint(int nr);
-	void selectRNS(int nr);
-	void jointValueChanged(int pos);
-	void showCoordSystem();
-	void robotStructure();
-	void robotCoordSystems();
-	void robotFullModel();
-	void closeHand();
-	void openHand();
-	void selectEEF(int nr);*/
 	void selectScene();
 
+	void selectRobot(int nr);
+	void selectObject(int nr);
+	void selectRobotConfig(int nr);
+	void selectTrajectory(int nr);
+	void sliderMoved(int pos);
 
-	SoQtExaminerViewer* getExaminerViewer(){return m_pExViewer;};
+	SoQtExaminerViewer* getExaminerViewer(){return viewer;};
 
 protected:
+
+	void updateGui();
 	void setupUI();
 	QString formatString(const char *s, float f);
 	void buildVisu();
-	/*void updateJointBox();
-	void updateRNSBox();
-	void updateEEFBox();
-	void displayTriangles();*/
+
 	Ui::MainWindowShowScene UI;
-	SoQtExaminerViewer *m_pExViewer; /*!< Viewer to display the 3D model of the robot and the environment. */
+	SoQtExaminerViewer *viewer; /*!< Viewer to display the 3D model of the robot and the environment. */
 		
 	SoSeparator *sceneSep;
 	SoSeparator *sceneVisuSep;
+	SoSeparator *graspVisu;
+	VirtualRobot::RobotPtr currentRobot;
+	VirtualRobot::TrajectoryPtr currentTrajectory;
 
 	VirtualRobot::ScenePtr scene;
-	std::string m_sSceneFile;
-	/*std::vector < VirtualRobot::RobotNodePtr > allRobotNodes;
-	std::vector < VirtualRobot::RobotNodePtr > currentRobotNodes;
-	std::vector < VirtualRobot::RobotNodeSetPtr > robotNodeSets;
-	std::vector < VirtualRobot::EndEffectorPtr > eefs;
-	VirtualRobot::EndEffectorPtr currentEEF;
-	VirtualRobot::RobotNodeSetPtr currentRobotNodeSet;
-	VirtualRobot::RobotNodePtr currentRobotNode;*/
+	std::string sceneFile;
 
-
-	//bool useColModel;
-	//bool structureEnabled;
 
     boost::shared_ptr<VirtualRobot::CoinVisualization> visualization;
 };

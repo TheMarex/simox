@@ -145,6 +145,7 @@ public:
 	TrajectoryPtr getTrajectory(const std::string &name);
 
 	std::vector< TrajectoryPtr > getTrajectories();
+	std::vector< TrajectoryPtr > getTrajectories(const std::string &robotName);
 
 
 

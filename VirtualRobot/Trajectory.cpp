@@ -376,4 +376,16 @@ VisualizationNodePtr Trajectory::getVisualization(std::string visualizationFacto
 	return visualizationFactory->createTrajectory(shared_from_this());
 }
 
+std::string Trajectory::getRobotName() const
+{
+	return rns->getRobot()->getName();
+}
+
+void Trajectory::apply( float t )
+{
+	Eigen::VectorXf c;
+	interpolate(t,c);
+	rns->setJointValues(c);
+}
+
 }

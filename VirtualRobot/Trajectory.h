@@ -123,6 +123,10 @@ public:
 	 */
 	virtual void interpolate(float t, Eigen::VectorXf &storePos, int *storeIndex = NULL) const;
 
+	 /*!
+		Interpolates and applies the resulting configuration at position t (0<=t<=1) to corresponding RobotNodeSet.
+	*/
+	 virtual void apply(float t);
 	/*!
 		
 	*/
@@ -151,6 +155,8 @@ public:
 	virtual std::string getXMLString(int tabs = 0) const;
 
 	std::string getName() const;
+
+	std::string getRobotName() const;
 
 	/*!
 		Get a visualization for this trajectory.

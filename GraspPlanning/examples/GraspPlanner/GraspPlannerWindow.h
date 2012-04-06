@@ -74,7 +74,7 @@ protected:
 
 	static void timerCB(void * data, SoSensor * sensor);
 	Ui::GraspPlanner UI;
-	SoQtExaminerViewer *m_pExViewer; /*!< Viewer to display the 3D model of the robot and the environment. */
+	SoQtExaminerViewer *viewer; /*!< Viewer to display the 3D model of the robot and the environment. */
 		
 	SoSeparator *sceneSep;
 	SoSeparator *robotSep;

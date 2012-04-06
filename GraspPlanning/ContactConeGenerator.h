@@ -52,6 +52,21 @@ public:
 	//! Computes the cone points without normals. coneSamples computed points are appended to storeConePoints. 
 	void computeConePoints(const VirtualRobot::MathTools::ContactPoint &point, std::vector<Eigen::Vector3f> &storeConePoints);
 
+	/*!
+		Returns the opening angle of a friction cone. [rad]
+	*/
+	float getConeAngle();
+
+	/*!
+		Returns the radius a friction cone.
+	*/
+	float getConeRadius();
+
+	/*!
+		Returns the height a friction cone.
+	*/
+	float getConeHeight();
+
 private:
 
 	//Friction cone relevant parameters
@@ -59,6 +74,7 @@ private:
 	double frictionCoeff;
 	double frictionConeAngle;
 	double frictionConeRad;
+	double frictionConeHeight;
 	std::vector< Eigen::Vector3f > frictionConeRimPoints;
 	int frictionConeSamples;
 

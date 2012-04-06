@@ -68,10 +68,20 @@ public:
 	//! Indicates if joint limits are considered.
 	virtual bool consideringJointLimits();
 
+	/*!
+		Consider obstacles. Here, the shortest distance on the surface of the RNS to an obstacle is set (in TCP coords). 
+		This obstacle vector may be considered by any further calculations (depending on the implementation).
+	*/
+	virtual void setObstacleDistanceVector(const Eigen::Vector3f &directionSurfaceToObstance);
+	virtual void disableObstacleDistance();
 
 protected:
 	std::string name;
     VirtualRobot::RobotNodeSetPtr rns;
+
+	bool considerObstacle;
+	Eigen::Vector3f obstacleDir;
+
 	bool verbose;
 };
 

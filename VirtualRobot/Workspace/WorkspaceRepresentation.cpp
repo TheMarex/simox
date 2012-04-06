@@ -26,6 +26,8 @@ WorkspaceRepresentation::WorkspaceRepresentation(RobotPtr robot)
 	THROW_VR_EXCEPTION_IF(!robot,"Need a robot ptr here");
 	this->robot = robot;
 	type = "WorkspaceRepresentation";
+	versionMajor = 2;
+	versionMinor = 3;
 	reset();
 }
 
@@ -201,12 +203,18 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		// Check version
 		int version[2];
 		readArray<int>(version, 2, file);
-		THROW_VR_EXCEPTION_IF(
-			(version[0] > 2) || 
-			(version[0] == 2 && !(version[1] == 0 || version[1] == 1 || version[1] == 2)) || 
-			(version[0] == 1 && !(version[1] == 0 || version[1] == 2 || version[1] == 3)
-			),	"Wrong file format version");
-
+		// first check if the current version is used
+		if (version[0] != versionMajor || version[1] != versionMinor)
+		{
+			// now check if an older version is used
+			THROW_VR_EXCEPTION_IF(
+				(version[0] > 2) || 
+				(version[0] == 2 && !(version[1] == 0 || version[1] == 1 || version[1] == 2 || version[1] == 3)) || 
+				(version[0] == 1 && !(version[1] == 0 || version[1] == 2 || version[1] == 3)
+				),	"Wrong file format version");
+		}
+		versionMajor = version[0];
+		versionMinor = version[1];
 		// Check Robot name
 		readString(tmpString, file);
 		THROW_VR_EXCEPTION_IF(tmpString != robot->getType(), "Wrong Robot");
@@ -344,8 +352,8 @@ void WorkspaceRepresentation::save(const std::string &filename)
 		writeString(file, tmpStr);
 
 		// Version
-		write<int>(file, 2);
-		write<int>(file, 2);
+		write<int>(file, versionMajor);
+		write<int>(file, versionMinor);
 
 		// Robot type
 		writeString(file, robot->getType());

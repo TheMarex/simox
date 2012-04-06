@@ -110,4 +110,9 @@ bool GraspQualityMeasure::isValid()
 	return isGraspForceClosure();
 }
 
+GraspStudio::ContactConeGeneratorPtr GraspQualityMeasure::getConeGenerator()
+{
+	return coneGenerator;
+}
+
 } // namespace

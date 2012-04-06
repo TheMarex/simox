@@ -278,6 +278,9 @@ protected:
 	
 	std::string type;
 
+	int versionMajor;
+	int versionMinor;
+
 };
 
 

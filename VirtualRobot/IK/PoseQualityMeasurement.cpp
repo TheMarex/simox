@@ -15,6 +15,7 @@ PoseQualityMeasurement::PoseQualityMeasurement(VirtualRobot::RobotNodeSetPtr rns
 {
 	THROW_VR_EXCEPTION_IF( (!rns || !rns->getTCP()), "NULL data");
 	name = "PoseQualityMeasurement";
+	considerObstacle = false;
 	verbose = false;
 }
 
@@ -47,6 +48,17 @@ VirtualRobot::RobotNodeSetPtr PoseQualityMeasurement::getRNS()
 bool PoseQualityMeasurement::consideringJointLimits()
 {
 	return false;
+}
+
+void PoseQualityMeasurement::setObstacleDistanceVector( const Eigen::Vector3f &directionSurfaceToObstance )
+{
+	considerObstacle = true;
+	obstacleDir = directionSurfaceToObstance;
+}
+
+void PoseQualityMeasurement::disableObstacleDistance()
+{
+	considerObstacle = false;
 }
 
 }

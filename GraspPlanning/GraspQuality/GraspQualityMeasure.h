@@ -66,6 +66,7 @@ public:
 
 	virtual bool isValid();
 
+	virtual ContactConeGeneratorPtr getConeGenerator();
 protected:
 	
 	//Methods

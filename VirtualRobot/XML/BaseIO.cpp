@@ -203,6 +203,16 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 		}
 		rotation = true;
 		translation = true;
+		if (hasUnitsAttribute(matrixXMLNode))
+		{
+			Units u = getUnitsAttribute(matrixXMLNode,Units::eLength);
+			if (u.isMeter())
+			{
+				transform(0,3) *= 1000.0f;
+				transform(1,3) *= 1000.0f;
+				transform(2,3) *= 1000.0f;
+			}
+		}
 	}
 
 	// Rotation Matrix 3x3
@@ -622,14 +632,28 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 	{
 		enableVisu = isTrue(attr->value());
 	}
+
+	attr = visuXMLNode->first_attribute("useascollisionmodel", 0, false);
+	if (attr)
+	{
+		useAsColModel = isTrue(attr->value());
+	}
 	if (enableVisu)
 	{
 		rapidxml::xml_node<> *visuFileXMLNode = visuXMLNode->first_node("file",0,false);
 		if (visuFileXMLNode)
 		{
 			attr = visuFileXMLNode->first_attribute("type", 0, false);
-			THROW_VR_EXCEPTION_IF(!attr, "Missing 'type' attribute in <Visualization> tag of node " << tagName << "." << endl)
+			//THROW_VR_EXCEPTION_IF(!attr, "Missing 'type' attribute in <Visualization> tag of node " << tagName << "." << endl)
+			if (!attr)
+			{
+				if (VisualizationFactory::first(NULL))
+					visuFileType = VisualizationFactory::first(NULL)->getName();
+				else
+					VR_WARNING << "No visualization present..." << endl;
+			} else
 				visuFileType = attr->value();
+
 			getLowerCase(visuFileType);
 			visuFile = processFileNode(visuFileXMLNode,basePath);
 			//visuFile = visuFileXMLNode->value();
@@ -665,8 +689,16 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 					coordAxisText = tagName;
 
 				attr = coordXMLNode->first_attribute("type", 0, false);
-				THROW_VR_EXCEPTION_IF(!attr, "Missing 'type' attribute in <CoordinateAxis> tag of node " << tagName << "." << endl)
+				//THROW_VR_EXCEPTION_IF(!attr, "Missing 'type' attribute in <CoordinateAxis> tag of node " << tagName << "." << endl)
+				if (!attr)
+				{
+					if (VisualizationFactory::first(NULL))
+						visuCoordType = VisualizationFactory::first(NULL)->getName();
+					else
+						VR_WARNING << "No visualization present..." << endl;
+				} else
 					visuCoordType = attr->value();
+				
 				getLowerCase(visuCoordType);
 				VisualizationFactoryPtr visualizationFactory = VisualizationFactory::fromName(visuCoordType, NULL);
 
@@ -721,9 +753,16 @@ CollisionModelPtr BaseIO::processCollisionTag(rapidxml::xml_node<char> *colXMLNo
 		if (colFileXMLNode)
 		{
 			attr = colFileXMLNode->first_attribute("type", 0, false);
-			THROW_VR_EXCEPTION_IF(!attr, "Expecting 'type' attribute in <Collisionmodel> tag of node " << tagName << "." << endl);
-
-			collisionFileType = attr->value();
+			//THROW_VR_EXCEPTION_IF(!attr, "Expecting 'type' attribute in <Collisionmodel> tag of node " << tagName << "." << endl);
+			//collisionFileType = attr->value();
+			if (!attr)
+			{
+				if (VisualizationFactory::first(NULL))
+					collisionFileType = VisualizationFactory::first(NULL)->getName();
+				else
+					VR_WARNING << "No visualization present..." << endl;
+			} else
+				collisionFileType = attr->value();
 			getLowerCase(collisionFileType);
 			collisionFile = processFileNode(colFileXMLNode,basePath);
 		

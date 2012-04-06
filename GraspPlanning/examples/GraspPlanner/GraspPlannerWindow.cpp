@@ -1,6 +1,7 @@
 
 #include "GraspPlannerWindow.h"
 #include "GraspPlanning/Visualization/CoinVisualization/CoinConvexHullVisualization.h"
+#include "GraspPlanning/ContactConeGenerator.h"
 #include "VirtualRobot/EndEffector/EndEffector.h"
 #include "VirtualRobot/Workspace/Reachability.h"
 #include "VirtualRobot/ManipulationObject.h"
@@ -33,6 +34,7 @@
 #include <sstream>
 using namespace std;
 using namespace VirtualRobot;
+using namespace GraspStudio;
 
 float TIMER_MS = 30.0f;
 
@@ -70,7 +72,7 @@ GraspPlannerWindow::GraspPlannerWindow(std::string &robFile, std::string &eefNam
 
 
 
-	m_pExViewer->viewAll();
+	viewer->viewAll();
 
 	/*SoSensorManager *sensor_mgr = SoDB::getSensorManager();
 	SoTimerSensor *timer = new SoTimerSensor(timerCB, this);
@@ -112,19 +114,19 @@ GraspPlannerWindow::~GraspPlannerWindow()
 void GraspPlannerWindow::setupUI()
 {
 	 UI.setupUi(this);
-	 m_pExViewer = new SoQtExaminerViewer(UI.frameViewer,"",TRUE,SoQtExaminerViewer::BUILD_POPUP);
+	 viewer = new SoQtExaminerViewer(UI.frameViewer,"",TRUE,SoQtExaminerViewer::BUILD_POPUP);
 
 	// setup
-	m_pExViewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
-	m_pExViewer->setAccumulationBuffer(true);
+	viewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
+	viewer->setAccumulationBuffer(true);
 #ifdef WIN32
-	m_pExViewer->setAntialiasing(true, 8);
+	viewer->setAntialiasing(true, 8);
 #endif
-	m_pExViewer->setGLRenderAction(new SoLineHighlightRenderAction);
-	m_pExViewer->setTransparencyType(SoGLRenderAction::BLEND);
-	m_pExViewer->setFeedbackVisibility(true);
-	m_pExViewer->setSceneGraph(sceneSep);
-	m_pExViewer->viewAll();
+	viewer->setGLRenderAction(new SoLineHighlightRenderAction);
+	viewer->setTransparencyType(SoGLRenderAction::SORTED_OBJECT_BLEND);
+	viewer->setFeedbackVisibility(true);
+	viewer->setSceneGraph(sceneSep);
+	viewer->viewAll();
 
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));
 	connect(UI.pushButtonPlan, SIGNAL(clicked()), this, SLOT(plan()));
@@ -200,9 +202,13 @@ void GraspPlannerWindow::buildVisu()
 	
 	frictionConeSep->removeAllChildren();
 	bool fc = (UI.checkBoxCones->isChecked());
-	if (fc && contacts.size()>0)
+	if (fc && contacts.size()>0 && qualityMeasure)
 	{
-		SoNode* visualisationNode = CoinVisualizationFactory::getCoinVisualization(contacts);
+		ContactConeGeneratorPtr cg = qualityMeasure->getConeGenerator();
+		float radius = cg->getConeRadius();
+		float height = cg->getConeHeight();
+		float scaling = 30.0f;
+		SoNode* visualisationNode = CoinVisualizationFactory::getCoinVisualization(contacts,height*scaling,radius*scaling);
 		if (visualisationNode)
 			frictionConeSep->addChild(visualisationNode);
 	}
@@ -212,7 +218,7 @@ void GraspPlannerWindow::buildVisu()
 	if (!UI.checkBoxGrasps->isChecked() && sceneSep->findChild(graspsSep)>=0)
 		sceneSep->removeChild(graspsSep);
 
-	m_pExViewer->scheduleRedraw();
+	viewer->scheduleRedraw();
 }
 
 int GraspPlannerWindow::main()

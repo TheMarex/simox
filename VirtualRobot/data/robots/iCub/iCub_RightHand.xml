@@ -674,5 +674,33 @@
 		<Node name="Right Hand Pinky Joint3"/>
 		<Node name="Right Hand Pinky Joint4"/>
 	</RobotNodeSet>
+
+	<RobotNodeSet name="Right Hand Col Model" kinematicRoot="Right Hand Start"  tcp="Right Arm TCP">
+		<Node name="Right Hand Palm"/>
+		<Node name="Right Hand Thumb Joint1"/>
+		<Node name="Right Hand Thumb Joint2"/>
+		<Node name="Right Hand Thumb Joint3"/>
+		<Node name="Right Hand Thumb Joint4"/>
+		
+		<Node name="Right Hand Index Joint1"/>
+		<Node name="Right Hand Index Joint2"/>
+		<Node name="Right Hand Index Joint3"/>
+		<Node name="Right Hand Index Joint4"/>
+		
+		<Node name="Right Hand Middle Joint1"/>
+		<Node name="Right Hand Middle Joint2"/>
+		<Node name="Right Hand Middle Joint3"/>
+		<Node name="Right Hand Middle Joint4"/>
+		
+		<Node name="Right Hand Ring Joint1"/>
+		<Node name="Right Hand Ring Joint2"/>
+		<Node name="Right Hand Ring Joint3"/>
+		<Node name="Right Hand Ring Joint4"/>
+		
+		<Node name="Right Hand Pinky Joint1"/>
+		<Node name="Right Hand Pinky Joint2"/>
+		<Node name="Right Hand Pinky Joint3"/>
+		<Node name="Right Hand Pinky Joint4"/>
+	</RobotNodeSet>
 	
 </Robot>

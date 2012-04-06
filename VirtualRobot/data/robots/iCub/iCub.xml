@@ -168,7 +168,7 @@
 						<row4 c1="0" c2="0"  c3="0" c4="1"/>
 					</matrix4x4>
 				</Transform>
-			</prejointtransform>
+			</PreJointTransform>
 		</Joint>
 		<ChildFromRobot>
 			<File>iCub_LeftLeg.xml</File>

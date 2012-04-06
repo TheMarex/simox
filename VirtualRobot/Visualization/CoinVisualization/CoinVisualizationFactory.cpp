@@ -709,7 +709,7 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( VisualizationNodePtr vi
 	return coinVisu->getCoinVisualization();	 
 }
 
-SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInfo &contact )
+SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInfo &contact, float frictionConeHeight,  float frictionConeRadius )
 {
 	SoSeparator *result = new SoSeparator();
 	result->ref();
@@ -756,8 +756,8 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInf
 	tr3->matrix.setValue(m3);
 
 	// create cone
-	float fConeHeight = 30.0f;
-	float fConeRadius = 15.0f;
+	float fConeHeight = frictionConeHeight;
+	float fConeRadius = frictionConeRadius;
 	SoCone *cone3 = new SoCone();
 	cone3->bottomRadius = fConeRadius;
 	cone3->height = fConeHeight;
@@ -809,12 +809,12 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInf
 	return result;
 }
 
-SoNode * CoinVisualizationFactory::getCoinVisualization( std::vector <EndEffector::ContactInfo> &contacts )
+SoNode * CoinVisualizationFactory::getCoinVisualization( std::vector <EndEffector::ContactInfo> &contacts, float frictionConeHeight,  float frictionConeRadius )
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();
 	for (size_t i=0;i<contacts.size();i++)
-		res->addChild(getCoinVisualization(contacts[i]));
+		res->addChild(getCoinVisualization(contacts[i],frictionConeHeight,frictionConeRadius));
 	res->unrefNoDelete();
 	return res;
 }

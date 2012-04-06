@@ -6,7 +6,7 @@
 		<Joint type="revolute">
 			<!-- CenterOfArms is -143.3, the official DH_d value is -223.3(-> -80 here), but in the iCubGui the value is -193.3(-> -50 here), that looks better?! --> 
 			<DH a="0" d="-50.0" theta="-90" alpha="-90" units="degree"/>
-			<Limits unit="degree" lo="-40" hi="22"/>
+			<Limits unit="degree" lo="-50" hi="50"/>
 		</Joint>
 		<Child name="Neck2"/>
 	</RobotNode>
@@ -15,7 +15,7 @@
 	<RobotNode name="Neck2">
 		<Joint type="revolute">
 			<DH a="9.5" d="0.0" theta="90" alpha="90" units="degree"/>
-			<Limits unit="degree" lo="-20" hi="20"/>
+			<Limits unit="degree" lo="-50" hi="50"/>
 		</Joint>
 		<Child name="Neck3"/>
 	</RobotNode>

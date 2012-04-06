@@ -71,7 +71,7 @@
 	<RobotNode name="Right Arm Elbow2">
 		<Joint type="revolute">
 			<DH a="0" d="-137.3" theta="-90" alpha="90" units="degree"/>
-			<Limits unit="degree" lo="-50" hi="50"/>
+			<Limits unit="degree" lo="-90" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
 			<File type="Inventor">model/Arms/rightLowerArm.iv</File>

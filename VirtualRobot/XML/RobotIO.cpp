@@ -819,7 +819,7 @@ EndEffectorPtr RobotIO::processEndeffectorNode(rapidxml::xml_node<char>* endeffe
 				VR_ERROR << "There should only be one <static> tag inside <endeffector> tags" << endl;
 		} else if ("preshape" == nodeName)
 		{
-			bool cOK = processConfigurationNode(node, configDefinitions, configNames);
+			bool cOK = processConfigurationNodeList(node, configDefinitions, configNames);
 			THROW_VR_EXCEPTION_IF(!cOK, "Invalid Preshape defined in robot's eef tag '" << nodeName << "'." << endl);
 		} else
 		{

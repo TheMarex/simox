@@ -386,6 +386,21 @@
 			<File type="Inventor">collisionModel/index_r2.iv</File>
 		</CollisionModel>
 	</RobotNode>
+	
+	<RobotNodeSet name="RightHandColModel" kinematicRoot="Hand R Base" tcp="TCP R">
+		<Node name="Hand Palm 1 R"/>
+		<Node name="Hand Palm 2 R"/>
+		<Node name="Thumb R J0"/>
+		<Node name="Thumb R J1"/>
+		<Node name="Index R J0"/>
+		<Node name="Index R J1"/>
+		<Node name="Middle R J0"/>
+		<Node name="Middle R J1"/>
+		<Node name="Ring R J0"/>
+		<Node name="Ring R J1"/>
+		<Node name="Pinky R J0"/>
+		<Node name="Pinky R J1"/>
+	</RobotNodeSet>
 
 	<Endeffector name="Hand R" base="Hand R Base" tcp="TCP R" gcp="GCP R">
 		<Static>

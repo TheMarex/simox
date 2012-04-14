@@ -35,17 +35,7 @@ BoundingBox::BoundingBox(const std::vector< Eigen::Vector3f > &p)
 	{
 		min = p[0];
 		max = p[0];
-
-		for (size_t i=1;i<p.size();i++)
-		{
-			for (int j=0;j<3;j++)
-			{
-				if (p[i](j) < min(j))
-					min(j) = p[i](j);
-				if (p[i](j) > max(j))
-					max(j) = p[i](j);
-			}
-		}
+		addPoints(p);
 	}
 }
 
@@ -74,6 +64,25 @@ void BoundingBox::print()
 	cout << "** max <" << max(0) << "," << max(1) << "," << max(2) << ">\n";
 	cout.precision(pr);
 
+}
+
+void BoundingBox::addPoints( const std::vector < Eigen::Vector3f > &p )
+{
+	for (size_t i=1;i<p.size();i++)
+	{
+		addPoint(p[i]);
+	}
+}
+
+void BoundingBox::addPoint( const Eigen::Vector3f &p )
+{
+	for (int j=0;j<3;j++)
+	{
+		if (p(j) < min(j))
+			min(j) = p(j);
+		if (p(j) > max(j))
+			max(j) = p(j);
+	}
 }
 
 

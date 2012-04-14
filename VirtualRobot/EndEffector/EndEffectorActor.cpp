@@ -144,6 +144,18 @@ bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, std::vector<
 			newContacts[i].distance = colChecker->calculateDistance(newContacts[i].robotNode->getCollisionModel(), newContacts[i].obstacle->getCollisionModel(), newContacts[i].contactPointFingerGlobal, newContacts[i].contactPointObstacleGlobal,&id1,&id2);
 			newContacts[i].contactPointFingerLocal = newContacts[i].obstacle->toLocalCoordinateSystemVec(newContacts[i].contactPointFingerGlobal);
 			newContacts[i].contactPointObstacleLocal = newContacts[i].obstacle->toLocalCoordinateSystemVec(newContacts[i].contactPointObstacleGlobal);
+
+			// compute approach direction
+			// todo: this could be done more elegantly (Jacobian)
+			RobotConfigPtr config = getConfiguration();
+			Eigen::Vector3f contGlobal1 = newContacts[i].contactPointFingerGlobal;
+			Eigen::Vector3f contFinger = newContacts[i].robotNode->toLocalCoordinateSystemVec(contGlobal1);
+			this->moveActor(angle);
+			Eigen::Vector3f contGlobal2 = newContacts[i].robotNode->toGlobalCoordinateSystemVec(contFinger);
+			newContacts[i].approachDirectionGlobal = contGlobal2 - contGlobal1;
+			newContacts[i].approachDirectionGlobal.normalize();
+			config->setJointValues();
+
 			storeContacts.push_back(newContacts[i]);
 		}
 	}
@@ -174,6 +186,8 @@ bool EndEffectorActor::isColliding(EndEffectorPtr eef, SceneObjectSetPtr obstacl
 				ci.robotNode = n->robotNode;
 				ci.obstacle = *o;
 
+				// todo: maybe not needed here: we are in collision, distance makes no sense...
+				// later the distance is calculated anyway (with slightly opened actors)
 				int id1,id2;
 				ci.distance = colChecker->calculateDistance(ci.robotNode->getCollisionModel(), ci.obstacle->getCollisionModel(), ci.contactPointFingerGlobal, ci.contactPointObstacleGlobal,&id1,&id2);
 				ci.contactPointFingerLocal = ci.obstacle->toLocalCoordinateSystemVec(ci.contactPointFingerGlobal);
@@ -301,6 +315,7 @@ bool EndEffectorActor::isColliding( EndEffectorPtr eef, SceneObjectPtr obstacle,
 			ci.robotNode = n->robotNode;
 			ci.obstacle = obstacle;
 
+			// todo: not needed here, later we calculate the distance with opened actors...
 			int id1,id2;
 			ci.distance = colChecker->calculateDistance(ci.robotNode->getCollisionModel(), ci.obstacle->getCollisionModel(), ci.contactPointFingerGlobal, ci.contactPointObstacleGlobal,&id1,&id2);
 			ci.contactPointFingerLocal = ci.obstacle->toLocalCoordinateSystemVec(ci.contactPointFingerGlobal);
@@ -372,6 +387,38 @@ bool EndEffectorActor::nodesSufficient( std::vector<RobotNodePtr> nodes ) const
 		i++;
 	}
 	return true;
+}
+
+float EndEffectorActor::getApproximatedLength()
+{
+	BoundingBox bb_all;
+	for (size_t j=0;j<actors.size();j++)
+	{
+		if (actors[j].robotNode->getCollisionModel())
+		{
+			BoundingBox bb = actors[j].robotNode->getCollisionModel()->getBoundingBox();
+			bb_all.addPoint(bb.min);
+			bb_all.addPoint(bb.max);
+		}
+	}
+	Eigen::Vector3f d = bb_all.max - bb_all.min;
+	return d.norm();
+}
+
+VirtualRobot::RobotConfigPtr EndEffectorActor::getConfiguration()
+{
+	if (actors.size()==0 || !actors[0].robotNode)
+		return VirtualRobot::RobotConfigPtr();
+	std::vector< RobotConfig::Configuration > c;
+	for (size_t i=0;i <actors.size(); i++)
+	{
+		RobotConfig::Configuration e;
+		e.name = actors[i].robotNode->getName();
+		e.value = actors[i].robotNode->getJointValue();
+		c.push_back(e);
+	}
+	RobotConfigPtr res(new RobotConfig(actors[0].robotNode->getRobot(),name,c));
+	return res;
 }
 
 

@@ -172,6 +172,7 @@ namespace MathTools
 	{
 		Eigen::Vector3f	p;	// point
 		Eigen::Vector3f n;	// normal
+		float force;
 	};
 
 	struct TriangleFace

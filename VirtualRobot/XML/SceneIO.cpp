@@ -87,7 +87,7 @@ bool SceneIO::processSceneRobot(rapidxml::xml_node<char>* sceneXMLNode, ScenePtr
 			fileName = processFileNode(node,basePath);
 		} else if (nodeName == "configuration")
 		{
-			bool cOK = processConfigurationNode(node, configDefinitions, configNames);
+			bool cOK = processConfigurationNodeList(node, configDefinitions, configNames);
 			THROW_VR_EXCEPTION_IF(!cOK, "Invalid configuration defined in scene's robot tag '" << robotName << "'." << endl);
 		} else if (nodeName == "globalpose")
 		{

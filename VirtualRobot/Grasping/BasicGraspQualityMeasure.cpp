@@ -71,7 +71,8 @@ void BasicGraspQualityMeasure::setContactPoints( const std::vector<VirtualRobot:
 		MathTools::ContactPoint point = (*objPointsIter);
 		point.p -= centerOfModel;
 		point.n.normalize();
-		
+		point.force = 1.0f;
+
 		this->contactPoints.push_back(point);
 	}
 	MathTools::convertMM2M(this->contactPoints,this->contactPointsM);
@@ -95,6 +96,13 @@ void BasicGraspQualityMeasure::setContactPoints( const std::vector<EndEffector::
 
 		point.n = objPointsIter->contactPointFingerLocal - objPointsIter->contactPointObstacleLocal;
 		point.n.normalize();
+
+		// store force as projected component of approachDirection
+		Eigen::Vector3f nGlob = objPointsIter->contactPointObstacleGlobal - objPointsIter->contactPointFingerGlobal;
+		if (nGlob.norm()>1e-10)
+			point.force = nGlob.dot(objPointsIter->approachDirectionGlobal) / nGlob.norm();
+		else
+			point.force = 0;
 
 		this->contactPoints.push_back(point);
 	}

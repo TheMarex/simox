@@ -99,8 +99,15 @@ bool ApproachMovementSurfaceNormal::setEEFToApproachPose(const Eigen::Vector3f &
 
 	// create a random rotation around approach vector
 	bool bSuccess = false;
+	int loop = 0;
 	while (!bSuccess)
 	{
+		loop++;
+		if (loop>1000)
+		{
+			VR_ERROR << "INTERNAL ERROR, aborting..." << endl;
+			return false;
+		}
 		//random y dir vector
 		y.setRandom();
 		if (y.norm()<1e-8)

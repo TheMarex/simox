@@ -709,7 +709,7 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( VisualizationNodePtr vi
 	return coinVisu->getCoinVisualization();	 
 }
 
-SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInfo &contact, float frictionConeHeight,  float frictionConeRadius )
+SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInfo &contact, float frictionConeHeight,  float frictionConeRadius, bool scaleAccordingToApproachDir )
 {
 	SoSeparator *result = new SoSeparator();
 	result->ref();
@@ -737,6 +737,16 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInf
 	sep2->addChild(sph2);
 	result->addChild(sep2);
 
+	Eigen::Vector3f n;
+	n = contact.contactPointObstacleGlobal - contact.contactPointFingerGlobal;
+	if (scaleAccordingToApproachDir && n.norm()>1e-10)
+	{
+		float factor = n.dot(contact.approachDirectionGlobal) / n.norm();
+
+		frictionConeHeight *= factor;
+		frictionConeRadius *= factor;
+	}
+
 	// add gfx for approach direction
 	SoSeparator *sep3 = new SoSeparator();
 	SoMatrixTransform *tr3 = new SoMatrixTransform();
@@ -744,9 +754,9 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInf
 	// compute rotation
 	SbVec3f rotFrom(1.0f,0.0f,0.0f);
 	SbVec3f rotTo;
-	rotTo[0] = contact.contactPointObstacleGlobal[0] - contact.contactPointFingerGlobal[0];
-	rotTo[1] = contact.contactPointObstacleGlobal[1] - contact.contactPointFingerGlobal[1];
-	rotTo[2] = contact.contactPointObstacleGlobal[2] - contact.contactPointFingerGlobal[2];
+	rotTo[0] = n[0];
+	rotTo[1] = n[1];
+	rotTo[2] = n[2];
 	SbRotation rot3(rotFrom,rotTo);
 
 	SbVec3f sc3;
@@ -784,37 +794,17 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInf
 	sep3->addChild(tr3);
 	sep3->addChild(ConeSep);
 	result->addChild(sep3);
-	// finished GFX for approach direction
-
-	/*if (bHighlightFinger && pRobot)
-	{
-		CFinger *pFinger = contactInfo.pFinger;
-		if (pFinger)
-		{
-			CRobotCollisionModelCollection* pCol = pFinger->GetCollisionModel();
-			if (pCol)
-			{
-				std::set<CRobotNode*> vNodes;
-				pCol->GetNodes(vNodes);
-				std::set<CRobotNode*>::iterator iter = vNodes.begin();
-				while (iter!=vNodes.end())
-				{
-					pRobot->SetHighlightNode(true,(*iter)->GetName());
-					iter++;
-				}
-			}
-		}
-	}*/
+	
 	result->unrefNoDelete();
 	return result;
 }
 
-SoNode * CoinVisualizationFactory::getCoinVisualization( std::vector <EndEffector::ContactInfo> &contacts, float frictionConeHeight,  float frictionConeRadius )
+SoNode * CoinVisualizationFactory::getCoinVisualization( std::vector <EndEffector::ContactInfo> &contacts, float frictionConeHeight,  float frictionConeRadius, bool scaleAccordingToApproachDir )
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();
 	for (size_t i=0;i<contacts.size();i++)
-		res->addChild(getCoinVisualization(contacts[i],frictionConeHeight,frictionConeRadius));
+		res->addChild(getCoinVisualization(contacts[i],frictionConeHeight,frictionConeRadius,scaleAccordingToApproachDir));
 	res->unrefNoDelete();
 	return res;
 }

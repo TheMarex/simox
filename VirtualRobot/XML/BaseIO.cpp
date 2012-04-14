@@ -934,13 +934,11 @@ std::string BaseIO::processFileNode( rapidxml::xml_node<char> *fileNode, const s
 	return fileName;
 }
 
-bool BaseIO::processConfigurationNode(rapidxml::xml_node<char>* configXMLNode, std::vector< std::vector< RobotConfig::Configuration > > &configDefinitions, std::vector< std::string > &configNames )
+bool BaseIO::processConfigurationNode(rapidxml::xml_node<char>* configXMLNode, std::vector< RobotConfig::Configuration > &storeConfigDefinitions, std::string  &storeConfigName )
 {
 	THROW_VR_EXCEPTION_IF(!configXMLNode, "NULL data in processConfigurationNode");
-	std::string name = processNameAttribute(configXMLNode,true);
-	THROW_VR_EXCEPTION_IF(name.empty(), "Expecting a name in configuration tag");
-	std::vector< RobotConfig::Configuration > configs;
-
+	storeConfigName = processNameAttribute(configXMLNode,true);
+	THROW_VR_EXCEPTION_IF(storeConfigName.empty(), "Expecting a name in configuration tag");
 
 	rapidxml::xml_node<>* node = configXMLNode->first_node();
 	while (node)
@@ -950,20 +948,33 @@ bool BaseIO::processConfigurationNode(rapidxml::xml_node<char>* configXMLNode, s
 		{
 			RobotConfig::Configuration c;
 			c.name = processNameAttribute(node,true);
-			THROW_VR_EXCEPTION_IF(c.name.empty(), "Expecting a name in configuration tag '" << name << "'.");
+			THROW_VR_EXCEPTION_IF(c.name.empty(), "Expecting a name in configuration tag '" << storeConfigName << "'.");
 			c.value = getFloatByAttributeName(node,"value");
 			if (getUnitsAttribute(node,Units::eAngle).isDegree())
 			{
 				c.value = c.value/180.0f * (float)M_PI;
 			}
-			configs.push_back(c);
+			storeConfigDefinitions.push_back(c);
 		} else
 		{
-			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in scene's Configuration definition wiuth name '" << name << "'." << endl);
+			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in scene's Configuration definition wiuth name '" << storeConfigName << "'." << endl);
 		}
 
 		node = node->next_sibling();
 	}
+	return true;
+}
+
+bool BaseIO::processConfigurationNodeList(rapidxml::xml_node<char>* configXMLNode, std::vector< std::vector< RobotConfig::Configuration > > &configDefinitions, std::vector< std::string > &configNames )
+{
+	THROW_VR_EXCEPTION_IF(!configXMLNode, "NULL data in processConfigurationNode");
+	std::string name = processNameAttribute(configXMLNode,true);
+	THROW_VR_EXCEPTION_IF(name.empty(), "Expecting a name in configuration tag");
+	std::vector< RobotConfig::Configuration > configs;
+
+
+	if (!processConfigurationNode(configXMLNode,configs,name))
+		return false;
 
 	configDefinitions.push_back(configs);
 	configNames.push_back(name);

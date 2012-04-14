@@ -713,7 +713,7 @@ void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const Eigen::VectorXf &v, boo
 	std::cout << std::fixed;
 	for (int i=0;i<v.rows();i++)
 	{
-		cout << v(0);
+		cout << v(i);
 		if (i!=v.rows()-1)
 			cout << ",";
 	}

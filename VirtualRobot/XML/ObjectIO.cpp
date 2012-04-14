@@ -53,7 +53,8 @@ GraspPtr ObjectIO::processGrasp(rapidxml::xml_node<char>* graspXMLNode, const st
 
 	Eigen::Matrix4f pose;
 	pose.setIdentity();
-
+	std::vector< RobotConfig::Configuration > configDefinitions;
+	std::string configName;
 	rapidxml::xml_node<>* node = graspXMLNode->first_node();
 	while (node)
 	{
@@ -61,7 +62,13 @@ GraspPtr ObjectIO::processGrasp(rapidxml::xml_node<char>* graspXMLNode, const st
 		if (nodeName == "transform")
 		{
 			processTransformNode(graspXMLNode,name,pose);
-			
+
+		}  if (nodeName == "configuration")
+		{
+			THROW_VR_EXCEPTION_IF( configDefinitions.size()>0, "Only one configuration per grasp allowed");
+			bool cOK = processConfigurationNode(graspXMLNode, configDefinitions, configName);
+			THROW_VR_EXCEPTION_IF(!cOK, "Invalid configuration defined in grasp tag '" << name << "'." << endl);
+
 		}  else
 		{
 			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in Grasp <" << name << ">." << endl);
@@ -71,6 +78,16 @@ GraspPtr ObjectIO::processGrasp(rapidxml::xml_node<char>* graspXMLNode, const st
 	}
 
 	GraspPtr grasp(new Grasp(name,robotType,eef,pose,method,quality));
+	if (configDefinitions.size()>0)
+	{
+		// create & register configs
+		std::map< std::string, float > rc;
+		for (size_t i=0;i<configDefinitions.size();i++)
+		{
+			rc[ configDefinitions[i].name ] = configDefinitions[i].value;
+		}
+		grasp->setConfiguration(rc);
+	}
 	return grasp;
 }
 

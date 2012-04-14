@@ -72,7 +72,6 @@ protected:
 	static ObstaclePtr processObstacle(rapidxml::xml_node<char>* objectXMLNode, const std::string& basePath);
 
 	static bool processSceneRobot(rapidxml::xml_node<char>* sceneXMLNode, ScenePtr scene, const std::string& basePath );
-	static bool processConfigurationNode(rapidxml::xml_node<char>* configXMLNode, std::vector< std::vector< RobotConfig::Configuration > > &configDefinitions, std::vector< std::string > &configNames );
 	static GraspSetPtr processGraspSet(rapidxml::xml_node<char>* graspSetXMLNode, const std::string& objName);
 	static GraspPtr processGrasp(rapidxml::xml_node<char>* graspXMLNode, const std::string& robotType, const std::string& eef, const std::string& objName);
 };

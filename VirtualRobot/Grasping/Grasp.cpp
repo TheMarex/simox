@@ -97,6 +97,10 @@ std::string Grasp::getXMLString(int tabs)
 	ss << tt<< "<Transform>\n";
 	ss << MathTools::getTransformXMLString(poseTcp, ttt);
 	ss << tt << "</Transform>\n";
+	if (eefConfiguration.size()>0)
+	{
+		ss << RobotConfig::createXMLString(eefConfiguration,name,tabs+1);
+	}
 
 	ss << t << "</Grasp>\n";
 
@@ -123,7 +127,18 @@ Eigen::Matrix4f Grasp::getObjectTargetPoseGlobal( const Eigen::Matrix4f &graspin
 VirtualRobot::GraspPtr Grasp::clone()
 {
 	GraspPtr result(new Grasp(name,robotType,eef,poseTcp,creation,quality));
+	result->setConfiguration(eefConfiguration);
 	return result;
+}
+
+void Grasp::setConfiguration( std::map< std::string, float > &c )
+{
+	eefConfiguration = c;
+}
+
+std::map< std::string, float > Grasp::getConfiguration()
+{
+	return eefConfiguration;
 }
 
 

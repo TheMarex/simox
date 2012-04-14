@@ -208,9 +208,22 @@ void GraspPlannerWindow::buildVisu()
 		float radius = cg->getConeRadius();
 		float height = cg->getConeHeight();
 		float scaling = 30.0f;
-		SoNode* visualisationNode = CoinVisualizationFactory::getCoinVisualization(contacts,height*scaling,radius*scaling);
+		SoNode* visualisationNode = CoinVisualizationFactory::getCoinVisualization(contacts,height*scaling,radius*scaling,true);
 		if (visualisationNode)
 			frictionConeSep->addChild(visualisationNode);
+
+		// add approach dir visu
+		for (size_t i=0;i<contacts.size();i++)
+		{
+			SoSeparator *s = new SoSeparator;
+			Eigen::Matrix4f ma;
+			ma.setIdentity();
+			ma.block(0,3,3,1) = contacts[i].contactPointFingerGlobal;
+			SoMatrixTransform *m = CoinVisualizationFactory::getMatrixTransform(ma);
+			s->addChild(m);
+			s->addChild(CoinVisualizationFactory::CreateArrow(contacts[i].approachDirectionGlobal,10.0f,1.0f));
+			frictionConeSep->addChild(s);
+		}
 	}
 
 	if (UI.checkBoxGrasps->isChecked() && sceneSep->findChild(graspsSep)<0)

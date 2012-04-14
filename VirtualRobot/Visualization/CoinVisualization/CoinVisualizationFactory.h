@@ -128,15 +128,17 @@ public:
 		\param contacts The contacts to be visualized
 		\param frictionConeHeight The height of the friction cone [mm].
 		\param frictionConeRadius The radius of the cone [mm].
+		\param scaleAccordingToApproachDir If true, the parallel component of the contact normal is computed according to the approahcDirection of the contact.
 	*/
-	static SoNode *getCoinVisualization(std::vector <EndEffector::ContactInfo> &contacts, float frictionConeHeight = 30.0f,  float frictionConeRadius = 15.0f);
+	static SoNode *getCoinVisualization(std::vector <EndEffector::ContactInfo> &contacts, float frictionConeHeight = 30.0f,  float frictionConeRadius = 15.0f, bool scaleAccordingToApproachDir = true);
 	/*!
 		Convenient method to retrieve a coin visualization for a contact.
 		\param contact The contact to be visualized
 		\param frictionConeHeight The height of the friction cone [mm].
 		\param frictionConeRadius The radius of the cone [mm].
+		\param scaleAccordingToApproachDir If true, the parallel component of the contact normal is computed according to the approahcDirection of the contact.
 	*/
-	static SoNode *getCoinVisualization(EndEffector::ContactInfo &contact, float frictionConeHeight = 30.0f,  float frictionConeRadius = 15.0f);
+	static SoNode *getCoinVisualization(EndEffector::ContactInfo &contact, float frictionConeHeight = 30.0f,  float frictionConeRadius = 15.0f, bool scaleAccordingToApproachDir = true);
 	
 	static SoNode *getCoinVisualization(VisualizationNodePtr visu);
 

@@ -44,7 +44,10 @@ public:
 	std::vector <Eigen::Vector3f> getPoints();
 
 	void print();
-	
+
+	void addPoints( const std::vector < Eigen::Vector3f > &p );
+	void addPoint (const Eigen::Vector3f &p);
+
 	Eigen::Vector3f min;
 	Eigen::Vector3f max;
 };

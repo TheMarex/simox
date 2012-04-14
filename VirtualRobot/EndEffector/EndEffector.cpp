@@ -118,7 +118,6 @@ std::vector<VirtualRobot::EndEffector::ContactInfo> EndEffector::closeActors(Sce
 			if(!actorCollisionStatus[i])
 			{
 				finished = false;
-				//std::vector< EndEffector::ContactInfo > storeContacts;
 				if (actors[i]->moveActorCheckCollision(shared_from_this(),result,obstacles,stepSize))
 					actorCollisionStatus[i] = true;
 			}
@@ -138,11 +137,6 @@ std::vector<VirtualRobot::EndEffector::ContactInfo> EndEffector::closeActors(Sce
 	return result;
 }
 
-/*std::vector<EndEffector::ContactInfo> EndEffector::closeActors( ObstaclePtr obstacle, float stepSize )
-{
-	SceneObjectPtr o = boost::dynamic_pointer_cast<SceneObject>(obstacle);
-	return closeActors(o,stepSize);
-}*/
 
 std::vector<EndEffector::ContactInfo> EndEffector::closeActors( SceneObjectPtr obstacle, float stepSize /*= 0.02*/ )
 {
@@ -404,6 +398,33 @@ bool EndEffector::nodesSufficient( std::vector<RobotNodePtr> nodes ) const
 			return false;
 	}
 	return true;
+}
+
+float EndEffector::getApproximatedLength()
+{
+	float maxActor = 0;
+	for (size_t j=0;j<actors.size();j++)
+	{
+		float al = actors[j]->getApproximatedLength();
+		if (al>maxActor)
+			maxActor = al;
+	}
+
+
+	BoundingBox bb_all;
+	for (size_t j=0;j<statics.size();j++)
+	{
+		if (statics[j]->getCollisionModel())
+		{
+			BoundingBox bb = statics[j]->getCollisionModel()->getBoundingBox();
+			bb_all.addPoint(bb.min);
+			bb_all.addPoint(bb.max);
+		}
+	}
+	Eigen::Vector3f d = bb_all.max - bb_all.min;
+	float maxStatic = d.norm();
+
+	return maxStatic + maxActor;
 }
 
 

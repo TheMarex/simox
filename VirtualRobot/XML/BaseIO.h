@@ -84,7 +84,8 @@ protected:
 	static float getFloatByAttributeName(rapidxml::xml_node<char>* xmlNode, const std::string& attributeName);
 	static float getOptionalFloatByAttributeName(rapidxml::xml_node<char>* xmlNode, const std::string& attributeName, float standardValue);
 
-	static bool processConfigurationNode(rapidxml::xml_node<char>* configXMLNode, std::vector< std::vector< RobotConfig::Configuration > > &configDefinitions, std::vector< std::string > &configNames );
+	static bool processConfigurationNode(rapidxml::xml_node<char>* configXMLNode, std::vector< RobotConfig::Configuration > &storeConfigDefinitions, std::string  &storeConfigName );
+	static bool processConfigurationNodeList(rapidxml::xml_node<char>* configXMLNode, std::vector< std::vector< RobotConfig::Configuration > > &configDefinitions, std::vector< std::string > &configNames );
 
 	static std::string getLowerCase(const char* c);
 	static void getLowerCase(std::string& aString);

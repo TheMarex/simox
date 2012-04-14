@@ -205,7 +205,7 @@ std::vector< RobotNodePtr > RobotConfig::getNodes() const
 	return result;
 }
 
-std::map < std::string, float > RobotConfig::getRobotNodeJointvalueMap()
+std::map < std::string, float > RobotConfig::getRobotNodeJointValueMap()
 {
 	std::map < std::string, float > result;
 	std::map< RobotNodePtr, float >::const_iterator i = configs.begin();
@@ -222,7 +222,7 @@ bool RobotConfig::applyToRobot( RobotPtr r )
 	if (!r)
 		return false;
 
-	std::map < std::string, float > jv = getRobotNodeJointvalueMap();
+	std::map < std::string, float > jv = getRobotNodeJointValueMap();
 	std::map< std::string, float >::const_iterator i = jv.begin();
 
 	// first check if all nodes are present
@@ -249,6 +249,12 @@ bool RobotConfig::applyToRobot( RobotPtr r )
 
 std::string RobotConfig::getXMLString(int tabs)
 {
+	std::map < std::string, float > jv = getRobotNodeJointValueMap();
+	return createXMLString(jv,name,tabs);
+}
+
+std::string RobotConfig::createXMLString( const std::map< std::string, float > &config, const std::string &name, int tabs/*=0*/ )
+{
 	std::stringstream ss;
 	std::string t;
 	for (int i=0;i<tabs;i++)
@@ -260,9 +266,9 @@ std::string RobotConfig::getXMLString(int tabs)
 
 	ss << t << "<Configuration name='" << name << "'>\n";
 
-	std::map < std::string, float > jv = getRobotNodeJointvalueMap();
-	std::map< std::string, float >::const_iterator i = jv.begin();
-	while (i != jv.end())
+
+	std::map< std::string, float >::const_iterator i = config.begin();
+	while (i != config.end())
 	{
 		ss << tt << "<Node name='" << i->first << "' unit='radian' value='" << i->second << "'/>\n";
 		i++;

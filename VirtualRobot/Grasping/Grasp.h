@@ -99,10 +99,22 @@ public:
 
 	std::string getXMLString(int tabs=2);
 
-
 	GraspPtr clone();
 
+	/*!
+		Returns the (optionally) stored configuration of the fingers / actors.
+	*/
+	std::map< std::string, float > getConfiguration();
+
+	/*!
+		Optionally the configuration of the fingers / actors can be stored.
+
+	*/
+	void setConfiguration(std::map< std::string, float > &c);
+
 protected:
+	std::map< std::string, float > eefConfiguration; //!< Optional: the configuration of the actors.
+
 	Eigen::Matrix4f poseTcp;	//!< The pose in TCP's coordinate system
 	std::string robotType;
 	std::string eef;			//!< The eef specifies which TCP node should be used

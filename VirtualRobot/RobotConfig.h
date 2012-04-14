@@ -111,7 +111,7 @@ public:
 	/*!
 		Returns map of RobotNodeNames with corresponding joint values.
 	*/
-	std::map < std::string, float > getRobotNodeJointvalueMap();
+	std::map < std::string, float > getRobotNodeJointValueMap();
 
 	/*!
 		Usually setJointValues() is sufficient for applying the joint values. But in some cases one might want to
@@ -123,9 +123,10 @@ public:
 		Create an XML string that defines this object.
 	*/
 	std::string getXMLString(int tabs=0);
+
+	static std::string createXMLString(const std::map< std::string, float > &config, const std::string &name, int tabs=0);
+
 protected:
-
-
 	std::string name;
 
 	std::map< RobotNodePtr, float > configs;

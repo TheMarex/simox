@@ -110,6 +110,10 @@ VirtualRobot::GraspPtr GenericGraspPlanner::planGrasp()
     Eigen::Matrix4f objP = object->getGlobalPose();
 	Eigen::Matrix4f pLocal = tcp->toLocalCoordinateSystem(objP);
     VirtualRobot::GraspPtr g(new VirtualRobot::Grasp(sGraspName,robot->getType(),eef->getName(),pLocal,sGraspPlanner,score));
+	// set joint config
+	VirtualRobot::RobotConfigPtr config = eef->getConfiguration();
+	std::map< std::string, float > configValues = config->getRobotNodeJointValueMap();
+	g->setConfiguration(configValues);
     return g;
 }
 

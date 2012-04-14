@@ -78,11 +78,6 @@ public:
 	bool moveActorCheckCollision(EndEffectorPtr eef, std::vector< EndEffector::ContactInfo > &storeContacts, SceneObjectSetPtr obstacles = SceneObjectSetPtr(), float angle = 0.02);
 
 	/*!
-		Returns true if this node should be included in collision checks
-	*/
-	//bool collisionChecksEnabled(RobotNodePtr node);
-
-	/*!
 		Checks if the actor collides with one of the given obstacles
 	*/
 	bool isColliding(SceneObjectSetPtr obstacles, CollisionMode checkColMode = EndEffectorActor::eAll);
@@ -118,6 +113,14 @@ public:
 
 	//! Returns true, if nodes (only name strings are checked) are sufficient for building this eef
 	bool nodesSufficient(std::vector<RobotNodePtr> nodes) const;
+
+	/*!
+		returns an approximation about the length of this eef.
+	*/
+	float getApproximatedLength();
+
+	RobotConfigPtr getConfiguration();
+
 
 private:
 

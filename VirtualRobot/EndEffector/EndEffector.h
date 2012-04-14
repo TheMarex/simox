@@ -52,6 +52,8 @@ public:
 		Eigen::Vector3f contactPointObstacleLocal;		// given in coord system of the object
 		Eigen::Vector3f contactPointFingerGlobal;		// given in global coord system 
 		Eigen::Vector3f contactPointObstacleGlobal;		// given in global coord system 
+
+		Eigen::Vector3f approachDirectionGlobal;	// the movement of the contact point while closing the finger (in this direction force can be applied)
 	};
 
 	EndEffector(const std::string& nameString, const std::vector<EndEffectorActorPtr>& actorsVector, const std::vector<RobotNodePtr>& staticPartVector, RobotNodePtr baseNodePtr, RobotNodePtr tcpNodePtr, RobotNodePtr gcpNodePtr = RobotNodePtr(), std::vector< RobotConfigPtr > preshapes = std::vector< RobotConfigPtr >());
@@ -105,7 +107,6 @@ public:
 		This method is intended for gripper or hand-like end-effectors.
 	*/
 	std::vector<ContactInfo> closeActors(SceneObjectSetPtr obstacles = SceneObjectSetPtr(), float stepSize = 0.02);
-	//std::vector<ContactInfo> closeActors(ObstaclePtr obstacle, float stepSize = 0.02);
 	std::vector<ContactInfo> closeActors(SceneObjectPtr obstacle, float stepSize = 0.02);
 
 	/*!
@@ -162,6 +163,11 @@ public:
 
 	//! Returns true, if nodes (only name strings are checked)  are sufficient for building this eef
 	bool nodesSufficient(std::vector<RobotNodePtr> nodes) const;
+
+	/*!
+		returns an approximation about the length of this eef.
+	*/
+	float getApproximatedLength();
 
 private:
 	std::string name;

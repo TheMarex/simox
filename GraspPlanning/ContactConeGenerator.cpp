@@ -59,7 +59,7 @@ void ContactConeGenerator::computeConePoints( const VirtualRobot::MathTools::Con
         
     Eigen::Vector3f conePoint;
 	
-	float scaleFactor = 1.0f;
+	float scaleFactor = point.force;
 	for (int i = 0; i < frictionConeSamples; i++)
 	{
 		VirtualRobot::MathTools::ContactPoint newConePoint;
@@ -81,7 +81,7 @@ void ContactConeGenerator::computeConePoints(const VirtualRobot::MathTools::Cont
         
     Eigen::Vector3f conePoint;
 
-	float scaleFactor = 1.0f;
+	float scaleFactor = point.force;
 	for (int i = 0; i < frictionConeSamples; i++)
 	{
 		Eigen::Vector3f newConePoint;

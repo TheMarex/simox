@@ -63,7 +63,7 @@ GraspPtr ObjectIO::processGrasp(rapidxml::xml_node<char>* graspXMLNode, const st
 		{
 			processTransformNode(graspXMLNode,name,pose);
 
-		}  if (nodeName == "configuration")
+		} else if (nodeName == "configuration")
 		{
 			THROW_VR_EXCEPTION_IF( configDefinitions.size()>0, "Only one configuration per grasp allowed");
 			bool cOK = processConfigurationNode(graspXMLNode, configDefinitions, configName);

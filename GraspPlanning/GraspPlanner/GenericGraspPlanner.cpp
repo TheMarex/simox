@@ -82,7 +82,7 @@ VirtualRobot::GraspPtr GenericGraspPlanner::planGrasp()
 	if (!bRes)
 	    return VirtualRobot::GraspPtr();
 	
-	std::vector< VirtualRobot::EndEffector::ContactInfo > contacts;
+	VirtualRobot::EndEffector::ContactInfoVector contacts;
 	contacts = eef->closeActors(object);
 	
 	if (contacts.size()<2)

@@ -8,8 +8,8 @@ namespace VirtualRobot
 {
 
 
-Grasp::Grasp(const std::string &name, const std::string &robotType, const std::string &eef, const Eigen::Matrix4f &poseInTCPCoordSystem, const std::string &creation, float quality)
-:name(name),robotType(robotType),eef(eef),poseTcp(poseInTCPCoordSystem),creation(creation),quality(quality)
+Grasp::Grasp(const std::string &name, const std::string &robotType, const std::string &eef, const Eigen::Matrix4f &poseInTCPCoordSystem, const std::string &creation, float quality, const std::string &eefPreshape)
+:name(name),robotType(robotType),eef(eef),poseTcp(poseInTCPCoordSystem),creation(creation),quality(quality),preshape(eefPreshape)
 {
 }
 
@@ -24,6 +24,7 @@ void Grasp::print( bool printDecoration /*= true*/ )
 		cout << "**** Grasp ****" << endl;
 		cout << " * Robot type: " << robotType << endl;
 		cout << " * End Effector: " << eef << endl;
+		cout << " * EEF Preshape: " << preshape << endl;
 	}
 	cout << " * Name: " << name << endl;
 	cout << " * Creation Method: " << creation << endl;
@@ -72,6 +73,11 @@ std::string Grasp::getName()
 	return name;
 }
 
+std::string Grasp::getPreshapeName()
+{
+	return preshape;
+}
+
 Eigen::Matrix4f Grasp::getTransformation()
 {
 	return poseTcp;
@@ -92,8 +98,11 @@ std::string Grasp::getXMLString(int tabs)
 	tt += "\t";
 	std::string ttt = tt;
 	ttt += "\t";
-	
-	ss << t << "<Grasp name='" << name << "' quality='" << quality << "' Creation='" << creation << "'>\n";
+	ss << t << "<Grasp name='" << name << "' quality='" << quality << "' Creation='" << creation;
+	if (preshape.empty())
+		 ss << "'>\n";
+	else
+		ss << "' Preshape='" << preshape << "'>\n";
 	ss << tt<< "<Transform>\n";
 	ss << MathTools::getTransformXMLString(poseTcp, ttt);
 	ss << tt << "</Transform>\n";
@@ -126,7 +135,7 @@ Eigen::Matrix4f Grasp::getObjectTargetPoseGlobal( const Eigen::Matrix4f &graspin
 
 VirtualRobot::GraspPtr Grasp::clone()
 {
-	GraspPtr result(new Grasp(name,robotType,eef,poseTcp,creation,quality));
+	GraspPtr result(new Grasp(name,robotType,eef,poseTcp,creation,quality,preshape));
 	result->setConfiguration(eefConfiguration);
 	return result;
 }
@@ -139,6 +148,11 @@ void Grasp::setConfiguration( std::map< std::string, float > &c )
 std::map< std::string, float > Grasp::getConfiguration()
 {
 	return eefConfiguration;
+}
+
+void Grasp::setPreshape( const std::string &preshapeName )
+{
+	preshape = preshapeName;
 }
 
 

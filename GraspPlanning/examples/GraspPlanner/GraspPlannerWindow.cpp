@@ -315,6 +315,7 @@ void GraspPlannerWindow::plan()
 	int start = (int)grasps->getSize()-nrGrasps-1;
 	if (start<0)
 		start = 0;
+	grasps->setPreshape(preshape);
 	for (int i=start; i<(int)grasps->getSize()-1; i++)
 	{
 		Eigen::Matrix4f m = grasps->getGrasp(i)->getTcpPoseGlobal(object->getGlobalPose());

@@ -799,7 +799,7 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInf
 	return result;
 }
 
-SoNode * CoinVisualizationFactory::getCoinVisualization( std::vector <EndEffector::ContactInfo> &contacts, float frictionConeHeight,  float frictionConeRadius, bool scaleAccordingToApproachDir )
+SoNode * CoinVisualizationFactory::getCoinVisualization( EndEffector::ContactInfoVector &contacts, float frictionConeHeight,  float frictionConeRadius, bool scaleAccordingToApproachDir )
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();

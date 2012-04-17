@@ -52,7 +52,7 @@ public:
 		the contact points are normalized by subtracting the COM
 		the contact normals are normalize to unit length
 	*/
-	virtual void setContactPoints(const std::vector<VirtualRobot::EndEffector::ContactInfo> &contactPoints);
+	virtual void setContactPoints(const VirtualRobot::EndEffector::ContactInfoVector &contactPoints);
 	virtual void setContactPoints(const std::vector<VirtualRobot::MathTools::ContactPoint> &contactPoints6d);
 
 	/*! 

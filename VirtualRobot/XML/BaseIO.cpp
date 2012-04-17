@@ -957,7 +957,7 @@ bool BaseIO::processConfigurationNode(rapidxml::xml_node<char>* configXMLNode, s
 			storeConfigDefinitions.push_back(c);
 		} else
 		{
-			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in scene's Configuration definition wiuth name '" << storeConfigName << "'." << endl);
+			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in configuration definition with name '" << storeConfigName << "'." << endl);
 		}
 
 		node = node->next_sibling();

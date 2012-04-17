@@ -78,6 +78,10 @@ public:
 	GraspSetPtr clone();
 
 	std::vector< GraspPtr > getGrasps();
+
+	//! Sets preshape string of all grasps
+	void setPreshape (const std::string &preshape);
+
 protected:
 	std::vector< GraspPtr > grasps;
 	std::string name;

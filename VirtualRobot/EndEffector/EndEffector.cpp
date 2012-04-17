@@ -101,10 +101,10 @@ void EndEffector::getStatics(std::vector<RobotNodePtr> &statics)
 	statics = this->statics;
 }
 
-std::vector<VirtualRobot::EndEffector::ContactInfo> EndEffector::closeActors(SceneObjectSetPtr obstacles, float stepSize)
+EndEffector::ContactInfoVector EndEffector::closeActors(SceneObjectSetPtr obstacles, float stepSize)
 {
 	std::vector<bool> actorCollisionStatus(actors.size(), false);
-	std::vector<ContactInfo> result;
+	EndEffector::ContactInfoVector result;
 
 	bool finished = false;
 	int loop = 0;
@@ -138,7 +138,7 @@ std::vector<VirtualRobot::EndEffector::ContactInfo> EndEffector::closeActors(Sce
 }
 
 
-std::vector<EndEffector::ContactInfo> EndEffector::closeActors( SceneObjectPtr obstacle, float stepSize /*= 0.02*/ )
+EndEffector::ContactInfoVector EndEffector::closeActors( SceneObjectPtr obstacle, float stepSize /*= 0.02*/ )
 {
 	if (!obstacle)
 		return closeActors(SceneObjectSetPtr(),stepSize);

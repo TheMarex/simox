@@ -82,11 +82,11 @@ void BasicGraspQualityMeasure::setContactPoints( const std::vector<VirtualRobot:
 	}
 }
 
-void BasicGraspQualityMeasure::setContactPoints( const std::vector<EndEffector::ContactInfo> &contactPoints )
+void BasicGraspQualityMeasure::setContactPoints( const EndEffector::ContactInfoVector &contactPoints )
 {
 	this->contactPoints.clear();
 	this->contactPointsM.clear();
-	std::vector<EndEffector::ContactInfo>::const_iterator objPointsIter;
+	EndEffector::ContactInfoVector::const_iterator objPointsIter;
 	for (objPointsIter = contactPoints.begin(); objPointsIter != contactPoints.end(); objPointsIter++)
 	{
 		MathTools::ContactPoint point;

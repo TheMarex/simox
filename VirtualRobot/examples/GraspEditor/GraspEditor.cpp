@@ -32,9 +32,9 @@ int main(int argc, char *argv[])
 
 	std::string filename1(VR_BASE_DIR "/data/objects/plate.xml");
 	std::string filename2(VR_BASE_DIR "/data/robots/ArmarIII/ArmarIII.xml");
-#if 0
-	filename1 = VR_BASE_DIR "/data/objects/plate_iCub.xml";
-	filename2 = "C:/Projects/IIT_Projects/iCubRobot/robot/iCub.xml";
+#if 1
+	filename1 = VR_BASE_DIR "/data/objects/iCub/LegoXWing_Righthand_200.xml";
+	filename2 = VR_BASE_DIR "/data/robots/iCub/iCub.xml";
 #endif
 
 	GraspEditorWindow rw(filename1,filename2);

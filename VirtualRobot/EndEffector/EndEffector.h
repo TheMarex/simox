@@ -56,6 +56,8 @@ public:
 		Eigen::Vector3f approachDirectionGlobal;	// the movement of the contact point while closing the finger (in this direction force can be applied)
 	};
 
+	typedef std::vector< ContactInfo, Eigen::aligned_allocator<ContactInfo> > ContactInfoVector;
+
 	EndEffector(const std::string& nameString, const std::vector<EndEffectorActorPtr>& actorsVector, const std::vector<RobotNodePtr>& staticPartVector, RobotNodePtr baseNodePtr, RobotNodePtr tcpNodePtr, RobotNodePtr gcpNodePtr = RobotNodePtr(), std::vector< RobotConfigPtr > preshapes = std::vector< RobotConfigPtr >());
 
 	virtual ~EndEffector();
@@ -106,8 +108,8 @@ public:
 		Closes each actor until a joint limit is hit or a collision occurred.
 		This method is intended for gripper or hand-like end-effectors.
 	*/
-	std::vector<ContactInfo> closeActors(SceneObjectSetPtr obstacles = SceneObjectSetPtr(), float stepSize = 0.02);
-	std::vector<ContactInfo> closeActors(SceneObjectPtr obstacle, float stepSize = 0.02);
+	ContactInfoVector closeActors(SceneObjectSetPtr obstacles = SceneObjectSetPtr(), float stepSize = 0.02);
+	ContactInfoVector closeActors(SceneObjectPtr obstacle, float stepSize = 0.02);
 
 	/*!
 		Opens each actor until a joint limit is hit or a collision occurred.

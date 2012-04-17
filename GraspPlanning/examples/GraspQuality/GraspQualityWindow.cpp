@@ -396,7 +396,7 @@ void GraspQualityWindow::showGWS()
 
 	GraspStudio::ContactConeGeneratorPtr cgMM(new GraspStudio::ContactConeGenerator(8,0.25f,100.0f));
 	std::vector<MathTools::ContactPoint> resultsMM;
-	std::vector<EndEffector::ContactInfo>::const_iterator objPointsIter;
+	VirtualRobot::EndEffector::ContactInfoVector::const_iterator objPointsIter;
 	for (objPointsIter = contacts.begin(); objPointsIter != contacts.end(); objPointsIter++)
 	{
 		MathTools::ContactPoint point;

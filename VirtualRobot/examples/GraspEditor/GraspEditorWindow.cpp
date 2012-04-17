@@ -342,6 +342,10 @@ void GraspEditorWindow::selectGrasp(int n)
 		Eigen::Matrix4f gp;
 		gp = currentGrasp->getTransformation().inverse();
 		gp = object->toGlobalCoordinateSystem(gp);
+		std::string preshape = currentGrasp->getPreshapeName();
+		if (!preshape.empty() && robotEEF_EEF->hasPreshape(preshape))
+			robotEEF_EEF->setPreshape(preshape);
+
 		setCurrentGrasp(gp);
 	}
 	buildVisu();

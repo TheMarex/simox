@@ -101,7 +101,7 @@ public:
 	the contact normals are normalize to unit length
 	*/
 	virtual void setContactPoints(const std::vector<VirtualRobot::MathTools::ContactPoint> &contactPoints);
-	virtual void setContactPoints(const std::vector<VirtualRobot::EndEffector::ContactInfo> &contactPoints);
+	virtual void setContactPoints(const VirtualRobot::EndEffector::ContactInfoVector &contactPoints);
 
 	virtual bool calculateGraspQuality();
 	virtual bool calculateObjectProperties();

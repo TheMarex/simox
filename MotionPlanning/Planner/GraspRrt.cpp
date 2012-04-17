@@ -776,8 +776,8 @@ float GraspRrt::calculateGraspScore(const Eigen::VectorXf &c, int nId, bool bSto
 	performanceMeasure.numberOfGraspScorings++;
 
 	rns->setJointValues(c);
-	std::vector< VirtualRobot::EndEffector::ContactInfo > contactsAll = eef->closeActors(graspCollisionObjects);
-	std::vector< VirtualRobot::EndEffector::ContactInfo > contacts;
+	VirtualRobot::EndEffector::ContactInfoVector contactsAll = eef->closeActors(graspCollisionObjects);
+	VirtualRobot::EndEffector::ContactInfoVector contacts;
 	// we only need the targetObject contacts
 	for (size_t i=0;i<contactsAll.size();i++)
 	{
@@ -924,7 +924,7 @@ ApproachDiscretizationPtr GraspRrt::getPoseRelationSphere()
 	return poseSphere;
 }
 
-void GraspRrt::getGraspInfoResult(std::vector<GraspInfo, Eigen::aligned_allocator<GraspInfo> > &storeGraspInfo)
+void GraspRrt::getGraspInfoResult(GraspRrt::GraspInfoVector &storeGraspInfo)
 {
 	graspInfoMutex.lock();
 	storeGraspInfo = grasps;

@@ -49,7 +49,7 @@ void GraspQualityMeasureWrenchSpace::setContactPoints( const std::vector<Virtual
 	GWSCalculated = false;
 }
 
-void GraspQualityMeasureWrenchSpace::setContactPoints( const std::vector<EndEffector::ContactInfo> &contactPoints )
+void GraspQualityMeasureWrenchSpace::setContactPoints( const VirtualRobot::EndEffector::ContactInfoVector &contactPoints )
 {
 	GraspQualityMeasure::setContactPoints(contactPoints);
 	GWSCalculated = false;

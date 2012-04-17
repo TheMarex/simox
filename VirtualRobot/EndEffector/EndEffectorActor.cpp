@@ -65,7 +65,7 @@ bool EndEffectorActor::moveActor(float angle)
 	return res;
 }
 
-bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, std::vector< EndEffector::ContactInfo > &storeContacts, SceneObjectSetPtr obstacles /*= SceneObjectSetPtr()*/, float angle /*= 0.02*/ )
+bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, EndEffector::ContactInfoVector &storeContacts, SceneObjectSetPtr obstacles /*= SceneObjectSetPtr()*/, float angle /*= 0.02*/ )
 {
 	if (!eef)
 	{
@@ -76,7 +76,7 @@ bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, std::vector<
 	eef->getActors(eefActors);
 	std::vector<RobotNodePtr> eefStatic;
 	eef->getStatics(eefStatic);
-	std::vector< EndEffector::ContactInfo > newContacts;
+	EndEffector::ContactInfoVector newContacts;
 
 	for(std::vector<ActorDefinition>::iterator n = actors.begin(); n != actors.end(); n++)
 	{
@@ -163,7 +163,7 @@ bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, std::vector<
 }
 
 
-bool EndEffectorActor::isColliding(EndEffectorPtr eef, SceneObjectSetPtr obstacles, std::vector< EndEffector::ContactInfo > &storeContacts, CollisionMode checkColMode)
+bool EndEffectorActor::isColliding(EndEffectorPtr eef, SceneObjectSetPtr obstacles, EndEffector::ContactInfoVector &storeContacts, CollisionMode checkColMode)
 {
 	std::vector<SceneObjectPtr> colModels = obstacles->getSceneObjects();
 	//Eigen::Vector3f contact;
@@ -258,7 +258,7 @@ bool EndEffectorActor::isColliding(EndEffectorPtr obstacle)
 	return false;
 }
 
-bool EndEffectorActor::isColliding( EndEffectorPtr eef, EndEffectorPtr obstacle, std::vector< EndEffector::ContactInfo > &storeContacts )
+bool EndEffectorActor::isColliding( EndEffectorPtr eef, EndEffectorPtr obstacle, EndEffector::ContactInfoVector &storeContacts )
 {
 	std::vector<EndEffectorActorPtr> obstacleActors;
 	obstacle->getActors(obstacleActors);
@@ -282,7 +282,7 @@ bool EndEffectorActor::isColliding( EndEffectorPtr eef, EndEffectorPtr obstacle,
 	return false;
 }
 
-bool EndEffectorActor::isColliding( EndEffectorPtr eef, EndEffectorActorPtr obstacle, std::vector< EndEffector::ContactInfo > &storeContacts )
+bool EndEffectorActor::isColliding( EndEffectorPtr eef, EndEffectorActorPtr obstacle, EndEffector::ContactInfoVector &storeContacts )
 {
 	for(std::vector<ActorDefinition>::iterator n = actors.begin(); n != actors.end(); n++)
 	{
@@ -294,7 +294,7 @@ bool EndEffectorActor::isColliding( EndEffectorPtr eef, EndEffectorActorPtr obst
 
 }
 
-bool EndEffectorActor::isColliding( EndEffectorPtr eef, SceneObjectPtr obstacle, std::vector< EndEffector::ContactInfo > &storeContacts, CollisionMode checkColMode /*= EndEffectorActor::eAll*/ )
+bool EndEffectorActor::isColliding( EndEffectorPtr eef, SceneObjectPtr obstacle, EndEffector::ContactInfoVector &storeContacts, CollisionMode checkColMode /*= EndEffectorActor::eAll*/ )
 {
 	if(!obstacle || !obstacle->getCollisionModel())
 		return false;

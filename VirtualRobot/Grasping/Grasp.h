@@ -50,7 +50,7 @@ public:
 		\param creation A custom string explaining how the grasp was created.
 		\param quality A custom quality index.
 	*/
-	Grasp(const std::string &name, const std::string &robotType, const std::string &eef, const Eigen::Matrix4f &poseInTCPCoordSystem, const std::string &creation= std::string(""), float quality = 0.0f);
+	Grasp(const std::string &name, const std::string &robotType, const std::string &eef, const Eigen::Matrix4f &poseInTCPCoordSystem, const std::string &creation= std::string(""), float quality = 0.0f, const std::string &eefPreshape= std::string(""));
 
 	/*!
 	*/
@@ -59,6 +59,7 @@ public:
 	void print(bool printDecoration = true);
 
 	void setName(const std::string &name);
+	void setPreshape(const std::string &preshapeName);
 
 	/*!
 		Get the (current) global pose of the target object when the grasp is applied on the corresponding EEF of robot. 
@@ -88,6 +89,7 @@ public:
 	std::string getRobotType();
 	std::string getEefName();
 	std::string getCreationMethod();
+	std::string getPreshapeName();
 	float getQuality();
 
 	/*!
@@ -122,7 +124,7 @@ protected:
 	std::string creation;
 	float quality;
 		
-
+	std::string preshape;		//!< Optionally an eef-preshape can be defined.
 };
 
 } // namespace

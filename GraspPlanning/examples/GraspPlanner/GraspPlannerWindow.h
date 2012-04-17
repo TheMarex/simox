@@ -90,7 +90,7 @@ protected:
 	VirtualRobot::GraspSetPtr grasps;
 
 
-	std::vector< VirtualRobot::EndEffector::ContactInfo > contacts;
+	VirtualRobot::EndEffector::ContactInfoVector contacts;
 
 	
 	std::string robotFile;

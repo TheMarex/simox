@@ -102,7 +102,7 @@ protected:
 	VirtualRobot::EndEffectorPtr eef;
 	std::vector< VirtualRobot::EndEffectorPtr > eefs;
 
-	std::vector< VirtualRobot::EndEffector::ContactInfo > contacts;
+	VirtualRobot::EndEffector::ContactInfoVector contacts;
 
 	
 	std::string robotFile;

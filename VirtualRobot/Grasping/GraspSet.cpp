@@ -173,6 +173,12 @@ std::vector< GraspPtr > GraspSet::getGrasps()
 	return res;
 }
 
+void GraspSet::setPreshape( const std::string &preshape )
+{
+	for (size_t i=0;i<grasps.size();i++)
+		grasps[i]->setPreshape(preshape);
+}
+
 
 
 } //  namespace

@@ -106,11 +106,14 @@ public:
 		int rrtNodeId;
 		float graspScore;
 		float distanceToObject;
-		std::vector<VirtualRobot::EndEffector::ContactInfo> contacts;
+		VirtualRobot::EndEffector::ContactInfoVector contacts;
 	};
 
+	typedef std::vector< GraspInfo, Eigen::aligned_allocator<GraspInfo> > GraspInfoVector;
+
+
 	//! Stores all found grasps to given vector (thread safe)
-	void getGraspInfoResult(std::vector<GraspInfo, Eigen::aligned_allocator<GraspInfo> > &vStoreGraspInfo);
+	void getGraspInfoResult(GraspInfoVector &vStoreGraspInfo);
 	    
 	//! Returns a specific grasp result (thread safe)
 	bool getGraspInfoResult(int index, GraspInfo &storeGraspInfo);
@@ -232,7 +235,7 @@ protected:
 	float cartSamplingOriStepSize,cartSamplingPosStepSize;
 
 
-	std::vector<GraspInfo, Eigen::aligned_allocator<GraspInfo> > grasps;
+	GraspInfoVector grasps;
 
 	ApproachDiscretizationPtr poseSphere;
 

@@ -37,7 +37,7 @@ public:
 
 	enum type
 	{
-		eIntensity, eHot, eRed, eGreen, eBlue, eHotAlpha
+		eIntensity, eHot, eRed, eGreen, eBlue, eHotAlpha, eRedAlpha, eBlueAlpha, eGreenAlpha
 	};
 	ColorMap(type t);
 
@@ -51,7 +51,14 @@ public:
 	VirtualRobot::VisualizationFactory::Color getColor(float position) const;
 	bool getColor(float position, VirtualRobot::VisualizationFactory::Color &storeColor) const;
 
+	//! Custom color maps can be created with this method.
+	static ColorMap customColorMap(std::vector< VirtualRobot::VisualizationFactory::Color > colors);
+
 protected:
+	ColorMap();
+
+	bool addColorKey(const unsigned char R, const unsigned char G, const unsigned char B, const unsigned char A, const float Position);
+
 	void create (type t);
 	struct ColorKey
 	{
@@ -61,7 +68,6 @@ protected:
 	};
 	void sort();
 	static bool CompareColorKey(const ColorKey& lhs, const ColorKey& rhs);
-	bool addColorKey(const unsigned char R, const unsigned char G, const unsigned char B, const unsigned char A, const float Position);
 
 	std::vector<ColorKey> colorKeys;
 	std::vector<float> intervals;

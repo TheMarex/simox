@@ -72,7 +72,7 @@ bool GraspQualityMeasureWrenchSpace::isGraspForceClosure()
 
 void GraspQualityMeasureWrenchSpace::calculateOWS(int samplePoints)
    {
-	bool printAll = false;
+	bool printAll = true;
 	bool bRes = sampleObjectPoints(samplePoints);
 	if (!bRes)
 		return;

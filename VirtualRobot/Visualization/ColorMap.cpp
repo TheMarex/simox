@@ -17,6 +17,10 @@ ColorMap::ColorMap( type t )
 	create (t);
 }
 
+ColorMap::ColorMap( )
+{
+}
+
 ColorMap::~ColorMap()
 {
 
@@ -96,6 +100,10 @@ void ColorMap::create(type t)
 		addColorKey(0, 0, 0, 255, 0.0f);
 		addColorKey(255, 0, 0, 255, 1.0f);
 		break;
+	case eRedAlpha:
+		addColorKey(0, 0, 0, 0, 0.0f);
+		addColorKey(255, 0, 0, 255, 1.0f);
+		break;
 	/*case eGrayToRed:
 		addColorKey(64, 64, 64, 255, 0.0f);
 		addColorKey(255, 0, 0, 255, 1.0f);
@@ -104,8 +112,16 @@ void ColorMap::create(type t)
 		addColorKey(0, 0, 0, 255, 0.0f);
 		addColorKey(0, 255, 0, 255, 1.0f);
 		break;
+	case eGreenAlpha:
+		addColorKey(0, 0, 0, 0, 0.0f);
+		addColorKey(0, 255, 0, 255, 1.0f);
+		break;
 	case eBlue:
 		addColorKey(0, 0, 0, 255, 0.0f);
+		addColorKey(0, 0, 255, 255, 1.0f);
+		break;
+	case eBlueAlpha:
+		addColorKey(0, 0, 0, 0, 0.0f);
 		addColorKey(0, 0, 255, 255, 1.0f);
 		break;
 	}
@@ -185,6 +201,28 @@ bool ColorMap::getColor( float position, VirtualRobot::VisualizationFactory::Col
 	}
 	storeColor = VirtualRobot::VisualizationFactory::Color::None();
 	return false;
+}
+
+ColorMap ColorMap::customColorMap( std::vector< VirtualRobot::VisualizationFactory::Color > colors )
+{
+	VR_ASSERT(colors.size()>0);
+	ColorMap c;
+
+	c.addColorKey((unsigned char)(colors[0].r*255.0f+0.5f),(unsigned char)(colors[0].g*255.0f+0.5f),(unsigned char)(colors[0].b*255.0f+0.5f),255-(unsigned char)(colors[0].transparency*255.0f+0.5f),0.0f);
+	if (colors.size()==1)
+	{
+		c.addColorKey((unsigned char)(colors[0].r*255.0f+0.5f),(unsigned char)(colors[0].g*255.0f+0.5f),(unsigned char)(colors[0].b*255.0f+0.5f),255-(unsigned char)(colors[0].transparency*255.0f+0.5f),1.0f);
+		return c;
+	}
+
+	float step = 1.0f / (float)(colors.size()-1);
+	float act = 0.0f;
+	for (size_t i=1;i<colors.size();i++)
+	{
+		act += step;
+		c.addColorKey((unsigned char)(colors[i].r*255.0f+0.5f),(unsigned char)(colors[i].g*255.0f+0.5f),(unsigned char)(colors[i].b*255.0f+0.5f),255-(unsigned char)(colors[i].transparency*255.0f+0.5f),act);
+	}
+	return c;
 }
 
 

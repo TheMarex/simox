@@ -63,6 +63,7 @@ bool GraspQualityMeasure::sampleObjectPoints(int nMaxFaces)
 		objectPoint.n = iFaceIter->normal;
 		objectPoint.n.normalize();
 		objectPoint.n *= unitForce;
+		objectPoint.force = 1.0f;
 		
 		// move points so that object is located at origin
 		objectPoint.p -= centerOfModel;

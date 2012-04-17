@@ -56,7 +56,11 @@ GraspPlannerWindow::GraspPlannerWindow(std::string &robFile, std::string &eefNam
     frictionConeSep = new SoSeparator;
 	graspsSep = new SoSeparator;
 	graspsSep->ref();
-	
+
+#if 0
+	SoSeparator *s = CoinVisualizationFactory::CreateCoordSystemVisualization();
+	sceneSep->addChild(s);
+#endif
 	sceneSep->addChild(robotSep);
 	sceneSep->addChild(objectSep);
 	sceneSep->addChild(frictionConeSep);
@@ -263,6 +267,7 @@ void GraspPlannerWindow::loadObject()
 	//object->getCollisionModel()->getTriMeshModel()->getSize(minS,maxS);
 	//cout << "minS: \n" << minS << "\nMaxS:\n" << maxS << endl;
 	qualityMeasure.reset(new GraspStudio::GraspQualityMeasureWrenchSpace(object));
+	//qualityMeasure->setVerbose(true);
 	qualityMeasure->calculateObjectProperties();
 	approach.reset(new GraspStudio::ApproachMovementSurfaceNormal(object,eef));
 	eefCloned = approach->getEEFRobotClone();

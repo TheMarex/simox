@@ -52,6 +52,18 @@ ContactConeGenerator::~ContactConeGenerator()
 
 void ContactConeGenerator::computeConePoints( const VirtualRobot::MathTools::ContactPoint &point, std::vector<VirtualRobot::MathTools::ContactPoint> &storeConePoints )
 {
+	bool printInfo = false;
+	if (printInfo)
+	{
+		cout << "Compute Cone Points" << endl;
+		cout << "Point.p:" << endl;
+		cout << point.p << endl;
+		cout << "Point.n:" << endl;
+		cout << point.n << endl;
+		cout << "Point.force:" << endl;
+		cout << point.force << endl;
+		cout << "storeConePoints.size():" << storeConePoints.size() << endl;
+	}
 	//Rotate generic friction cone to align with object normals
 	Eigen::Vector3f upRightNormal(0.0f,0.0f,1.0f);
 	MathTools::Quaternion objNormalRot =  MathTools::getRotation(upRightNormal,point.n);
@@ -60,6 +72,8 @@ void ContactConeGenerator::computeConePoints( const VirtualRobot::MathTools::Con
     Eigen::Vector3f conePoint;
 	
 	float scaleFactor = point.force;
+	if (printInfo)
+		cout << "frictionConeSamples:" << frictionConeSamples << endl;
 	for (int i = 0; i < frictionConeSamples; i++)
 	{
 		VirtualRobot::MathTools::ContactPoint newConePoint;
@@ -68,13 +82,36 @@ void ContactConeGenerator::computeConePoints( const VirtualRobot::MathTools::Con
 		newConePoint.p = conePoint + point.p;
 		newConePoint.n = conePoint;
 		newConePoint.n.normalize();
+		newConePoint.force = point.force;
+		if (printInfo)
+		{
+			cout << "Loop " << i << endl;
+			cout << "newConePoint.p:" << endl;
+			cout << newConePoint.p << endl;
+			cout << "newConePoint.n:" << endl;
+			cout << newConePoint.n << endl;
+			cout << "newConePoint.force:" << endl;
+			cout << newConePoint.force << endl;
+		}
 		storeConePoints.push_back(newConePoint);
 	}
 }
 
 void ContactConeGenerator::computeConePoints(const VirtualRobot::MathTools::ContactPoint &point, std::vector<Eigen::Vector3f> &storeConePoints)
 {
-    //Rotate generic friction cone to align with object normals
+	bool printInfo = false;
+	if (printInfo)
+	{
+		cout << "Compute Cone Points" << endl;
+		cout << "Point.p:" << endl;
+		cout << point.p << endl;
+		cout << "Point.n:" << endl;
+		cout << point.n << endl;
+		cout << "Point.force:" << endl;
+		cout << point.force << endl;
+		cout << "storeConePoints.size():" << storeConePoints.size() << endl;
+	}
+	//Rotate generic friction cone to align with object normals
 	Eigen::Vector3f upRightNormal(0.0f,0.0f,1.0f);
 	MathTools::Quaternion objNormalRot =  MathTools::getRotation(upRightNormal,point.n); // invert?!
     Eigen::Matrix4f objNormalTrafo = MathTools::quat2eigen4f(objNormalRot);
@@ -82,12 +119,20 @@ void ContactConeGenerator::computeConePoints(const VirtualRobot::MathTools::Cont
     Eigen::Vector3f conePoint;
 
 	float scaleFactor = point.force;
+	if (printInfo)
+		cout << "frictionConeSamples:" << frictionConeSamples << endl;
 	for (int i = 0; i < frictionConeSamples; i++)
 	{
 		Eigen::Vector3f newConePoint;
 		Eigen::Vector3f conePointOrg = frictionConeRimPoints[i]*scaleFactor;
 		conePoint = MathTools::transformPosition(conePointOrg,objNormalTrafo);
 		newConePoint = conePoint + point.p;
+		if (printInfo)
+		{
+			cout << "Loop " << i << endl;
+			cout << "newConePoint:" << endl;
+			cout << newConePoint << endl;
+		}
 		storeConePoints.push_back(newConePoint);
 	}
 }

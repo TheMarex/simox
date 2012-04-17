@@ -149,11 +149,19 @@ void reachabilityWindow::reachVisu()
 	reachabilityVisuSep->removeAllChildren();
 	if (UI.checkBoxReachabilityVisu->checkState() == Qt::Checked)
 	{
-		SoNode* visualisationNode = CoinVisualizationFactory::getCoinVisualization(reachSpace,VirtualRobot::ColorMap::eHot,axisTCP,true);
+		SoNode* visualisationNode = CoinVisualizationFactory::getCoinVisualization(reachSpace,VirtualRobot::ColorMap(VirtualRobot::ColorMap::eHot),axisTCP,true);
 	
-		// different visualization
-		//SoNode* visualisationNode = CoinVisualizationFactory::getCoinVisualization(reachSpace,VirtualRobot::ColorMap::eRed,true);
-		
+		// different visualization		
+		/*
+		std::vector< VirtualRobot::VisualizationFactory::Color > colors;
+		VirtualRobot::VisualizationFactory::Color c1(0.5f,0.1f,0.1f,0.0f);
+		VirtualRobot::VisualizationFactory::Color c2(1.0f,0.1f,0.1f,0.0f);
+		colors.push_back(c1);
+		colors.push_back(c2);
+		VirtualRobot::ColorMap c = VirtualRobot::ColorMap::customColorMap(colors);
+		SoNode* visualisationNode = CoinVisualizationFactory::getCoinVisualization(reachSpace,c,true);
+		*/		
+
 		if (visualisationNode)
 			reachabilityVisuSep->addChild(visualisationNode);
 	}

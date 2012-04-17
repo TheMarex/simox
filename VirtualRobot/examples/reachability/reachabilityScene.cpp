@@ -17,7 +17,7 @@
 
 #include "reachabilityWindow.h"
 
-#define ICUB
+//#define ICUB
 //#define AXIS_X
 
 // --robot robots/iCub/iCub_LeftHand_Extended.xml

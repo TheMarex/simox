@@ -4,7 +4,7 @@
 #include <VirtualRobot/XML/RobotIO.h>
 #include <VirtualRobot/Visualization/VisualizationFactory.h>
 #include <VirtualRobot/Visualization/CoinVisualization/CoinVisualization.h>
-
+#include <VirtualRobot/RuntimeEnvironment.h>
 
 
 #include <Inventor/Qt/viewers/SoQtExaminerViewer.h>
@@ -33,10 +33,19 @@ int main(int argc, char *argv[])
 	std::string filename1(VR_BASE_DIR "/data/objects/plate.xml");
 	std::string filename2(VR_BASE_DIR "/data/robots/ArmarIII/ArmarIII.xml");
 #if 1
-	filename1 = VR_BASE_DIR "/data/objects/iCub/LegoXWing_Righthand_200.xml";
+	filename1 = VR_BASE_DIR "/data/objects/iCub/LegoXWing_RightHand_200.xml";
 	filename2 = VR_BASE_DIR "/data/robots/iCub/iCub.xml";
 #endif
 
+
+	VirtualRobot::RuntimeEnvironment::considerKey("object");
+	
+	VirtualRobot::RuntimeEnvironment::processCommandLine(argc,argv);
+	VirtualRobot::RuntimeEnvironment::print();
+
+	std::string objFile = VirtualRobot::RuntimeEnvironment::getValue("object");
+	if (!objFile.empty() && VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(objFile))
+		filename1 = objFile;
 	GraspEditorWindow rw(filename1,filename2);
 
 	rw.main();

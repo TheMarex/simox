@@ -1,0 +1,96 @@
+#Inventor V2.1 ascii
+
+Separator
+{
+RotationXYZ {
+    angle 1.57
+    axis Y
+}
+Transform {
+	translation 0 0 -70
+}      
+
+# bottom
+Separator {
+    Transform {
+		translation 0 -32 0
+    }      
+    File {name lego_duplo_plate4x8_4672_blue.wrl }
+}
+Separator {
+    Transform {
+		translation 0 32 0
+    }      
+    File {name lego_duplo_plate4x8_4672_blue.wrl }
+}
+
+# to top
+
+Separator {
+    Transform {
+		translation 0 0 0
+    }      
+    File {name duplo_2x2_yellow.wrl }
+}
+
+
+Separator {
+    Transform {
+		translation 0 0 20
+    }      
+    File {name duplo_2x2_yellow.wrl }
+}
+
+Separator {
+    Transform {
+		translation 0 0 40
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 0 0 60
+    }      
+    File {name duplo_2x2_yellow.wrl }
+}
+
+Separator {
+    Transform {
+		translation 0 0 80
+    }      
+    File {name duplo_2x2_red.wrl }
+}
+
+Separator {
+    Transform {
+		translation 0 0 100
+    }      
+    File {name duplo_2x2_yellow.wrl }
+}
+
+Separator {
+    Transform {
+		translation 0 0 120
+    }      
+    File {name duplo_2x2_yellow.wrl }
+}
+
+
+# top
+Separator {
+    Transform {
+		translation 0 -32 150
+    }      
+    File {name lego_duplo_plate4x8_4672_blue.wrl }
+}
+Separator {
+    Transform {
+		translation 0 32 150
+    }      
+    File {name lego_duplo_plate4x8_4672_blue.wrl }
+}
+
+
+
+}

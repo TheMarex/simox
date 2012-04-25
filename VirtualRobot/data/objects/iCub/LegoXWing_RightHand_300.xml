@@ -1,9 +1,9 @@
 <ManipulationObject name='LegoGate'>
 	<Visualization>
-		<File type='inventor'>C:/Projects/Simox2/VirtualRobot/data/objects/iv/lego_xwing.iv</File>
+		<File type='inventor'>objects/iv/lego_xwing.iv</File>
 	</Visualization>
 	<CollisionModel>
-		<File type='inventor'>C:/Projects/Simox2/VirtualRobot/data/objects/iv/lego_xwing_col.iv</File>
+		<File type='inventor'>objects/iv/lego_xwing_col.iv</File>
 	</CollisionModel>
 	<GraspSet name='Grasp Planner - Right Hand' RobotType='iCub' EndEffector='Right Hand'>
 		<Grasp name='Grasp 1' quality='0.283145' Creation='Simox - GraspStudio - GraspWrenchSpace' Preshape='Grasp Preshape'>

@@ -48,8 +48,12 @@ public:
 
 	/*!
 	    To generate approach movements an object and an end effector has to be specified.
+		\param object The object.
+		\param eef The end effector.
+		\param graspPreshape An optional preshape that can be used in order to "open" the eef.
+		\param maxRandDist If >0, the resulting apporach pose is randomly moved in the approach direction (away from the object) in order to create different distances to the object.
 	*/
-	ApproachMovementSurfaceNormal(VirtualRobot::SceneObjectPtr object, VirtualRobot::EndEffectorPtr eef);
+	ApproachMovementSurfaceNormal(VirtualRobot::SceneObjectPtr object, VirtualRobot::EndEffectorPtr eef, const std::string &graspPreshape, float maxRandDist = 0.0f);
 	//! destructor
 	virtual ~ApproachMovementSurfaceNormal();
 
@@ -65,8 +69,8 @@ public:
 	void moveEEFAway(const Eigen::Vector3f &approachDir, float step, int maxLoops = 1000);
 
 protected:
+	float randomDistanceMax;
 
-	void openHand();
 };
 }
 

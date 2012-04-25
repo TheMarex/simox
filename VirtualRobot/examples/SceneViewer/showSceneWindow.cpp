@@ -75,11 +75,11 @@ void showSceneWindow::setupUI()
 
 	connect(UI.horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(sliderMoved(int)));
 
-	/*connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeHand()));
-	connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openHand()));
-	connect(UI.comboBoxEndEffector, SIGNAL(activated(int)), this, SLOT(selectEEF(int)));
+	connect(UI.pushButtonEEFClose, SIGNAL(clicked()), this, SLOT(closeHand()));
+	connect(UI.pushButtonEEFOpen, SIGNAL(clicked()), this, SLOT(openHand()));
+	connect(UI.comboBoxEEF, SIGNAL(activated(int)), this, SLOT(selectEEF(int)));
 
-
+	/*
 	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(collisionModel()));
 	connect(UI.checkBoxStructure, SIGNAL(clicked()), this, SLOT(robotStructure()));
 	UI.checkBoxFullModel->setChecked(true);
@@ -196,6 +196,7 @@ void showSceneWindow::loadScene()
 		return;
 	}
 
+
 	/*std::vector<VirtualRobot::ManipulationObjectPtr> mo;
 	mo = scene->getManipulationObjects();
 	cout << "Printing " << mo.size() << " objects" << endl;
@@ -235,10 +236,7 @@ void showSceneWindow::loadScene()
 	else
 		selectJoint(0);
 
-	if (eefs.size()==0)
-		selectEEF(-1);
-	else
-		selectEEF(0);
+	
 
 	displayTriangles();
 
@@ -254,6 +252,7 @@ void showSceneWindow::selectRobot(int nr)
 {
 	UI.comboBoxRobotConfig->clear();
 	UI.comboBoxTrajectory->clear();
+	UI.comboBoxEEF->clear();
 	currentRobot.reset();
 	if (nr<0 || nr>=UI.comboBoxRobot->count() || !scene)
 		return;
@@ -276,6 +275,17 @@ void showSceneWindow::selectRobot(int nr)
 	}
 	if (tr.size()>0)
 		UI.comboBoxTrajectory->setCurrentIndex(0);
+
+	
+	std::vector<VirtualRobot::EndEffectorPtr> eefs = currentRobot->getEndEffectors();
+	for (size_t i=0;i<eefs.size();i++)
+	{
+		QString rn = eefs[i]->getName().c_str();
+		UI.comboBoxEEF->addItem(rn);
+	}
+
+	selectEEF(0);
+
 
 	selectRobotConfig(0);
 	selectTrajectory(0);
@@ -304,6 +314,16 @@ void showSceneWindow::selectTrajectory(int nr)
 	
 	currentTrajectory = scene->getTrajectory(UI.comboBoxTrajectory->currentText().toStdString());
 	sliderMoved(0);
+}
+
+void showSceneWindow::selectEEF(int nr)
+{
+	if (nr<0 || nr>=UI.comboBoxEEF->count() || !currentRobot)
+	{
+		currentEEF.reset();
+		return;
+	}
+	currentEEF = currentRobot->getEndEffector(UI.comboBoxEEF->currentText().toStdString());
 }
 
 void showSceneWindow::selectObject(int nr)
@@ -351,5 +371,28 @@ void showSceneWindow::updateGui()
 		UI.comboBoxRobot->setCurrentIndex(0);
 		selectObject(0);
 	}
+}
+
+void showSceneWindow::closeHand()
+{
+	if (!currentEEF)
+		return;
+
+	VirtualRobot::SceneObjectPtr so;
+	if (UI.comboBoxObject->currentIndex()>=0)
+	{
+		if (UI.comboBoxObject->currentIndex()<(int)scene->getManipulationObjects().size())
+			so = scene->getManipulationObject(UI.comboBoxObject->currentText().toStdString());
+		else
+			so = scene->getObstacle(UI.comboBoxObject->currentText().toStdString());
+	}
+	currentEEF->closeActors(so);
+}
+
+void showSceneWindow::openHand()
+{	
+	if (!currentEEF)
+		return;
+	currentEEF->openActors();
 }
 

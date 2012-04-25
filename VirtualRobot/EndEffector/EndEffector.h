@@ -56,6 +56,7 @@ public:
 		Eigen::Vector3f approachDirectionGlobal;	// the movement of the contact point while closing the finger (in this direction force can be applied)
 	};
 
+	//! We need an Eigen::aligned_allocator here, otherwise access to a std::vector could crash
 	typedef std::vector< ContactInfo, Eigen::aligned_allocator<ContactInfo> > ContactInfoVector;
 
 	EndEffector(const std::string& nameString, const std::vector<EndEffectorActorPtr>& actorsVector, const std::vector<RobotNodePtr>& staticPartVector, RobotNodePtr baseNodePtr, RobotNodePtr tcpNodePtr, RobotNodePtr gcpNodePtr = RobotNodePtr(), std::vector< RobotConfigPtr > preshapes = std::vector< RobotConfigPtr >());
@@ -147,6 +148,11 @@ public:
 		\return false if preshape was not registered, otherwise true
 	*/
 	bool setPreshape(const std::string &name);
+
+	/*!
+		Returns vector of all registered preshape names.
+	*/
+	std::vector<std::string> getPreshapes();
 
 	/*!
 		Check, if node is part of this eef.

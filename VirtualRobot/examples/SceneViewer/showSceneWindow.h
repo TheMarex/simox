@@ -49,9 +49,13 @@ public slots:
 
 	void selectRobot(int nr);
 	void selectObject(int nr);
+	void selectEEF(int nr);
 	void selectRobotConfig(int nr);
 	void selectTrajectory(int nr);
 	void sliderMoved(int pos);
+
+	void closeHand();
+	void openHand();
 
 	SoQtExaminerViewer* getExaminerViewer(){return viewer;};
 
@@ -70,6 +74,7 @@ protected:
 	SoSeparator *graspVisu;
 	VirtualRobot::RobotPtr currentRobot;
 	VirtualRobot::TrajectoryPtr currentTrajectory;
+	VirtualRobot::EndEffectorPtr currentEEF;
 
 	VirtualRobot::ScenePtr scene;
 	std::string sceneFile;

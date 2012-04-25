@@ -11,8 +11,8 @@ using namespace std;
 namespace GraspStudio
 {
 
-ApproachMovementGenerator::ApproachMovementGenerator( VirtualRobot::SceneObjectPtr object, VirtualRobot::EndEffectorPtr eef )
-    : object(object), eef(eef)
+ApproachMovementGenerator::ApproachMovementGenerator( VirtualRobot::SceneObjectPtr object, VirtualRobot::EndEffectorPtr eef, const std::string &graspPreshape )
+    : object(object), eef(eef), graspPreshape(graspPreshape)
 {
 	name = "ApproachMovementGenerator";
 	THROW_VR_EXCEPTION_IF(!object, "NULL object?!");
@@ -31,6 +31,12 @@ ApproachMovementGenerator::ApproachMovementGenerator( VirtualRobot::SceneObjectP
 	eef_cloned = eefRobot->getEndEffector(eef->getName());
     THROW_VR_EXCEPTION_IF(!eef_cloned, "No EEF with name " << eef->getName() << " in cloned robot?!");
     THROW_VR_EXCEPTION_IF(!eef_cloned->getGCP(), "No GCP in EEF with name " << eef->getName());
+
+	if (!graspPreshape.empty())
+	{
+		THROW_VR_EXCEPTION_IF(!eef_cloned->hasPreshape(graspPreshape),"Preshape with name " << graspPreshape << " not present in EEF");
+		eef_cloned->setPreshape(graspPreshape);
+	}
 }
 
 ApproachMovementGenerator::~ApproachMovementGenerator()
@@ -98,6 +104,19 @@ VirtualRobot::EndEffectorPtr ApproachMovementGenerator::getEEFOriginal()
 std::string ApproachMovementGenerator::getName()
 {
 	return name;
+}
+
+
+void ApproachMovementGenerator::openHand()
+{
+	if (eef_cloned)
+	{
+		if (!graspPreshape.empty())
+		{
+			eef_cloned->setPreshape(graspPreshape);
+		} else
+			eef_cloned->openActors();
+	}
 }
 
 }

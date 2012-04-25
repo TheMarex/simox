@@ -429,11 +429,17 @@ float EndEffector::getApproximatedLength()
 
 
 
-
-
-
-
-
+std::vector<std::string> EndEffector::getPreshapes()
+{
+	std::vector<std::string> res;
+	std::map< std::string, RobotConfigPtr >::iterator it = preshapes.begin();
+	while (it != preshapes.end())
+	{
+		res.push_back(it->first);
+		it++;
+	}
+	return res;
+}
 
 
 } // namespace VirtualRobot

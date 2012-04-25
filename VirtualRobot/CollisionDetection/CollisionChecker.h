@@ -66,12 +66,21 @@ public:
 	virtual float calculateDistance (SceneObjectSetPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
 	virtual float calculateDistance (CollisionModelPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
 	virtual float calculateDistance (CollisionModelPtr model1, CollisionModelPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
+	
 	/*! 
 		Test if the two models are colliding.
 		Returns true on collision.
 	*/
 	virtual bool checkCollision (SceneObjectSetPtr model1, SceneObjectSetPtr model2);
+	/*! 
+		Test if the two models are colliding.
+		Returns true on collision.
+	*/
 	virtual bool checkCollision (CollisionModelPtr model1, SceneObjectSetPtr model2);
+	/*! 
+		Test if the two models are colliding.
+		Returns true on collision.
+	*/
 	virtual bool checkCollision (CollisionModelPtr model1, CollisionModelPtr model2);//, Eigen::Vector3f *storeContact = NULL);
 	//virtual bool getAllCollisonTriangles (SceneObjectSetPtr model1, SceneObjectSetPtr model2, std::vector<int> &storePairs);
 
@@ -111,11 +120,16 @@ public:
 	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectPtr model2);
 	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
 	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
+
 	/*! 
 		Test if the two models are colliding.
 		Returns true on collision.
 	*/
 	virtual bool checkCollision (SceneObjectPtr model1, SceneObjectSetPtr model2);
+	/*! 
+		Test if the two models are colliding.
+		Returns true on collision.
+	*/
 	virtual bool checkCollision (SceneObjectPtr model1, SceneObjectPtr model2);
 
 

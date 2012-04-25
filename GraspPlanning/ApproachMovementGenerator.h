@@ -45,8 +45,11 @@ public:
 	/*!
 	    To generate approach movements an object and an end effector has to be specified.
 		Internally a clone of the EEF is used.
+		\param object The object.
+		\param eef The eef.
+		\param graspPreshape An optional preshape that can be used in order to "open" the eef.
 	*/
-	ApproachMovementGenerator(VirtualRobot::SceneObjectPtr object, VirtualRobot::EndEffectorPtr eef);
+	ApproachMovementGenerator(VirtualRobot::SceneObjectPtr object, VirtualRobot::EndEffectorPtr eef, const std::string &graspPreshape="");
 	    
 	//! destructor
 	virtual ~ApproachMovementGenerator();
@@ -83,6 +86,8 @@ public:
 	std::string getName();
 protected:
 
+	virtual void openHand();
+
 	VirtualRobot::SceneObjectPtr object;
 	VirtualRobot::TriMeshModelPtr objectModel;
 	VirtualRobot::EndEffectorPtr eef;
@@ -92,6 +97,7 @@ protected:
 	VirtualRobot::EndEffectorPtr eef_cloned;
 
 	std::string name;
+	std::string graspPreshape;
 };
 
 }

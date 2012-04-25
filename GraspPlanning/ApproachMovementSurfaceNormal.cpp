@@ -17,10 +17,11 @@ using namespace std;
 namespace GraspStudio
 {
 
-ApproachMovementSurfaceNormal::ApproachMovementSurfaceNormal( VirtualRobot::SceneObjectPtr object, VirtualRobot::EndEffectorPtr eef )
-:ApproachMovementGenerator( object, eef )
+ApproachMovementSurfaceNormal::ApproachMovementSurfaceNormal( VirtualRobot::SceneObjectPtr object, VirtualRobot::EndEffectorPtr eef, const std::string &graspPreshape, float maxRandDist )
+	:ApproachMovementGenerator( object, eef, graspPreshape )
 {
 	name = "ApproachMovementSurfaceNormal";
+	randomDistanceMax = maxRandDist;
 }
 
 ApproachMovementSurfaceNormal::~ApproachMovementSurfaceNormal()
@@ -66,7 +67,23 @@ Eigen::Matrix4f ApproachMovementSurfaceNormal::createNewApproachPose()
 
     // move away until valid
 	moveEEFAway(approachDir,3.0f);
+
 	Eigen::Matrix4f poseB = getEEFPose();
+
+
+	// check if a random distance is wanted
+	if (randomDistanceMax>0)
+	{
+		float d = (float)(rand()%10000)*0.0001f * randomDistanceMax;
+		Eigen::Vector3f delta = approachDir * d;
+		updateEEFPose(delta);
+		if (!eef_cloned->getCollisionChecker()->checkCollision(object,eef->createSceneObjectSet()))
+		{
+			poseB = getEEFPose();
+		} // else remain at original pose
+
+	}
+
 	   
 	// restore original pose
 	setEEFPose(pose);
@@ -134,15 +151,6 @@ bool ApproachMovementSurfaceNormal::setEEFToApproachPose(const Eigen::Vector3f &
 
 	setEEFPose(poseFinal);
 	return true;
-}
-
-
-void ApproachMovementSurfaceNormal::openHand()
-{
-	if (eef_cloned)
-	{
-		eef_cloned->openActors();
-	}
 }
 
 void ApproachMovementSurfaceNormal::moveEEFAway(const Eigen::Vector3f &approachDir, float step, int maxLoops)

@@ -7,7 +7,7 @@ function(VirtualRobotQtApplication name srcs incs mocFiles uiFiles)
     qt4_wrap_cpp(generatedMocFiles ${mocFiles})
     MESSAGE (STATUS "Qt ui files: ${uiFiles}")
     qt4_wrap_ui(generatedUiFiles ${uiFiles})
-    INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+    INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} )
 
     ################################## EXECUTABLE ##############################
     ADD_EXECUTABLE(${name} ${srcs} ${incs} ${generatedUiFiles} ${generatedMocFiles})

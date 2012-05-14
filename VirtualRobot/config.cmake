@@ -70,6 +70,28 @@ IF (NOT VIRTUAL_ROBOT_CONFIGURED)
 		ELSE()
 			MESSAGE(STATUS "Configuring Release build")
 		ENDIF()
+		
+		# use, i.e. don't skip the full RPATH for the build tree
+		SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+		# when building, don't use the install RPATH already
+		# (but later on when installing)
+		SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+
+		SET(CMAKE_INSTALL_RPATH "${VIRTUAL_ROBOT_LIB_DIR}")
+
+		# add the automatically determined parts of the RPATH
+		# which point to directories outside the build tree to the install RPATH
+		SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+
+		# the RPATH to be used when installing, but only if it's not a system directory
+		LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${VIRTUAL_ROBOT_LIB_DIR}" isSystemDir)
+		IF("${isSystemDir}" STREQUAL "-1")
+		   SET(CMAKE_INSTALL_RPATH "${VIRTUAL_ROBOT_LIB_DIR}")
+		ENDIF("${isSystemDir}" STREQUAL "-1")
+
+
     ELSE(UNIX)
     	# We are on Windows
     	SET(VIRTUAL_ROBOT_TEST_DIR ${VIRTUAL_ROBOT_BIN_DIR})

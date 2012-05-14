@@ -20,5 +20,5 @@ IF(SIMOX_VISUALIZATION AND SIMOX_USE_COIN_VISUALIZATION)
         ${PROJECT_SOURCE_DIR}/GraspRrt.ui
     )
 
-    simox_add_example("${PROJECT_NAME}" "${demo_SRCS}" "${demo_INCS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
+    SimoxQtApplication("${PROJECT_NAME}" "${demo_SRCS}" "${demo_INCS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
 ENDIF()

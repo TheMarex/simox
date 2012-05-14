@@ -20,10 +20,11 @@ int main(int argc, char *argv[])
 	SoQt::init(argc,argv,"IKRRT");
 	cout << " --- START --- " << endl;
 
-	//std::string filename1(VR_BASE_DIR "/data/objects/plate.xml");
-	std::string robot(SIMOX_BASE_DIR "/VirtualRobot/data/robots/ArmarIII/ArmarIII.xml");
-	//std::string object(SIMOX_BASE_DIR "/VirtualRobot/data/objects/wok.xml");
-	std::string object(SIMOX_BASE_DIR "/VirtualRobot/data/objects/riceBox.xml");
+	std::string robot("robots/ArmarIII/ArmarIII.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robot);
+
+	std::string object("objects/riceBox.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(object);
 
 	VirtualRobot::RuntimeEnvironment::considerKey("robot");
 	VirtualRobot::RuntimeEnvironment::considerKey("object");

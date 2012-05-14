@@ -33,13 +33,14 @@ int main(int argc, char *argv[])
 
 	std::string filenameReach;
 #ifdef ICUB
-		std::string filenameRob(VR_BASE_DIR "/data/robots/iCub/iCub.xml");
+		std::string filenameRob("robots/iCub/iCub.xml");
 		Eigen::Vector3f axisTCP(1.0f,0,0);
 		filenameReach = "reachability/iCub_HipRightArm.bin";
 #else
-	std::string filenameRob(VR_BASE_DIR "/data/robots/ArmarIII/ArmarIII.xml");
+	std::string filenameRob("robots/ArmarIII/ArmarIII.xml");
 	Eigen::Vector3f axisTCP(0,0,1.0f);	
 #endif
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameRob);
 
 
 	VirtualRobot::RuntimeEnvironment::considerKey("robot");

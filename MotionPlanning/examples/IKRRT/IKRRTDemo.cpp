@@ -30,8 +30,10 @@ int main(int argc, char *argv[])
 	SoQt::init(argc,argv,"IKRRT");
 	cout << " --- START --- " << endl;
 
-	std::string filenameScene(SIMOX_BASE_DIR "/VirtualRobot/data/scenes/IKRRT_scene_iCub.xml");
-	std::string filenameReach(SIMOX_BASE_DIR "/VirtualRobot/data/reachability/iCub_HipLeftArm.bin");
+	std::string filenameScene("scenes/IKRRT_scene_iCub.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameScene);
+	std::string filenameReach("reachability/iCub_HipLeftArm.bin");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameReach);
     std::string kinChain("Hip Left Arm");
     std::string eef("Left Hand");
 	std::string colModel("Left HandArm ColModel");

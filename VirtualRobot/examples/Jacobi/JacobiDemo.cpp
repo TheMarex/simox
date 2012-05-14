@@ -4,7 +4,7 @@
 #include <VirtualRobot/XML/RobotIO.h>
 #include <VirtualRobot/Visualization/VisualizationFactory.h>
 #include <VirtualRobot/Visualization/CoinVisualization/CoinVisualization.h>
-
+#include <VirtualRobot/RuntimeEnvironment.h>
 
 
 #include <Inventor/Qt/viewers/SoQtExaminerViewer.h>
@@ -31,8 +31,8 @@ int main(int argc, char *argv[])
 	SoDB::init();
 	SoQt::init(argc,argv,"Ik demo");
 	cout << " --- START --- " << endl;
-	std::string filename(VR_BASE_DIR "/data/robots/ArmarIII/ArmarIII.xml");
-
+	std::string filename("robots/ArmarIII/ArmarIII.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filename);
 	JacobiWindow rw(filename);
 
 	rw.main();

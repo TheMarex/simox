@@ -1,6 +1,7 @@
 
 #include <VirtualRobot/Robot.h>
 #include <VirtualRobot/Obstacle.h>
+#include <VirtualRobot/RuntimeEnvironment.h>
 #include <VirtualRobot/SceneObjectSet.h>
 #include <VirtualRobot/Nodes/RobotNode.h>
 #include <VirtualRobot/XML/RobotIO.h>
@@ -68,7 +69,8 @@ void startRRTVisualization()
 {
 
 	// create robot
-	std::string filename(SABA_BASE_DIR "/examples/RRT/Joint3.xml");
+	std::string filename("robots/examples/RrtDemo/Joint3.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filename);
 	cout << "Loading 3DOF robot from " << filename << endl;
 	RobotPtr robot = RobotIO::loadRobot(filename);
 	if (!robot)

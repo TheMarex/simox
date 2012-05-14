@@ -19,7 +19,41 @@ namespace VirtualRobot
 	std::map< std::string, std::string > RuntimeEnvironment::keyValues;
 	bool RuntimeEnvironment::pathInitialized = false;
 
-
+	void RuntimeEnvironment::init()
+	{
+		if (!pathInitialized)
+		{
+			pathInitialized = true;
+			bool pathFound = false;
+			char * simox_data_path = getenv("SIMOX_DATA_PATH");
+			if (simox_data_path)
+			{
+				pathFound = addDataPath(std::string(simox_data_path),true);
+			}
+			char * vr_data_path = getenv("VIRTUAL_ROBOT_DATA_PATH");
+			if (vr_data_path)
+			{
+				pathFound = addDataPath(std::string(vr_data_path),true);
+			}
+			if (!pathFound)
+			{
+				// test for Simox_DIR
+				simox_data_path = getenv("Simox_DIR");
+				if (simox_data_path)
+				{
+					std::string sd(simox_data_path);
+					sd += std::string("/data");
+					pathFound = addDataPath(sd,true);
+				}
+			}
+#ifdef SIMOX_DATA_PATH
+			addDataPath(std::string(SIMOX_DATA_PATH),true);
+#endif
+#ifdef VIRTUAL_ROBOT_DATA_PATH
+			addDataPath(std::string(VIRTUAL_ROBOT_DATA_PATH),true);
+#endif
+		}
+	}
 	bool RuntimeEnvironment::getDataFileAbsolute( std::string &fileName )
 	{
 		if (!pathInitialized)
@@ -134,17 +168,19 @@ namespace VirtualRobot
 		return dataPaths;
 	}
 
-	void RuntimeEnvironment::addDataPath( const std::string &path, bool quiet )
+	bool RuntimeEnvironment::addDataPath( const std::string &path, bool quiet )
 	{
 		boost::filesystem::path p(path);
-		if (!boost::filesystem::is_directory(p))
+		if (!boost::filesystem::is_directory(p) && !boost::filesystem::is_symlink(p))
 		{
 			if (!quiet)
 			{
 				VR_ERROR << "Trying to add non-existing data path: " << p.string() << endl;
 			}
+			return false;
 		} else
 			dataPaths.push_back(path);
+		return true;
 	}
 
 	void RuntimeEnvironment::print()

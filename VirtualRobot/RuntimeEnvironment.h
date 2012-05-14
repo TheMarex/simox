@@ -34,6 +34,9 @@ namespace VirtualRobot
 {
 /*!
 	The runtime environment holds data paths and program arguments.
+	Data files can be located by the getDataFileAbsolute method. 
+	Here, the environment variable SIMOX_DATA_PATH and VIRTUAL_ROBOT_DATA_PATH are considered. 
+	In addition, the install data directory is added at the end of the list of data paths for convenient access.
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT RuntimeEnvironment
 {
@@ -50,8 +53,9 @@ public:
 			Only valid paths are processed.
 			\param path The path to add.
 			\param quiet If set, invalid paths are quietly ignored. Otherwise an error is printed.
+			\return true on success (path has to be a directory or a symlink).
 		*/
-		static void addDataPath(const std::string &path, bool quiet = false);
+		static bool addDataPath(const std::string &path, bool quiet = false);
 
 		/*!
 			Enable the command line search for given key. Only keys that are enabled can later be accessed with the getValue() method.
@@ -68,7 +72,7 @@ public:
 		/*!
 			The command line parameters can be passed in order to generate a map of key/value pairs.
 			All "--key value" pairs for which the key was enabled with the allowCommandLineOption() method are processed and stored as std::strings in a std::map.
-			Further all "--data-path <path>" entries are extracted and the according data paths are stored.
+			In addition, all "--data-path <path>" entries are extracted and the according data paths are stored.
 			All unrecognized options are also stored.
 		*/
 		static void processCommandLine(int argc, char *argv[]);
@@ -120,29 +124,7 @@ public:
 		RuntimeEnvironment(){}
 		virtual ~RuntimeEnvironment(){}
 		static bool pathInitialized;
-		static void init()
-		{
-			if (!pathInitialized)
-			{
-				pathInitialized = true;
-#ifdef VR_BASE_DIR
-				addDataPath(std::string(VR_BASE_DIR),true);
-				addDataPath(std::string(VR_BASE_DIR "/data"),true);
-#endif
-#ifdef SIMOX_BASE_DIR
-				addDataPath(std::string(SIMOX_BASE_DIR),true);
-				addDataPath(std::string(SIMOX_BASE_DIR "/data"),true);
-#endif
-#ifdef SABA_BASE_DIR
-				addDataPath(std::string(SABA_BASE_DIR),true);
-				addDataPath(std::string(SABA_BASE_DIR "/data"),true);
-#endif
-#ifdef GRASPSTUDIO_BASE_DIR
-				addDataPath(std::string(GRASPSTUDIO_BASE_DIR),true);
-				addDataPath(std::string(GRASPSTUDIO_BASE_DIR "/data"),true);
-#endif
-			}
-		}
+		static void init();
 
 
 		static std::vector< std::string > processKeys;

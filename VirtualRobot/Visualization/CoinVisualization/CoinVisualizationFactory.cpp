@@ -9,6 +9,7 @@
 #include "../VisualizationNode.h"
 #include "CoinVisualizationNode.h"
 #include "../../VirtualRobotException.h"
+#include "../../RuntimeEnvironment.h"
 #include "CoinVisualization.h"
 #include "../../Robot.h"
 #include "../../Grasping/Grasp.h"
@@ -538,10 +539,16 @@ SoSeparator* CoinVisualizationFactory::CreatePlaneVisualization( const Eigen::Ve
 	{
 		SoSeparator *res2;
 		if (transparency==0)
-			res2 = CreateGrid(extend,extend,extend/500.0f,extend/500.0f,true,VR_BASE_DIR"/data/images/FloorWhite.png",transparency);
-		else
-			res2 = CreateGrid(extend,extend,extend/500.0f,extend/500.0f,true,VR_BASE_DIR"/data/images/Floor.png",transparency);
-
+		{
+			std::string filename("images/FloorWhite.png");
+			RuntimeEnvironment::getDataFileAbsolute(filename);
+			res2 = CreateGrid(extend,extend,extend/500.0f,extend/500.0f,true,filename.c_str(),transparency);
+		} else
+		{
+			std::string filename("images/Floor.png");
+			RuntimeEnvironment::getDataFileAbsolute(filename);
+			res2 = CreateGrid(extend,extend,extend/500.0f,extend/500.0f,true,filename.c_str(),transparency);
+		}
 		res->addChild(res2);
 	} else
 	{

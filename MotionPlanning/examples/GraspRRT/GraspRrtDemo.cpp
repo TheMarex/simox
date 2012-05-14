@@ -30,7 +30,8 @@ int main (int argc, char** argv)
 	SoQt::init(argc,argv,"GraspRrtDemo");
 	cout << " --- START --- " << endl;
 
-	std::string filenameScene(SABA_BASE_DIR "/examples/GraspRRT/scenes/planning.xml");
+	std::string filenameScene("/scenes/examples/GraspRrt/planning.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameScene);
 	std::string startConfig("init");
 	std::string goalObject("Can");
 	std::string rnsName("Planning Left");

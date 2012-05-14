@@ -116,26 +116,7 @@
 		</ChildFromRobot>
 	</RobotNode>
 	
-	
 
-	<!--RobotNode name="CenterArms">
-		<Joint type="fixed">
-			<DH a="0" d="-143.3" theta="0" alpha="0" units="degree"/>
-		</Joint>
-		<ChildFromRobot>
-			<File importEEF="true">iCub_LeftArm.xml</File>
-		</ChildFromRobot>
-		<ChildFromRobot>
-			<File importEEF="true">iCub_RightArm.xml</File>
-		</ChildFromRobot>
-		<ChildFromRobot>
-			<File>iCub_Head.xml</File>
-		</ChildFromRobot>
-		<Child name="UpperBodyModel"/>
-		<Physics>
-			<Mass value="5" unit="kg"/>
-		</Physics>
-	</RobotNode-->
 		
 	<RobotNode name="UpperBodyModel">
 		<Visualization enable="true">
@@ -178,36 +159,6 @@
 		</ChildFromRobot>
 	</RobotNode>
 
-	
-	<!--
-	
-	<RobotNode name="Dummy_Platform">
-		<Joint type="fixed">
-			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
-		</Joint>
-	</RobotNode>
-	
-	<RobotNode name="X_Platform">
-		<Joint type="prismatic">
-			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
-			<Limits unit="mm" lo="-10000" hi="10000"/>
-		</Joint>
-		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
-		</Visualization>
-		<Child name="Y_Platform"/>
-	</RobotNode>
-	
-	<RobotNode name="Y_Platform">
-		<Joint type="prismatic">
-			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
-			<Limits unit="mm" lo="-10000" hi="10000"/>
-		</Joint>
-		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
-		</Visualization>
-		<Child name="Yaw_Platform"/>
-	</RobotNode-->
 	
 	<RobotNodeSet name="UpperbodyHeadColModel">
 		<Node name="UpperBodyModel"/>

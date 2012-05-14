@@ -4,7 +4,6 @@
 #include "../Nodes/RobotNodePrismatic.h"
 #include "../VirtualRobotException.h"
 
-
 #include <float.h>
 
 namespace VirtualRobot

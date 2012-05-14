@@ -211,6 +211,7 @@ void Trajectory::interpolate( float t, Eigen::VectorXf &storePathPos, int *store
 	if (getNrOfPoints()==0)
 	{
 		VR_WARNING << " no Path.." << std::endl;
+		return;
 	}
 	if (t==0.0f)
 	{
@@ -276,7 +277,7 @@ float Trajectory::getLength() const
 	float pathLength = 0.0f;
 	Eigen::VectorXf c1,c2;
 	float l;
-	for (unsigned int i=0;i<getNrOfPoints()-2;i++)
+	for (int i=0;i<(int)getNrOfPoints()-2;i++)
 	{
 		c1 = path[i];
 		c2 = path[i+1];
@@ -383,6 +384,8 @@ std::string Trajectory::getRobotName() const
 
 void Trajectory::apply( float t )
 {
+	if (!rns)
+		return;
 	Eigen::VectorXf c;
 	interpolate(t,c);
 	rns->setJointValues(c);

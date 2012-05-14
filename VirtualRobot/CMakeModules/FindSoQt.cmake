@@ -17,9 +17,9 @@ IF (WIN32)
     FIND_LIBRARY(SoQt_LIBRARIES SoQt)
 
   ELSE (CYGWIN)
-    FIND_PATH(SoQt_INCLUDE_DIRS Inventor/Qt/SoQt.h "$ENV{COINDIR}/include")
-    FIND_LIBRARY(SoQt_LIBRARY_RELEASE soqt1 "$ENV{COINDIR}/lib")
-    FIND_LIBRARY(SoQt_LIBRARY_DEBUG soqt1d "$ENV{COINDIR}/lib")
+    FIND_PATH(SoQt_INCLUDE_DIRS Inventor/Qt/SoQt.h "$ENV{COINDIR}/include" "$ENV{Coin3D_DIR}/include")
+    FIND_LIBRARY(SoQt_LIBRARY_RELEASE soqt1 "$ENV{COINDIR}/lib" "$ENV{Coin3D_DIR}/lib")
+    FIND_LIBRARY(SoQt_LIBRARY_DEBUG soqt1d "$ENV{COINDIR}/lib" "$ENV{Coin3D_DIR}/lib")
 
     IF (SoQt_LIBRARY_DEBUG AND SoQt_LIBRARY_RELEASE)
       SET(SoQt_LIBRARIES optimized ${SoQt_LIBRARY_RELEASE}
@@ -46,10 +46,8 @@ ELSE (WIN32)
     SET(SoQt_LIBRARIES "-framework SoQt" CACHE STRING "SoQt library for OSX")
   ELSE(APPLE)
 
-    FIND_PATH(SoQt_INCLUDE_DIRS NAMES Inventor/Qt/SoQt.h PATHS "$ENV{SoQt_DIR}/include" "$ENV{COIN3D_DIR}/include" /usr/include /usr/local/include NO_DEFAULT_PATH)
-    FIND_LIBRARY(SoQt_LIBRARIES NAMES SoQt PATHS "$ENV{SoQt_DIR}/lib" "$ENV{COIN3D_DIR}/lib" /usr/lib /usr/local/lib NO_DEFAULT_PATH)
-#FIND_PATH(SoQt_INCLUDE_DIRS Inventor/Qt/SoQt.h $ENV{SoQt_DIR}/include)
-#FIND_LIBRARY(SoQt_LIBRARIES SoQt $ENV{SoQt_DIR}/lib)
+    FIND_PATH(SoQt_INCLUDE_DIRS NAMES Inventor/Qt/SoQt.h PATHS "$ENV{SoQt_DIR}/include" "$ENV{COIN3D_DIR}/include" "$ENV{Coin3D_DIR}/include" /usr/include /usr/local/include NO_DEFAULT_PATH)
+    FIND_LIBRARY(SoQt_LIBRARIES NAMES SoQt PATHS "$ENV{SoQt_DIR}/lib" "$ENV{COIN3D_DIR}/lib" "$ENV{Coin3D_DIR}/lib" /usr/lib /usr/local/lib NO_DEFAULT_PATH)
 
   ENDIF(APPLE)
 

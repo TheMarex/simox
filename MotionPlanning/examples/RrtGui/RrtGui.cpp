@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
 	SoQt::init(argc,argv,"RrtGui");
 	cout << " --- START --- " << endl;
 
-	std::string filenameScene(SABA_BASE_DIR "/examples/RrtGui/scenes/planning.xml");
+	std::string filenameScene("scenes/examples/RrtGui/planning.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameScene);
 	std::string startConfig("start");
 	std::string goalConfig("goal");
 	std::string rnsName("Planning");

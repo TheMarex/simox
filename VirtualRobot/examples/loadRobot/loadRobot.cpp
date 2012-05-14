@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
 	VirtualRobot::RuntimeEnvironment::processCommandLine(argc,argv);
 	VirtualRobot::RuntimeEnvironment::print();
 
-	std::string filename(VR_BASE_DIR "/examples/loadRobot/RobotExample.xml");
+	std::string filename("robots/examples/loadRobot/RobotExample.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filename);
 	if (VirtualRobot::RuntimeEnvironment::hasValue("robot"))
 	{
 		std::string robFile = VirtualRobot::RuntimeEnvironment::getValue("robot");

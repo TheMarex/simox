@@ -21,10 +21,12 @@ int main(int argc, char *argv[])
 	cout << " --- START --- " << endl;
 
 	// --robot robots/iCub/iCub.xml --endeffector "Left Hand" --preshape "Grasp Preshape"
-	std::string robot(SIMOX_BASE_DIR "/VirtualRobot/data/robots/ArmarIII/ArmarIII.xml");
+	std::string robot("robots/ArmarIII/ArmarIII.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robot);
 	std::string eef("Hand L");
-	//std::string object(SIMOX_BASE_DIR "/VirtualRobot/data/objects/wok.xml");
-	std::string object(SIMOX_BASE_DIR "/VirtualRobot/data/objects/riceBox.xml");
+	//std::string object("objects/wok.xml");
+	std::string object("objects/riceBox.xml");
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(object);
 	std::string preshape("");
 
 	VirtualRobot::RuntimeEnvironment::considerKey("robot");

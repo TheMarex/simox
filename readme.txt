@@ -38,7 +38,7 @@ GNU GPL 2 (see license.txt)
 
 Copyright
 ---------
- 2011 Nikolaus Vahrenkamp
+ 2012 Nikolaus Vahrenkamp
 
 Contact
 -------

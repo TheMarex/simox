@@ -20,9 +20,9 @@ add_subdirectory(GraspPlanning)
 ############################################
 MESSAGE(STATUS "Simox: Generating CMake files")
 
-set(SIMOX_MAJOR_VERSION 0)
+set(SIMOX_MAJOR_VERSION 2)
 set(SIMOX_MINOR_VERSION 1)
-set(SIMOX_PATCH_VERSION 0)
+set(SIMOX_PATCH_VERSION 2)
 set(SIMOX_VERSION
     ${SIMOX_MAJOR_VERSION}.${SIMOX_MINOR_VERSION}.${SIMOX_PATCH_VERSION})
 
@@ -60,15 +60,16 @@ SET(VIRTUAL_ROBOT_CMAKE_DIR "${SIMOX_BUILD_DIRECTORY}/share/VirtualRobot/cmake")
 SET(SIMOX_LIBRARY_CMAKE_INCLUDE "${VIRTUAL_ROBOT_CMAKE_INCLUDE}")
 SET(SIMOX_DATA_PATH "${VIRTUAL_ROBOT_DATA_PATH}")
 
-
+# the SimoxConfig.cmake will be used by external porjects to setup Simox via the FindPackage method.
+# So it must be located in the Simox_DIR directory (build-tree -> SIMOX_BUILD_DIRECTORY)
 configure_file(
     ${PROJECT_SOURCE_DIR}/CMakeModules/SimoxConfig.cmake.in
-    "${SIMOX_CMAKE_DIR}/SimoxConfig.cmake"
+    "${SIMOX_BUILD_DIRECTORY}/SimoxConfig.cmake"
     @ONLY)
 
 configure_file(
     ${PROJECT_SOURCE_DIR}/CMakeModules/SimoxConfigVersion.cmake.in
-    "${SIMOX_CMAKE_DIR}/SimoxConfigVersion.cmake"
+    "${SIMOX_BUILD_DIRECTORY}/SimoxConfigVersion.cmake"
     @ONLY)
 
 configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/SimoxExternalLibrarySetup.cmake"
@@ -97,15 +98,23 @@ configure_file(
     ${PROJECT_SOURCE_DIR}/CMakeModules/SimoxConfigVersion.cmake.in
     "${SIMOX_BUILD_DIRECTORY}/InstallFiles/SimoxConfigVersion.cmake"
     @ONLY)
+# The SimoxConfig.cmake will be used by external porjects to setup Simox via the FindPackage method.
+# So it must be located in the Simox_DIR directory (install-tree -> CMAKE_INSTALL_PREFIX)
 install(FILES
     "${SIMOX_BUILD_DIRECTORY}/InstallFiles/SimoxConfig.cmake"
     "${SIMOX_BUILD_DIRECTORY}/InstallFiles/SimoxConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}")
+install(FILES
+    "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxExternalLibrarySetup.cmake"
+    "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxMacros.cmake"
+    "${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
     DESTINATION "${SIMOX_CMAKE_DIR}")
 install(FILES
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxExternalLibrarySetup.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxMacros.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
     DESTINATION "${SIMOX_CMAKE_DIR}")
+
 
 #
 #INSTALL(TARGETS Simox 

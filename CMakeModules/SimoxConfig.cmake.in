@@ -32,3 +32,13 @@ SET(SIMOX_VISUALIZATION_LIBS "@SIMOX_VISUALIZATION_LIBS@")
 SET(SIMOX_VISUALIZATION_INCLUDE_PATHS "@SIMOX_VISUALIZATION_INCLUDE_PATHS@")
 SET(SIMOX_VISUALIZATION_COMPILE_FLAGS "@SIMOX_VISUALIZATION_COMPILE_FLAGS@")
 
+# Convenient setup: all simox-related dependencies are included here.
+# If this causes troubles, disable it by steting SIMOX_DISABLE_DEPENDENCIES_INCLUDE. 
+# Then you will need to setup the dependencies on your own, similar to the setup in SimoxExternalLibrarySetup.cmake
+IF(NOT SIMOX_DISABLE_DEPENDENCIES_INCLUDE)
+    # include all library dependencies
+    MESSAGE(STATUS " * Including ${SIMOX_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake")
+    include(${SIMOX_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake)
+    MESSAGE(STATUS " * Including ${SIMOX_CMAKE_DIR}/SimoxMacros.cmake")
+    include(${SIMOX_CMAKE_DIR}/SimoxMacros.cmake)
+ENDIF()

@@ -18,7 +18,6 @@
 #
 ## PROJECT ( myDemo )
 ## SET(Simox_DIR $ENV{Simox_DIR} CACHE STRING "Choose the path to Simox (install or build).")
-## SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${Simox_DIR}/share/Simox/cmake)
 ## FIND_PACKAGE(Simox REQUIRED)
 ## IF(SIMOX_USE_COIN_VISUALIZATION)
 ##   FILE(GLOB SRCS ${PROJECT_SOURCE_DIR}/myDemo.cpp ${PROJECT_SOURCE_DIR}/myWindow.cpp)
@@ -29,11 +28,16 @@
 ## ENDIF()
 
  
+MESSAGE ("START1")
+
 #### CMAKE CONFIG
 find_file( Simox_CMAKE_CONFIG SimoxConfig.cmake 
                     "${Custom_Simox_DIR}/share/Simox/cmake" 
                     "${Simox_DIR}/share/Simox/cmake" 
-                    "$ENV{Simox_DIR}/share/Simox/cmake")
+                    "$ENV{Simox_DIR}/share/Simox/cmake"
+                    "${Custom_Simox_DIR}"
+                    "${Simox_DIR}" 
+                    "$ENV{Simox_DIR}")
 
 MESSAGE(STATUS " * Including ${Simox_CMAKE_CONFIG}")
 include (${Simox_CMAKE_CONFIG})
@@ -42,13 +46,6 @@ if( SIMOX_LIBRARIES AND SIMOX_BASE_DIR)
     set( SIMOX_FOUND TRUE )
     set( SIMOX_INCLUDE_DIR ${SIMOX_BASE_DIR} )
     set( SIMOX_LIBRARY ${SIMOX_LIBRARIES} )
-    
-	# include all library dependencies
-	MESSAGE(STATUS " * Including ${SIMOX_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake")
-	include(${SIMOX_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake)
-	MESSAGE(STATUS " * Including ${SIMOX_CMAKE_DIR}/SimoxMacros.cmake")
-	include(${SIMOX_CMAKE_DIR}/SimoxMacros.cmake)
-
 endif()
 
 include( FindPackageHandleStandardArgs )

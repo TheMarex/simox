@@ -39,3 +39,14 @@ SET(VIRTUAL_ROBOT_VISUALIZATION_LIBS "@VIRTUAL_ROBOT_VISUALIZATION_LIBS@")
 SET(VIRTUAL_ROBOT_VISUALIZATION_INCLUDE_PATHS "@VIRTUAL_ROBOT_VISUALIZATION_INCLUDE_PATHS@")
 SET(VIRTUAL_ROBOT_VISUALIZATION_COMPILE_FLAGS "@VIRTUAL_ROBOT_VISUALIZATION_COMPILE_FLAGS@")
 
+# Convenient setup: all VirtualRobot-related dependencies are included here.
+# If this causes troubles, disable it by steting VIRTUAL_ROBOT_DISABLE_DEPENDENCIES_INCLUDE. 
+# Then you will need to setup the dependencies on your own, similar to the setup in VirtualRobotExternalLibrarySetup.cmake
+IF(NOT VIRTUAL_ROBOT_DISABLE_DEPENDENCIES_INCLUDE)
+	# include all library dependencies
+	MESSAGE (STATUS " * Including ${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake")
+	include(${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake)
+	
+	MESSAGE (STATUS " * Including ${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotMacros.cmake")
+	include(${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotMacros.cmake)
+ENDIF()

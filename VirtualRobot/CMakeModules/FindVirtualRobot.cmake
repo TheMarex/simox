@@ -45,13 +45,6 @@ if( VIRTUAL_ROBOT_LIBRARIES AND VIRTUAL_ROBOT_DIR)
     set( VIRTUAL_ROBOT_FOUND TRUE )
     set( VIRTUAL_ROBOT_INCLUDE_DIR ${VIRTUAL_ROBOT_DIR} )
     set( VIRTUAL_ROBOT_LIBRARY ${VIRTUAL_ROBOT_LIBRARIES} )
-    
-	# include all library dependencies
-	MESSAGE (STATUS " * Including ${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake")
-	include(${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake)
-	
-	MESSAGE (STATUS " * Including ${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotMacros.cmake")
-	include(${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotMacros.cmake)
 endif()
 
 include( FindPackageHandleStandardArgs )

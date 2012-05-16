@@ -1,4 +1,5 @@
-When you intend to use Simox with an external project, you can use the following CMakeLists.txt code:
+When you intend to use Simox with an external project, you can use the following CMakeLists.txt code.
+Set the environment variable Simox_DIR to the (build or install) location of Simox. It will be considered by the FIND_PACKAGE method.
 
 <---- snippet ----->
 
@@ -8,12 +9,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
 CMAKE_POLICY(VERSION 2.6)
 
 ############################# SETUP PATHS TO Simox #############################
-
-# the environment variable Simox_DIR is initially used as path to simox.
-SET(Simox_DIR $ENV{Simox_DIR} CACHE STRING "Choose the path to Simox (install or build).")
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${Simox_DIR}/share/Simox/cmake)
-
-# now search simox (The file ${Simox_DIR}/share/Simox/cmake/FindSimox.cmake is used)
 FIND_PACKAGE(Simox REQUIRED)
 
 # Build only if Simox was created with Coin3D support.

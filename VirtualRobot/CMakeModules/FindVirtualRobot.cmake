@@ -31,12 +31,13 @@
 
  
 #### CMAKE CONFIG
-find_file( Simox_VR_CMAKE_CONFIG VirtualRobotConfig.cmake 
-                    "${Custom_Simox_VR_DIR}/share/VirtualRobot/cmake" 
-                    "${VirtualRobot_DIR}/share/VirtualRobot/cmake" 
-                    "$ENV{VirtualRobot_DIR}/share/VirtualRobot/cmake" 
-                    "${Simox_DIR}/share/VirtualRobot/cmake" 
-                    "$ENV{Simox_DIR}/share/VirtualRobot/cmake")
+find_path( VirtualRobot_DIR VirtualRobotConfig.cmake 
+                    "${Custom_Simox_VR_DIR}"
+                    "${VirtualRobot_DIR}" 
+                    "$ENV{VirtualRobot_DIR}")
+
+
+SET (Simox_VR_CMAKE_CONFIG ${VirtualRobot_DIR}/VirtualRobotConfig.cmake) 
 MESSAGE(STATUS " Including ${Simox_VR_CMAKE_CONFIG}")
 include (${Simox_VR_CMAKE_CONFIG})
 

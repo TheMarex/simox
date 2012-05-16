@@ -17,7 +17,6 @@
 # A CMakeLists.txt file for setting up a simox related project could look like this:
 #
 ## PROJECT ( myDemo )
-## SET(Simox_DIR $ENV{Simox_DIR} CACHE STRING "Choose the path to Simox (install or build).")
 ## FIND_PACKAGE(Simox REQUIRED)
 ## IF(SIMOX_USE_COIN_VISUALIZATION)
 ##   FILE(GLOB SRCS ${PROJECT_SOURCE_DIR}/myDemo.cpp ${PROJECT_SOURCE_DIR}/myWindow.cpp)
@@ -27,18 +26,14 @@
 ##   SimoxQtApplication(${PROJECT_NAME} "${SRCS}" "${INCS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
 ## ENDIF()
 
- 
-MESSAGE ("START1")
-
 #### CMAKE CONFIG
-find_file( Simox_CMAKE_CONFIG SimoxConfig.cmake 
-                    "${Custom_Simox_DIR}/share/Simox/cmake" 
-                    "${Simox_DIR}/share/Simox/cmake" 
-                    "$ENV{Simox_DIR}/share/Simox/cmake"
+
+find_path( Simox_DIR SimoxConfig.cmake 
                     "${Custom_Simox_DIR}"
                     "${Simox_DIR}" 
                     "$ENV{Simox_DIR}")
 
+SET (Simox_CMAKE_CONFIG ${Simox_DIR}/SimoxConfig.cmake)               
 MESSAGE(STATUS " * Including ${Simox_CMAKE_CONFIG}")
 include (${Simox_CMAKE_CONFIG})
 

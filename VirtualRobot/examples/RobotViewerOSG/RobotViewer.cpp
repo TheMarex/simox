@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	VirtualRobot::RuntimeEnvironment::print();
 	
 	cout << " --- START --- " << endl;
-	std::string filename("robot/examples/RobotViewerOSG/Joint3DH.xml");
+	std::string filename("robots/examples/RobotViewerOSG/Joint3DH.xml");
     VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filename);
         
 	if (VirtualRobot::RuntimeEnvironment::hasValue("robot"))

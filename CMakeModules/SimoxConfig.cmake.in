@@ -10,7 +10,7 @@
 #  SIMOX_CMAKE_INCLUDE - list of includes that may be neccessary for external libraries (e.g. QT_USE_FILE)
 #  SIMOX_DATA_PATH     - the standard data path
 #  SIMOX_CMAKE_DIR     - Path to Simox cmake files.
-#  SIMOX_DIR           - Path to Simox
+#  SIMOX_BASE_DIR      - Path to Simox
 
 SET(SIMOX_INCLUDE_DIRS "@SIMOX_INCLUDE_DIRS@")
 SET(SIMOX_LIBRARY_DIRS "@SIMOX_LIB_DIRS@")

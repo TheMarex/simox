@@ -296,6 +296,10 @@ configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotExternalLibrarySe
     "${VIRTUAL_ROBOT_CONFIG_INBUILD_DIR}/VirtualRobotExternalLibrarySetup.cmake" COPYONLY)
 configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotMacros.cmake"
     "${VIRTUAL_ROBOT_CONFIG_INBUILD_DIR}/VirtualRobotMacros.cmake" COPYONLY)
+configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/FindVirtualRobot.cmake"
+    "${VIRTUAL_ROBOT_CONFIG_INBUILD_DIR}/FindVirtualRobot.cmake" COPYONLY)
+
+    
     
 # Create an VirtualRobotConfig.cmake file for the use from the install tree
 # and install it
@@ -323,6 +327,7 @@ install(FILES
 install(FILES
     "${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotExternalLibrarySetup.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotMacros.cmake"
+    "${PROJECT_SOURCE_DIR}/CMakeModules/FindVirtualRobot.cmake"
     DESTINATION "${VIRTUAL_ROBOT_CMAKE_DIR}")
 
 

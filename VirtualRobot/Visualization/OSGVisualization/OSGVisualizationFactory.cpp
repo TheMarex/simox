@@ -10,11 +10,11 @@
 #include "../../VirtualRobotException.h"
 #include "OSGVisualization.h"
 #include "../../Robot.h"
-#include "../../Grasp.h"
-#include "../../GraspSet.h"
+#include "../../Grasping/Grasp.h"
+#include "../../Grasping/GraspSet.h"
 #include "../../SceneObject.h"
 #include "../TriMeshModel.h"
-#include "../../ReachabilitySpace.h"
+#include "../../Workspace/Reachability.h"
 #include <iostream>
 #include <algorithm>
 #include <boost/pointer_cast.hpp>
@@ -305,7 +305,7 @@ VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createPlane( const E
 	return VisualizationNodePtr();
 }
 
-VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createTrajectory(TrajectoryPtr t, Color colorNode = Color::Blue(), Color colorLine = Color::Gray(), float nodeSize = 15.0f, float lineSize = 4.0f)
+VirtualRobot::VisualizationNodePtr OSGVisualizationFactory::createTrajectory(TrajectoryPtr t, Color colorNode, Color colorLine, float nodeSize, float lineSize)
 {
 	VR_INFO << "init nyi..." << endl;
 	return VisualizationNodePtr();

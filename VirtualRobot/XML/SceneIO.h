@@ -58,6 +58,7 @@ public:
 	
 	/*!
         Creates scene from string.
+		\param xmlString The input.
         \param basePath If any robot tags are given, the base path for searching the robot files can be specified.
     */
     static ScenePtr createSceneFromString(const std::string &xmlString, const std::string &basePath = "");

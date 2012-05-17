@@ -162,6 +162,10 @@ public:
 
 	/*!
 		Computes a step towards goalPose.
+		\param currentPose The current pose
+		\param goalPose The pose in global coord system.
+		\param storeCSpaceConf The result is stored here.
+		\return The resulting state.
 	*/
 	MoveArmResult createWorkSpaceSamplingStep(const Eigen::Matrix4f &currentPose, const Eigen::Matrix4f &goalPose, Eigen::VectorXf &storeCSpaceConf);
 
@@ -214,8 +218,8 @@ protected:
 
 	/*!
 		Current pose of RNS is moved.
-		\param deltaPose Consists of the 3x3 rotation delta R and the 3 dim translational delta T in homogeneous notation.
-		R and T must be given in global coordinate system.
+		\param deltaPose Consists of the 3x3 rotation delta R and the 3 dim translational delta T in homogeneous notation. R and T must be given in global coordinate system.
+		\param storeCSpaceConf The result is stored here.
 	*/
 	MoveArmResult moveArmDiffKin(const Eigen::Matrix4f &deltaPose, Eigen::VectorXf &storeCSpaceConf);
 

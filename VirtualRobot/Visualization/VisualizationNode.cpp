@@ -1,6 +1,6 @@
 /**
 * @package    VirtualRobot
-* @author     Manfred Kroehnert <mkroehnert _at_ users dot sourceforge dot net>
+* @author     Manfred Kroehnert 
 * @author     Nikolaus Vahrenkamp
 * @copyright  2010 Manfred Kroehnert
 */

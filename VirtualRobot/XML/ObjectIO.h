@@ -59,6 +59,7 @@ public:
 	
 	/*!
         Creates ManipulationObject from string.
+		@param xmlString The input string.
         @param basePath If file tags are given, the base path for searching the object files can be specified.
     */
     static ManipulationObjectPtr createManipulationObjectFromString(const std::string &xmlString, const std::string &basePath = "");

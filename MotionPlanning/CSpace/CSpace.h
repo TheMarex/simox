@@ -140,7 +140,7 @@ public:
 		\param storeValues Store the values here.
 		\param checkValid When set to true, it is guaranteed that the sample not in collision and all constraints are considered
 	*/
-	void getRandomConfig(Eigen::VectorXf &storeValues, bool checkvalid = false);
+	void getRandomConfig(Eigen::VectorXf &storeValues, bool checkValid = false);
 
 	//! set values of configuration considering boundaries
 	virtual void respectBoundaries(Eigen::VectorXf &config);

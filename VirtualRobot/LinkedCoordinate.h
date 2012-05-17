@@ -15,7 +15,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * @package    VirtualRobot
-* @author     Stefan Ulbrich <stefanulbrich at users dot sf dot net>
+* @author     Stefan Ulbrich
 * @copyright  2011 Stefan Ulbrich 
 * @license    http://www.gnu.org/licenses/gpl.txt
 *             GNU General Public License
@@ -90,7 +90,7 @@ public:
 
 	/** Sets the frame of reference and the coordinate relative to it.
 	 * @param frame The name of the robot node that defines the reference frame of the coordinate.
-	 * @param pose A homogeneous matrix that defines the pose relative to the frame of reference.  
+	 * @param position The pose relative to the frame of reference.  
 	 * @throw VirtualRobotException An exception is thrown if frame does not belong to the robot. 
 	 * @details A homogeneous vector can be previously converted using Eigen::Vector4f::head<3>().
 	 */

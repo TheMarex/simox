@@ -1,6 +1,6 @@
 /**
 * @package    VirtualRobot
-* @author     Stefan Ulbrich <stefanulbrich at users dot sf dot net>, Nikolaus Vahrenkamp 
+* @author     Stefan Ulbrich, Nikolaus Vahrenkamp 
 * @copyright  2010,2011,2012 Stefan Ulbrich, Nikolaus Vahrenkamp
 */
 

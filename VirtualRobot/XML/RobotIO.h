@@ -68,7 +68,8 @@ public:
 	
 	/*!
             Creates Robot from string.
-            @param basePath If any <childFromRobot> tags are given, the path for searching the robot files can be specified.
+			@param xmlString The input string.
+            @param basePath If any \<childFromRobot\> tags are given, the path for searching the robot files can be specified.
             @param loadMode Standard: eFull, When eStructure is used no visualization oand collision models are loaded for faster access.
         */
         static RobotPtr createRobotFromString(const std::string &xmlString, const std::string &basePath = "", RobotDescription loadMode = eFull);

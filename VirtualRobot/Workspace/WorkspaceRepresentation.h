@@ -137,6 +137,7 @@ public:
 
 	/*!
 		Generate a random configuration for the robot node set. This configuration is within the joint limits of the current robot node set.
+		\param nodeSet The nodes.
 		\param checkForSelfCollisions Build a collision-free configuration. If true, random configs are generated until one is collision-free.
 	*/
 	virtual bool setRobotNodesToRandomConfig(VirtualRobot::RobotNodeSetPtr nodeSet, bool checkForSelfCollisions = true);

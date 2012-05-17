@@ -117,13 +117,6 @@ public:
 		return root->getEntry(pos);
 	}
 
-
-	/*!
-		Check if the corresponding leaf is present in data structure.
-		\Return False if p is outside the extends or if no data is stored for pos
-	*/
-	//bool isCovered(float pos[6]);
-
 protected:
 	float minExtend[6];
 	float maxExtend[6];

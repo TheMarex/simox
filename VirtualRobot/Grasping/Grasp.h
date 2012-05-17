@@ -49,8 +49,9 @@ public:
 		\param poseInTCPCoordSystem The pose of the object, given in eef's tcp coordinate system
 		\param creation A custom string explaining how the grasp was created.
 		\param quality A custom quality index.
+		\param eefPreshape An optional preshape.
 	*/
-	Grasp(const std::string &name, const std::string &robotType, const std::string &eef, const Eigen::Matrix4f &poseInTCPCoordSystem, const std::string &creation= std::string(""), float quality = 0.0f, const std::string &eefPreshape= std::string(""));
+	Grasp(const std::string &name, const std::string &robotType, const std::string &eef, const Eigen::Matrix4f &poseInTCPCoordSystem, const std::string &creation= std::string(""), float quality = 0.0f, const std::string &eefPreshape = std::string(""));
 
 	/*!
 	*/

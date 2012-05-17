@@ -73,7 +73,7 @@ void RobotIO::processChildFromRobotNode(rapidxml::xml_node<char> *childXMLNode, 
 
 
 /**
- * This method processes <Limits> tags.
+ * This method processes Limits tags.
  * The values for the attributes "lo" and "hi" are extracted based on the
  * "unit" or "units" attribute.
  *
@@ -847,8 +847,8 @@ EndEffectorPtr RobotIO::processEndeffectorNode(rapidxml::xml_node<char>* endeffe
 
 
 /**
- * This method processes the attributes and the children of an <actor> tag which
- * itself is a child of the <endeffector> tag.
+ * This method processes the attributes and the children of an actor tag which
+ * itself is a child of the endeffector tag.
  * First the name attribute is retrieved and afterwards the child nodes are
  * processed which make up the actor.
  */
@@ -865,8 +865,8 @@ EndEffectorActorPtr RobotIO::processEndeffectorActorNode(rapidxml::xml_node<char
  
 
 /**
- * This method processes the children of the <static> tag which
- * itself is a child of the <endeffector> tag.
+ * This method processes the children of the static tag which
+ * itself is a child of the endeffector tag.
  */
 void RobotIO::processEndeffectorStaticNode(rapidxml::xml_node<char>* endeffectorStaticXMLNode, RobotPtr robo, std::vector<RobotNodePtr>& staticNodesList)
 {
@@ -875,7 +875,7 @@ void RobotIO::processEndeffectorStaticNode(rapidxml::xml_node<char>* endeffector
 
 
 /**
- * This method processes the \p parentNode Tag and extracts a list of <Node name="xyz" speed="0123" /> tags.
+ * This method processes the \p parentNode Tag and extracts a list of \<Node name="xyz" speed="0123" /\> tags.
  * All other child tags raise a VirtualRobot::VirtualRobotException.
  * The resulting nodes are stored in \p nodeList.
  *

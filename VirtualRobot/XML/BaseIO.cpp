@@ -144,7 +144,7 @@ Eigen::Matrix3f BaseIO::process3x3Matrix(rapidxml::xml_node<char> *matrixXMLNode
 
 
 /**
- * This method processes <Transform> tags.
+ * This method processes \<Transform\> tags.
  * If \p transformXMLNode is NULL (e.g. the tag does not exist) \p transform
  * is set to contain the identity matrix.
  */
@@ -436,7 +436,7 @@ void BaseIO::getLowerCase(std::string& aString)
 
 
 /**
- * This method processes the \p parentNode Tag and extracts a list of <Node name="xyz"/> tags.
+ * This method processes the \p parentNode Tag and extracts a list of \<Node name="xyz"/\> tags.
  * All other child tags raise a VirtualRobot::VirtualRobotException.
  * The resulting nodes are stored in \p nodeList.
  *

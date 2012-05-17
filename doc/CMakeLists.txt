@@ -46,6 +46,9 @@ IF(DOXYGEN_FOUND)
     # set image path
     SET (CMAKE_DOXYGEN_IMAGE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/images")
     
+    # set exclude files
+    SET (CMAKE_EXCLUDE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/../VirtualRobot/XML/rapidxml.hpp")
+    
     # replace ; with space
     STRING(REGEX REPLACE ";" " " DOXYGEN_INPUT_DIRECTORIES "${CMAKE_DOXYGEN_INPUT_LIST}")
     

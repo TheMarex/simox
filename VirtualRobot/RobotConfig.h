@@ -81,7 +81,7 @@ public:
 
 	/*!
 		Appends a configuration to this instance.
-		\param True on success. False if robot is not present any more (may happen due to the use of weak pointers).
+		\return True on success. False if robot is not present any more (may happen due to the use of weak pointers).
 	*/
 	bool setConfig (const Configuration &c);
 	bool setConfig (RobotNodePtr node, float value);
@@ -90,7 +90,7 @@ public:
 	/*!
 		Apply the stored configurations to the corresponding robot.
 		RobotNodes that are not stored in this RobotConfig are not affected.
-		\param True on success. False if robot is not present any more (may happen due to the use of weak pointers).
+		\return True on success. False if robot is not present any more (may happen due to the use of weak pointers).
 	*/
 	bool setJointValues();
 

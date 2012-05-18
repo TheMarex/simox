@@ -19,13 +19,15 @@ add_subdirectory(doc)
 #######################################################################
 
 ############################################
-MESSAGE(STATUS "Simox: Generating CMake files")
+MESSAGE (STATUS "\n ***** Simox: Generating CMake files for build and install setup")
 
 set(SIMOX_MAJOR_VERSION 2)
 set(SIMOX_MINOR_VERSION 1)
 set(SIMOX_PATCH_VERSION 2)
 set(SIMOX_VERSION
     ${SIMOX_MAJOR_VERSION}.${SIMOX_MINOR_VERSION}.${SIMOX_PATCH_VERSION})
+
+MESSAGE (STATUS " ** Simox version: ${SIMOX_VERSION}")
 
 set(SIMOX_LIBRARIES VirtualRobot Saba GraspStudio)
 set(SIMOX_EXECUTABLES "")

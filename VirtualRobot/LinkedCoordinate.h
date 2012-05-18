@@ -17,7 +17,7 @@
 * @package    VirtualRobot
 * @author     Stefan Ulbrich
 * @copyright  2011 Stefan Ulbrich 
-* @license    http://www.gnu.org/licenses/gpl.txt
+* license     http://www.gnu.org/licenses/gpl.txt
 *             GNU General Public License
 */
 

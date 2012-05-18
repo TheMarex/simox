@@ -82,8 +82,14 @@ configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
  
 # Create an SimoxConfig.cmake file for the use from the install tree
 # and install it
+
 # import Virtual-Robot configs (install)
+# do not include files from install tree here (the files are not installed yet. So include them manually from inbuild)
+SET (VIRTUAL_ROBOT_DISABLE_DEPENDENCIES_INCLUDE TRUE)
 include ("${VIRTUAL_ROBOT_CONFIG_INSTALL_LOCAL}")
+include(${SIMOX_BUILD_DIRECTORY}/share/VirtualRobot/cmake/VirtualRobotExternalLibrarySetup.cmake)
+include(${SIMOX_BUILD_DIRECTORY}/share/VirtualRobot/cmake/VirtualRobotMacros.cmake)
+
 SET(SIMOX_INCLUDE_DIRS "${VIRTUAL_ROBOT_INCLUDE_DIRS}" "${GRASP_STUDIO_INCLUDE_DIRS}" "${SABA_INCLUDE_DIRS}")
 SET(SIMOX_LIB_DIRS "${VIRTUAL_ROBOT_LIBRARY_DIRS}" "${GRASP_STUDIO_LIBRARY_DIRS}" "${SABA_LIBRARY_DIRS}")
 SET(SIMOX_LIB_FLAGS "${VIRTUAL_ROBOT_COMPILE_FLAGS} ${GRASP_STUDIO_COMPILE_FLAGS} ${SABA_COMPILE_FLAGS}")

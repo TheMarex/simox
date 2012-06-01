@@ -311,7 +311,7 @@ protected:
 	/*!
 	Derived classes must implement their clone method here.
 	*/
-	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel) = 0;
+	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker) = 0;
 };
 
 } // namespace VirtualRobot

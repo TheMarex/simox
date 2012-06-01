@@ -161,15 +161,15 @@ void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 		std::for_each(children.begin(), children.end(), boost::bind(&RobotNode::print, _1, true, true));
 }
 
-RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel)
+RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
 {
 	ReadLock lock(mutex,use_mutex);
 	RobotNodePtr result;
 
 	if (optionalDHParameter.isSet)
-		result.reset(new RobotNodeRevolute(newRobot,name,newChildren, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics));
+		result.reset(new RobotNodeRevolute(newRobot,name,newChildren, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker));
 	else
-		result.reset(new RobotNodeRevolute(newRobot,name,newChildren,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointRotationAxis,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics));
+		result.reset(new RobotNodeRevolute(newRobot,name,newChildren,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointRotationAxis,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics,colChecker));
 	return result;
 }
 

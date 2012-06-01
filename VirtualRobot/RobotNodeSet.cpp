@@ -310,6 +310,8 @@ void RobotNodeSet::setJointValues(const std::vector<float> &jointValues)
 		RobotPtr rob = robot.lock();
 		if (rob)
 			rob->applyJointValues();
+		else
+			VR_WARNING << "Robot of RNS " << name << " has been deleted! Could not set joint values!" << endl;
 	}
 }
 
@@ -327,6 +329,8 @@ void RobotNodeSet::setJointValues(const Eigen::VectorXf &jointValues)
 		RobotPtr rob = robot.lock();
 		if (rob)
 			rob->applyJointValues();
+		else
+			VR_WARNING << "Robot of RNS " << name << " has been deleted! Could not set joint values!" << endl;
 	}
 }
 
@@ -346,6 +350,8 @@ void RobotNodeSet::setJointValues( const RobotConfigPtr jointValues )
 		RobotPtr rob = robot.lock();
 		if (rob)
 			rob->applyJointValues();
+		else
+			VR_WARNING << "Robot of RNS " << name << " has been deleted! Could not set joint values!" << endl;
 	}
 }
 

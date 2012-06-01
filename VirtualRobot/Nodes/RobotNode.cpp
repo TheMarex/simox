@@ -383,7 +383,7 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 	if (collisionModel)
 		clonedCollisionModel = collisionModel->clone(colChecker);
 
-	RobotNodePtr result = _clone(newRobot, clonedChildrenNames, clonedVisualizationNode, clonedCollisionModel);
+	RobotNodePtr result = _clone(newRobot, clonedChildrenNames, clonedVisualizationNode, clonedCollisionModel,colChecker);
 
 	if (!result)
 	{

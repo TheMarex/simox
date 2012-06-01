@@ -102,10 +102,16 @@ public:
 	virtual std::string getXMLString( int tabs);
 
 	/*!
-		Create a copy of this set.
+		Create a (shallow) copy of this set.
 		\param newName The name of the newly created set.
 	 */
 	SceneObjectSetPtr clone(const std::string &newName = "");
+
+	/*!
+		Create a deep copy of this set.
+		\param newName The name of the newly created set.
+	 */
+	SceneObjectSetPtr clone(const std::string &newName, CollisionCheckerPtr newColChecker);
 
 protected:
 

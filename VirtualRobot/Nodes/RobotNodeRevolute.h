@@ -104,7 +104,7 @@ protected:
 
 	Eigen::Vector3f jointRotationAxis;			// eRevoluteJoint 
 
-	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel);
+	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker);
 };
 
 } // namespace VirtualRobot

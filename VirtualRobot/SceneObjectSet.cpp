@@ -273,6 +273,16 @@ VirtualRobot::SceneObjectSetPtr SceneObjectSet::clone( const std::string &newNam
 }
 
 
+VirtualRobot::SceneObjectSetPtr SceneObjectSet::clone( const std::string &newName, CollisionCheckerPtr newColChecker )
+{
+	SceneObjectSetPtr result(new SceneObjectSet(newName,newColChecker));
+	for (size_t i=0;i<sceneObjects.size();i++)
+	{
+		SceneObjectPtr o = sceneObjects[i]->clone(sceneObjects[i]->getName(), newColChecker);
+		result->addSceneObject(o);
+	}
+	return result;
+}
 
 } // namespace VirtualRobot
 

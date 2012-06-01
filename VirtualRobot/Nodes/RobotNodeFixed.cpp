@@ -130,16 +130,16 @@ void RobotNodeFixed::print( bool printChildren, bool printDecoration ) const
 }
 
 
-RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel)
+RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
 {
 	ReadLock lock(mutex,use_mutex);
 	
 	RobotNodePtr result;
 
 	if (optionalDHParameter.isSet)
-		result.reset(new RobotNodeFixed(newRobot,name,newChildren,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,physics));
+		result.reset(new RobotNodeFixed(newRobot,name,newChildren,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,physics,colChecker));
 	else
-		result.reset(new RobotNodeFixed(newRobot,name,newChildren,getPreJointTransformation(),getPostJointTransformation(),visualizationModel,collisionModel,physics));
+		result.reset(new RobotNodeFixed(newRobot,name,newChildren,getPreJointTransformation(),getPostJointTransformation(),visualizationModel,collisionModel,physics,colChecker));
 
 	return result;
 }

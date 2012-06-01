@@ -95,7 +95,7 @@ protected:
 	RobotNodeFixed(){};
 	virtual void updateTransformationMatrices();
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &globalPose);
-	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel);
+	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker);
 };
 
 } // namespace VirtualRobot

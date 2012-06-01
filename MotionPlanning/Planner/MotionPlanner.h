@@ -123,7 +123,6 @@ protected:
 	CSpacePtr cspace;					//!< the cspace on which are operating
 	CSpacePathPtr solution;				//!< the solution
 
-	//bool init;							//!< indication the status of initialization
 	bool stopSearch;					//!< indicates that the search should be interrupted
 	
 	unsigned int dimension;				//!< dimension of c-space

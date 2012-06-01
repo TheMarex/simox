@@ -83,11 +83,13 @@ namespace Saba
 	class Sampler;
 	class ConfigurationConstraint;
 	class Rrt;
+	class MotionPlanner;
 	class BiRrt;
 	class GraspIkRrt;
 	class GraspRrt;
 	class ShortcutProcessor;
 	class ApproachDiscretization;
+	class PlanningThread;
 
 	typedef boost::shared_ptr<CSpace> CSpacePtr;
 	typedef boost::shared_ptr<CSpaceSampled> CSpaceSampledPtr;
@@ -95,6 +97,7 @@ namespace Saba
 	typedef boost::shared_ptr<Sampler> SamplerPtr;
 	typedef boost::shared_ptr<CSpaceTree> CSpaceTreePtr;
 	typedef boost::shared_ptr<CSpaceNode> CSpaceNodePtr;
+	typedef boost::shared_ptr<MotionPlanner> MotionPlannerPtr;
 	typedef boost::shared_ptr<Rrt> RrtPtr;
 	typedef boost::shared_ptr<BiRrt> BiRrtPtr;
 	typedef boost::shared_ptr<GraspIkRrt> GraspIkRrtPtr;
@@ -102,6 +105,7 @@ namespace Saba
 	typedef boost::shared_ptr<ShortcutProcessor> ShortcutProcessorPtr;
 	typedef boost::shared_ptr<ConfigurationConstraint> ConfigurationConstraintPtr;
 	typedef boost::shared_ptr<ApproachDiscretization> ApproachDiscretizationPtr;
+	typedef boost::shared_ptr<PlanningThread> PlanningThreadPtr;
 
 #define SABA_INFO VR_INFO
 #define SABA_WARNING VR_WARNING

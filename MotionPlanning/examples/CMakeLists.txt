@@ -6,3 +6,5 @@ ADD_SUBDIRECTORY(IKRRT)
 # todo: check whether GraspStudio is present
 ADD_SUBDIRECTORY(GraspRRT)
 
+ADD_SUBDIRECTORY(MultiThreadedPlanning)
+

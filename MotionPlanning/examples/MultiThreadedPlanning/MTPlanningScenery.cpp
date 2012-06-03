@@ -341,9 +341,11 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers, int id
 	if (!rn)
 		return;
 	kinChain->setJointValues(start);
-	SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransform(rn->getGlobalPose());
+	Eigen::Matrix4f gp = rn->getGlobalPose();
+	SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransform(gp);
 	kinChain->setJointValues(goal);
-	SoMatrixTransform *mt2 =CoinVisualizationFactory::getMatrixTransform(rn->getGlobalPose());
+	gp = rn->getGlobalPose();
+	SoMatrixTransform *mt2 =CoinVisualizationFactory::getMatrixTransform(gp);
 
 	SoSeparator *sep1 = new SoSeparator();
 	sep1->addChild(mt);

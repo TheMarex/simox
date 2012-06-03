@@ -28,6 +28,7 @@ Planner/PlanningThread.cpp
 Visualization/RrtWorkspaceVisualization.cpp
 PostProcessing/PathProcessor.cpp
 PostProcessing/ShortcutProcessor.cpp
+PostProcessing/PathProcessingThread.cpp
 ApproachDiscretization.cpp
 )
 
@@ -49,6 +50,7 @@ Planner/PlanningThread.h
 Visualization/RrtWorkspaceVisualization.h
 PostProcessing/PathProcessor.h
 PostProcessing/ShortcutProcessor.h
+PostProcessing/PathProcessingThread.h
 ApproachDiscretization.h
 ${SABA_SimoxDir}/VirtualRobot/definesVR.h
 )

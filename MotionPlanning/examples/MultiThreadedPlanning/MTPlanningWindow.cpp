@@ -27,8 +27,8 @@ using namespace std;
 
 //Globel variables
 float TIMER_MS = 30.0f;
-bool runtimeIsGot = false;
-bool optiTimeIsGot = false;
+bool runtimeDisplayed = false;
+bool optiTimeDisplayed = false;
 
 MTPlanningWindow::MTPlanningWindow(Qt::WFlags flags)
 :QMainWindow(NULL)
@@ -75,14 +75,14 @@ void MTPlanningWindow::timerCBPlanning(void * data, SoSensor * sensor)
 	mtWindow->UI.labelThreads->setText(sText);
 	sText = "Threads_Idle: " + QString::number(nThreadsIdle);
 	mtWindow->UI.labelThreadsIdle->setText(sText);
-	if(!runtimeIsGot && mtWindow->scene->getPlannersStarted() && nThreadsWorking == 0)
+	if(!runtimeDisplayed && mtWindow->scene->getPlannersStarted() && nThreadsWorking == 0)
 	{
 		mtWindow->endTime = clock();
 		double runtime = (double)(mtWindow->endTime - mtWindow->startTime) / CLOCKS_PER_SEC;
 		sText = "Runtime: " + QString::number(runtime) + "s";
 		mtWindow->UI.labelRuntime->setText(sText);
 		cout << "Runtime = " << runtime << endl;
-		runtimeIsGot = true;
+		runtimeDisplayed = true;
 	}
 }
 
@@ -99,14 +99,15 @@ void MTPlanningWindow::timerCBOptimize(void * data, SoSensor * sensor)
 	mtWindow->UI.labelOptiWork->setText(sText);
 	sText = "Opti_Threads_Idle: " + QString::number(nIdle);
 	mtWindow->UI.labelOptiIdle->setText(sText);
-	if(!optiTimeIsGot && mtWindow->scene->getOptimizeStarted() && (nWorking==0))
+	if(!optiTimeDisplayed && mtWindow->scene->getOptimizeStarted() && (nWorking==0))
 	{
 		mtWindow->optiEndTime = clock();
 		double runtime = (double)(mtWindow->optiEndTime - mtWindow->optiStartTime) / CLOCKS_PER_SEC;
+		cout << "Runtime:" << runtime << endl;
 		sText = "Optimizing Time: " + QString::number(runtime) + "s";
 		mtWindow->UI.labelOptiTime->setText(sText);
 		cout << "Optimizing Time = " << runtime << endl;
-		optiTimeIsGot = true;
+		optiTimeDisplayed = true;
 	}
 }
 
@@ -119,61 +120,25 @@ void MTPlanningWindow::setupLayoutMTPlanning()
 	// setup
 	viewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
 	viewer->setAccumulationBuffer(true);
-
 	viewer->setAntialiasing(true, 4);
-
 	viewer->setGLRenderAction(new SoLineHighlightRenderAction);
 	viewer->setTransparencyType(SoGLRenderAction::SORTED_LAYERS_BLEND);
 	viewer->setFeedbackVisibility(true);
 	viewer->setSceneGraph((SoNode*)sceneSep);
 	viewer->viewAll();
 
-
-
-	//////////////////////////////////////////////////////////////////////////////////////
-	// Commands
-
-		
 	connect(UI.pushButtonBuild, SIGNAL(clicked()), this, SLOT(buildScene()));
-
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(reset()));
-
-	//////////////////////////////////////////////////////////////////////////////////////
-	// MTplanning
 
 	UI.comboBoxColChecking->addItem(QString("Singleton Col Checker"));
 	UI.comboBoxColChecking->addItem(QString("Multiple Col Checker Instances"));
 	UI.comboBoxColChecking->setCurrentIndex(1);
 	connect(UI.comboBoxColChecking, SIGNAL(activated(int)), this, SLOT(selectColCheckerComboBoxChanged(int)));
-
 	connect(UI.pushButtonAdd, SIGNAL(clicked()), this, SLOT(addThread()));
-
 	connect(UI.pushButtonPlanning, SIGNAL(clicked()), this, SLOT(startThreads()));
-
 	connect(UI.pushButtonPlanningStop, SIGNAL(clicked()), this, SLOT(stopThreads()));
-
 	connect(UI.pushButtonPost, SIGNAL(clicked()), this, SLOT(startOptimize()));
-
 	connect(UI.pushButtonPostStop, SIGNAL(clicked()), this, SLOT(stopOptimize()));
-
-
-	//////////////////////////////////////////////////////////////////////////////////////
-	// Sequential Planing
-	/*QString titleSQ("Sequential Planing");
-	QVButtonGroup *SQPlanButtonGroup = new QVButtonGroup(titleSQ, this);
-
-	loadRobotButton = new QPushButton("Load Robot", SQPlanButtonGroup, "loadRobot");
-	connect(loadRobotButton, SIGNAL(clicked()), this, SLOT(loadRobot()));
-
-	m_pPlanButton = new QPushButton("plan", SQPlanButtonGroup, "plan");
-	connect(m_pPlanButton, SIGNAL(clicked()), this, SLOT(plan()));
-
-	optiShowButton = new QPushButton("Optimize and Show", SQPlanButtonGroup, "optiShow");
-	connect(optiShowButton, SIGNAL(clicked()), this, SLOT(optimizeSolution()));
-
-	sQRuntimeLabel = new QLabel("Plan Time: 0.000s", SQPlanButtonGroup, "SQRuntime");
-	sQOptimizeTimeLabel = new QLabel("Optimizing Time: 0.000s", SQPlanButtonGroup, "SQOpti");
-*/
 }
 
 void MTPlanningWindow::selectColCheckerComboBoxChanged(int value)
@@ -207,19 +172,12 @@ void MTPlanningWindow::quit()
 void MTPlanningWindow::reset()
 {
 	std::cout << "MTPlanningWindow: Reset" << std::endl;
-	runtimeIsGot = false;
+	runtimeDisplayed = false;
+	optiTimeDisplayed = false;
 	scene->reset();
 	viewer->viewAll();
 }
 
-/*
-void MTPlanningWindow::loadRobot()
-{
-	std::cout << "MTPlanningWindow: Loading robot" << std::endl;
-	scene->loadRobotSTPlanning();
-	viewer->viewAll();
-}
-*/
 void MTPlanningWindow::buildScene()
 {
 	std::cout << "MTPlanningWindow: buildScene " << std::endl;
@@ -235,9 +193,10 @@ void MTPlanningWindow::addThread()
 	bool bMultipleThreads = false;
 	if (UI.comboBoxColChecking->currentIndex()==1)
 		bMultipleThreads = true;
+	int thr = scene->getThreads();
 	for(int i=0; i<n; i++)
 	{
-		scene->buildPlanningThread(bMultipleThreads);
+		scene->buildPlanningThread(bMultipleThreads, thr+i);
 	}
 }
 
@@ -247,6 +206,7 @@ void MTPlanningWindow::startThreads()
 	std::cout << "MTPlanningWindow: startThreads " << std::endl;
 	this->startTime = clock();
 	scene->startPlanning();
+	runtimeDisplayed = false;
 }
 
 
@@ -261,6 +221,7 @@ void MTPlanningWindow::startOptimize()
 	std::cout << "MTPlanningWindow: startOptimize " << std::endl;
 	this->optiStartTime = clock();
 	scene->startOptimizing();
+	optiTimeDisplayed = false;
 }
 
 void MTPlanningWindow::stopOptimize()

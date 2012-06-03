@@ -6,7 +6,8 @@
 #include <time.h>
 
 #include <Planner/PlanningThread.h>
-//#include "PostprocessingThread.h"
+#include <PostProcessing/PathProcessingThread.h>
+
 #include <CSpace/CSpaceSampled.h>
 #include <CSpace/CSpaceNode.h>
 #include <Planner/MotionPlanner.h>
@@ -22,8 +23,6 @@ using namespace Saba;
 class MTPlanningScenery
 {
 public:
-	///////////////////////////////////////////////////////////////////
-	//MT-Planing
 	MTPlanningScenery();
 	~MTPlanningScenery();
 
@@ -37,9 +36,8 @@ public:
 	void reset();
 
 	// if bMultiCollisionCheckers is set, more than one collision checker is used
-	void buildPlanningThread(bool bMultiCollisionCheckers);
-	//void buildOptimizeThread(CPostprocessingThread *pOptiThread, CSpaceSampled *pCSpace, CRrtSolution *solToOptimize);
-
+	void buildPlanningThread(bool bMultiCollisionCheckers, int id);
+	PathProcessingThreadPtr buildOptimizeThread(CSpaceSampledPtr cspace, CSpacePathPtr path);
 	void startPlanning();
 	void stopPlanning();
 
@@ -55,6 +53,7 @@ public:
 	bool getPlannersStarted(){return this->plannersStarted;}
 	bool getOptimizeStarted(){return this->optimizeStarted;}
 
+	int getThreads();
 	///////////////////////////////////////////////////////////////////
 	//Sequential planing
 	//void loadRobotSTPlanning();
@@ -63,8 +62,7 @@ public:
 	//void showSolution(CRrtSolution *solToShow, int solutionIndex);
 
 protected:
-	///////////////////////////////////////////////////////////////////
-	//MT-Planing
+
 	void addBBCube(SoSeparator* result);
 
 	void getRandomPos(float &x, float &y, float &z);
@@ -72,7 +70,7 @@ protected:
 	std::string robotFilename;
 	std::string colModel;
 	std::string kinChainName;
-	//RobotNodeSetPtr kinChain;
+
 	SoSeparator* sceneSep;
 	SoSeparator* robotSep;
 	SoSeparator* obstSep;
@@ -81,7 +79,7 @@ protected:
 	bool optimizeStarted;
 	
 	std::vector<PlanningThreadPtr> planningThreads;
-	//std::vector<PostprocessingThread*> optimizeThreads;
+	std::vector<PathProcessingThreadPtr> optimizeThreads;
 	std::vector<CSpaceSampledPtr> CSpaces;
 	std::vector<RrtPtr> planners;
 	std::vector<CSpacePathPtr> solutions;
@@ -95,6 +93,7 @@ protected:
 
 	
 	SceneObjectSetPtr environment;
+	ObstaclePtr environmentUnited;
 
 
 

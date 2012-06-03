@@ -73,31 +73,6 @@ protected:
 	Ui::MainWindowMTPlanning UI;
 	SoQtExaminerViewer *viewer; /*!< Viewer to display the 3D model of the robot and the environment. */
 
-
-	/*QPushButton* addThreadButton;
-	QPushButton* addThread5Button;
-	QPushButton* addThread10Button;
-	QPushButton* startThreadsButton;
-	QPushButton* stopThreadsButton;
-	QPushButton* startOptimizeButton;
-	QPushButton* stopOptimizeButton;
-
-	QPushButton* buildSceneButton;
-	QPushButton* resetButton;
-
-	QComboBox* colCheckingComboBox;
-
-	QLabel* labelThreads;
-	QLabel* labelThreadsIdle;
-	QLabel* labelRuntime;
-
-	QLabel* optimizeRun;
-	QLabel* optimizeIdle;
-	QLabel* optimizeTime;
-
-	QLabel *sQRuntimeLabel;
-	QLabel *sQOptimizeTimeLabel;*/
-	
 	SoSeparator* sceneSep;
 	SoSeparator* robotSep;
 	SoSeparator* graspObjectSep;
@@ -111,10 +86,10 @@ protected:
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Sequential Planing
-	QPushButton *loadRobotButton;
+	/*QPushButton *loadRobotButton;
 	QPushButton *setConfigButton;
 	QPushButton	*planButton;
-	QPushButton *optiShowButton;
+	QPushButton *optiShowButton;*/
 };
 
 #endif // __MTPlanning_WINDOW_H_

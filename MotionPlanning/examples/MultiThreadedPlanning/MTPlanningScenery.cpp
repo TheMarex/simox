@@ -29,13 +29,15 @@
 #include <Inventor/nodes/SoDrawStyle.h>
 #include <Inventor/nodes/SoCoordinate3.h>
 #include <Inventor/nodes/SoLineSet.h>
+#include <Inventor/nodes/SoBaseColor.h>
+#include <Inventor/nodes/SoTranslation.h>
+#include <Inventor/nodes/SoScale.h>
 
 #include <sstream>
 using namespace std;
 using namespace VirtualRobot;
 using namespace Saba;
 
-//int g_iSolutionIndex = 0;
 
 MTPlanningScenery::MTPlanningScenery()
 {
@@ -61,6 +63,8 @@ MTPlanningScenery::MTPlanningScenery()
 	plannersStarted = false;
 	optimizeStarted = false;
 	startEndVisu = NULL;
+
+	buildScene();
 }
 
 MTPlanningScenery::~MTPlanningScenery()
@@ -82,6 +86,9 @@ void MTPlanningScenery::reset()
 	if(plannersStarted)
 		stopPlanning();
 
+	if(optimizeStarted)
+		stopOptimizing();
+
 	for(int i=0; i<(int)planners.size(); i++)
 	{
 		planners[i].reset();
@@ -100,12 +107,12 @@ void MTPlanningScenery::reset()
 	}
 	planningThreads.clear();
 
-	/*for(int i=0; i<(int)optimizeThreads.size(); i++)
+	for(int i=0; i<(int)optimizeThreads.size(); i++)
 	{
 		optimizeThreads[i].reset();
 	}
 	optimizeThreads.clear();
-	*/
+	
 	solutions.clear();
 	optiSolutions.clear();
 
@@ -121,6 +128,7 @@ void MTPlanningScenery::reset()
 	if (startEndVisu!=NULL)
 		sceneSep->removeChild(startEndVisu);
 	startEndVisu = NULL;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Sequential Planing
@@ -166,31 +174,24 @@ void MTPlanningScenery::buildScene()
 		sceneSep->removeChild(obstSep);
 		obstSep = NULL;
 	}
-	float fCubeSize = 30.0f;
-	float fPlayfieldSize = 970.0f;
+	float fCubeSize = 50.0f;
+	float fPlayfieldSize = 1000.0f-fCubeSize;
 	environment.reset(new VirtualRobot::SceneObjectSet("Environment"));
 
 	obstSep = new SoSeparator();
-	for (int i=0;i<1000;i++)
+	sceneSep->addChild(obstSep);
+
+	int ob = 2000;
+	cout << "Randomly placing " << ob << " obstacles..." << endl;
+
+	for (int i=0;i<ob;i++)
 	{
 		VirtualRobot::ObstaclePtr o = VirtualRobot::Obstacle::createBox(fCubeSize,fCubeSize,fCubeSize);
-		/*SoCube *c = new SoCube();
-		c->width = fCubeSize;
-		c->height = fCubeSize;
-		c->depth = fCubeSize;
-		SoMatrixTransform *mt = new SoMatrixTransform();
-		SbMatrix m;
-		m.setTranslate(SbVec3f( rand()%(2*(int)fPlayfieldSize)-(int)fPlayfieldSize,
-								rand()%(2*(int)fPlayfieldSize)-(int)fPlayfieldSize,
-								rand()%(2*(int)fPlayfieldSize)-(int)fPlayfieldSize));
-		mt->matrix.setValue(m);
-		SoSeparator *sep = new SoSeparator();
-		sep->addChild(mt);
-		sep->addChild(c);*/
+
 		Eigen::Vector3f p;
-		p(0) = rand()%(2*(int)fPlayfieldSize)-(int)fPlayfieldSize;
-		p(1) = rand()%(2*(int)fPlayfieldSize)-(int)fPlayfieldSize;
-		p(2) = rand()%(2*(int)fPlayfieldSize)-(int)fPlayfieldSize;
+		p(0) = (float)(rand()%(2*(int)fPlayfieldSize)-(int)fPlayfieldSize);
+		p(1) = (float)(rand()%(2*(int)fPlayfieldSize)-(int)fPlayfieldSize);
+		p(2) = (float)(rand()%(2*(int)fPlayfieldSize)-(int)fPlayfieldSize);
 		Eigen::Matrix4f m;
 		m.setIdentity();
 		m.block(0,3,3,1) = p;
@@ -202,7 +203,8 @@ void MTPlanningScenery::buildScene()
 			visualisationNode = visualization->getCoinVisualization();
 		obstSep->addChild(visualisationNode);
 	}
-	sceneSep->addChild(obstSep);
+
+	environmentUnited = environment->createStaticObstacle("MultiThreadedObstacle");
 }
 
 void MTPlanningScenery::getRandomPos(float &x, float &y, float &z)
@@ -228,9 +230,9 @@ void MTPlanningScenery::getRandomPos(float &x, float &y, float &z)
 	}
 }
 
-void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers)
+void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers, int id)
 {
-	if (!environment)
+	if (!environmentUnited)
 	{
 		cout << "Build Environment first!..." << endl;
 		return;
@@ -263,11 +265,12 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers)
 	CDManagerPtr pCcm(new VirtualRobot::CDManager(pRobot->getCollisionChecker()));
 	cout << "Set CSpace for " << robots.size() << ".th robot." << endl;
 	pCcm->addCollisionModel(pRobot->getRobotNodeSet(colModel));
-	SceneObjectSetPtr pEnv = environment;
+	ObstaclePtr pEnv = environmentUnited;
+	//SceneObjectSetPtr pEnv = environment;
 	if (bMultiCollisionCheckers)
 	{
 		//clone environment
-		pEnv = environment->clone("Clonde Environment", pRobot->getCollisionChecker());
+		pEnv = environmentUnited->clone("Cloned Environment", pRobot->getCollisionChecker());
 	}
 	pCcm->addCollisionModel(pEnv);
 	CSpaceSampledPtr pCSpace(new CSpaceSampled(pRobot, pCcm, kinChain));
@@ -279,8 +282,6 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers)
 	pCSpace->setSamplingSize(20.0f);
 	BiRrtPtr pPlanner (new BiRrt(pCSpace));
 
-	/*CRrtConnectPlanner* pPlanner = new CRrtConnectPlanner(pCSpace);
-	*/
 	//setup random start and goal
 	float x, y, z;
 	Eigen::VectorXf start(3);
@@ -305,6 +306,8 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers)
 		cout << "GOAL: " << x << "," << y << "," << z << endl;
 		kinChain->setJointValues(goal);
 	}while(pCcm->isInCollision());
+
+	
 	goalPositions.push_back(goal);
 
 	pRobot->setUpdateVisualization(true);
@@ -317,10 +320,8 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers)
 	planningThreads.push_back(pThread);
 	solutions.push_back(CSpacePathPtr());
 	optiSolutions.push_back(CSpacePathPtr());
+	optimizeThreads.push_back(PathProcessingThreadPtr());
 	visualisations.push_back(NULL);
-
-	////CPostprocessingThread *pOptiThread = new CPostprocessingThread();
-	////optimizeThreads.push_back(pOptiThread);
 
 	if (startEndVisu == NULL)
 	{
@@ -348,21 +349,55 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers)
 	sep1->addChild(mt);
 	sep1->addChild(mat);
 	sep1->addChild(s);
+
+	SoSeparator* sep1a = new SoSeparator();
+	SoBaseColor* bc1 = new SoBaseColor();
+	bc1->rgb.setValue(0,0,0);
+	sep1a->addChild(bc1);
+	SoTranslation* tr1 = new SoTranslation();
+	tr1->translation.setValue(35,0,0);
+	sep1a->addChild(tr1);
+	SoScale* sc1 = new SoScale();
+	sc1->scaleFactor.setValue(10,10,10);
+	sep1a->addChild(sc1);
+	std::stringstream ss;
+	ss << "Start_" << id;
+	SoSeparator* bb1 = CoinVisualizationFactory::CreateBillboardText(ss.str());
+	sep1a->addChild(bb1);
+	sep1->addChild(sep1a);
 	SoSeparator *sep2 = new SoSeparator();
 	sep2->addChild(mt2);
 	sep2->addChild(mat2);
 	sep2->addChild(s);
+
+	SoSeparator* sep2a = new SoSeparator();
+	SoBaseColor* bc = new SoBaseColor();
+	bc->rgb.setValue(0,0,0);
+	sep2a->addChild(bc);
+	SoTranslation* tr = new SoTranslation();
+	tr->translation.setValue(30,0,0);
+	sep2a->addChild(tr);
+	SoScale* sc2 = new SoScale();
+	sc2->scaleFactor.setValue(10,10,10);
+	sep2a->addChild(sc2);
+	std::stringstream ss2;
+	ss2 << "Goal_" << id;
+	SoSeparator* bb2 = CoinVisualizationFactory::CreateBillboardText(ss2.str());
+	sep2a->addChild(bb2);
+	sep2->addChild(sep2a);
+
 	startEndVisu->addChild(sep1);
 	startEndVisu->addChild(sep2);
 }
 
-/*
-void MTPlanningScenery::buildOptimizeThread(CPostprocessingThread *pOptiThread, CSpaceSampled *pCSpace, CRrtSolution *solToOptimize)
+
+PathProcessingThreadPtr MTPlanningScenery::buildOptimizeThread(CSpaceSampledPtr cspace, CSpacePathPtr path)
 {
-	CShortcutOptimizer *pRrtOpt = new CShortcutOptimizer(solToOptimize,pCSpace);
-	pOptiThread->SetOptimizer(pRrtOpt);
-	pOptiThread->setNumberOfPostprocessingSteps(SHORTEN_LOOP);
-}*/
+
+	ShortcutProcessorPtr o(new ShortcutProcessor(path,cspace));
+	PathProcessingThreadPtr optiThread(new PathProcessingThread(o));
+	return optiThread;
+}
 
 
 void MTPlanningScenery::stopPlanning()
@@ -388,18 +423,18 @@ void MTPlanningScenery::stopOptimizing()
 		cout << "Start the optimizing first!..." << endl;
 		return;
 	}
-/*
+
 	cout << "Stopping "	<< optimizeThreads.size() << " optimizing threads..." << endl;
 	for(int i=0; i<(int)optimizeThreads.size(); i++)
 	{
-		optimizeThreads[i]->StopExecution();
+		optimizeThreads[i]->stop();
 	}
 	for(int i=0; i<(int)robots.size(); i++)
 	{
 		robots[i]->setUpdateVisualization(true);
 	}
 	cout << "...done" << endl;
-	optimizeStarted = false;*/
+	optimizeStarted = false;
 }
 
 
@@ -453,35 +488,36 @@ void MTPlanningScenery::startOptimizing()
 			}
 		}
 	}
-/*
-	for(int i=0; i<(int)optimizeThreads.size(); i++)
+	if (optimizeStarted)
 	{
-		if(solutions[i] != NULL)
+		cout << "Path processors already started..." << endl;
+		return;
+	}
+
+	for(int i=0; i<(int)solutions.size(); i++)
+	{
+		if(solutions[i])
 		{
-			buildOptimizeThread(optimizeThreads[i], CSpaces[i], solutions[i]);
-			optiSolutions[i] = NULL;
+			optimizeThreads[i] = buildOptimizeThread(CSpaces[i], solutions[i]);
+			optiSolutions[i].reset();
 		}
-		else
-		{
-			optimizeThreads[i] = NULL;
-		}
-	}*/
+	}
 
 	int j = 0;
 	for(unsigned int i=0; i<robots.size(); i++)
 	{
 		robots[i]->setUpdateVisualization(false);
 	}
-/*	for(unsigned int i=0; i<optimizeThreads.size(); i++)
+	for(unsigned int i=0; i<optimizeThreads.size(); i++)
 	{
-		if(optimizeThreads[i] != NULL)
+		if(optimizeThreads[i])
 		{
-			optimizeThreads[i]->start();
+			optimizeThreads[i]->start(SHORTEN_LOOP);
 			j++;
 		}
-	}*/
+	}
 	cout << "... done" << endl;
-	cout << "Starting " << j << " planning threads..." << endl;
+	cout << "Starting " << j << " path processing threads..." << endl;
 	optimizeStarted = true;
 }
 
@@ -534,7 +570,7 @@ void MTPlanningScenery::loadRobotMTPlanning(bool bMultiCollisionCheckers)
 		robotSep = new SoSeparator();
 		if (visualization)
 			robotSep->addChild(visualization->getCoinVisualization());
-		sceneSep->addChild(robotSep);
+		//sceneSep->addChild(robotSep);
 	}
 
 	//colModelRobots.push_back(pRobot->getCollisionModel(colModel));
@@ -643,7 +679,7 @@ void MTPlanningScenery::setRobotModelShape(bool collisionModel)
 	if (!sceneSep || !robotSep)
 		return;
 	// update robotsep
-	sceneSep->removeChild(robotSep);
+	//sceneSep->removeChild(robotSep);
 	if (robots.size()>0)
 	{
 		boost::shared_ptr<CoinVisualization> visualization = robots[0]->getVisualization<CoinVisualization>(robotModelVisuColModel?SceneObject::Full:SceneObject::Collision);
@@ -652,7 +688,7 @@ void MTPlanningScenery::setRobotModelShape(bool collisionModel)
 		if (visualization)
 			robotSep->addChild(visualization->getCoinVisualization());
 
-		sceneSep->addChild(robotSep);
+		//sceneSep->addChild(robotSep);
 	}
 }
 
@@ -695,22 +731,22 @@ void MTPlanningScenery::checkOptimizeThreads()
 	{
 		return;
 	}
-/*
+
 	for(int i=0; i<(int)optimizeThreads.size(); i++)
 	{
-		if(!optimizeThreads[i]->IsRunning())
+		if(!optimizeThreads[i]->isRunning())
 		{
-			CSpacePath *pOptiSol = optimizeThreads[i]->GetOptimizedPath();
-			if(pOptiSol != NULL)
+			CSpacePathPtr pOptiSol = optimizeThreads[i]->getProcessedPath();
+			if(pOptiSol)
 			{
-				if (optiSolutions[i] == NULL)
+				if (!optiSolutions[i])
 				{
-					optiSolutions[i] = new CRrtSolution(pOptiSol);
+					cout << "fetching solution " << i << endl;
 					sceneSep->removeChild(visualisations[i]);
-					CRrtWSpaceVisualization visu(robots[i], TCPName);
-					visu.AddTree(kinChain, planners[i]->GetPlanningTree(), optiSolutions[i]);
-					visu.BuildVisualizations(false, true);
-					visualisations[i] = visu.GetTreeVisualisation();
+					optiSolutions[i] = pOptiSol->clone();
+					CoinRrtWorkspaceVisualizationPtr visu(new CoinRrtWorkspaceVisualization(robots[i], CSpaces[i], TCPName));
+					visu->addCSpacePath(optiSolutions[i]);
+					visualisations[i] = visu->getCoinVisualization();
 					sceneSep->addChild(visualisations[i]);
 				}
 			}
@@ -720,7 +756,7 @@ void MTPlanningScenery::checkOptimizeThreads()
 				cout << "show the original solution" << endl;
 			}
 		}
-	}*/
+	}
 }
 
 
@@ -747,10 +783,10 @@ void MTPlanningScenery::getOptimizeThreadCount(int &nWorking, int &nIdle)
 {
 	nWorking = 0;
 	nIdle = 0;
-	/*for (unsigned int i=0; i<optimizeThreads.size();i++)
+	for (unsigned int i=0; i<optimizeThreads.size();i++)
 	{
-		CPostprocessingThread* pOptiThread = optimizeThreads[i];
-		if (pOptiThread->IsRunning())
+		PathProcessingThreadPtr pOptiThread = optimizeThreads[i];
+		if (pOptiThread && pOptiThread->isRunning())
 		{
 			nWorking++;
 		} 
@@ -758,7 +794,12 @@ void MTPlanningScenery::getOptimizeThreadCount(int &nWorking, int &nIdle)
 		{
 			nIdle++;
 		}
-	}*/
+	}
+}
+
+int MTPlanningScenery::getThreads()
+{
+	return (int)(planningThreads.size());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

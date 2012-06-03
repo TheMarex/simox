@@ -58,9 +58,46 @@ Eigen::MatrixXf PoseQualityManipulability::getSingularVectorCartesian()
 }
 
 
+
 float PoseQualityManipulability::getManipulability(ManipulabilityIndexType i)
 {
 	return getManipulability(i,-1);
+}
+
+float PoseQualityManipulability::getManipulability( const Eigen::VectorXf &direction, int considerFirstSV )
+{
+	VR_ASSERT(direction.rows()==3 || direction.rows()==6);
+	Eigen::VectorXf d(6);
+	if ( direction.rows()==6)
+		d = direction;
+	else
+	{
+		d.setZero();
+		d.segment(0,3) = direction;
+	}
+	float result = 0;
+
+	// jacobian (in global coord system!)
+	VirtualRobot::DifferentialIKPtr jacobianGlobal(new VirtualRobot::DifferentialIK(rns));
+	jacobianGlobal->convertModelScalingtoM(convertMMtoM);
+
+	Eigen::MatrixXf jac = jacobianGlobal->getJacobianMatrix(rns->getTCP());
+	// penalize rotation
+	jac.block(3,0,3,jac.cols()) *= penalizeRotationFactor;
+
+	// compute gradient
+	Eigen::VectorXf gradient = (jac.transpose() * d).transpose();
+
+	result = gradient.norm();
+
+
+	if (penJointLimits)
+	{
+		result *= getJointLimitPenalizationFactor();
+	}
+
+	return result;
+
 }
 
 float PoseQualityManipulability::getManipulability( ManipulabilityIndexType i, int considerFirstSV )
@@ -108,6 +145,11 @@ float PoseQualityManipulability::getManipulability( ManipulabilityIndexType i, i
 float PoseQualityManipulability::getPoseQuality()
 {
 	return getManipulability(manipulabilityType);
+}
+
+float PoseQualityManipulability::getPoseQuality( const Eigen::VectorXf &direction )
+{
+	return getManipulability(direction);
 }
 
 Eigen::VectorXf PoseQualityManipulability::getSingularValues()

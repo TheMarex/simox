@@ -113,6 +113,14 @@ public:
 	 */
 	SceneObjectSetPtr clone(const std::string &newName, CollisionCheckerPtr newColChecker);
 
+	/*!
+		This method creates a new obstacle from all added SceneObjects. 
+		Note, that the resulting object is a rigid body that can be placed in the scene but the internal structure is fixed.
+		This object can be useful when the SceneObjectSet consists of a large number of objects that do not change their relation to each other.
+		When building a static obstacle collision detection can be performed much more efficient.
+	*/
+	ObstaclePtr createStaticObstacle(const std::string &name);
+
 protected:
 
 	//! delete all data

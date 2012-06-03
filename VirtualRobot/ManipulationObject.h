@@ -79,12 +79,15 @@ public:
 	/*!
 		Clones this object. If no col checker is given, the one of the original object is used.
 	*/
-	ManipulationObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() );
+	ManipulationObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {return ManipulationObjectPtr(_clone(name,colChecker));}
 
 	void setFilename(const std::string &filename);
 	std::string getFilename();
 
 protected:
+
+	virtual ManipulationObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const;
+
 
 	std::string filename;
 		

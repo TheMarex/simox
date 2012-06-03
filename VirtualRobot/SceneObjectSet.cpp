@@ -2,7 +2,9 @@
 #include "SceneObjectSet.h"
 #include "CollisionDetection/CollisionModel.h"
 #include "CollisionDetection/CollisionChecker.h"
+#include "Visualization//VisualizationNode.h"
 #include "RobotNodeSet.h"
+#include "Obstacle.h"
 #include <boost/pointer_cast.hpp>
 
 namespace VirtualRobot {
@@ -282,6 +284,24 @@ VirtualRobot::SceneObjectSetPtr SceneObjectSet::clone( const std::string &newNam
 		result->addSceneObject(o);
 	}
 	return result;
+}
+
+VirtualRobot::ObstaclePtr SceneObjectSet::createStaticObstacle( const std::string &name )
+{
+	//VisualizationNodePtr visus(new VisualizationNode());
+	std::vector<VisualizationNodePtr> visus;
+	std::vector<CollisionModelPtr> cols;
+	for (size_t i=0;i<sceneObjects.size();i++)
+	{
+		if (sceneObjects[i]->getVisualization())
+			visus.push_back(sceneObjects[i]->getVisualization());
+		if (sceneObjects[i]->getCollisionModel())
+			cols.push_back(sceneObjects[i]->getCollisionModel());
+	}
+	VisualizationNodePtr unitedVisu = VisualizationNode::CreateUnitedVisualization(visus);
+	CollisionModelPtr unitedColModel = CollisionModel::CreateUnitedCollisionModel(cols);
+	SceneObject::Physics phys;
+	return ObstaclePtr(new Obstacle(name,unitedVisu,unitedColModel,phys,colChecker));
 }
 
 } // namespace VirtualRobot

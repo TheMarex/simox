@@ -34,11 +34,7 @@ float CollisionCheckerPQP::calculateDistance (CollisionModelPtr model1, Collisio
 {
 	boost::shared_ptr<PQP::PQP_Model> m1 = model1->getCollisionModelImplementation()->getPQPModel();
 	boost::shared_ptr<PQP::PQP_Model> m2 = model2->getCollisionModelImplementation()->getPQPModel();
-	if (!m1 || !m2)
-	{
-		VR_WARNING << "no internal data..." << endl;
-		return -1.0f;
-	}
+	VR_ASSERT_MESSAGE(m1&&m2,"NULL data in ColChecker!");
 
 	float res = getMinDistance(m1,m2,model1->getCollisionModelImplementation()->getGlobalPose(),model2->getCollisionModelImplementation()->getGlobalPose(),P1,P2,trID1,trID2);
 	/*if (model1->hasCollisionId(*trID2) && !model1->hasCollisionId(*trID1))
@@ -75,11 +71,7 @@ bool CollisionCheckerPQP::checkCollision (CollisionModelPtr model1, CollisionMod
 {
 	boost::shared_ptr<PQP::PQP_Model> m1 = model1->getCollisionModelImplementation()->getPQPModel();
 	boost::shared_ptr<PQP::PQP_Model> m2 = model2->getCollisionModelImplementation()->getPQPModel();
-	if (!m1 || !m2 || !pqpChecker)
-	{
-		VR_WARNING << "no internal data..." << endl;
-		return false;
-	}
+	VR_ASSERT_MESSAGE(m1&&m2,"NULL data in ColChecker!");
 
 	PQP::PQP_CollideResult result;
 	PQP::PQP_REAL R1[3][3];
@@ -216,7 +208,7 @@ float CollisionCheckerPQP::getMinDistance(boost::shared_ptr<PQP::PQP_Model> m1, 
 // returns min distance between the objects
 float CollisionCheckerPQP::getMinDistance(boost::shared_ptr<PQP::PQP_Model> m1, boost::shared_ptr<PQP::PQP_Model> m2, const Eigen::Matrix4f &mat1, const Eigen::Matrix4f &mat2, Eigen::Vector3f &storeP1, Eigen::Vector3f &storeP2, int *storeID1, int *storeID2)
 {
-	THROW_VR_EXCEPTION_IF((!m1 || !m2), "NULL data..");
+	VR_ASSERT_MESSAGE(m1&&m2,"NULL data in ColChecker!");
 
 	PQP::PQP_DistanceResult result;
 
@@ -240,7 +232,8 @@ float CollisionCheckerPQP::getMinDistance(boost::shared_ptr<PQP::PQP_Model> m1, 
 
 void CollisionCheckerPQP::GetPQPDistance(const boost::shared_ptr<PQP::PQP_Model>& model1, const boost::shared_ptr<PQP::PQP_Model>& model2, const Eigen::Matrix4f& matrix1, const Eigen::Matrix4f& matrix2, PQP::PQP_DistanceResult& pqpResult)
 {
-	THROW_VR_EXCEPTION_IF(!pqpChecker, "no internal data\n");
+	VR_ASSERT_MESSAGE(pqpChecker,"NULL data in ColChecker!");
+
 
 	PQP::PQP_REAL Rotation1[3][3];
 	PQP::PQP_REAL Translation1[3];

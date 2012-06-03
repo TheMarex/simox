@@ -57,6 +57,16 @@ public:
 	*/
 	virtual float getPoseQuality();
 	virtual float getManipulability(ManipulabilityIndexType i);
+
+	/*!
+		The quality is determined for a given Cartesian direction.  
+		The current configuration of the corresponding RNS is analyzed and the quality is returned.
+		See derived classes for details.
+		\param direction A 3d or 6d vector with the Cartesian direction to investigate.
+	*/
+	virtual float getPoseQuality(const Eigen::VectorXf &direction);
+	virtual float getManipulability(const Eigen::VectorXf &direction, int considerFirstSV = -1);
+
 	/*!
 		Considers the first considerFirstSV singular values and ignores any remaining entries in the sv vector.
 		This can be useful, when constrained motions should be analyzed (e.g. 2d motions in 3d)

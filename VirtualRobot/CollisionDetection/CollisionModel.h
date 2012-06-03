@@ -123,6 +123,14 @@ public:
 
 	std::string getXMLString(const std::string &basePath, int tabs);
 
+	/*!
+		Create a united collision model. 
+		All triangle data is copied to one model which usually improves the collision detection performance.
+	*/
+	static CollisionModelPtr CreateUnitedCollisionModel(const std::vector<CollisionModelPtr> &colModels);
+
+
+
 protected:
 
 	//! delete all data

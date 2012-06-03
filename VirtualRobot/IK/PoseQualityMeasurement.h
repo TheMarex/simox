@@ -55,6 +55,16 @@ public:
 		See derived classes for details.
 	*/
 	virtual float getPoseQuality();
+
+	/*!
+		The quality is determined for a given Cartesian direction.  
+		The current configuration of the corresponding RNS is analyzed and the quality is returned.
+		See derived classes for details.
+		\param direction A 3d or 6d vector with the Cartesian direction to investigate.
+	*/
+	virtual float getPoseQuality(const Eigen::VectorXf &direction);
+
+
 	void setVerbose(bool v);
 
 	/*!

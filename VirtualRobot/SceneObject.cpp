@@ -431,7 +431,7 @@ void SceneObject::setName( const std::string &name )
 	this->name = name;
 }
 
-SceneObjectPtr SceneObject::clone( const std::string &name, CollisionCheckerPtr colChecker )
+SceneObject* SceneObject::_clone( const std::string &name, CollisionCheckerPtr colChecker ) const
 {
 	VisualizationNodePtr clonedVisualizationNode;
 	if (visualizationModel)
@@ -440,13 +440,15 @@ SceneObjectPtr SceneObject::clone( const std::string &name, CollisionCheckerPtr 
 	if (collisionModel)
 		clonedCollisionModel = collisionModel->clone(colChecker);
 
-	SceneObjectPtr result(new SceneObject(name, clonedVisualizationNode, clonedCollisionModel, physics, colChecker));
+	SceneObject* result = new SceneObject(name, clonedVisualizationNode, clonedCollisionModel, physics, colChecker);
 
 	if (!result)
 	{
 		VR_ERROR << "Cloning failed.." << endl;
 		return result;
 	}
+
+	result->setGlobalPose(getGlobalPose());
 
 	return result;
 }

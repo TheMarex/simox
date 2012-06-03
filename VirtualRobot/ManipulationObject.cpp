@@ -118,7 +118,7 @@ std::string ManipulationObject::getXMLString(const std::string &basePath, int ta
 	return ss.str();
 }
 
-ManipulationObjectPtr ManipulationObject::clone( const std::string &name, CollisionCheckerPtr colChecker )
+ManipulationObject* ManipulationObject::_clone( const std::string &name, CollisionCheckerPtr colChecker ) const
 {
 	VisualizationNodePtr clonedVisualizationNode;
 	if (visualizationModel)
@@ -127,13 +127,16 @@ ManipulationObjectPtr ManipulationObject::clone( const std::string &name, Collis
 	if (collisionModel)
 		clonedCollisionModel = collisionModel->clone(colChecker);
 
-	ManipulationObjectPtr result(new ManipulationObject(name, clonedVisualizationNode, clonedCollisionModel, physics, colChecker));
+	ManipulationObject* result = new ManipulationObject(name, clonedVisualizationNode, clonedCollisionModel, physics, colChecker);
 
 	if (!result)
 	{
 		VR_ERROR << "Cloning failed.." << endl;
 		return result;
 	}
+
+	result->setGlobalPose(getGlobalPose());
+
 	for (size_t i=0;i<graspSets.size();i++)
 	{
 		result->addGraspSet(graspSets[i]->clone());

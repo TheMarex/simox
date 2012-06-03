@@ -147,4 +147,30 @@ std::string VisualizationNode::getXMLString(const std::string &basePath, int tab
 	return ss.str();
 }
 
+VirtualRobot::VisualizationNodePtr VisualizationNode::CreateUnitedVisualization( const std::vector<VisualizationNodePtr> &visualizations )
+{
+	if (visualizations.size()==0)
+		return VisualizationNodePtr();
+	VisualizationFactoryPtr f;
+	std::vector<VisualizationNodePtr>::const_iterator i = visualizations.begin();
+	while (!f && i!=visualizations.end())
+	{
+		if ((*i)->getType() != VisualizationFactory::getName())
+		{
+			f = VisualizationFactory::fromName((*i)->getType(),NULL);
+			break;
+		}
+		i++;
+	}
+	if (i==visualizations.end())
+	{
+		VR_ERROR << "Could not find visualization factory. Aborting..." << endl;
+		return VisualizationNodePtr();
+	}
+
+	THROW_VR_EXCEPTION_IF(!f,"No VisualizationFactory");
+
+	return f->createUnitedVisualization(visualizations);
+}
+
 } // namespace VirtualRobot

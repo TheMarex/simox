@@ -277,11 +277,13 @@ public:
 	/*!
 		Clones this object. If no col checker is given, the one of the original object is used.
 	*/
-	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker );
+	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {return SceneObjectPtr(_clone(name,colChecker));}
 
 
 
 protected:
+	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const;
+
 	SceneObject(){};
 
 	//! basic data, used by Obstacle and ManipulationObject

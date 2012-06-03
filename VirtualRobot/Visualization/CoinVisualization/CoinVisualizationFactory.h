@@ -75,6 +75,12 @@ public:
 	*/
 	virtual VisualizationNodePtr createVisualization();
 
+	/*!
+		Create a united visualization. Internally all visualizations are copied and added to one SoSeparator.
+		All visualizations have to be of type CoinVisualizationNode.
+	*/
+	virtual VisualizationNodePtr createUnitedVisualization(const std::vector<VisualizationNodePtr> &visualizations) const;
+
 
 	static SoSeparator* CreateConvexHull2DVisualization(const MathTools::ConvexHull2DPtr ch, MathTools::Plane &p, VisualizationFactory::Color colorInner = VisualizationFactory::Color::Blue(), VisualizationFactory::Color colorLine = VisualizationFactory::Color::Black(), float lineSize = 5.0f, const Eigen::Vector3f &offset =Eigen::Vector3f::Zero() );
 	static SoSeparator* CreatePolygonVisualization(const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner = VisualizationFactory::Color::Blue(), VisualizationFactory::Color colorLine = VisualizationFactory::Color::Black(), float lineSize = 5.0f);
@@ -113,6 +119,7 @@ public:
 	static SoSeparator* CreateEndEffectorVisualization(EndEffectorPtr eef, SceneObject::VisualizationType = SceneObject::Full);
 
 	static SoSeparator* CreateText(const std::string &s);
+	static SoSeparator* CreateBillboardText(const std::string &s);
 
 	/*!
 		Convenient method to retrieve a coin visualization for a robot

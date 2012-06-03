@@ -77,6 +77,11 @@ public:
 	*/
 	virtual VisualizationNodePtr createVisualization(){return VisualizationNodePtr();}
 
+	/*!
+		Create a united visualization.
+	*/
+	virtual VisualizationNodePtr createUnitedVisualization(const std::vector<VisualizationNodePtr> &visualizations) const {return VisualizationNodePtr();}
+
 };
 typedef boost::shared_ptr<VisualizationFactory::Color> ColorPtr;
 

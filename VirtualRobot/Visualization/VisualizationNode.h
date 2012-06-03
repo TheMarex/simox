@@ -119,6 +119,14 @@ public:
 	virtual std::string getType(){return VisualizationFactory::getName();}
 
 	std::string getXMLString(const std::string &basePath, int tabs);
+
+
+	/*!
+		Create a united visualization. Behavior depends on the derived implementation, 
+		but usually the visualizations are copied and united to one object.
+	*/
+	static VisualizationNodePtr CreateUnitedVisualization(const std::vector<VisualizationNodePtr> &visualizations);
+
 protected:
 	bool boundingBox; //!< Indicates, if the bounding box model was used
 	std::string filename; //!< if the visualization was build from a file, the filename is stored here

@@ -194,6 +194,25 @@ std::string CollisionModel::getXMLString(const std::string &basePath, int tabs)
 	return ss.str();
 }
 
+VirtualRobot::CollisionModelPtr CollisionModel::CreateUnitedCollisionModel( const std::vector<CollisionModelPtr> &colModels )
+{
+	VR_ASSERT(colModels.size()>0);
+	CollisionCheckerPtr colChecker = colModels[0]->getCollisionChecker();
+	std::vector<VisualizationNodePtr> visus;
+	for (size_t i=0;i<colModels.size();i++)
+	{
+		VisualizationNodePtr v = colModels[i]->getVisualization();
+		if (v)
+			visus.push_back(v);
+		VR_ASSERT(colModels[i]->getCollisionChecker() == colChecker);
+	}
+	if (visus.size()==0)
+		return CollisionModelPtr();
+
+	VisualizationNodePtr vc = VisualizationNode::CreateUnitedVisualization(visus);
+	return CollisionModelPtr(new CollisionModel(vc,"",colChecker));
+}
+
 /*
 void CollisionModel::GetAABB( SbBox3f& store_aabb )
 {
@@ -216,34 +235,7 @@ void CollisionModel::GetOOBB(SbXfBox3f& store_oobb)
 	store_oobb = bboxAction.getXfBoundingBox();
 }
 */
-/*
-int CollisionModel::BuildColModel(std::map<SoNode*,int> &mIVIDMapping)
-{
-	if (!colChecker)
-		return 0;
-	if (m_pIVModel)
-	{
-		m_pIVModel->unref();
-	}
-	m_pIVModel = new SoSeparator();
-	m_pIVModel->ref();
-	SoMatrixTransform *pMaTr = new SoMatrixTransform();
-	m_pIVModel->addChild(pMaTr);
 
-	SoSeparator *pIVModel = new SoSeparator();
-	int nodeCount = 0;
-	//int idNr = s_nID;
-	m_vCollisionModelIds.clear();
-	int trNr = collisionModelImplementation->BuildColModel(mIVIDMapping,m_vCollisionModelIds,pIVModel);
-	m_pIVModel->addChild(pIVModel);
-
-	SbMatrix mat;
-	mat.makeIdentity();
-	SetGlobalPose(mat);
-
-	return trNr;
-}
-*/
 
 } // namespace VirtualRobot
 

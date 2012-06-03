@@ -44,13 +44,25 @@ namespace VirtualRobot
 					std::string sd(simox_data_path);
 					sd += std::string("/data");
 					pathFound = addDataPath(sd,true);
+					if (!pathFound)
+					{
+						std::string sd(simox_data_path);
+						sd += std::string("/VirtualRobot/data");
+						pathFound = addDataPath(sd,true);
+					}
+					if (!pathFound)
+					{
+						std::string sd(simox_data_path);
+						sd += std::string("../VirtualRobot/data");
+						pathFound = addDataPath(sd,true);
+					}
 				}
 			}
 #ifdef SIMOX_DATA_PATH
-			addDataPath(std::string(SIMOX_DATA_PATH),true);
+			pathFound = pathFound | addDataPath(std::string(SIMOX_DATA_PATH),true);
 #endif
 #ifdef VIRTUAL_ROBOT_DATA_PATH
-			addDataPath(std::string(VIRTUAL_ROBOT_DATA_PATH),true);
+			pathFound = pathFound | addDataPath(std::string(VIRTUAL_ROBOT_DATA_PATH),true);
 #endif
 		}
 	}

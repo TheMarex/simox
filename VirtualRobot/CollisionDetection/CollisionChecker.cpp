@@ -117,13 +117,10 @@ float CollisionChecker::calculateDistance (SceneObjectPtr model1, SceneObjectPtr
 
 float CollisionChecker::calculateDistance (SceneObjectSetPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2)
 {
-	THROW_VR_EXCEPTION_IF((!model1 || !model2), "NULL data");
-
-	if (model1->getCollisionChecker() != model2->getCollisionChecker() || model1->getCollisionChecker()!=shared_from_this())
-	{
-		THROW_VR_EXCEPTION ("Collision models are linked to different Collision Checker instances");
-	}
-	THROW_VR_EXCEPTION_IF(!isInitialized(), "Not initialized");
+	VR_ASSERT(model1 && model2);
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == model2->getCollisionChecker(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == shared_from_this(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT(isInitialized());
 
 	std::vector< CollisionModelPtr > colModels1 = model1->getCollisionModels();
 	std::vector< CollisionModelPtr > colModels2 = model2->getCollisionModels();
@@ -163,13 +160,10 @@ float CollisionChecker::calculateDistance (SceneObjectSetPtr model1, SceneObject
 
 float CollisionChecker::calculateDistance (CollisionModelPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2)
 {
-	THROW_VR_EXCEPTION_IF((!model1 || !model2), "NULL data");
-
-	if (model1->getCollisionChecker() != model2->getCollisionChecker() || model1->getCollisionChecker()!=shared_from_this())
-	{
-		THROW_VR_EXCEPTION ("Collision models are linked to different Collision Checker instances");
-	}
-	THROW_VR_EXCEPTION_IF(!isInitialized(), "Not initialized");
+	VR_ASSERT(model1 && model2);
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == model2->getCollisionChecker(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == shared_from_this(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT(isInitialized());
 	
 	std::vector< CollisionModelPtr > colModels = model2->getCollisionModels();
 	if (colModels.size()==0)
@@ -203,13 +197,10 @@ float CollisionChecker::calculateDistance (CollisionModelPtr model1, SceneObject
 
 float CollisionChecker::calculateDistance (CollisionModelPtr model1, CollisionModelPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2)
 {
-	THROW_VR_EXCEPTION_IF((!model1 || !model2), "NULL data");
-
-	if (model1->getCollisionChecker() != model2->getCollisionChecker() || model1->getCollisionChecker()!=shared_from_this())
-	{
-		THROW_VR_EXCEPTION ("Collision models are linked to different Collision Checker instances");
-	}
-	THROW_VR_EXCEPTION_IF(!isInitialized(), "Not initialized");
+	VR_ASSERT(model1 && model2);
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == model2->getCollisionChecker(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == shared_from_this(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT(isInitialized());
 
 	return collisionCheckerImplementation->calculateDistance(model1,model2,P1,P2,trID1,trID2);
 }
@@ -218,13 +209,10 @@ float CollisionChecker::calculateDistance (CollisionModelPtr model1, CollisionMo
 
 bool CollisionChecker::checkCollision (SceneObjectSetPtr model1, SceneObjectSetPtr model2)
 {
-	THROW_VR_EXCEPTION_IF((!model1 || !model2), "NULL data");
-
-	if (model1->getCollisionChecker() != model2->getCollisionChecker() || model1->getCollisionChecker()!=shared_from_this())
-	{
-		THROW_VR_EXCEPTION ("Collision models are linked to different Collision Checker instances");
-	}
-	THROW_VR_EXCEPTION_IF(!isInitialized(), "Not initialized");
+	VR_ASSERT(model1 && model2);
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == model2->getCollisionChecker(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == shared_from_this(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT(isInitialized());
 
 	std::vector< CollisionModelPtr > vColModels1 = model1->getCollisionModels();
 	std::vector< CollisionModelPtr > vColModels2 = model2->getCollisionModels();
@@ -257,13 +245,10 @@ bool CollisionChecker::checkCollision (SceneObjectPtr model1, SceneObjectSetPtr 
 
 bool CollisionChecker::checkCollision (CollisionModelPtr model1, SceneObjectSetPtr model2)
 {
-	THROW_VR_EXCEPTION_IF((!model1 || !model2), "NULL data");
-
-	if (model1->getCollisionChecker() != model2->getCollisionChecker() || model1->getCollisionChecker()!=shared_from_this())
-	{
-		THROW_VR_EXCEPTION ("Collision models are linked to different Collision Checker instances");
-	}
-	THROW_VR_EXCEPTION_IF(!isInitialized(), "Not initialized");
+	VR_ASSERT(model1 && model2);
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == model2->getCollisionChecker(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == shared_from_this(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT(isInitialized());
 
 	std::vector< CollisionModelPtr > vColModels = model2->getCollisionModels();
 	if (vColModels.size()==0)
@@ -289,21 +274,11 @@ bool CollisionChecker::checkCollision (SceneObjectPtr model1, SceneObjectPtr mod
 
 bool CollisionChecker::checkCollision (CollisionModelPtr model1, CollisionModelPtr model2)
 {
-	if (!model1 || !model2)
-	{
-		VR_WARNING << "NULL data." << endl;
-		return false;
-	}
-	if (model1->getCollisionChecker() != model2->getCollisionChecker() || model1->getCollisionChecker()!=shared_from_this())
-	{
-		VR_WARNING << "Could not go on, collision models are linked to different Collision Checker instances." << endl;
-		return false;
-	}
-	if (!isInitialized())
-	{
-		VR_WARNING << "not initialized." << endl;
-		return false;
-	}
+	VR_ASSERT(model1 && model2);
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == model2->getCollisionChecker(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT_MESSAGE(model1->getCollisionChecker() == shared_from_this(), "Collision models are linked to different Collision Checker instances");
+	VR_ASSERT(isInitialized());
+
 	return collisionCheckerImplementation->checkCollision(model1, model2);//, storeContact);
 }
 

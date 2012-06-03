@@ -24,6 +24,7 @@
 #define _VirtualRobot_RobotNode_h_
 
 #include "../VirtualRobotImportExport.h"
+#include "../VirtualRobotException.h"
 
 #include "../SceneObject.h"
 #include "../RobotFactory.h"
@@ -271,6 +272,11 @@ public:
 
 	void setThreadsafe(bool);
 
+
+	//! Forbid cloning method from SceneObject. We need to know the new robot for cloning
+	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
+
+
 private: // Use the private setters and getters instead
 	float jointValue;							//< The joint value
 	std::vector<std::string> childrenNames;
@@ -281,7 +287,6 @@ private: // Use the private setters and getters instead
 
 protected:
 	///////////////////////// SETUP ////////////////////////////////////
-	//mutable boost::shared_mutex mutex; 
 	mutable boost::recursive_mutex mutex; 
 	bool use_mutex;
 
@@ -289,7 +294,6 @@ protected:
 	virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo);
 	virtual void setPreJointTransformation(const Eigen::Matrix4f &trafo);
 
-	//Stefan
 	virtual std::vector<std::string> getChildrenNames() const {return childrenNames;};
 	virtual std::string getParentName() const {RobotNodePtr p = parent.lock();if (p) return p->getName(); else return std::string();};
 
@@ -312,6 +316,9 @@ protected:
 	Derived classes must implement their clone method here.
 	*/
 	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker) = 0;
+
+	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
+
 };
 
 } // namespace VirtualRobot

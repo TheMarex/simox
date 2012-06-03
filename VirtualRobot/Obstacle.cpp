@@ -130,7 +130,7 @@ void Obstacle::print( bool printDecoration /*= true*/ )
 		cout << endl;
 }
 
-ObstaclePtr Obstacle::clone( const std::string &name, CollisionCheckerPtr colChecker )
+Obstacle* Obstacle::_clone( const std::string &name, CollisionCheckerPtr colChecker ) const
 {
 	VisualizationNodePtr clonedVisualizationNode;
 	if (visualizationModel)
@@ -139,13 +139,15 @@ ObstaclePtr Obstacle::clone( const std::string &name, CollisionCheckerPtr colChe
 	if (collisionModel)
 		clonedCollisionModel = collisionModel->clone(colChecker);
 
-	ObstaclePtr result(new Obstacle(name, clonedVisualizationNode, clonedCollisionModel, physics, colChecker));
+	Obstacle* result = new Obstacle(name, clonedVisualizationNode, clonedCollisionModel, physics, colChecker);
 
 	if (!result)
 	{
 		VR_ERROR << "Cloning failed.." << endl;
 		return result;
 	}
+
+	result->setGlobalPose(getGlobalPose());
 
 	return result;
 }

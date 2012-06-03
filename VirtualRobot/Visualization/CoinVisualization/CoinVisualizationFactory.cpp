@@ -46,6 +46,7 @@
 #include <Inventor/nodes/SoFaceSet.h>
 #include <Inventor/nodes/SoCylinder.h>
 #include <Inventor/nodes/SoLightModel.h>
+#include <Inventor/VRMLnodes/SoVRMLBillboard.h>
 #include <iostream>
 #include <algorithm>
 #include <boost/pointer_cast.hpp>
@@ -471,6 +472,23 @@ SoSeparator* CoinVisualizationFactory::CreateText(const std::string &s)
 	return textSep;
 }
 
+SoSeparator* CoinVisualizationFactory::CreateBillboardText(const std::string &s)
+{
+	SoSeparator *textSep = new SoSeparator();
+	SoVRMLBillboard *bb = new SoVRMLBillboard();
+	textSep->addChild(bb);
+	SoTranslation *moveT = new SoTranslation();
+	moveT->translation.setValue(2.0f,2.0f,0.0f);
+	textSep->addChild(moveT);
+	SoAsciiText *textNode = new SoAsciiText();
+	/*std::string text2(*text);
+	text2.replace( ' ', "_" );*/
+	SbString text2(s.c_str());
+	text2.apply( &IVToolsHelper_ReplaceSpaceWithUnderscore );
+	textNode->string.set(text2.getString());
+	bb->addChild(textNode);
+	return textSep;
+}
 SoSeparator* CoinVisualizationFactory::CreateVertexVisualization( const Eigen::Vector3f &position, float radius, float transparency, float colorR /*= 0.5f*/, float colorG /*= 0.5f*/, float colorB /*= 0.5f*/ )
 {
 	SoSeparator *res = new SoSeparator;
@@ -1678,6 +1696,43 @@ bool CoinVisualizationFactory::renderOffscreen( SoOffscreenRenderer* renderer, S
 	}
 	*buffer = renderer->getBuffer();
 	return true;
+}
+
+VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createUnitedVisualization( const std::vector<VisualizationNodePtr> &visualizations ) const
+{
+	if (visualizations.size()==0)
+		return VisualizationNodePtr();
+
+	SoSeparator *s = new SoSeparator;
+	s->ref();
+	for (size_t i=0;i<visualizations.size();i++)
+	{
+		if (visualizations[i]->getType() == VisualizationFactory::getName())
+		{
+			//skip empty visus
+			continue;
+		}
+
+		if (visualizations[i]->getType() != getName())
+		{
+			VR_ERROR << "Skipping Visualization " << i << ": Is type " << visualizations[i]->getType() << ", but factory is of type " << getName() << endl;
+			continue;
+		}
+		CoinVisualizationNode* cvn = dynamic_cast<CoinVisualizationNode*>(visualizations[i].get());
+		if (cvn)
+		{
+			SoNode* n = cvn->getCoinVisualization();
+			if (n)
+				s->addChild(n->copy(FALSE));
+		} else
+		{
+			VR_WARNING << "Invalid type casting to CoinVisualizationNode?!" << endl;
+		}
+	}
+
+	VisualizationNodePtr result(new CoinVisualizationNode(s));
+	s->unrefNoDelete();
+	return result;
 }
 
 

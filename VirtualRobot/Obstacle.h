@@ -54,7 +54,7 @@ public:
 	/*!
 		Clones this object. If no col checker is given, the one of the original object is used.
 	*/
-	ObstaclePtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() );
+	ObstaclePtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() )  const {return ObstaclePtr(_clone(name,colChecker));}
 
 	int getID();
 
@@ -78,6 +78,8 @@ public:
 	static ObstaclePtr createSphere(float radius, VisualizationFactory::Color color = VisualizationFactory::Color::Red(), std::string visualizationType = "", CollisionCheckerPtr colChecker = CollisionCheckerPtr());
 	std::string getXMLString(const std::string &basePath, int tabs=0);
 protected:
+
+	virtual Obstacle* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const;
 
 	// a counter for internal ids
 	static int idCounter;

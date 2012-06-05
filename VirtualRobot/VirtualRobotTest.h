@@ -34,7 +34,7 @@ struct OutputConfiguration
 {
 	OutputConfiguration()
 	{
-		std::string logFileName(VR_TEST_OUTPUT_DIRECTORY);
+		std::string logFileName(VirtualRobot_TEST_DIR);
 		logFileName.append(boost::unit_test::framework::master_test_suite().p_name);
 		logFileName.append(".xml");
 		logFile.open(logFileName.c_str());

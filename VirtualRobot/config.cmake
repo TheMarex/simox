@@ -1,7 +1,7 @@
 
-IF (NOT VIRTUAL_ROBOT_CONFIGURED)
+IF (NOT VirtualRobot_CONFIGURED)
 
-    SET(VIRTUAL_ROBOT_CONFIGURED TRUE)
+    SET(VirtualRobot_CONFIGURED TRUE)
     
     GET_FILENAME_COMPONENT (CurrentVRPath ${CMAKE_CURRENT_LIST_FILE} PATH)
     SET(VR_DIR ${CurrentVRPath})
@@ -16,7 +16,7 @@ IF (NOT VIRTUAL_ROBOT_CONFIGURED)
     
     ############################# SETUP PATHS #############################
 
-    # Allow #include <VIRTUAL_ROBOT/*.h>
+    # Allow #include <VirtualRobot/*.h>
     INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR} ${VR_DIR}/..)
     
  
@@ -29,37 +29,37 @@ IF (NOT VIRTUAL_ROBOT_CONFIGURED)
     ENDIF()
     	
     # check if we are enforced to build to some destination
-    IF(DEFINED VIRTUAL_ROBOT_BUILD_DIRECTORY)
-    	get_filename_component(VIRTUAL_ROBOT_BUILD_DIRECTORY ${VIRTUAL_ROBOT_BUILD_DIRECTORY} ABSOLUTE)
-    	MESSAGE (STATUS "** VIRTUAL_ROBOT Build dir defined: ${VIRTUAL_ROBOT_BUILD_DIRECTORY}")
+    IF(DEFINED VirtualRobot_BUILD_DIRECTORY)
+    	get_filename_component(VirtualRobot_BUILD_DIRECTORY ${VirtualRobot_BUILD_DIRECTORY} ABSOLUTE)
+    	MESSAGE (STATUS "** VirtualRobot Build dir defined: ${VirtualRobot_BUILD_DIRECTORY}")
     ELSE()
-    	SET(VIRTUAL_ROBOT_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
-    	MESSAGE (STATUS "** VIRTUAL_ROBOT Build dir not defined, using CMAKE_BINARY_DIR: ${VIRTUAL_ROBOT_BUILD_DIRECTORY}")
+    	SET(VirtualRobot_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
+    	MESSAGE (STATUS "** VirtualRobot Build dir not defined, using CMAKE_BINARY_DIR: ${VirtualRobot_BUILD_DIRECTORY}")
     ENDIF()
     
-    SET(VIRTUAL_ROBOT_LIB_DIR ${VIRTUAL_ROBOT_BUILD_DIRECTORY}/${LIB_DIR})
-    SET(VIRTUAL_ROBOT_BIN_DIR ${VIRTUAL_ROBOT_BUILD_DIRECTORY}/${BIN_DIR})
+    SET(VirtualRobot_LIB_DIR ${VirtualRobot_BUILD_DIRECTORY}/${LIB_DIR})
+    SET(VirtualRobot_BIN_DIR ${VirtualRobot_BUILD_DIRECTORY}/${BIN_DIR})
     
-    MESSAGE (STATUS "** VIRTUAL_ROBOT LIB DIR: ${VIRTUAL_ROBOT_LIB_DIR}")
-    MESSAGE (STATUS "** VIRTUAL_ROBOT BIN DIR: ${VIRTUAL_ROBOT_BIN_DIR}")
+    MESSAGE (STATUS "** VirtualRobot LIB DIR: ${VirtualRobot_LIB_DIR}")
+    MESSAGE (STATUS "** VirtualRobot BIN DIR: ${VirtualRobot_BIN_DIR}")
     
     
     # Define, where to install the binaries
-    IF (NOT DEFINED VIRTUAL_ROBOT_INSTALL_LIB_DIR)
-        SET(VIRTUAL_ROBOT_INSTALL_LIB_DIR ${CMAKE_INSTALL_PREFIX}/${LIB_DIR})
+    IF (NOT DEFINED VirtualRobot_INSTALL_LIB_DIR)
+        SET(VirtualRobot_INSTALL_LIB_DIR ${CMAKE_INSTALL_PREFIX}/${LIB_DIR})
     ENDIF()
-    IF (NOT DEFINED VIRTUAL_ROBOT_INSTALL_BIN_DIR)
-        SET(VIRTUAL_ROBOT_INSTALL_BIN_DIR ${CMAKE_INSTALL_PREFIX}/${BIN_DIR})
+    IF (NOT DEFINED VirtualRobot_INSTALL_BIN_DIR)
+        SET(VirtualRobot_INSTALL_BIN_DIR ${CMAKE_INSTALL_PREFIX}/${BIN_DIR})
     ENDIF()
-    IF (NOT DEFINED VIRTUAL_ROBOT_INSTALL_HEADER_DIR)
-        SET(VIRTUAL_ROBOT_INSTALL_HEADER_DIR ${CMAKE_INSTALL_PREFIX}/include)
+    IF (NOT DEFINED VirtualRobot_INSTALL_HEADER_DIR)
+        SET(VirtualRobot_INSTALL_HEADER_DIR ${CMAKE_INSTALL_PREFIX}/include)
     ENDIF()
     
     
     ############################# Set OS specific options #############################
     IF(UNIX)
     	# We are on Linux
-    	SET(VIRTUAL_ROBOT_TEST_DIR ${VIRTUAL_ROBOT_BIN_DIR}/tests)
+    	SET(VirtualRobot_TEST_DIR ${VirtualRobot_BIN_DIR}/tests)
     	IF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
 			ADD_DEFINITIONS(-fPIC)
 		ENDIF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
@@ -78,7 +78,7 @@ IF (NOT VIRTUAL_ROBOT_CONFIGURED)
 		# (but later on when installing)
 		SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 
-		SET(CMAKE_INSTALL_RPATH "${VIRTUAL_ROBOT_LIB_DIR}")
+		SET(CMAKE_INSTALL_RPATH "${VirtualRobot_LIB_DIR}")
 
 		# add the automatically determined parts of the RPATH
 		# which point to directories outside the build tree to the install RPATH
@@ -86,15 +86,15 @@ IF (NOT VIRTUAL_ROBOT_CONFIGURED)
 
 
 		# the RPATH to be used when installing, but only if it's not a system directory
-		LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${VIRTUAL_ROBOT_LIB_DIR}" isSystemDir)
+		LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${VirtualRobot_LIB_DIR}" isSystemDir)
 		IF("${isSystemDir}" STREQUAL "-1")
-		   SET(CMAKE_INSTALL_RPATH "${VIRTUAL_ROBOT_LIB_DIR}")
+		   SET(CMAKE_INSTALL_RPATH "${VirtualRobot_LIB_DIR}")
 		ENDIF("${isSystemDir}" STREQUAL "-1")
 
 
     ELSE(UNIX)
     	# We are on Windows
-    	SET(VIRTUAL_ROBOT_TEST_DIR ${VIRTUAL_ROBOT_BIN_DIR})
+    	SET(VirtualRobot_TEST_DIR ${VirtualRobot_BIN_DIR})
     	ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
 		
 		# On MSVC we compile with /MP flag (use multiple threads)
@@ -110,18 +110,18 @@ IF (NOT VIRTUAL_ROBOT_CONFIGURED)
     ENABLE_TESTING()
     INCLUDE(CTest)
     
-    MESSAGE(STATUS "** Test output directory: ${VIRTUAL_ROBOT_TEST_DIR}")
+    MESSAGE(STATUS "** Test output directory: ${VirtualRobot_TEST_DIR}")
     
     MACRO(ADD_VR_TEST TEST_NAME)
         
-        INCLUDE_DIRECTORIES(${VIRTUAL_ROBOT_EXTERNAL_INCLUDE_DIRS})
-        ADD_DEFINITIONS(${VIRTUAL_ROBOT_EXTERNAL_LIBRARY_FLAGS})
+        INCLUDE_DIRECTORIES(${VirtualRobot_EXTERNAL_INCLUDE_DIRS})
+        ADD_DEFINITIONS(${VirtualRobot_EXTERNAL_LIBRARY_FLAGS})
     	ADD_EXECUTABLE(${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}.cpp)
-    	TARGET_LINK_LIBRARIES(${TEST_NAME} VirtualRobot ${VIRTUAL_ROBOT_EXTERNAL_LIBRARIES})
-    	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${VIRTUAL_ROBOT_TEST_DIR})
+    	TARGET_LINK_LIBRARIES(${TEST_NAME} VirtualRobot ${VirtualRobot_EXTERNAL_LIBRARIES})
+    	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${VirtualRobot_TEST_DIR})
     	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES FOLDER "VirtualRobot Tests")
     	ADD_TEST(NAME VirtualRobot_${TEST_NAME}
-    	         COMMAND ${VIRTUAL_ROBOT_TEST_DIR}/${TEST_NAME} --output_format=XML --log_level=all --report_level=no)
+    	         COMMAND ${VirtualRobot_TEST_DIR}/${TEST_NAME} --output_format=XML --log_level=all --report_level=no)
     ENDMACRO(ADD_VR_TEST)
     
-ENDIF (NOT VIRTUAL_ROBOT_CONFIGURED)
+ENDIF (NOT VirtualRobot_CONFIGURED)

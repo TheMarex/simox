@@ -31,14 +31,14 @@ IF(DOXYGEN_FOUND)
                          "${CMAKE_CURRENT_SOURCE_DIR}/../VirtualRobot")
     
     # consider visualization setup
-    IF (SIMOX_USE_COIN_VISUALIZATION)
+    IF (Simox_USE_COIN_VISUALIZATION)
         SET (CMAKE_DOXYGEN_INPUT_LIST  ${CMAKE_DOXYGEN_INPUT_LIST} 
                                         "${CMAKE_CURRENT_SOURCE_DIR}/../VirtualRobot/Visualization/CoinVisualization"
                                         "${CMAKE_CURRENT_SOURCE_DIR}/../GraspPlanning/Visualization/CoinVisualization" 
                                         "${CMAKE_CURRENT_SOURCE_DIR}/../MotionPlanning/Visualization/CoinVisualization")
     ENDIF()
     
-    IF (SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION)
+    IF (Simox_USE_OPENSCENEGRAPH_VISUALIZATION)
         SET (CMAKE_DOXYGEN_INPUT_LIST  ${CMAKE_DOXYGEN_INPUT_LIST} 
                                         "${CMAKE_CURRENT_SOURCE_DIR}/../VirtualRobot/Visualization/OSGVisualization")
     ENDIF()

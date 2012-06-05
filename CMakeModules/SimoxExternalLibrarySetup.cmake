@@ -1,12 +1,14 @@
 
 # Setup paths, libs and external cmake files to be used for SIMOX
 
-MESSAGE(STATUS "SETTING LIBRARY DEPENDENCIES FOR SIMOX")
+if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY))
+    MESSAGE(STATUS "SETTING LIBRARY DEPENDENCIES FOR SIMOX")
+endif()
 
 # VR
 
 INCLUDE (${Simox_DIR}/VirtualRobotConfig.cmake)
-INCLUDE (${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake)
+INCLUDE (${VirtualRobot_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake)
 
 # SABA
 

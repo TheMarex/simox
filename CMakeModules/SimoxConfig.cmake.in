@@ -2,43 +2,47 @@
 
 # - Config file for the Simox package
 # It defines the following variables
-#  SIMOX_INCLUDE_DIRS  - include directories for Simox
-#  SIMOX_LIBRARY_DIRS  - library directories for Simox (normally not used!)
-#  SIMOX_LIBRARIES     - libraries to link against
-#  SIMOX_EXECUTABLES   - the Simox executable
-#  SIMOX_COMPILE_FLAGS - compile flags
-#  SIMOX_CMAKE_INCLUDE - list of includes that may be neccessary for external libraries (e.g. QT_USE_FILE)
-#  SIMOX_DATA_PATH     - the standard data path
-#  SIMOX_CMAKE_DIR     - Path to Simox cmake files.
-#  SIMOX_BASE_DIR      - Path to Simox
+#  Simox_INCLUDE_DIRS  - include directories for Simox
+#  Simox_LIBRARY_DIRS  - library directories for Simox (normally not used!)
+#  Simox_LIBRARIES     - libraries to link against
+#  Simox_EXECUTABLES   - the Simox executable
+#  Simox_COMPILE_FLAGS - compile flags
+#  Simox_CMAKE_INCLUDE - list of includes that may be neccessary for external libraries (e.g. QT_USE_FILE)
+#  Simox_DATA_PATH     - the standard data path
+#  Simox_CMAKE_DIR     - Path to Simox cmake files.
+#  Simox_BASE_DIR      - Path to Simox
 
-SET(SIMOX_INCLUDE_DIRS "@SIMOX_INCLUDE_DIRS@")
-SET(SIMOX_LIBRARY_DIRS "@SIMOX_LIB_DIRS@")
-SET(SIMOX_COMPILE_FLAGS "@SIMOX_LIB_FLAGS@")
-SET(SIMOX_CMAKE_INCLUDE "@SIMOX_LIBRARY_CMAKE_INCLUDE@")
-SET(SIMOX_DATA_PATH "@SIMOX_DATA_PATH@")
-SET(SIMOX_CMAKE_DIR "@SIMOX_CMAKE_DIR@")
-SET(VIRTUAL_ROBOT_CMAKE_DIR "@VIRTUAL_ROBOT_CMAKE_DIR@")
-SET(SIMOX_BASE_DIR "@SIMOX_BASE_DIR@")
+SET(Simox_INCLUDE_DIRS "@Simox_INCLUDE_DIRS@")
+SET(Simox_LIBRARY_DIRS "@Simox_LIB_DIRS@")
+SET(Simox_COMPILE_FLAGS "@Simox_LIB_FLAGS@")
+SET(Simox_CMAKE_INCLUDE "@Simox_LIBRARY_CMAKE_INCLUDE@")
+SET(Simox_DATA_PATH "@Simox_DATA_PATH@")
+SET(Simox_CMAKE_DIR "@Simox_CMAKE_DIR@")
+SET(VirtualRobot_CMAKE_DIR "@VirtualRobot_CMAKE_DIR@")
+SET(Simox_BASE_DIR "@Simox_BASE_DIR@")
 
 # These are IMPORTED targets created by SimoxLibraryDepends.cmake
-SET(SIMOX_LIBRARIES "@SIMOX_LIBRARIES_ALL@")
-SET(SIMOX_EXECUTABLES "@SIMOX_EXECUTABLES@")
+SET(Simox_LIBRARIES "@Simox_LIBRARIES_ALL@")
+SET(Simox_EXECUTABLES "@Simox_EXECUTABLES@")
 
-SET(SIMOX_VISUALIZATION "@SIMOX_VISUALIZATION@")
-SET(SIMOX_USE_COIN_VISUALIZATION "@SIMOX_USE_COIN_VISUALIZATION@")
-SET(SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION "@SIMOX_USE_OPENSCENEGRAPH_VISUALIZATION@")
-SET(SIMOX_VISUALIZATION_LIBS "@SIMOX_VISUALIZATION_LIBS@")
-SET(SIMOX_VISUALIZATION_INCLUDE_PATHS "@SIMOX_VISUALIZATION_INCLUDE_PATHS@")
-SET(SIMOX_VISUALIZATION_COMPILE_FLAGS "@SIMOX_VISUALIZATION_COMPILE_FLAGS@")
+SET(Simox_VISUALIZATION "@Simox_VISUALIZATION@")
+SET(Simox_USE_COIN_VISUALIZATION "@Simox_USE_COIN_VISUALIZATION@")
+SET(Simox_USE_OPENSCENEGRAPH_VISUALIZATION "@Simox_USE_OPENSCENEGRAPH_VISUALIZATION@")
+SET(Simox_VISUALIZATION_LIBS "@Simox_VISUALIZATION_LIBS@")
+SET(Simox_VISUALIZATION_INCLUDE_PATHS "@Simox_VISUALIZATION_INCLUDE_PATHS@")
+SET(Simox_VISUALIZATION_COMPILE_FLAGS "@Simox_VISUALIZATION_COMPILE_FLAGS@")
 
 # Convenient setup: all simox-related dependencies are included here.
-# If this causes troubles, disable it by steting SIMOX_DISABLE_DEPENDENCIES_INCLUDE. 
+# If this causes troubles, disable it by steting Simox_DISABLE_DEPENDENCIES_INCLUDE. 
 # Then you will need to setup the dependencies on your own, similar to the setup in SimoxExternalLibrarySetup.cmake
-IF(NOT SIMOX_DISABLE_DEPENDENCIES_INCLUDE)
+IF(NOT Simox_DISABLE_DEPENDENCIES_INCLUDE)
     # include all library dependencies
-    MESSAGE(STATUS " * Including ${SIMOX_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake")
-    include(${SIMOX_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake)
-    MESSAGE(STATUS " * Including ${SIMOX_CMAKE_DIR}/SimoxMacros.cmake")
-    include(${SIMOX_CMAKE_DIR}/SimoxMacros.cmake)
+    if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY)) 
+        MESSAGE(STATUS " * Including ${Simox_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake")
+    endif()
+    include(${Simox_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake)
+    if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY)) 
+        MESSAGE(STATUS " * Including ${Simox_CMAKE_DIR}/SimoxMacros.cmake")
+    endif()
+    include(${Simox_CMAKE_DIR}/SimoxMacros.cmake)
 ENDIF()

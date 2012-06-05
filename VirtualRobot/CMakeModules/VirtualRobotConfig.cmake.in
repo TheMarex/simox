@@ -2,51 +2,55 @@
 
 # - Config file for the VirtualRobot package
 # It defines the following variables
-#  VIRTUAL_ROBOT_INCLUDE_DIRS  - include directories for VirtualRobot
-#  VIRTUAL_ROBOT_LIBRARY_DIRS  - library directories for VirtualRobot (normally not used!)
-#  VIRTUAL_ROBOT_LIBRARIES     - libraries to link against
-#  VIRTUAL_ROBOT_EXECUTABLES   - the VirtualRobot executable
-#  VIRTUAL_ROBOT_COMPILE_FLAGS - compile flags
-#  VIRTUAL_ROBOT_CMAKE_INCLUDE - list of includes that may be neccessary for external libraries (e.g. QT_USE_FILE)
-#  VIRTUAL_ROBOT_DATA_PATH     - the standard data path
-#  VIRTUAL_ROBOT_CMAKE_DIR     - Path to VirtualRobot cmake files.
-#  VIRTUAL_ROBOT_DIR           - Path to VirtualRobot
+#  VirtualRobot_INCLUDE_DIRS  - include directories for VirtualRobot
+#  VirtualRobot_LIBRARY_DIRS  - library directories for VirtualRobot (normally not used!)
+#  VirtualRobot_LIBRARIES     - libraries to link against
+#  VirtualRobot_EXECUTABLES   - the VirtualRobot executable
+#  VirtualRobot_COMPILE_FLAGS - compile flags
+#  VirtualRobot_CMAKE_INCLUDE - list of includes that may be neccessary for external libraries (e.g. QT_USE_FILE)
+#  VirtualRobot_DATA_PATH     - the standard data path
+#  VirtualRobot_CMAKE_DIR     - Path to VirtualRobot cmake files.
+#  VirtualRobot_DIR           - Path to VirtualRobot
 
 # Tell the user project where to find VirtualRobot headers and libraries
 #get_property(VirtualRobot_external_INCLUDE_DIRS TARGET VirtualRobot PROPERTY EXTERNAL_INCLUDE_DIRS)
 #message(STATUS "VirtualRobot_external_INCLUDE_DIRS: ${VirtualRobot_external_INCLUDE_DIRS}")
 
-SET(VIRTUAL_ROBOT_INCLUDE_DIRS "@VIRTUAL_ROBOT_INCLUDE_DIRS@")
-SET(VIRTUAL_ROBOT_LIBRARY_DIRS "@VIRTUAL_ROBOT_LIB_DIRS@")
-SET(VIRTUAL_ROBOT_COMPILE_FLAGS "@VIRTUAL_ROBOT_LIB_FLAGS@")
-SET(VIRTUAL_ROBOT_CMAKE_INCLUDE "@VIRTUAL_ROBOT_LIBRARY_CMAKE_INCLUDE@")
-SET(VIRTUAL_ROBOT_DATA_PATH "@VIRTUAL_ROBOT_DATA_PATH@")
-SET(VIRTUAL_ROBOT_CMAKE_DIR "@VIRTUAL_ROBOT_CMAKE_DIR@")
-SET(VIRTUAL_ROBOT_DIR "@VIRTUAL_ROBOT_DIR@")
+SET(VirtualRobot_INCLUDE_DIRS "@VirtualRobot_INCLUDE_DIRS@")
+SET(VirtualRobot_LIBRARY_DIRS "@VirtualRobot_LIB_DIRS@")
+SET(VirtualRobot_COMPILE_FLAGS "@VirtualRobot_LIB_FLAGS@")
+SET(VirtualRobot_CMAKE_INCLUDE "@VirtualRobot_LIBRARY_CMAKE_INCLUDE@")
+SET(VirtualRobot_DATA_PATH "@VirtualRobot_DATA_PATH@")
+SET(VirtualRobot_CMAKE_DIR "@VirtualRobot_CMAKE_DIR@")
+SET(VirtualRobot_DIR "@VirtualRobot_DIR@")
 
 # VirtualRobot library dependencies (contains definitions for IMPORTED targets)
-#include("@VIRTUAL_ROBOT_CMAKE_DIR@/VirtualRobotLibraryDepends.cmake")
+#include("@VirtualRobot_CMAKE_DIR@/VirtualRobotLibraryDepends.cmake")
 
 # These are IMPORTED targets created by VirtualRobotLibraryDepends.cmake
-#SET(VIRTUAL_ROBOT_LIBRARIES "@VIRTUAL_ROBOT_LIBRARIES@")
-SET(VIRTUAL_ROBOT_LIBRARIES "@VIRTUAL_ROBOT_LIBRARIES_ALL@")
-SET(VIRTUAL_ROBOT_EXECUTABLES "@VIRTUAL_ROBOT_EXECUTABLES@")
+#SET(VirtualRobot_LIBRARIES "@VirtualRobot_LIBRARIES@")
+SET(VirtualRobot_LIBRARIES "@VirtualRobot_LIBRARIES_ALL@")
+SET(VirtualRobot_EXECUTABLES "@VirtualRobot_EXECUTABLES@")
 
-SET(VIRTUAL_ROBOT_VISUALIZATION "@VIRTUAL_ROBOT_VISUALIZATION@")
-SET(VIRTUAL_ROBOT_USE_COIN_VISUALIZATION "@VIRTUAL_ROBOT_USE_COIN_VISUALIZATION@")
-SET(VIRTUAL_ROBOT_USE_OPENSCENEGRAPH_VISUALIZATION "@VIRTUAL_ROBOT_USE_OPENSCENEGRAPH_VISUALIZATION@")
-SET(VIRTUAL_ROBOT_VISUALIZATION_LIBS "@VIRTUAL_ROBOT_VISUALIZATION_LIBS@")
-SET(VIRTUAL_ROBOT_VISUALIZATION_INCLUDE_PATHS "@VIRTUAL_ROBOT_VISUALIZATION_INCLUDE_PATHS@")
-SET(VIRTUAL_ROBOT_VISUALIZATION_COMPILE_FLAGS "@VIRTUAL_ROBOT_VISUALIZATION_COMPILE_FLAGS@")
+SET(VirtualRobot_VISUALIZATION "@VirtualRobot_VISUALIZATION@")
+SET(VirtualRobot_USE_COIN_VISUALIZATION "@VirtualRobot_USE_COIN_VISUALIZATION@")
+SET(VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION "@VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION@")
+SET(VirtualRobot_VISUALIZATION_LIBS "@VirtualRobot_VISUALIZATION_LIBS@")
+SET(VirtualRobot_VISUALIZATION_INCLUDE_PATHS "@VirtualRobot_VISUALIZATION_INCLUDE_PATHS@")
+SET(VirtualRobot_VISUALIZATION_COMPILE_FLAGS "@VirtualRobot_VISUALIZATION_COMPILE_FLAGS@")
 
 # Convenient setup: all VirtualRobot-related dependencies are included here.
-# If this causes troubles, disable it by steting VIRTUAL_ROBOT_DISABLE_DEPENDENCIES_INCLUDE. 
+# If this causes troubles, disable it by steting VirtualRobot_DISABLE_DEPENDENCIES_INCLUDE. 
 # Then you will need to setup the dependencies on your own, similar to the setup in VirtualRobotExternalLibrarySetup.cmake
-IF(NOT VIRTUAL_ROBOT_DISABLE_DEPENDENCIES_INCLUDE)
+IF(NOT VirtualRobot_DISABLE_DEPENDENCIES_INCLUDE)
 	# include all library dependencies
-	MESSAGE (STATUS " * Including ${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake")
-	include(${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake)
+	if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY)) 
+	    MESSAGE (STATUS " * Including ${VirtualRobot_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake")
+	endif()
+	include(${VirtualRobot_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake)
 	
-	MESSAGE (STATUS " * Including ${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotMacros.cmake")
-	include(${VIRTUAL_ROBOT_CMAKE_DIR}/VirtualRobotMacros.cmake)
+	if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY)) 
+	    MESSAGE (STATUS " * Including ${VirtualRobot_CMAKE_DIR}/VirtualRobotMacros.cmake")
+	endif()
+	include(${VirtualRobot_CMAKE_DIR}/VirtualRobotMacros.cmake)
 ENDIF()

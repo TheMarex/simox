@@ -5,7 +5,7 @@ ADD_VR_TEST( VirtualRobotRobotTest )
 
 ADD_VR_TEST( VirtualRobotTransformationTest )
 
-if (VIRTUAL_ROBOT_VISUALIZATION)
+if (VirtualRobot_VISUALIZATION)
 	ADD_VR_TEST( VirtualRobotCollisionTest )
 endif()
 

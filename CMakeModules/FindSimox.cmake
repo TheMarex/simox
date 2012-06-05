@@ -9,16 +9,16 @@
 ##   [ The paths should point to either the build or the install directory or Simox ]
 #
 # The following variables are set:
-## SIMOX_FOUND       - TRUE on success
-## SIMOX_INCLUDE_DIR - The include directory
-## SIMOX_LIBRARIES   - The libraries
+## Simox_FOUND       - TRUE on success
+## Simox_INCLUDE_DIR - The include directory
+## Simox_LIBRARIES   - The libraries
 #
 #
 # A CMakeLists.txt file for setting up a simox related project could look like this:
 #
 ## PROJECT ( myDemo )
 ## FIND_PACKAGE(Simox REQUIRED)
-## IF(SIMOX_USE_COIN_VISUALIZATION)
+## IF(Simox_USE_COIN_VISUALIZATION)
 ##   FILE(GLOB SRCS ${PROJECT_SOURCE_DIR}/myDemo.cpp ${PROJECT_SOURCE_DIR}/myWindow.cpp)
 ##   FILE(GLOB INCS ${PROJECT_SOURCE_DIR}/myWindow.h)
 ##   set(GUI_MOC_HDRS ${PROJECT_SOURCE_DIR}/myWindow.h)
@@ -33,17 +33,20 @@ find_path( Simox_DIR SimoxConfig.cmake
                     "${Simox_DIR}" 
                     "$ENV{Simox_DIR}")
 
-SET (Simox_CMAKE_CONFIG ${Simox_DIR}/SimoxConfig.cmake)               
-MESSAGE(STATUS " * Including ${Simox_CMAKE_CONFIG}")
+SET (Simox_CMAKE_CONFIG ${Simox_DIR}/SimoxConfig.cmake)
+if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY))       
+    MESSAGE(STATUS " * Including ${Simox_CMAKE_CONFIG}")
+endif()
 include (${Simox_CMAKE_CONFIG})
 
-if( SIMOX_LIBRARIES AND SIMOX_BASE_DIR)
-    set( SIMOX_FOUND TRUE )
-    set( SIMOX_INCLUDE_DIR ${SIMOX_BASE_DIR} )
-    set( SIMOX_LIBRARY ${SIMOX_LIBRARIES} )
+if( Simox_LIBRARIES AND Simox_BASE_DIR)
+    set( Simox_FOUND TRUE )
+    set( VirtualRobot_FOUND TRUE )
+    set( Simox_INCLUDE_DIR ${Simox_BASE_DIR} )
+    set( Simox_LIBRARY ${Simox_LIBRARIES} )
 endif()
 
 include( FindPackageHandleStandardArgs )
-find_package_handle_standard_args( Simox DEFAULT_MSG SIMOX_LIBRARIES SIMOX_INCLUDE_DIR )
+find_package_handle_standard_args( Simox DEFAULT_MSG Simox_LIBRARIES Simox_INCLUDE_DIR )
 
-mark_as_advanced( SIMOX_INCLUDE_DIR SIMOX_LIBRARIES )
+mark_as_advanced( Simox_INCLUDE_DIR Simox_LIBRARIES )

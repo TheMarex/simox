@@ -7,7 +7,7 @@ CMAKE_POLICY(VERSION 2.6)
 
 INCLUDE(${SABA_SimoxDir}/CMakeModules/SimoxMacros.cmake)
 
-IF(SIMOX_VISUALIZATION AND SIMOX_USE_COIN_VISUALIZATION)
+IF(Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)
      
 	# the variable "demo_SRCS" contains all .cpp files of this project
 	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/RrtGui.cpp ${PROJECT_SOURCE_DIR}/RrtGuiWindow.cpp)

@@ -153,9 +153,9 @@ public:
 
 protected:
 
+	RobotPtr robot;
 	Eigen::Matrix4f pose;
 	RobotNodePtr frame;
-	RobotPtr robot;
 };
 
 } // namespace VirtualRobot

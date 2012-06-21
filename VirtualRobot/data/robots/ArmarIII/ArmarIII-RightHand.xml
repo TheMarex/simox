@@ -403,6 +403,20 @@
 	</RobotNodeSet>
 
 	<Endeffector name="Hand R" base="Hand R Base" tcp="TCP R" gcp="GCP R">
+	    <Preshape name="Grasp Preshape">
+	        <Node name="Thumb R J0" unit="radian" value="0"/>
+	        <Node name="Thumb R J1" unit="radian" value="0"/>
+	        <Node name="Index R J0" unit="radian" value="0"/>
+	        <Node name="Index R J1" unit="radian" value="0"/>
+	        <Node name="Middle R J0" unit="radian" value="0"/>
+	        <Node name="Middle R J1" unit="radian" value="0"/>
+	        <Node name="Ring R J0" unit="radian" value="0"/>
+	        <Node name="Ring R J1" unit="radian" value="0"/>
+	        <Node name="Pinky R J0" unit="radian" value="0"/>
+	        <Node name="Pinky R J1" unit="radian" value="0"/>
+	    </Preshape>
+	    
+	    
 		<Static>
 			<Node name="Hand Palm 1 R"/>
 			<Node name="Hand Palm 2 R"/>

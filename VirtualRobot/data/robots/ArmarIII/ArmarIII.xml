@@ -279,5 +279,33 @@
 		<Node name="Wrist 2 R"/>
 	</RobotNodeSet>	
 
+	<RobotNodeSet name="PlatformYawTorsoLeftArm" kinematicRoot="Armar3_Base" tcp="TCP L">
+	    <Node name="Yaw_Platform"/>
+		<Node name="Hip Pitch"/>
+		<Node name="Hip Roll"/>
+		<Node name="Hip Yaw"/>
+		<Node name="Shoulder 1 L"/>
+		<Node name="Shoulder 2 L"/>
+		<Node name="Upperarm L"/>
+		<Node name="Elbow L"/>
+		<Node name="Underarm L"/>
+		<Node name="Wrist 1 L"/>
+		<Node name="Wrist 2 L"/>
+	</RobotNodeSet>	
+
+	<RobotNodeSet name="PlatformYawTorsoRightArm" kinematicRoot="Armar3_Base" tcp="TCP R">
+		<Node name="Yaw_Platform"/>
+		<Node name="Hip Pitch"/>
+		<Node name="Hip Roll"/>
+		<Node name="Hip Yaw"/>
+		<Node name="Shoulder 1 R"/>
+		<Node name="Shoulder 2 R"/>
+		<Node name="Upperarm R"/>
+		<Node name="Elbow R"/>
+		<Node name="Underarm R"/>
+		<Node name="Wrist 1 R"/>
+		<Node name="Wrist 2 R"/>
+	</RobotNodeSet>
+	
 
 </Robot>

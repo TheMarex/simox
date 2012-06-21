@@ -94,9 +94,9 @@
 	elseif (VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION)
 	
 	    MESSAGE(STATUS "Searching OSG and Qt...")
-	
+	    
 	    FIND_PACKAGE(OpenSceneGraph REQUIRED osgViewer osgUtil osgDB osgGA)
-
+		
 		if (OPENSCENEGRAPH_FOUND)
 		    MESSAGE (STATUS "Found OpenSceneGraph:" ${OPENSCENEGRAPH_INCLUDE_DIRS})
 			##INCLUDE_DIRECTORIES(${OPENSCENEGRAPH_INCLUDE_DIRS})
@@ -118,10 +118,14 @@
 		    MESSAGE("firstOsgLib: ${firstOsgLib}")
 		    GET_FILENAME_COMPONENT(osgLibPath ${firstOsgLib} PATH)
 		    MESSAGE("osgLibPath: ${osgLibPath}")
-		    list(APPEND OPENSCENEGRAPH_LIBRARIES optimized)
-		    list(APPEND OPENSCENEGRAPH_LIBRARIES ${osgLibPath}/osgQt.lib)
-		    list(APPEND OPENSCENEGRAPH_LIBRARIES debug)
-		    list(APPEND OPENSCENEGRAPH_LIBRARIES ${osgLibPath}/osgQtd.lib)
+		    if (UNIX)
+			    list(APPEND OPENSCENEGRAPH_LIBRARIES ${osgLibPath}/libosgQt.so)
+		    else()
+			    list(APPEND OPENSCENEGRAPH_LIBRARIES optimized)
+			    list(APPEND OPENSCENEGRAPH_LIBRARIES ${osgLibPath}/osgQt.lib)
+		    	list(APPEND OPENSCENEGRAPH_LIBRARIES debug)
+		    	list(APPEND OPENSCENEGRAPH_LIBRARIES ${osgLibPath}/osgQtd.lib)
+		    endif()
 		    MESSAGE("OPENSCENEGRAPH_LIBRARIES: ${OPENSCENEGRAPH_LIBRARIES}")
 			SET (VirtualRobot_VISUALIZATION TRUE)
         	SET (VirtualRobot_VISUALIZATION_LIBS ${QT_LIBRARIES} ${OPENSCENEGRAPH_LIBRARIES} )

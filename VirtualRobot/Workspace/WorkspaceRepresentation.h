@@ -81,7 +81,7 @@ public:
 	/*!
 		Return corresponding entry of workspace data 
 	*/
-	unsigned char getEntry(const Eigen::Matrix4f &globalPose);
+	unsigned char getEntry(const Eigen::Matrix4f &globalPose) const;
 
     //! Returns the maximum entry of a voxel.
 	int getMaxEntry() const;
@@ -203,13 +203,63 @@ public:
 	*/
 	virtual int getMaxSummedAngleReachablity();
 
-
+	/*!
+		Estimate a parameter setup for the given RNS by randomly set configurations and check for achieved workspace extends. The results are slightly scaled.
+		\param ndoeSet
+		\param steps How many loops should be performed to estimate the result. Chose a value >= 1000.
+		\param storeMinBounds Workspace extend from min
+		\param storeMaxBounds Workspace extend to max
+		\param baseNode
+		\param tcpNode
+		\return True on success.
+	*/
 	virtual bool checkForParameters(RobotNodeSetPtr nodeSet,
 									float steps,
 									float storeMinBounds[6], 
 									float storeMaxBounds[6],
 									RobotNodePtr baseNode = RobotNodePtr(), 
 									RobotNodePtr tcpNode = RobotNodePtr());
+
+	/*!
+		2D data that represents a cut through the workspace representation.
+		Usually the z component and the orientation of the 6D workspace data is fixed and the x and y components are iterated in order to store the resulting workspace entries.
+	*/
+	struct WorkspaceCut2D
+	{
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		Eigen::Matrix4f referenceGlobalPose;
+		Eigen::MatrixXi entries;
+		float minBounds[2]; // in global coord system
+		float maxBounds[2]; // in global coord system
+	};
+	typedef boost::shared_ptr<WorkspaceCut2D> WorkspaceCut2DPtr;
+
+	struct WorkspaceCut2DTransformation
+	{
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		int value;
+		Eigen::Matrix4f transformation;
+	};
+	
+	typedef boost::shared_ptr<WorkspaceCut2DTransformation> WorkspaceCut2DTransformationPtr;
+
+	/*!
+		Create a horizontal cut through this workspace data. Therefore, the z component and the orientation of the reference pose (in global coordinate system) is used.
+		Then the x and y components are iterated and the corresponding entires are used to fill the 2d grid.
+	*/
+	WorkspaceCut2DPtr createCut(const Eigen::Matrix4f& referencePose, float cellSize) const;
+	
+	/*!
+		Build all transformations from referenceNode to cutXY data.h Only entries>0 are considered.
+		If referenceNode is set, the transformations are given in the corresponding coordinate system.
+	*/
+	std::vector<WorkspaceCut2DTransformationPtr> createCutTransformations(WorkspaceCut2DPtr cutXY, RobotNodePtr referenceNode = RobotNodePtr());
+
+
+	bool getWorkspaceExtends(Eigen::Vector3f &storeMinBBox, Eigen::Vector3f &storeMaxBBox) const;
+
+	float getDiscretizeParameterTranslation();
+	float getDiscretizeParameterRotation();
 
 protected:
 	/*!

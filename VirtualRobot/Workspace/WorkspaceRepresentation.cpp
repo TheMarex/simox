@@ -19,15 +19,13 @@
 namespace VirtualRobot
 {
 
-
-
 WorkspaceRepresentation::WorkspaceRepresentation(RobotPtr robot)
 {
 	THROW_VR_EXCEPTION_IF(!robot,"Need a robot ptr here");
 	this->robot = robot;
 	type = "WorkspaceRepresentation";
 	versionMajor = 2;
-	versionMinor = 3;
+	versionMinor = 4;
 	reset();
 }
 
@@ -209,7 +207,7 @@ void WorkspaceRepresentation::load(const std::string &filename)
 			// now check if an older version is used
 			THROW_VR_EXCEPTION_IF(
 				(version[0] > 2) || 
-				(version[0] == 2 && !(version[1] == 0 || version[1] == 1 || version[1] == 2 || version[1] == 3)) || 
+				(version[0] == 2 && !(version[1] == 0 || version[1] == 1 || version[1] == 2 || version[1] == 3 || version[1] == 4)) || 
 				(version[0] == 1 && !(version[1] == 0 || version[1] == 2 || version[1] == 3)
 				),	"Wrong file format version");
 		}
@@ -298,28 +296,73 @@ void WorkspaceRepresentation::load(const std::string &filename)
 
 		int size = numVoxels[0]*numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5];
 		data.reset(new WorkspaceData(numVoxels[0], numVoxels[1], numVoxels[2], numVoxels[3], numVoxels[4], numVoxels[5],true));
-		unsigned char *d = new unsigned char[size];
 
-		if(version[0] == 1 && version[1] <= 2)
+		if (version[0]<=1 || (version[0]==2 && version[1]<=3))
 		{
-			// Data is uncompressed
-			readArray<unsigned char>(d, size, file);
-		}
-		else
-		{
-			// Data is compressed
-			int compressedSize = read<int>(file);
-			unsigned char *compressedData = new unsigned char[compressedSize];
-			readArray<unsigned char>(compressedData, compressedSize, file);
-			if ( (version[0] > 2) ||  (version[0] == 2 && version[1] >= 1))
-				CompressionRLE::RLE_Uncompress(compressedData,d,compressedSize);
+			// one data block
+			unsigned char *d = new unsigned char[size];	
+			if(version[0] == 1 && version[1] <= 2)
+			{
+				// Data is uncompressed
+				readArray<unsigned char>(d, size, file);
+			}
 			else
-				uncompressData(compressedData, compressedSize, d);
+			{
+				// Data is compressed
+				int compressedSize = read<int>(file);
+				unsigned char *compressedData = new unsigned char[compressedSize];
+				readArray<unsigned char>(compressedData, compressedSize, file);
+				if ( (version[0] > 2) ||  (version[0] == 2 && version[1] >= 1))
+					CompressionRLE::RLE_Uncompress(compressedData,d,compressedSize);
+				else
+					uncompressData(compressedData, compressedSize, d);
+				delete[] compressedData;
+			}
+			// convert old data format
+			unsigned char *dRot;
+			unsigned int sizeX0 = numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5];
+			unsigned int sizeX1 = numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5];
+			unsigned int sizeX2 = numVoxels[3]*numVoxels[4]*numVoxels[5];
+			unsigned int sizeX3 = numVoxels[4]*numVoxels[5];
+			unsigned int sizeX4 = numVoxels[5];
+			dRot = new unsigned char[numVoxels[3]*numVoxels[4]*numVoxels[5]];
+			for (int x=0;x<numVoxels[0];x++)
+				for (int y=0;y<numVoxels[1];y++)
+					for (int z=0;z<numVoxels[2];z++)
+					{
+						for (int a=0;a<numVoxels[3];a++)
+							for (int b=0;b<numVoxels[4];b++)
+								for (int c=0;c<numVoxels[5];c++)
+								{
+									dRot[a*sizeX3 + b*sizeX4 + c] = 
+										d[x * sizeX0 + y * sizeX1 + z * sizeX2 + a * sizeX3 + b * sizeX4 + c];
+								}
+
+						data->setDataRot(dRot,x,y,z);
+					}
+			delete [] dRot;
+			delete[] d;
+		} else
+		{
+			// data is split, only rotations are given in blocks
+			// Data is compressed
+			int maxCompressedSize = numVoxels[3]*numVoxels[4]*numVoxels[5]*3;
+			unsigned char *compressedData = new unsigned char[maxCompressedSize];
+			unsigned char *uncompressedData = new unsigned char[numVoxels[3]*numVoxels[4]*numVoxels[5]];
+			for (int x=0;x<numVoxels[0];x++)
+				for (int y=0;y<numVoxels[1];y++)
+					for (int z=0;z<numVoxels[2];z++)
+					{
+						int compressedSize = read<int>(file);
+						
+						readArray<unsigned char>(compressedData, compressedSize, file);
+						
+						CompressionRLE::RLE_Uncompress(compressedData,uncompressedData,compressedSize);
+						data->setDataRot(uncompressedData,x,y,z);
+					}
 			delete[] compressedData;
 		}
 
-		data->setData(d);
-		delete[] d;
 
 		data->voxelFilledCount = voxelFilledCount;
 		data->maxEntry = maxEntry;
@@ -424,14 +467,18 @@ void WorkspaceRepresentation::save(const std::string &filename)
 		// Data
 		writeString(file, "DATA_START");
 		int size = 0;
-		//unsigned char *compressed = compressData(data->getData(), data->getSize(), size);
-		int newSize = (int)((float)data->getSize()*1.05f + 2.0f);
-		unsigned char *compressed = new unsigned char[newSize];
-		size = CompressionRLE::RLE_Compress(data->getData(),compressed,data->getSize());
-		write<int>(file, size);
-		if(size > 0)
-			writeArray<unsigned char>(file, compressed, size);
-		delete[] compressed;
+		int maxCompressedSize = numVoxels[3]*numVoxels[4]*numVoxels[5]*3;
+		unsigned char *compressedData = new unsigned char[maxCompressedSize];
+		for (int x=0;x<numVoxels[0];x++)
+			for (int y=0;y<numVoxels[1];y++)
+				for (int z=0;z<numVoxels[2];z++)
+				{
+					size = CompressionRLE::RLE_Compress(data->getDataRot(x,y,z),compressedData,data->getSizeRot());
+					write<int>(file, size);
+					if(size > 0)
+						writeArray<unsigned char>(file, compressedData, size);
+				}
+		delete []compressedData;
 		writeString(file, "DATA_END");
 	}
 	catch(VirtualRobotException &e)
@@ -633,11 +680,11 @@ void WorkspaceRepresentation::print()
 		cout << "Collisions: " << collisionConfigs << endl;
 		cout << "Maximum entry in a voxel: " << (int)data->getMaxEntry() << endl;
 		cout << type << " workspace extend (as defined on construction):" << endl;
-		cout << "Min boundary: ";
+		cout << "Min boundary (local): ";
 		for (int i=0;i<6;i++)
 			cout << minBounds[i] << ",";
 		cout << endl;
-		cout << "Max boundary: ";
+		cout << "Max boundary (local): ";
 		for (int i=0;i<6;i++)
 			cout << maxBounds[i] << ",";
 		cout << endl;
@@ -747,7 +794,7 @@ void WorkspaceRepresentation::binarize()
 		data->binarize();
 }
 
-unsigned char WorkspaceRepresentation::getEntry( const Eigen::Matrix4f &globalPose )
+unsigned char WorkspaceRepresentation::getEntry( const Eigen::Matrix4f &globalPose ) const
 {
 	if (!data)
 	{
@@ -994,6 +1041,121 @@ bool WorkspaceRepresentation::checkForParameters( RobotNodeSetPtr nodeSet, float
 	}
 	return true;
 
+}
+
+WorkspaceRepresentation::WorkspaceCut2DPtr WorkspaceRepresentation::createCut( const Eigen::Matrix4f& referencePose, float cellSize ) const
+{
+	WorkspaceCut2DPtr result(new WorkspaceCut2D());
+	result->referenceGlobalPose = referencePose;
+
+	Eigen::Vector3f minBB,maxBB;
+
+	getWorkspaceExtends(minBB,maxBB);
+	result->minBounds[0] = minBB(0);
+	result->maxBounds[0] = maxBB(0);
+	result->minBounds[1] = minBB(1);
+	result->maxBounds[1] = maxBB(1);
+
+	THROW_VR_EXCEPTION_IF(cellSize<=0.0f, "Invalid parameter");
+
+	float sizeX = result->maxBounds[0] - result->minBounds[0];
+	int numVoxelsX = (int)(sizeX / cellSize);
+	float sizeY = result->maxBounds[1] - result->minBounds[1];
+	int numVoxelsY = (int)(sizeY / cellSize);
+
+
+	Eigen::Matrix4f tmpPose = referencePose;
+
+	result->entries.resize(numVoxelsX,numVoxelsY);
+
+
+	for (int a=0;a<numVoxelsX;a++)
+	{
+		tmpPose(0,3) = result->minBounds[0] + (float)a * cellSize + 0.5f*cellSize;
+		for (int b=0;b<numVoxelsY;b++)
+		{
+			tmpPose(1,3) = result->minBounds[1] + (float)b * cellSize + 0.5f*cellSize;
+			result->entries(a,b) = getEntry(tmpPose);
+		}
+	}
+	return result;
+}
+
+bool WorkspaceRepresentation::getWorkspaceExtends( Eigen::Vector3f &storeMinBBox, Eigen::Vector3f &storeMaxBBox ) const
+{
+	Eigen::Vector3f minBB;
+	minBB(0) = minBounds[0];
+	minBB(1) = minBounds[1];
+	minBB(2) = minBounds[2];
+	Eigen::Vector3f maxBB;
+	maxBB(0) = maxBounds[0];
+	maxBB(1) = maxBounds[1];
+	maxBB(2) = maxBounds[2];
+	if (baseNode)
+	{
+		minBB = baseNode->toGlobalCoordinateSystemVec(minBB);
+		maxBB = baseNode->toGlobalCoordinateSystemVec(maxBB);
+	}
+	for (int i=0;i<3;i++)
+		if (minBB(i) < maxBB(i))
+		{
+			storeMinBBox(i) = minBB(i);
+			storeMaxBBox(i) = maxBB(i);
+		} else
+		{
+			storeMinBBox(i) = maxBB(i);
+			storeMaxBBox(i) = minBB(i);
+		} 
+
+	return true;
+}
+
+std::vector<WorkspaceRepresentation::WorkspaceCut2DTransformationPtr> WorkspaceRepresentation::createCutTransformations( WorkspaceRepresentation::WorkspaceCut2DPtr cutXY, RobotNodePtr referenceNode )
+{	
+	THROW_VR_EXCEPTION_IF(!cutXY,"NULL data");
+	
+	std::vector<WorkspaceRepresentation::WorkspaceCut2DTransformationPtr> result;
+
+	//float x,y,z;
+	//z = cutXY->referenceGlobalPose(2,3);
+
+	int nX = cutXY->entries.rows();
+	int nY = cutXY->entries.cols();
+
+	float sizeX = (cutXY->maxBounds[0] - cutXY->minBounds[0]) / (float)nX;
+	float sizeY = (cutXY->maxBounds[1] - cutXY->minBounds[1]) / (float)nY;
+
+	for (int x = 0; x<nX; x++)
+	{
+		for (int y = 0; y<nY; y++)
+		{
+			int v = cutXY->entries(x,y);
+			if (v>0)
+			{
+				WorkspaceCut2DTransformationPtr tp(new WorkspaceCut2DTransformation());
+				tp->value = v;
+				float xPos = cutXY->minBounds[0] + (float)x * sizeX + 0.5f*sizeX; // center of voxel
+				float yPos = cutXY->minBounds[1] + (float)y * sizeY + 0.5f*sizeY; // center of voxel
+				tp->transformation = cutXY->referenceGlobalPose;
+				tp->transformation(0,3) = xPos;
+				tp->transformation(1,3) = yPos;
+				if (referenceNode)
+					tp->transformation = referenceNode->toLocalCoordinateSystem(tp->transformation);
+				result.push_back(tp);
+			}
+		}
+	}
+	return result;
+}
+
+float WorkspaceRepresentation::getDiscretizeParameterTranslation()
+{
+	return discretizeStepTranslation;
+}
+
+float WorkspaceRepresentation::getDiscretizeParameterRotation()
+{
+	return discretizeStepRotation;
 }
 
 } // namespace VirtualRobot

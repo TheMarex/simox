@@ -52,36 +52,42 @@ public:
 	~WorkspaceData();
 
 	//! Return the amount of data in bytes
-	unsigned int getSize() const;
+	unsigned int getSizeTr() const;
+	unsigned int getSizeRot() const;
 
-	inline unsigned int getPos(unsigned int x0, unsigned int x1, unsigned int x2,
-							   unsigned int x3, unsigned int x4, unsigned int x5) const
+	inline void getPos(	unsigned int x0, unsigned int x1, unsigned int x2,
+						unsigned int x3, unsigned int x4, unsigned int x5 , 
+						unsigned int &storePosTr, unsigned int &storePosRot) const
 	{
-		return x0 * sizeX0 + x1 * sizeX1 + x2 * sizeX2 + x3 * sizeX3 + x4 * sizeX4 + x5;
+		storePosTr  = x0 * sizeTr0  + x1 * sizeTr1  + x2;
+		storePosRot = x3 * sizeRot0 + x4 * sizeRot1 + x5;
 	}
 
-	inline unsigned int getPos( unsigned int x[6] ) const
+	inline void getPos( unsigned int x[6], unsigned int &storePosTr, unsigned int &storePosRot ) const
 	{
-		return x[0] * sizeX0 + x[1] * sizeX1 + x[2] * sizeX2 + x[3] * sizeX3 + x[4] * sizeX4 + x[5];
+		storePosTr  = x[0] * sizeTr0  + x[1] * sizeTr1  + x[2];
+		storePosRot = x[3] * sizeRot0 + x[4] * sizeRot1 + x[5];	
 	}
 
 	inline void setDatum(unsigned int x0, unsigned int x1, unsigned int x2,
 		                 unsigned int x3, unsigned int x4, unsigned int x5, unsigned char value)
 	{
-		unsigned int pos = getPos(x0,x1,x2,x3,x4,x5);
-		if (data[pos]==0)
+		unsigned int posTr = 0, posRot = 0;
+		getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
+		if (data[posTr][posRot]==0)
 			voxelFilledCount++;
-		data[pos] = value;
+		data[posTr][posRot] = value;
 		if (value >= maxEntry)
 			maxEntry = value;
 	}
 
 	inline void setDatum(unsigned int x[6], unsigned char value)
 	{
-		unsigned int pos = getPos(x);
-		if (data[pos]==0)
+		unsigned int posTr = 0, posRot = 0;
+		getPos(x,posTr,posRot);
+		if (data[posTr][posRot]==0)
 			voxelFilledCount++;
-		data[pos] = value;
+		data[posTr][posRot] = value;
 		if (value >= maxEntry)
 			maxEntry = value;
 	}
@@ -89,13 +95,14 @@ public:
 	inline void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
 								unsigned int x3, unsigned int x4, unsigned int x5)
 	{
-		unsigned int pos = getPos(x0,x1,x2,x3,x4,x5);
-		unsigned char e = data[pos];
+		unsigned int posTr = 0, posRot = 0;
+		getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
+		unsigned char e = data[posTr][posRot];
 		if (e==0)
 			voxelFilledCount++;
 		if (e<UCHAR_MAX)
 		{
-			data[pos]++;
+			data[posTr][posRot]++;
 			if (e >= maxEntry)
 				maxEntry = e+1;
 		} else if (adjustOnOverflow)
@@ -103,33 +110,43 @@ public:
 	}
 	inline void increaseDatum(	unsigned int x[6] )
 	{
-		unsigned int pos = getPos(x);
-		unsigned char e = data[pos];
+		unsigned int posTr = 0, posRot = 0;
+		getPos(x,posTr,posRot);
+		unsigned char e = data[posTr][posRot];
 		if (e==0)
 			voxelFilledCount++;
 		if (e<UCHAR_MAX)
 		{
-			data[pos]++;
+			data[posTr][posRot]++;
 			if (e >= maxEntry)
 				maxEntry = e+1;
 		} else if (adjustOnOverflow)
 			bisectData();
 	}
-
-	void setData(unsigned char *data);
-	const unsigned char *getData() const;
+	/*!
+		Set rotation data for given x,y,z position.
+	*/
+	void setDataRot(unsigned char *data, unsigned int x, unsigned int y, unsigned int z);
+	/*!
+		Get rotation data for given x,y,z position.
+	*/
+	const unsigned char *getDataRot(unsigned int x, unsigned int y, unsigned int z) const;
 
 	//! Simulates a multi-dimensional array access
 	inline unsigned char get(unsigned int x0, unsigned int x1, unsigned int x2,
 		                     unsigned int x3, unsigned int x4, unsigned int x5) const
 	{
-		return data[x0 * sizeX0 + x1 * sizeX1 + x2 * sizeX2 + x3 * sizeX3 + x4 * sizeX4 + x5];
+		unsigned int posTr = 0, posRot = 0;
+		getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
+		return data[posTr][posRot];
 	}
 
 	//! Simulates a multi-dimensional array access
 	inline unsigned char get( unsigned int x[6] ) const
 	{
-		return data[x[0] * sizeX0 + x[1] * sizeX1 + x[2] * sizeX2 + x[3] * sizeX3 + x[4] * sizeX4 + x[5]];
+		unsigned int posTr = 0, posRot = 0;
+		getPos(x,posTr,posRot);
+		return data[posTr][posRot];
 	}
 
 	unsigned char getMaxEntry() const;
@@ -139,8 +156,11 @@ public:
 	void bisectData();
 
 	unsigned int sizes[6];
-	unsigned int sizeX0,sizeX1,sizeX2,sizeX3,sizeX4;
-	unsigned char *data;
+	unsigned int sizeTr0,sizeTr1;
+	unsigned int sizeRot0,sizeRot1;
+
+	unsigned char** data;
+
 	unsigned char maxEntry;
 	unsigned int voxelFilledCount;
 	bool adjustOnOverflow;

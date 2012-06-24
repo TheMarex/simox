@@ -11,7 +11,7 @@ function(VirtualRobotQtApplication name srcs incs mocFiles uiFiles)
 
     ################################## EXECUTABLE ##############################
     ADD_EXECUTABLE(${name} ${srcs} ${incs} ${generatedUiFiles} ${generatedMocFiles})
-    TARGET_LINK_LIBRARIES(${name} ${VirtualRobot_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${name} VirtualRobot ${VirtualRobot_VISUALIZATION_LIBS})
 
 endfunction()
 

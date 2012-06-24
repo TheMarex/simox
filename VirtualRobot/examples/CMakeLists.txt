@@ -9,3 +9,5 @@ ADD_SUBDIRECTORY(reachability)
 ADD_SUBDIRECTORY(stability)
 ADD_SUBDIRECTORY(GraspEditor)
 
+ADD_SUBDIRECTORY(ReachabilityMap)
+

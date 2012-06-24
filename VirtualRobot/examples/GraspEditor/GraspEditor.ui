@@ -459,6 +459,27 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>pushButtonReset</tabstop>
+  <tabstop>pushButtonLoadObject</tabstop>
+  <tabstop>pushButtonLoadRobot</tabstop>
+  <tabstop>pushButtonSave</tabstop>
+  <tabstop>comboBoxEEF</tabstop>
+  <tabstop>pushButtonClose</tabstop>
+  <tabstop>pushButtonOpen</tabstop>
+  <tabstop>comboBoxGrasp</tabstop>
+  <tabstop>pushButtonRenameGrasp</tabstop>
+  <tabstop>pushButtonAddGrasp</tabstop>
+  <tabstop>horizontalSliderX</tabstop>
+  <tabstop>horizontalSliderY</tabstop>
+  <tabstop>horizontalSliderZ</tabstop>
+  <tabstop>horizontalSliderRo</tabstop>
+  <tabstop>horizontalSliderPi</tabstop>
+  <tabstop>horizontalSliderYa</tabstop>
+  <tabstop>checkBoxColModel</tabstop>
+  <tabstop>checkBoxGraspSet</tabstop>
+  <tabstop>checkBoxTCP</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

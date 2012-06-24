@@ -1,4 +1,4 @@
-/**
+/*!
 * This file is part of Simox.
 *
 * Simox is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
 #include "../../SceneObject.h"
 #include "../../EndEffector/EndEffector.h"
 #include "../ColorMap.h"
+#include "../../Workspace/WorkspaceRepresentation.h"
 
 #include <Inventor/SoInput.h>
 #include <Inventor/nodes/SoMatrixTransform.h>
@@ -168,6 +169,13 @@ public:
 
 	static SoMatrixTransform* getMatrixTransform(Eigen::Matrix4f &m);
 	static SoNode* createCoinLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width, float colorR, float colorG, float colorB);
+
+	/*! 
+		Creates a visualization of the reachability grid.
+	*/
+	static SoNode* getCoinVisualization(WorkspaceGridPtr reachGrid, VirtualRobot::ColorMap cm, bool transformToGlobalPose = true);	
+
+	static SoNode* CoinVisualizationFactory::getCoinVisualization( VirtualRobot::WorkspaceRepresentation::WorkspaceCut2DPtr cutXY, VirtualRobot::ColorMap cm );
 
 	/*!
 		Create an offscreen renderer object with the given width and height.

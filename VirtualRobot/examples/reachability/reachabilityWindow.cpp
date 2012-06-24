@@ -406,13 +406,18 @@ void reachabilityWindow::createReach()
 	UICreate.labelRNS->setText(QString("RobotNodeSet: ") + QString(currentRobotNodeSet->getName().c_str()));
 	UICreate.labelBaseNode->setText(QString("Base: ") + QString(baseNode->getName().c_str()));
 	UICreate.labelTCP->setText(QString("TCP: ") + QString(tcpNode->getName().c_str()));
-	float ex = currentRobotNodeSet->getMaximumExtension();
-	UICreate.doubleSpinBoxMinX->setValue(-ex);
-	UICreate.doubleSpinBoxMaxX->setValue(ex);
-	UICreate.doubleSpinBoxMinY->setValue(-ex);
-	UICreate.doubleSpinBoxMaxY->setValue(ex);
-	UICreate.doubleSpinBoxMinZ->setValue(-ex);
-	UICreate.doubleSpinBoxMaxZ->setValue(ex);
+	reachSpace.reset(new Reachability(robot));
+	float minB[6];// = {-1000.0f,-1000.0f,-1000.0f,(float)-M_PI,(float)-M_PI,(float)-M_PI};
+	float maxB[6];// ={1000.0f,1000.0f,1000.0f,(float)M_PI,(float)M_PI,(float)M_PI};
+	reachSpace->checkForParameters(currentRobotNodeSet,1000,minB,maxB,baseNode,tcpNode);
+
+	//float ex = currentRobotNodeSet->getMaximumExtension();
+	UICreate.doubleSpinBoxMinX->setValue(minB[0]);
+	UICreate.doubleSpinBoxMaxX->setValue(maxB[0]);
+	UICreate.doubleSpinBoxMinY->setValue(minB[1]);
+	UICreate.doubleSpinBoxMaxY->setValue(maxB[1]);
+	UICreate.doubleSpinBoxMinZ->setValue(minB[2]);
+	UICreate.doubleSpinBoxMaxZ->setValue(maxB[2]);
 	
 
 	std::vector < VirtualRobot::RobotNodeSetPtr > allRNS;
@@ -424,9 +429,8 @@ void reachabilityWindow::createReach()
 	}
 	if (diag.exec())
 	{
-		reachSpace.reset(new Reachability(robot));
-		float minB[6];// = {-1000.0f,-1000.0f,-1000.0f,(float)-M_PI,(float)-M_PI,(float)-M_PI};
-		float maxB[6];// ={1000.0f,1000.0f,1000.0f,(float)M_PI,(float)M_PI,(float)M_PI};
+		
+		
 		minB[0] = UICreate.doubleSpinBoxMinX->value();
 		minB[1] = UICreate.doubleSpinBoxMinY->value();
 		minB[2] = UICreate.doubleSpinBoxMinZ->value();

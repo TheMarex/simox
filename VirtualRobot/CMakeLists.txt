@@ -41,6 +41,7 @@ IK/PoseQualityManipulability.cpp
 Workspace/WorkspaceData.cpp
 Workspace/WorkspaceRepresentation.cpp
 Workspace/Reachability.cpp
+Workspace/WorkspaceGrid.cpp
 Grasping/Grasp.cpp
 Grasping/GraspSet.cpp
 Grasping/BasicGraspQualityMeasure.cpp
@@ -59,7 +60,8 @@ VirtualRobotException.cpp
 ManipulationObject.cpp
 BoundingBox.cpp
 RuntimeEnvironment.cpp
-CompressionRLE.cpp
+Compression/CompressionRLE.cpp
+Compression/CompressionBZip2.cpp
 LinkedCoordinate.cpp
 SphereApproximator.cpp
 )
@@ -102,6 +104,7 @@ Workspace/WorkspaceRepresentation.h
 Workspace/Reachability.h
 Workspace/VoxelTree6D.hpp
 Workspace/VoxelTree6DElement.hpp
+Workspace/WorkspaceGrid.h
 Grasping/Grasp.h
 Grasping/GraspSet.h
 Grasping/BasicGraspQualityMeasure.h
@@ -124,12 +127,14 @@ VirtualRobotTest.h
 ManipulationObject.h
 BoundingBox.h
 RuntimeEnvironment.h
-CompressionRLE.h
+Compression/CompressionRLE.h
+Compression/CompressionBZip2.h
 SphereApproximator.h
 )
 
 ADD_SUBDIRECTORY(Visualization/tests)
 ADD_SUBDIRECTORY(Workspace/tests)
+ADD_SUBDIRECTORY(Compression/tests)
 
 if (VirtualRobot_VISUALIZATION AND VirtualRobot_USE_COIN_VISUALIZATION)
 

@@ -1,7 +1,8 @@
 #include "WorkspaceRepresentation.h"
 #include "../VirtualRobotException.h"
 #include "../Robot.h"
-#include "../CompressionRLE.h"
+#include "../Compression/CompressionRLE.h"
+#include "../Compression/CompressionBZip2.h"
 #include "../SceneObjectSet.h"
 #include "../Nodes/RobotNode.h"
 #include "../Visualization/Visualization.h"
@@ -25,7 +26,7 @@ WorkspaceRepresentation::WorkspaceRepresentation(RobotPtr robot)
 	this->robot = robot;
 	type = "WorkspaceRepresentation";
 	versionMajor = 2;
-	versionMinor = 4;
+	versionMinor = 5;
 	reset();
 }
 
@@ -207,12 +208,12 @@ void WorkspaceRepresentation::load(const std::string &filename)
 			// now check if an older version is used
 			THROW_VR_EXCEPTION_IF(
 				(version[0] > 2) || 
-				(version[0] == 2 && !(version[1] == 0 || version[1] == 1 || version[1] == 2 || version[1] == 3 || version[1] == 4)) || 
+				(version[0] == 2 && !(version[1] == 0 || version[1] == 1 || version[1] == 2 || version[1] == 3 || version[1] == 4 || version[1] == 5)) || 
 				(version[0] == 1 && !(version[1] == 0 || version[1] == 2 || version[1] == 3)
 				),	"Wrong file format version");
 		}
-		versionMajor = version[0];
-		versionMinor = version[1];
+		//versionMajor = version[0];
+		//versionMinor = version[1];
 		// Check Robot name
 		readString(tmpString, file);
 		THROW_VR_EXCEPTION_IF(tmpString != robot->getType(), "Wrong Robot");
@@ -346,21 +347,51 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		{
 			// data is split, only rotations are given in blocks
 			// Data is compressed
-			int maxCompressedSize = numVoxels[3]*numVoxels[4]*numVoxels[5]*3;
-			unsigned char *compressedData = new unsigned char[maxCompressedSize];
-			unsigned char *uncompressedData = new unsigned char[numVoxels[3]*numVoxels[4]*numVoxels[5]];
-			for (int x=0;x<numVoxels[0];x++)
-				for (int y=0;y<numVoxels[1];y++)
-					for (int z=0;z<numVoxels[2];z++)
-					{
-						int compressedSize = read<int>(file);
+			
+			bool compressionBZIP2 = false;
+			if (version[0]>2 || (version[0]==2 && version[1]>=5))
+				compressionBZIP2 = true;
+			if (compressionBZIP2)
+			{
+				int dataSize = numVoxels[3]*numVoxels[4]*numVoxels[5];
+				unsigned char *uncompressedData = new unsigned char[dataSize];
+				CompressionBZip2Ptr bzip2(new CompressionBZip2(&file));
+				for (int x=0;x<numVoxels[0];x++)
+					for (int y=0;y<numVoxels[1];y++)
+						for (int z=0;z<numVoxels[2];z++)
+						{
+							int n;
+							bzip2->read((void*)(uncompressedData),dataSize,n);
+							if (n!=dataSize)
+							{
+								VR_ERROR << "Invalid number of bytes?!" << endl;
+								bzip2->close();
+								file.close();
+								return;
+							}
+							data->setDataRot(uncompressedData,x,y,z);
+						}
+						delete[] uncompressedData;
+						bzip2->close();
+			} else
+			{
+				int maxCompressedSize = numVoxels[3]*numVoxels[4]*numVoxels[5]*3;
+				unsigned char *compressedData = new unsigned char[maxCompressedSize];
+				unsigned char *uncompressedData = new unsigned char[numVoxels[3]*numVoxels[4]*numVoxels[5]];
+				for (int x=0;x<numVoxels[0];x++)
+					for (int y=0;y<numVoxels[1];y++)
+						for (int z=0;z<numVoxels[2];z++)
+						{
+							int compressedSize = read<int>(file);
 						
-						readArray<unsigned char>(compressedData, compressedSize, file);
+							readArray<unsigned char>(compressedData, compressedSize, file);
 						
-						CompressionRLE::RLE_Uncompress(compressedData,uncompressedData,compressedSize);
-						data->setDataRot(uncompressedData,x,y,z);
-					}
-			delete[] compressedData;
+							CompressionRLE::RLE_Uncompress(compressedData,uncompressedData,compressedSize);
+							data->setDataRot(uncompressedData,x,y,z);
+						}
+				delete[] compressedData;
+				delete[] uncompressedData;
+			}
 		}
 
 
@@ -468,7 +499,7 @@ void WorkspaceRepresentation::save(const std::string &filename)
 		writeString(file, "DATA_START");
 		int size = 0;
 		int maxCompressedSize = numVoxels[3]*numVoxels[4]*numVoxels[5]*3;
-		unsigned char *compressedData = new unsigned char[maxCompressedSize];
+		/*unsigned char *compressedData = new unsigned char[maxCompressedSize];
 		for (int x=0;x<numVoxels[0];x++)
 			for (int y=0;y<numVoxels[1];y++)
 				for (int z=0;z<numVoxels[2];z++)
@@ -478,7 +509,22 @@ void WorkspaceRepresentation::save(const std::string &filename)
 					if(size > 0)
 						writeArray<unsigned char>(file, compressedData, size);
 				}
-		delete []compressedData;
+		delete []compressedData;*/
+		CompressionBZip2Ptr bzip2(new CompressionBZip2(&file));
+		for (int x=0;x<numVoxels[0];x++)
+			for (int y=0;y<numVoxels[1];y++)
+				for (int z=0;z<numVoxels[2];z++)
+				{
+					if (!bzip2->write((void*)(data->getDataRot(x,y,z)),data->getSizeRot()))
+					{
+						VR_ERROR << "Error writing to file.." << endl;
+						bzip2->close();
+						file.close();
+						return;
+					}
+				}
+
+		bzip2->close();
 		writeString(file, "DATA_END");
 	}
 	catch(VirtualRobotException &e)

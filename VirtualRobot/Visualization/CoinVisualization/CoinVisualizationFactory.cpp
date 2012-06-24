@@ -4,7 +4,6 @@
 * @author     Manfred Kroehnert
 * @copyright  2010,2011 Nikolaus Vahrenkamp, Manfred Kroehnert
 */
-
 #include "CoinVisualizationFactory.h"
 #include "../VisualizationNode.h"
 #include "CoinVisualizationNode.h"
@@ -18,6 +17,7 @@
 #include "../../SceneObject.h"
 #include "../TriMeshModel.h"
 #include "../../Workspace/Reachability.h"
+#include "../../Workspace/WorkspaceGrid.h"
 #include <Inventor/SoDB.h>
 #include <Inventor/nodes/SoNode.h>
 #include <Inventor/nodes/SoUnits.h>
@@ -47,6 +47,8 @@
 #include <Inventor/nodes/SoCylinder.h>
 #include <Inventor/nodes/SoLightModel.h>
 #include <Inventor/VRMLnodes/SoVRMLBillboard.h>
+#include <Inventor/nodes/SoShapeHints.h>
+#include <Inventor/nodes/SoLightModel.h>
 #include <iostream>
 #include <algorithm>
 #include <boost/pointer_cast.hpp>
@@ -1608,6 +1610,210 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( TrajectoryPtr t, Color 
 	res->unrefNoDelete();
 	return res;
 }
+
+SoNode* CoinVisualizationFactory::getCoinVisualization( WorkspaceGridPtr reachGrid, VirtualRobot::ColorMap cm, bool transformToGlobalPose /*= true*/ )
+{
+	SoSeparator *res = new SoSeparator;
+	if (!reachGrid)
+		return res;
+
+	Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
+	float minX,maxX,minY,maxY;
+	reachGrid->getExtends(minX,maxX,minY,maxY);
+	gp(0,3) = minX;
+	gp(1,3) = minY;
+
+	int nX,nY;
+	
+	reachGrid->getCells(nX,nY);
+
+	float sizeX = (maxX - minX) / (float)nX;
+	float sizeY = (maxY - minY) / (float)nY;
+
+
+	float ro,gr,bl;
+	SoCube *cube = new SoCube();
+	cube->width = sizeX;
+	cube->height = sizeY;
+	cube->depth = 1.0f;
+	int maxEntry = reachGrid->getMaxEntry();
+
+	if (maxEntry==0)
+		maxEntry = 1;
+
+
+
+	SoDrawStyle *ds = new SoDrawStyle;
+	ds->style = SoDrawStyle::LINES;
+
+	// back-face culling
+	SoShapeHints * shapeHints = new SoShapeHints;
+	//shapeHints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
+	shapeHints->vertexOrdering = SoShapeHints::UNKNOWN_ORDERING;
+	shapeHints->shapeType = SoShapeHints::SOLID;
+
+	SoBaseColor *bc = new SoBaseColor;
+	bc->rgb.setValue(0,0,0);
+
+	// keep a solid color
+	SoLightModel * lightModel = new SoLightModel;
+	lightModel->model = SoLightModel::BASE_COLOR;
+
+	for (int x = 0; x<nX; x++)
+	{
+		float xPos = minX + (float)x * sizeX + 0.5f*sizeX; // center of voxel
+		for (int y = 0; y<nY; y++)
+		{
+			int v;
+			std::vector<GraspPtr> grasps;
+			bool ok = reachGrid->getCellEntry(x,y,v,grasps);
+			if (ok && v>0)
+			{
+				float yPos = minY + (float)y * sizeY + 0.5f*sizeY; // center of voxel
+				gp(0,3) = xPos;
+				gp(1,3) = yPos;
+
+				SoSeparator *sep1 = new SoSeparator();
+				SoMatrixTransform* matTr = getMatrixTransform(gp);
+
+				float intensity = (float)v;
+				intensity /= maxEntry;
+				if (intensity>1.0f)
+					intensity = 1.0f;
+				VirtualRobot::VisualizationFactory::Color color = cm.getColor(intensity);
+
+				SoMaterial *mat= new SoMaterial();
+
+				ro = color.r;
+				gr = color.g;
+				bl = color.b;
+
+				mat->diffuseColor.setValue(ro,gr,bl);
+				mat->ambientColor.setValue(ro,gr,bl);
+				if (intensity>0)
+				{
+
+					sep1->addChild(matTr);
+					sep1->addChild(mat);
+					sep1->addChild(cube);
+
+					SoSeparator *pSepLines = new SoSeparator;
+					sep1->addChild(pSepLines);
+
+					pSepLines->addChild(ds);
+					pSepLines->addChild(shapeHints);
+					pSepLines->addChild(lightModel);
+					pSepLines->addChild(bc);
+					pSepLines->addChild(cube);
+
+					res->addChild(sep1);
+				}
+			}
+		}
+	}
+	//res->addChild(lines);
+	return res;
+
+}
+
+SoNode* CoinVisualizationFactory::getCoinVisualization( WorkspaceRepresentation::WorkspaceCut2DPtr cutXY, VirtualRobot::ColorMap cm )
+{
+	SoSeparator *res = new SoSeparator;
+	if (!cutXY)
+		return res;
+
+	Eigen::Matrix4f gp = cutXY->referenceGlobalPose;
+
+	int nX = cutXY->entries.rows();
+	int nY = cutXY->entries.cols();
+
+	float sizeX = (cutXY->maxBounds[0] - cutXY->minBounds[0]) / (float)nX;
+	float sizeY = (cutXY->maxBounds[1] - cutXY->minBounds[1]) / (float)nY;
+
+
+	float ro,gr,bl;
+	SoCube *cube = new SoCube();
+	cube->width = sizeX;
+	cube->height = sizeY;
+	cube->depth = 1.0f;
+	int maxEntry = cutXY->entries.maxCoeff();
+
+	if (maxEntry==0)
+		maxEntry = 1;
+
+
+
+	SoDrawStyle *ds = new SoDrawStyle;
+	ds->style = SoDrawStyle::LINES;
+
+	// back-face culling
+	SoShapeHints * shapeHints = new SoShapeHints;
+	//shapeHints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
+	shapeHints->vertexOrdering = SoShapeHints::UNKNOWN_ORDERING;
+	shapeHints->shapeType = SoShapeHints::SOLID;
+
+	SoBaseColor *bc = new SoBaseColor;
+	bc->rgb.setValue(0,0,0);
+
+	// keep a solid color
+	SoLightModel * lightModel = new SoLightModel;
+	lightModel->model = SoLightModel::BASE_COLOR;
+
+	for (int x = 0; x<nX; x++)
+	{
+		float xPos = cutXY->minBounds[0] + (float)x * sizeX + 0.5f*sizeX; // center of voxel
+		for (int y = 0; y<nY; y++)
+		{
+			int v = cutXY->entries(x,y);
+			if (v>0)
+			{
+				float yPos = cutXY->minBounds[1] + (float)y * sizeY + 0.5f*sizeY; // center of voxel
+				gp(0,3) = xPos;
+				gp(1,3) = yPos;
+
+				SoSeparator *sep1 = new SoSeparator();
+				SoMatrixTransform* matTr = getMatrixTransform(gp);
+
+				float intensity = (float)v;
+				intensity /= maxEntry;
+				if (intensity>1.0f)
+					intensity = 1.0f;
+				VirtualRobot::VisualizationFactory::Color color = cm.getColor(intensity);
+
+				SoMaterial *mat= new SoMaterial();
+
+				ro = color.r;
+				gr = color.g;
+				bl = color.b;
+
+				mat->diffuseColor.setValue(ro,gr,bl);
+				mat->ambientColor.setValue(ro,gr,bl);
+				if (intensity>0)
+				{
+
+					sep1->addChild(matTr);
+					sep1->addChild(mat);
+					sep1->addChild(cube);
+
+					SoSeparator *pSepLines = new SoSeparator;
+					sep1->addChild(pSepLines);
+
+					pSepLines->addChild(ds);
+					pSepLines->addChild(shapeHints);
+					pSepLines->addChild(lightModel);
+					pSepLines->addChild(bc);
+					pSepLines->addChild(cube);
+
+					res->addChild(sep1);
+				}
+			}
+		}
+	}
+	//res->addChild(lines);
+	return res;
+}
+
+
 
 SoSeparator* CoinVisualizationFactory::Colorize( SoNode *model, VisualizationFactory::Color c )
 {

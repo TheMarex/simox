@@ -168,6 +168,7 @@ namespace VirtualRobot
 	class Trajectory;
 	class SphereApproximator;
 	class BasicGraspQualityMeasure;
+	class WorkspaceGrid;
 
     typedef boost::shared_ptr<RobotNode> RobotNodePtr;
     typedef boost::shared_ptr<RobotNodeSet> RobotNodeSetPtr;
@@ -201,6 +202,7 @@ namespace VirtualRobot
 	typedef boost::shared_ptr<Trajectory> TrajectoryPtr;
 	typedef boost::shared_ptr<SphereApproximator> SphereApproximatorPtr;
 	typedef boost::shared_ptr<BasicGraspQualityMeasure> BasicGraspQualityMeasurePtr;
+	typedef boost::shared_ptr<WorkspaceGrid> WorkspaceGridPtr;
 
 
 #define VR_INFO std::cout <<__FILE__ << ":" << __LINE__ << ": "

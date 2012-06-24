@@ -175,7 +175,7 @@ public:
 	*/
 	static SoNode* getCoinVisualization(WorkspaceGridPtr reachGrid, VirtualRobot::ColorMap cm, bool transformToGlobalPose = true);	
 
-	static SoNode* CoinVisualizationFactory::getCoinVisualization( VirtualRobot::WorkspaceRepresentation::WorkspaceCut2DPtr cutXY, VirtualRobot::ColorMap cm );
+	static SoNode* getCoinVisualization( VirtualRobot::WorkspaceRepresentation::WorkspaceCut2DPtr cutXY, VirtualRobot::ColorMap cm );
 
 	/*!
 		Create an offscreen renderer object with the given width and height.

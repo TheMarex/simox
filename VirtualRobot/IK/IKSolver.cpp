@@ -27,6 +27,7 @@ namespace VirtualRobot
 IKSolver::IKSolver(RobotNodeSetPtr rns) : 
 	rns(rns)
 {
+	verbose = false;
 	THROW_VR_EXCEPTION_IF(!rns, "Null data");
 	tcp = rns->getTCP();
 	THROW_VR_EXCEPTION_IF(!tcp, "no tcp");
@@ -238,6 +239,11 @@ VirtualRobot::RobotNodePtr IKSolver::getTcp()
 VirtualRobot::RobotNodeSetPtr IKSolver::getRobotNodeSet()
 {
 	return rns;
+}
+
+void IKSolver::setVerbose( bool enable )
+{
+	verbose = enable;
 }
 
 

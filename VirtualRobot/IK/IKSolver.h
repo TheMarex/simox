@@ -148,6 +148,8 @@ public:
 	RobotNodeSetPtr getRobotNodeSet();
 	RobotNodePtr getTcp();
 
+	void setVerbose(bool enable);
+
 protected:
     
 
@@ -163,6 +165,8 @@ protected:
 	float maxErrorOrientationRad;
 
 	ReachabilityPtr reachabilitySpace;
+
+	bool verbose;
 };
 
 typedef boost::shared_ptr<IKSolver> IKSolverPtr;

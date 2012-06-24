@@ -63,6 +63,8 @@ public:
 
 	void setupJacobian(float stepSize, int maxLoops);
 
+	void setVerbose(bool enable);
+
 protected:
     
     //! This method is called by the constructor and can be used in derived classes for initialization.

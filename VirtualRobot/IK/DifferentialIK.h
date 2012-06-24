@@ -243,6 +243,8 @@ public:
 		Standard: disabled
 	*/
 	void convertModelScalingtoM(bool enable);
+
+	void setVerbose(bool enable);
 	
 protected:
 	
@@ -267,6 +269,8 @@ protected:
 
 	std::vector <RobotNodePtr> nodes;
 	std::map< RobotNodePtr, std::vector<RobotNodePtr> > parents;
+
+	bool verbose;
 
 };
 

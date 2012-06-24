@@ -32,6 +32,7 @@ DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem) 
 		parents[nodes[i]] = p;
 	}
 	convertMMtoM = false;
+	verbose = false;
 }
 
 
@@ -335,27 +336,32 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 		// check tolerances
 		if (checkTolerances())
 		{
-			VR_INFO << "Tolerances ok, loop:" << step << endl;
+			if (verbose)
+				VR_INFO << "Tolerances ok, loop:" << step << endl;
 			return true;
 		}
 		float d = dTheta.norm();
 		if (dTheta.norm()<minumChange)
 		{
-			VR_INFO << "Could not improve result any more (dTheta.norm()=" << d << "), loop:" << step << endl;
+			if (verbose)
+				VR_INFO << "Could not improve result any more (dTheta.norm()=" << d << "), loop:" << step << endl;
 			return false;
 		}
 		if (checkImprovement && d>lastDist)
 		{
-			VR_INFO << "Could not improve result any more (dTheta.norm()=" << d << ", last loop's norm:" << lastDist << "), loop:" << step << endl;
+			if (verbose)
+				VR_INFO << "Could not improve result any more (dTheta.norm()=" << d << ", last loop's norm:" << lastDist << "), loop:" << step << endl;
 			return false;
 		}
 		lastDist = d;
 		step++;
 	}
-
-	VR_INFO << "IK failed, loop:" << step << endl;
-	VR_INFO << "pos error:" << getErrorPosition() << endl;
-	VR_INFO << "rot error:" << getErrorRotation() << endl;
+	if (verbose)
+	{
+		VR_INFO << "IK failed, loop:" << step << endl;
+		VR_INFO << "pos error:" << getErrorPosition() << endl;
+		VR_INFO << "rot error:" << getErrorRotation() << endl;
+	}
 	return false;
 }
 
@@ -367,6 +373,11 @@ bool DifferentialIK::solveIK( float stepSize /*= 0.2f*/, float minChange /*= 0.0
 void DifferentialIK::convertModelScalingtoM( bool enable )
 {
 	convertMMtoM = enable;
+}
+
+void DifferentialIK::setVerbose( bool enable )
+{
+	verbose = enable;
 }
 
 } // namespace VirtualRobot

@@ -106,5 +106,11 @@ bool GenericIKSolver::_sampleSolution( const Eigen::Matrix4f &globalPose, Cartes
 	return solve(globalPose,selection,maxLoops);
 }
 
+void GenericIKSolver::setVerbose( bool enable )
+{
+	verbose = enable;
+	jacobian->setVerbose(verbose);
+}
+
 
 } // namespace VirtualRobot

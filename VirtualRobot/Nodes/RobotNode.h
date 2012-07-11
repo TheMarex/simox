@@ -221,7 +221,7 @@ public:
 	/*!
 		Find all robot nodes whose movements affect this RobotNode
 	*/
-	std::vector<RobotNodePtr> getAllParents( RobotNodeSetPtr rns );
+	virtual std::vector<RobotNodePtr> getAllParents( RobotNodeSetPtr rns );
  
 	//! Return parent node
 	virtual RobotNodePtr getParent();

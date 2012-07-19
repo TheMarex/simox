@@ -104,13 +104,25 @@ public:
 	bool checkJointLimits(std::vector<float> &jointValues, bool verbose = false) const;
 	bool checkJointLimits(Eigen::VectorXf &jointValues, bool verbose = false) const;	
 
-	//void setJointValues(const std::vector<float> &jointValues);
-	//void setJointValues(const Eigen::VectorXf &jointValues);
+	/*!
+		Set joint values [rad].
+		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
+		\param rns The RobotNodeSet defines the joints
+		\param jointValues A vector with joint values, size must be equal to rns.
+	*/
+	void setJointValues(const std::vector<float> &jointValues);
+	/*!
+		Set joint values [rad].
+		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
+		\param rns The RobotNodeSet defines the joints
+		\param jointValues A vector with joint values, size must be equal to rns.
+	*/
+	void setJointValues(const Eigen::VectorXf &jointValues);
 
 	/*! 
 		Set joints that are within the given RobotConfig. Joints of this NodeSet that are not stored in jointValues remain untouched.
 	*/
-	//void setJointValues(const RobotConfigPtr jointValues);
+	void setJointValues(const RobotConfigPtr jointValues);
 	
 	RobotNodePtr& operator[](int i);
 	
@@ -135,17 +147,11 @@ public:
 	*/
 	virtual void highlight (VisualizationPtr visualization, bool enable);
 
-
 	/*! 
 		get number of faces (i.e. triangles) of this object
 		\p collisionModel Indicates weather the faces of the collision model or the full model should be returned.
 	*/
 	virtual int getNumFaces(bool collisionModel = false);
-
-	/*!
-		Creates a SceneObjectSet with the RobotNodes of this RobotNodeSet.
-	*/
-	//SceneObjectSetPtr createSceneObjectSet();
 
 	/*!
 		Compute an upper bound of the extension of the kinematic chain formed by this RobotNodeSet.
@@ -191,7 +197,6 @@ protected:
 		\param tcp The tcp.
 	*/
 	RobotNodeSet(const std::string &name, RobotWeakPtr robot, const std::vector< RobotNodePtr > &robotNodes, const RobotNodePtr kinematicRoot = RobotNodePtr(), const RobotNodePtr tcp = RobotNodePtr() );
-
 	std::vector< RobotNodePtr > robotNodes;
 	RobotWeakPtr robot;
 

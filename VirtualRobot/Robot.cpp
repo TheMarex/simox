@@ -607,7 +607,7 @@ VirtualRobot::RobotPtr Robot::extractSubPart( RobotNodePtr startJoint, const std
 	{
 		RobotNodePtr roN = result->getRobotNode(allNodes[i]->getName());
 		if (roN)
-			roN->setJointValue(allNodes[i]->getJointValue(),false);
+			roN->setJointValueNoUpdate(allNodes[i]->getJointValue());
 	}
 	result->applyJointValues();
 	return result;
@@ -688,6 +688,11 @@ ReadLockPtr Robot::getReadLock()
 	return ReadLockPtr(new ReadLock(mutex,use_mutex));
 }
 
+WriteLockPtr Robot::getWriteLock()
+{
+	return WriteLockPtr(new WriteLock(mutex,use_mutex));
+}
+
 void Robot::setJointValue( const std::string &nodeName, float jointValue )
 {
 	RobotNodePtr rn = getRobotNode(nodeName);
@@ -697,7 +702,6 @@ void Robot::setJointValue( const std::string &nodeName, float jointValue )
 void Robot::setJointValue( RobotNodePtr rn, float jointValue )
 {
 	VR_ASSERT(rn);
-	WriteLock(mutex,use_mutex);
 	rn->setJointValue(jointValue);
 }
 
@@ -710,7 +714,7 @@ void Robot::setJointValues( const std::map< std::string, float > &jointValues )
 	{
 		RobotNodePtr rn = getRobotNode(it->first);
 		VR_ASSERT(rn);
-		rn->setJointValue(it->second,false);
+		rn->setJointValueNoUpdate(it->second);
 		it++;
 	}
 	applyJointValuesNoLock();
@@ -719,42 +723,19 @@ void Robot::setJointValues( const std::map< std::string, float > &jointValues )
 void Robot::setJointValues( RobotNodeSetPtr rns, const std::vector<float> &jointValues )
 {
 	VR_ASSERT(rns);
-	THROW_VR_EXCEPTION_IF(jointValues.size() != rns->getSize(), "Wrong vector dimension (robotNodes:" << rns->getSize() << ", jointValues: " << jointValues.size() << ")" << endl);
-	WriteLock(mutex,use_mutex);
-	for (unsigned int i=0;i<rns->getSize();i++)
-	{
-		rns->getNode(i)->setJointValue(jointValues[i],false);
-	}
-	rns->getKinematicRoot()->applyJointValue();
+	rns->setJointValues(jointValues);
 }
 
 void Robot::setJointValues( RobotNodeSetPtr rns, const Eigen::VectorXf &jointValues )
 {
 	VR_ASSERT(rns);
-	THROW_VR_EXCEPTION_IF(jointValues.size() != rns->getSize(), "Wrong vector dimension (robotNodes:" << rns->getSize() << ", jointValues: " << jointValues.size() << ")" << endl);
-	WriteLock(mutex,use_mutex);
-	for (unsigned int i=0;i<rns->getSize();i++)
-	{
-		rns->getNode(i)->setJointValue(jointValues[i],false);
-	}
-	rns->getKinematicRoot()->applyJointValue();
+	rns->setJointValues(jointValues);
 }
 
 void Robot::setJointValues( RobotConfigPtr config )
 {
 	VR_ASSERT(config);
-	WriteLock(mutex,use_mutex);
-	std::map < std::string, float > jv = config->getRobotNodeJointValueMap();
-	std::map< std::string, float >::const_iterator i = jv.begin();
-
-	while (i != jv.end())
-	{
-		RobotNodePtr rn = getRobotNode(i->first);
-		VR_ASSERT(rn);
-		rn->setJointValue(i->second,false);
-		i++;
-	}
-	applyJointValuesNoLock();
+	config->setJointValues(shared_from_this());
 }
 
 void Robot::setJointValues( TrajectoryPtr trajectory, float t )
@@ -769,19 +750,7 @@ void Robot::setJointValues( RobotNodeSetPtr rns, RobotConfigPtr config )
 {
 	VR_ASSERT(rns);
 	VR_ASSERT(config);
-	WriteLock(mutex,use_mutex);
-	const std::vector<RobotNodePtr> robotNodes = rns->getAllRobotNodes();
-	for (unsigned int i=0;i<robotNodes.size();i++)
-	{
-		if (config->hasConfig(robotNodes[i]->getName()))
-			robotNodes[i]->setJointValue(config->getConfig(robotNodes[i]->getName()), false, true);
-	}
-	if (rns->getKinematicRoot() && rns->getKinematicRoot()!=getRootNode())
-		rns->getKinematicRoot()->applyJointValue();
-	else
-	{
-		applyJointValuesNoLock();
-	}
+	rns->setJointValues(config);
 }
 
 void Robot::setJointValues( const std::vector<RobotNodePtr> rn, const std::vector<float> &jointValues )
@@ -789,7 +758,7 @@ void Robot::setJointValues( const std::vector<RobotNodePtr> rn, const std::vecto
 	VR_ASSERT(rn.size()==jointValues.size());
 	WriteLock(mutex,use_mutex);
 	for (size_t i=0;i<rn.size();i++)
-		rn[i]->setJointValue(jointValues[i],false);
+		rn[i]->setJointValueNoUpdate(jointValues[i]);
 	applyJointValuesNoLock();
 }
 

@@ -60,7 +60,9 @@ class RobotNodeActuator;
 class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNode : public boost::enable_shared_from_this<RobotNode>, public SceneObject
 {
 public:
-	friend class VirtualRobot::Robot;
+	friend class Robot;
+	friend class RobotNodeSet;
+	friend class RobotConfig;
 	friend class RobotFactory;
 	friend class RobotNodeActuator;
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -87,7 +89,12 @@ public:
 
 	RobotPtr getRobot() const;
 
-	
+	/*!
+		Set a joint value [rad].
+		The internal matrices and visualizations are updated accordingly.
+		If you intend to update multiple joints, use \ref setJointValues for faster access.
+	*/
+	void setJointValue(float q);
 
 	/*!
 		All children and their children (and so on) are collected.
@@ -268,13 +275,15 @@ private: // Use the private setters and getters instead
 protected:
 
 	/*!
-		Set the joint value. Only Robots are allowed to do this in order to synchronize the access.
-		If you want to update the joint, call \ref Robot::SetJointValue().
+		Set the joint value without updating the internal matrices. 
+		After setting all jointvalues the transformations are calculated by calling \ref applyJointValues()
+		This method is used when multiple joints should be updated at once. 
+		Access by RobotNodeSets, Robots or RobotConfigs must be protected by a \ref WriteLock.
 		\param q The joint value.
 		\param updateTransformations When true, the transformation matrices of this joint and all child joints are updated (by calling applyJointValue()).
 		\param clampToLimits Consider joint limits. When false an exception is thrown in case of invalid values.
 	*/
-	virtual void setJointValue(float q, bool updateTransformations = true, bool clampToLimits = true);
+	virtual void setJointValueNoUpdate(float q);
 
 	/*!
 		Compute/Update the transformations of this joint and all child joints. This method is called by the robot in order to update the pose matrices.

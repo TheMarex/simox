@@ -8,10 +8,10 @@ int main(int argc, char *argv[])
 	SoDB::init();
 	SoQt::init(argc,argv,"stability demo");
 	cout << " --- START --- " << endl;
-	std::string filenameRob("robots/ArmarIII/ArmarIII.xml");
+	//std::string filenameRob("robots/ArmarIII/ArmarIII.xml");
+	std::string filenameRob("robots/iCub/iCub.xml");
 	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameRob);
-	//std::string filename("C:/Projects/IIT_Projects/iCubRobot/robot/iCub.xml");
-
+	
 	VirtualRobot::RuntimeEnvironment::considerKey("robot");
 	VirtualRobot::RuntimeEnvironment::processCommandLine(argc,argv);
 	VirtualRobot::RuntimeEnvironment::print();

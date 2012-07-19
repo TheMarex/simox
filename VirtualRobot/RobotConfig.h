@@ -92,7 +92,13 @@ public:
 		RobotNodes that are not stored in this RobotConfig are not affected.
 		\return True on success. False if robot is not present any more (may happen due to the use of weak pointers).
 	*/
-	//bool setJointValues();
+	bool setJointValues();
+	
+	/*!
+		Usually setJointValues() is sufficient for applying the joint values. But in some cases one might want to
+		apply the joint values to a cloned robot. Therefore this method can be used.
+	*/
+	bool setJointValues(RobotPtr r);
 
 	/*!
 		Check if a configuration for a RobotNode with name is stored.
@@ -112,12 +118,6 @@ public:
 		Returns map of RobotNodeNames with corresponding joint values.
 	*/
 	std::map < std::string, float > getRobotNodeJointValueMap();
-
-	/*!
-		Usually setJointValues() is sufficient for applying the joint values. But in some cases one might want to
-		apply the joint values to a cloned robot. Therefore this method can be used.
-	*/
-	//bool applyToRobot(RobotPtr r);
 
 	/*!
 		Create an XML string that defines this object.

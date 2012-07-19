@@ -144,7 +144,7 @@ RobotConfigPtr RobotConfig::clone( RobotPtr newRobot )
 	return result;
 }
 
-/*
+
 bool RobotConfig::setJointValues()
 {
 	RobotPtr r = robot.lock();
@@ -153,13 +153,14 @@ bool RobotConfig::setJointValues()
 		VR_WARNING << "Robot is already deleted, skipping update..." << endl;
 		return false;
 	}
+	WriteLockPtr lock = r->getWriteLock();
 	for (std::map< RobotNodePtr, float >::const_iterator i=configs.begin(); i!=configs.end(); i++ )
 	{
-		i->first->setJointValue(i->second, false, true);
+		i->first->setJointValueNoUpdate(i->second);
 	}
 	r->applyJointValues();
 	return true;
-}*/
+}
 
 bool RobotConfig::hasConfig( const std::string & name ) const
 {
@@ -216,11 +217,12 @@ std::map < std::string, float > RobotConfig::getRobotNodeJointValueMap()
 	}
 	return result;
 }
-/*
-bool RobotConfig::applyToRobot( RobotPtr r )
+
+bool RobotConfig::setJointValues( RobotPtr r )
 {
 	if (!r)
 		return false;
+	WriteLockPtr lock = r->getWriteLock();
 
 	std::map < std::string, float > jv = getRobotNodeJointValueMap();
 	std::map< std::string, float >::const_iterator i = jv.begin();
@@ -240,12 +242,12 @@ bool RobotConfig::applyToRobot( RobotPtr r )
 		RobotNodePtr rn = r->getRobotNode(i->first);
 		if (!rn)
 			return false;
-		rn->setJointValue(i->second,false);
+		rn->setJointValueNoUpdate(i->second);
 		i++;
 	}
 	r->applyJointValues();
 	return true;
-}*/
+}
 
 std::string RobotConfig::getXMLString(int tabs)
 {
@@ -277,7 +279,5 @@ std::string RobotConfig::createXMLString( const std::map< std::string, float > &
 
 	return ss.str();
 }
-
-
 
 } // namespace VirtualRobot

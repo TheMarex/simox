@@ -287,67 +287,60 @@ void RobotNodeSet::respectJointLimits(Eigen::VectorXf &jointValues) const
 		robotNodes[i]->respectJointLimits(jointValues[i]);
 	}
 }
-/*
+
 void RobotNodeSet::setJointValues(const std::vector<float> &jointValues)
 {
 	THROW_VR_EXCEPTION_IF(jointValues.size() != robotNodes.size(), "Wrong vector dimension (robotNodes:" << robotNodes.size() << ", jointValues: " << jointValues.size() << ")" << endl);
 
-	for (unsigned int i=0;i<robotNodes.size();i++)
-	{
-		robotNodes[i]->setJointValue(jointValues[i], false, true);
-	}
-	if (kinematicRoot && !kinematicRootIsRobotRoot)
-	{
-		kinematicRoot->applyJointValue();
-	} else
-	{
-		RobotPtr rob = robot.lock();
-		if (rob)
-			rob->applyJointValues();
-		else
-			VR_WARNING << "Robot of RNS " << name << " has been deleted! Could not set joint values!" << endl;
-	}
-}*/
+	RobotPtr rob = robot.lock();
+	VR_ASSERT(rob);
+	WriteLockPtr lock = rob->getWriteLock();
 
-/*
-void RobotNodeSet::setJointValues(const Eigen::VectorXf &jointValues)
-{
 	for (unsigned int i=0;i<robotNodes.size();i++)
 	{
-		robotNodes[i]->setJointValue(jointValues[i], false, true);
+		robotNodes[i]->setJointValueNoUpdate(jointValues[i]);
 	}
-	if (kinematicRoot && !kinematicRootIsRobotRoot)
+	if (kinematicRoot)
 		kinematicRoot->applyJointValue();
 	else
+		rob->applyJointValues();
+}
+
+
+void RobotNodeSet::setJointValues(const Eigen::VectorXf &jointValues)
+{
+	THROW_VR_EXCEPTION_IF(jointValues.rows() != robotNodes.size(), "Wrong vector dimension (robotNodes:" << robotNodes.size() << ", jointValues: " << jointValues.size() << ")" << endl);
+	RobotPtr rob = robot.lock();
+	VR_ASSERT(rob);
+	WriteLockPtr lock = rob->getWriteLock();
+	for (unsigned int i=0;i<robotNodes.size();i++)
 	{
-		RobotPtr rob = robot.lock();
-		if (rob)
-			rob->applyJointValues();
-		else
-			VR_WARNING << "Robot of RNS " << name << " has been deleted! Could not set joint values!" << endl;
-	}
-}*/
-/*
+		robotNodes[i]->setJointValueNoUpdate(jointValues[i]);
+	}	
+	if (kinematicRoot)
+		kinematicRoot->applyJointValue();
+	else
+		rob->applyJointValues();
+}
+
 void RobotNodeSet::setJointValues( const RobotConfigPtr jointValues )
 {
-	THROW_VR_EXCEPTION_IF(!jointValues,"NULL data");
+	VR_ASSERT(jointValues);
+	RobotPtr rob = robot.lock();
+	VR_ASSERT(rob);
+	WriteLockPtr lock = rob->getWriteLock();
 	
 	for (unsigned int i=0;i<robotNodes.size();i++)
 	{
 		if (jointValues->hasConfig(robotNodes[i]->getName()))
-			robotNodes[i]->setJointValue(jointValues->getConfig(robotNodes[i]->getName()), false, true);
+			robotNodes[i]->setJointValueNoUpdate(jointValues->getConfig(robotNodes[i]->getName()));
 	}
-	if (kinematicRoot && !kinematicRootIsRobotRoot)
+	if (kinematicRoot)
 		kinematicRoot->applyJointValue();
 	else
-	{
-		RobotPtr rob = robot.lock();
-		if (rob)
-			rob->applyJointValues();
-		else
-			VR_WARNING << "Robot of RNS " << name << " has been deleted! Could not set joint values!" << endl;
-	}
-}*/
+		rob->applyJointValues();
+
+}
 
 
 

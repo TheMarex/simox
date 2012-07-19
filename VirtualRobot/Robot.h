@@ -240,9 +240,35 @@ public:
 	std::string getFilename();
 
 	/*!
-		This readlock can be used to protect data access. It returns a <multiple reads> / <single write> lock.
+		This readlock can be used to protect data access. It locks the mutex until deletion.
+		For internal use. API users will usually not need this functionality since all data access is protected automatically.
+
+		Exemplary usage:
+		{
+			ReadLockPtr lock = robot->getReadlock();
+			// now the mutex is locked
+			
+			// access data
+			// ...
+		
+		} // end of scope -> lock gets deleted and mutex is released automatically
 	*/
 	ReadLockPtr getReadLock();
+	/*!
+		This writelock can be used to protect data access. It locks the mutex until deletion.
+		For internal use. API users will usually not need this functionality since all data access is protected automatically.
+
+		Exemplary usage:
+		{
+			WriteLockPtr lock = robot->getReadlock();
+			// now the mutex is locked
+			
+			// access data
+			// ...
+		
+		} // end of scope -> lock gets deleted and mutex is released automatically
+	*/
+	WriteLockPtr getWriteLock();
 
 	/*!
 		Set a joint value [rad].
@@ -258,46 +284,46 @@ public:
 	void setJointValue(const std::string &nodeName, float jointValue);
 
 	/*!
-		Set a joint values [rad].
+		Set joint values [rad].
 		The complete robot is updated to apply the new joint values.
 		\param jointValues A map containing RobotNode names with according values.
 	*/
 	void setJointValues(const std::map< std::string, float > &jointValues );
 	/*!
-		Set a joint values [rad].
+		Set joint values [rad].
 		The complete robot is updated to apply the new joint values.
 		\param jointValues A map containing RobotNodes with according values.
 	*/
 	void setJointValues(const std::map< RobotNodePtr, float > &jointValues );
 	/*!
-		Set a joint values [rad].
+		Set joint values [rad].
 		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
 		\param rns The RobotNodeSet defines the joints
 		\param jointValues A vector with joint values, size must be equal to rns.
 	*/
 	void setJointValues(RobotNodeSetPtr rns, const std::vector<float> &jointValues);
 	/*!
-		Set a joint values [rad].
+		Set joint values [rad].
 		The complete robot is updated to apply the new joint values.
 		\param rn The RobotNodes 
 		\param jointValues A vector with joint values, size must be equal to rn.
 	*/
 	void setJointValues(const std::vector<RobotNodePtr> rn, const std::vector<float> &jointValues);
 	/*!
-		Set a joint values [rad].
+		Set joint values [rad].
 		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
 		\param rns The RobotNodeSet defines the joints
 		\param jointValues A vector with joint values, size must be equal to rns.
 	*/
 	void setJointValues(RobotNodeSetPtr rns, const Eigen::VectorXf &jointValues);
 	/*!
-		Set a joint values [rad].
+		Set joint values [rad].
 		The complete robot is updated to apply the new joint values.
 		\param config The RobotConfig defines the RobotNodes and joint values.
 	*/
 	void setJointValues(RobotConfigPtr config);
 	/*!
-		Set a joint values [rad].
+		Set joint values [rad].
 		Only those joints in config are affected which are present in rns.
 		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
 		\param rns Only joints in this rns are updated.

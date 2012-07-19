@@ -111,10 +111,17 @@ RobotPtr RobotNode::getRobot() const
 	return result;
 }
 
-void RobotNode::setJointValue(float q, bool updateTransformations,
-                              bool clampToLimits)
+void RobotNode::setJointValue(float q)
 {
+	RobotPtr r = getRobot();
+	VR_ASSERT(r);
+	WriteLockPtr lock = r->getWriteLock();
+	setJointValueNoUpdate(q);
+	applyJointValue();
+}
 
+void RobotNode::setJointValueNoUpdate(float q)
+{
 	VR_ASSERT_MESSAGE( initialized, "Not initialized");
 	VR_ASSERT_MESSAGE( (!boost::math::isnan(q) && !boost::math::isinf(q)) ,"Not a valid number...");
 	
@@ -122,19 +129,13 @@ void RobotNode::setJointValue(float q, bool updateTransformations,
 
 	if (q < jointLimitLo)
 	{
-		THROW_VR_EXCEPTION_IF(!clampToLimits, "Joint limits violated, joint:" << name << ", min:" << jointLimitLo << ", max:" << jointLimitHi << ", q:" << q);
 		q = jointLimitLo;
 	}
 	if (q > jointLimitHi)
 	{
-		THROW_VR_EXCEPTION_IF(!clampToLimits, "Joint limits violated, joint:" << name << ", min:" << jointLimitLo << ", max:" << jointLimitHi << ", q:" << q);
 		q = jointLimitHi;
 	}
-
 	jointValue = q;
-	if (updateTransformations)
-		applyJointValue();
-
 }
 
 void RobotNode::updateTransformationMatrices()

@@ -131,7 +131,7 @@ bool SceneIO::processSceneRobot(rapidxml::xml_node<char>* sceneXMLNode, ScenePtr
 	if (!initConfigName.empty())
 	{
 		THROW_VR_EXCEPTION_IF(!scene->hasRobotConfig(robot,initConfigName), "Scene's robot tag '" << robotName << "' does not have the initConfig '" << initConfigName << "'." << endl);
-		scene->getRobotConfig(robot,initConfigName)->setJointValues();
+		robot->setJointValues(scene->getRobotConfig(robot,initConfigName));
 	}
 	return true;
 }

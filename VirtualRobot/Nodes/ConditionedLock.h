@@ -23,5 +23,6 @@ typedef ConditionedLock<boost::unique_lock<boost::recursive_mutex> > ReadLock;
 typedef ConditionedLock<boost::unique_lock<boost::recursive_mutex> > WriteLock;
 //typedef ConditionedLock<boost::shared_lock<boost::shared_mutex> > ReadLock;
 //typedef ConditionedLock<boost::unique_lock<boost::shared_mutex> > WriteLock;
+typedef boost::shared_ptr< ReadLock > ReadLockPtr;
 
 #endif

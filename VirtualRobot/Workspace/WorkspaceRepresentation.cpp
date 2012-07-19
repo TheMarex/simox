@@ -677,7 +677,7 @@ bool WorkspaceRepresentation::setRobotNodesToRandomConfig( VirtualRobot::RobotNo
 			maxJ = (*nodeSet)[i]->getJointLimitHi();
 			v[i] = minJ + ((maxJ - minJ)*rndValue);
 		}
-		nodeSet->setJointValues(v);
+		robot->setJointValues(nodeSet,v);
 		// check for collisions
 		if (!checkForSelfCollisions || !staticCollisionModel || !dynamicCollisionModel)
 			return true;
@@ -1071,7 +1071,7 @@ bool WorkspaceRepresentation::checkForParameters( RobotNodeSetPtr nodeSet, float
 				storeMaxBounds[i] = x[i];
 		}
 	}
-	nodeSet->setJointValues(c);
+	robot->setJointValues(nodeSet,c);
 
 	robot->setUpdateVisualization(visuSate);
 

@@ -23,7 +23,7 @@
 #ifndef __GENERIC_GRASP_PLANNER_H__
 #define __GENERIC_GRASP_PLANNER_H__
 
-#include "GraspStudio.h"
+#include "../GraspStudio.h"
 #include "GraspPlanner.h"
 #include "ApproachMovementGenerator.h"
 #include "GraspQuality/GraspQualityMeasure.h"

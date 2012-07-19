@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(testRobotNodePrismaticTransformation)
 	CHECK_TRANSFORMATION_MATRIX(m2,100.0f,200.0f,0);
 
 	// play around with joint values
-	r1->setJointValue(150.0f);
+	rob->setJointValue(r1,150.0f);
 
 	m1 = r1->getGlobalPose();
 	m2 = r2->getGlobalPose();
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(testRobotNodePrismaticTransformation)
 	CHECK_TRANSFORMATION_MATRIX(m2,100.0f,200.0f,150.0f);
 
 	// play around with joint values
-	r1->setJointValue(-5000.0f);
+	rob->setJointValue(r1,-5000.0f);
 
 	m1 = r1->getGlobalPose();
 	m2 = r2->getGlobalPose();

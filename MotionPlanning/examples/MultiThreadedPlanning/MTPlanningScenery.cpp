@@ -294,7 +294,7 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers, int id
 		start[1] = y;
 		start[2] = z;
 		cout << "START: " << x << "," << y << "," << z << endl;
-		kinChain->setJointValues(start);
+		pRobot->setJointValues(kinChain,start);
 	}while(pCcm->isInCollision());
 	startPositions.push_back(start);
 
@@ -304,7 +304,7 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers, int id
 		goal[1] = y;
 		goal[2] = z;
 		cout << "GOAL: " << x << "," << y << "," << z << endl;
-		kinChain->setJointValues(goal);
+		pRobot->setJointValues(kinChain,goal);
 	}while(pCcm->isInCollision());
 
 	
@@ -340,10 +340,10 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers, int id
 	RobotNodePtr rn = pRobot->getRobotNode(TCPName);
 	if (!rn)
 		return;
-	kinChain->setJointValues(start);
+	pRobot->setJointValues(kinChain,start);
 	Eigen::Matrix4f gp = rn->getGlobalPose();
 	SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransform(gp);
-	kinChain->setJointValues(goal);
+	pRobot->setJointValues(kinChain,goal);
 	gp = rn->getGlobalPose();
 	SoMatrixTransform *mt2 =CoinVisualizationFactory::getMatrixTransform(gp);
 

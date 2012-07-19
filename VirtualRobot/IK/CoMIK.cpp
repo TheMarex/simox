@@ -3,6 +3,7 @@
 #include "../Nodes/RobotNodeRevolute.h"
 #include "../Nodes/RobotNodePrismatic.h"
 #include "../VirtualRobotException.h"
+#include "../Robot.h"
 
 #include <float.h>
 
@@ -158,6 +159,8 @@ bool CoMIK::isValid(const Eigen::VectorXf &v) const
 bool CoMIK::computeSteps(float stepSize, float minumChange, int maxNStep) 
 {
 	std::vector<RobotNodePtr> rn = m_RobotNodeSet->getAllRobotNodes();
+	RobotPtr robot = m_RobotNodeSet->getRobot();
+	std::vector<float> jv(m_RobotNodeSet->getSize(),0.0f);
 	int step = 0;
 	checkTolerances();
 	float lastDist = FLT_MAX;
@@ -174,8 +177,9 @@ bool CoMIK::computeSteps(float stepSize, float minumChange, int maxNStep)
 		}
 
 		for (unsigned int i=0; i<rn.size();i++)
-			rn[i]->setJointValue(rn[i]->getJointValue() + dTheta[i]);
-
+			jv[i] = (rn[i]->getJointValue() + dTheta[i]);
+			//rn[i]->setJointValue(rn[i]->getJointValue() + dTheta[i]);
+		robot->setJointValues(m_RobotNodeSet,jv);
 		// check tolerances
 		if (checkTolerances())
 		{

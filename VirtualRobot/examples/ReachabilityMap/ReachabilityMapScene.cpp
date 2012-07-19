@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 		filenameReach = "reachability/iCub_HipLeftArm.bin";
 #else
 	std::string filenameRob("robots/ArmarIII/ArmarIII.xml");
-	std::string fileObj("objects/ArmarIII/WaterBottel_RightHand_1000.xml");
+	std::string fileObj("objects/ArmarIII/WaterBottle_RightHand_1000.xml");
 	filenameReach = "reachability/ArmarIII_PlatformHipRightArm.bin";
 	eef = "Hand R";
 #endif

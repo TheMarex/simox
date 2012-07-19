@@ -13,6 +13,7 @@
 
 #include <fstream>
 #include <istream>
+#include <time.h>
 
 BOOST_AUTO_TEST_SUITE(Compression)
 

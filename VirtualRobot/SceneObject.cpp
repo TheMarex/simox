@@ -37,15 +37,8 @@ SceneObject::SceneObject( const std::string &name, VisualizationNodePtr visualiz
 
 SceneObject::~SceneObject()
 {
-	reset();
 }
 
-void SceneObject::reset()
-{
-	name = "not set";
-	globalPose = Eigen::Matrix4f::Identity();
-	initialized = false;
-}
 
 bool SceneObject::initialize()
 {
@@ -381,7 +374,7 @@ void SceneObject::print( bool printDecoration /*= true*/ )
 		cout << endl;
 }
 
-void SceneObject::showBoundingBox( bool enable )
+void SceneObject::showBoundingBox( bool enable, bool wireframe )
 {
 	if (!enable && !visualizationModel)
 		return; // nothing to do
@@ -406,7 +399,7 @@ void SceneObject::showBoundingBox( bool enable )
 		if (collisionModel)
 		{
 			BoundingBox bbox = collisionModel->getBoundingBox(false);
-			VisualizationNodePtr visualizationNode = visualizationFactory->createBoundingBox(bbox);
+			VisualizationNodePtr visualizationNode = visualizationFactory->createBoundingBox(bbox, wireframe);
 			visualizationModel->attachVisualization("BoundingBox",visualizationNode);
 		}
 	}
@@ -492,4 +485,15 @@ std::string SceneObject::getSceneObjectXMLString(const std::string &basePath, in
 
 	return ss.str();
 }
+
+void SceneObject::setMass( float m )
+{
+	physics.massKg = m;
+}
+
+void SceneObject::setInertiaMatrix( const Eigen::Matrix3f &im )
+{
+	physics.intertiaMatrix = im;
+}
+
 } // namespace

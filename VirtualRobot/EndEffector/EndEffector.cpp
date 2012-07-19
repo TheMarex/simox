@@ -81,7 +81,7 @@ EndEffectorPtr EndEffector::clone(RobotPtr newRobot)
 	// set current config to new eef
 	RobotConfigPtr currentConfig = getConfiguration();
 	RobotConfigPtr newConfig = currentConfig->clone(newRobot);
-	newConfig->setJointValues();
+	newRobot->setJointValues(newConfig);
 
 	return eef;
 }
@@ -288,7 +288,9 @@ bool EndEffector::setPreshape( const std::string &name )
 	RobotConfigPtr ps = getPreshape(name);
 	if (ps)
 	{
-		ps->setJointValues();
+		RobotPtr robot = getRobot();
+		VR_ASSERT(robot);
+		robot->setJointValues(ps);
 		return true;
 	}
 	return false;

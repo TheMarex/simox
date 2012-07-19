@@ -349,8 +349,7 @@ float CSpace::calculateObstacleDistance(const Eigen::VectorXf &config)
 		colCheckMutex.lock();
 
 	// set configuration (joint values)
-	
-	robotNodes->setJointValues(config);
+	robo->setJointValues(robotNodes,config);
 	float d = cdm->getDistance();
 
 	if (multiThreaded)
@@ -396,7 +395,7 @@ bool CSpace::isCollisionFree( const Eigen::VectorXf &config )
 		colCheckMutex.lock();
 
 	// set configuration (joint values)
-	robotNodes->setJointValues(config);
+	robo->setJointValues(robotNodes,config);
 	bool res = cdm->isInCollision();
 
 	if (multiThreaded)

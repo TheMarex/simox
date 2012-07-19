@@ -83,7 +83,6 @@ public:
 	virtual ~RobotNodeFixed();
 
 	virtual bool initialize(RobotNodePtr parent, bool initializeChildren = false);
-	virtual void reset();
 
 	/*!
 	Print status information.

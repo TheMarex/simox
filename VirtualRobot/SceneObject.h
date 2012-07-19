@@ -141,7 +141,6 @@ public:
 	virtual VisualizationNodePtr getVisualization(SceneObject::VisualizationType visuType = SceneObject::Full);
 
 	virtual bool initialize();
-	virtual void reset();
 
 	/*!
 		Enables/Disables the visualization updates of collision model and visualization model.
@@ -179,8 +178,9 @@ public:
 		If the object does not own a visualization yet, the VisualizationFactory is queried to get the first registered
 		VisualizationType in order to build a valid visualization.
 		\p enable Show or hide bounding box
+		\p wireframe Wireframe or solid visualization.
 	*/
-	virtual void showBoundingBox( bool enable );
+	virtual void showBoundingBox( bool enable, bool wireframe = false );
 
 
 
@@ -244,11 +244,14 @@ public:
 	*/
 	float getMass();
 
+	void setMass(float m);
+
 	/*
 		Inertia matrix in kg*m^2.
 	*/
 	Eigen::Matrix3f getInertiaMatrix();
 
+	void setInertiaMatrix(const Eigen::Matrix3f &im);
 
 
 	virtual void print(bool printDecoration = true);

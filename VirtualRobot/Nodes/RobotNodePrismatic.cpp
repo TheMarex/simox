@@ -6,7 +6,6 @@
 #include <boost/bind.hpp>
 #include <Eigen/Geometry> 
 #include "../VirtualRobotException.h"
-#include "ConditionedLock.h"
 
 namespace VirtualRobot {
 
@@ -28,9 +27,11 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 {
 	initialized = false;
 	optionalDHParameter.isSet = false;
-	this->setPreJointTransformation(preJointTransform);
+	this->preJointTransformation = preJointTransform;
+	this->postJointTransformation = postJointTransform;
+	//this->setPreJointTransformation(preJointTransform);
 	this->jointTranslationDirection = translationDirection;
-	this->setPostJointTransformation(postJointTransform);
+	//this->setPostJointTransformation(postJointTransform);
 }
 
 RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob, 
@@ -71,25 +72,17 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	RotAlpha(2,2) = cos(alpha);
 
 	// fixed rotation around theta
-	this->setPreJointTransformation(RotTheta);
+	this->preJointTransformation = RotTheta;
 	// joint setup
 	jointTranslationDirection = Eigen::Vector3f(0,0,1);	// translation along the z axis
 	// compute postJointTransformation
-	this->setPostJointTransformation(TransD*TransA*RotAlpha);
+	this->postJointTransformation = TransD*TransA*RotAlpha;
 }
 
 RobotNodePrismatic::~RobotNodePrismatic()
 {
 }
 
-void RobotNodePrismatic::reset()
-{
-	{ 
-		WriteLock w(mutex,use_mutex);
-		jointTranslationDirection = Eigen::Vector3f(0,0,1);
-	}
-	RobotNode::reset();
-}
 
 bool RobotNodePrismatic::initialize(RobotNodePtr parent, bool initializeChildren)
 {
@@ -98,19 +91,15 @@ bool RobotNodePrismatic::initialize(RobotNodePtr parent, bool initializeChildren
 
 void RobotNodePrismatic::updateTransformationMatrices()
 {
-	{
-		WriteLock w(mutex,use_mutex);
+	if (this->getParent())
+		globalPose = this->getParent()->getGlobalPose() * this->getPreJointTransformation();
+	else
+		globalPose = this->getPreJointTransformation();
 
-		if (this->getParent())
-			globalPose = this->getParent()->getGlobalPose() * this->getPreJointTransformation();
-		else
-			globalPose = this->getPreJointTransformation();
+	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
+	globalPose *= tmpT.matrix();
 
-		Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
-		globalPose *= tmpT.matrix();
-
-		globalPosePostJoint = globalPose*this->getPostJointTransformation();
-	}
+	globalPosePostJoint = globalPose*this->getPostJointTransformation();
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
 	SceneObject::setGlobalPose(globalPose);
@@ -118,18 +107,14 @@ void RobotNodePrismatic::updateTransformationMatrices()
 
 void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
-	{
-		WriteLock w(mutex,use_mutex);
+	VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
 
-		THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
+	this->globalPose = globalPose * getPreJointTransformation();
 
-		this->globalPose = globalPose * getPreJointTransformation();
+	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
+	this->globalPose *= tmpT.matrix();
 
-		Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
-		this->globalPose *= tmpT.matrix();
-
-		globalPosePostJoint = this->globalPose*getPostJointTransformation();
-	}
+	globalPosePostJoint = this->globalPose*getPostJointTransformation();
 
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
@@ -138,7 +123,7 @@ void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &glo
 
 void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 {
-	ReadLock lock(mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	
 	if (printDecoration)
 		cout << "******** RobotNodePrismatic ********" << endl;
@@ -159,7 +144,7 @@ void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
 {
 	RobotNodePtr result;
-	ReadLock lock(mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 
 	if (optionalDHParameter.isSet)
 		result.reset(new RobotNodePrismatic(newRobot,name,newChildren, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker));
@@ -176,7 +161,7 @@ bool RobotNodePrismatic::isTranslationalJoint() const
 
 Eigen::Vector3f RobotNodePrismatic::getJointTranslationDirection(const SceneObjectPtr coordSystem) const
 {
-	ReadLock lock(mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	Eigen::Vector4f result4f = Eigen::Vector4f::Zero();
 	result4f.segment(0,3) = jointTranslationDirection;
 
@@ -188,6 +173,30 @@ Eigen::Vector3f RobotNodePrismatic::getJointTranslationDirection(const SceneObje
 	}
 
 	return result4f.segment(0,3);
+}
+
+void RobotNodePrismatic::updateVisualizationPose( const Eigen::Matrix4f &globalPose, bool updateChildren /*= false*/ )
+{
+	RobotNode::updateVisualizationPose(globalPose,updateChildren);
+
+	// compute the jointValue from pose
+	Eigen::Matrix4f localPose = toLocalCoordinateSystem(globalPose);
+	Eigen::Vector3f v = localPose.block(0,3,3,1);
+
+	// project on directionVector
+	MathTools::Line l(Eigen::Vector3f::Zero(),jointTranslationDirection);
+	Eigen::Vector3f v_on_line = MathTools::nearestPointOnLine(l,v);
+	float dist = v_on_line.norm();
+
+	// check pos/neg direction
+	if (v_on_line.normalized().dot(jointTranslationDirection.normalized()) < 0)
+	{
+		// pointing in opposite direction
+		dist = -dist;
+	}
+
+	// consider offset
+	jointValue = dist - jointValueOffset;
 }
 
 

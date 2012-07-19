@@ -64,7 +64,7 @@ public:
 		\param height The height of the box.
 		\param depth The depth of the box.
 		\param color Specify the color.
-		\param visualizationType Here the typo of visualization can be specified (e.g. "Inventor"). If empty, the first registered visualization type (which is usually the only one) is used.
+		\param visualizationType Here the type of visualization can be specified (e.g. "Inventor"). If empty, the first registered visualization type (which is usually the only one) is used.
 		\param colChecker Only needed if you plan to use the collision checker in parallel. If not given, the object is registered with the global singleton collision checker.
 	*/
 	static ObstaclePtr createBox(float width, float height, float depth, VisualizationFactory::Color color = VisualizationFactory::Color::Red(), std::string visualizationType = "", CollisionCheckerPtr colChecker = CollisionCheckerPtr());

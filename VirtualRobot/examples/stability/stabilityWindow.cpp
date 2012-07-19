@@ -130,12 +130,8 @@ void stabilityWindow::resetSceneryAll()
 		return;
 	std::vector< RobotNodePtr > nodes;
 	robot->getRobotNodes(nodes);
-
-	for (unsigned int i=0;i<nodes.size();i++)
-	{
-		nodes[i]->setJointValue(0);
-	}
-	robot->applyJointValues();
+	std::vector<float> jv(nodes.size(),0.0f);
+	robot->setJointValues(nodes,jv);
 }
 
 
@@ -402,7 +398,7 @@ void stabilityWindow::jointValueChanged(int pos)
 	if (nr<0 || nr>=(int)currentRobotNodes.size())
 		return;
 	float fPos = currentRobotNodes[nr]->getJointLimitLo() + (float)pos / 1000.0f * (currentRobotNodes[nr]->getJointLimitHi() - currentRobotNodes[nr]->getJointLimitLo());
-	currentRobotNodes[nr]->setJointValue(fPos);
+	robot->setJointValue(currentRobotNodes[nr],fPos);
 	UI.lcdNumberJointValue->display((double)fPos);
 
 	updateCoM();
@@ -418,7 +414,7 @@ void stabilityWindow::jointValueChanged(int pos)
 	{
 		for (unsigned int i=0;i<currentRobotNodeSet->getSize();i++)
 		{
-			currentRobotNodeSet->getNode(i)->showBoundingBox(true);
+			currentRobotNodeSet->getNode(i)->showBoundingBox(true,true);
 		}
 	}
 }

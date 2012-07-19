@@ -70,7 +70,7 @@ SoSeparator* CoinRrtWorkspaceVisualization::getCoinVisualization()
 
 bool CoinRrtWorkspaceVisualization::addCSpacePath(CSpacePathPtr path, CoinRrtWorkspaceVisualization::ColorSet colorSet)
 {
-	if (!path || !robotNodeSet || !TCPNode)
+	if (!path || !robotNodeSet || !TCPNode || !robot)
 		return false;
 	if (path->getDimension() != robotNodeSet->getSize())
 	{
@@ -117,7 +117,7 @@ bool CoinRrtWorkspaceVisualization::addCSpacePath(CSpacePathPtr path, CoinRrtWor
 			CSpace::lock();
 
 		// get tcp coords:
-		robotNodeSet->setJointValues(actConfig);
+		robot->setJointValues(robotNodeSet,actConfig);
 		Eigen::Matrix4f m;
 		m = TCPNode->getGlobalPose();
 		x = m(0,3);
@@ -234,7 +234,7 @@ bool CoinRrtWorkspaceVisualization::addTree(CSpaceTreePtr tree, CoinRrtWorkspace
 		actualNode = nodes[i];
 
 		// get tcp coords:
-		robotNodeSet->setJointValues(actualNode->configuration);
+		robot->setJointValues(robotNodeSet,actualNode->configuration);
 		Eigen::Matrix4f m;
 		m = TCPNode->getGlobalPose();
 		p(0) = m(0,3);
@@ -344,7 +344,7 @@ bool CoinRrtWorkspaceVisualization::addConfiguration( const Eigen::VectorXf &c, 
 	SoTranslation *t = new SoTranslation();
 
 	// get tcp coords:
-	robotNodeSet->setJointValues(c);
+	robot->setJointValues(robotNodeSet,c);
 	Eigen::Matrix4f m;
 	m = TCPNode->getGlobalPose();
 	x = m(0,3);//[0][3];

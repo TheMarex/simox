@@ -23,7 +23,7 @@
 #ifndef __GENERAL_GRASP_PLANNER_H__
 #define __GENERAL_GRASP_PLANNER_H__
 
-#include "GraspStudio.h"
+#include "../GraspStudio.h"
 #include <VirtualRobot/EndEffector/EndEffector.h>
 #include <VirtualRobot/SceneObject.h>
 #include <VirtualRobot/Grasping/GraspSet.h>

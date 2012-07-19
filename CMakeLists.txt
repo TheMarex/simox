@@ -3,14 +3,25 @@ PROJECT(Simox)
 cmake_minimum_required(VERSION 2.6)
 MESSAGE(STATUS "******************** Configuring Simox ************************")
 set (Simox_BUILD_DIRECTORY ${CMAKE_BINARY_DIR} CACHE STRING "Simox build directory")
+#set (Simox_BUILD_VirtualRobot TRUE CACHE BOOL "Build Simox VirtualRobot")
+set (Simox_BUILD_Saba TRUE CACHE BOOL "Build Motion Planning library")
+set (Simox_BUILD_GraspStudio TRUE CACHE BOOL "Build Grasp Planning library")
+set (Simox_BUILD_SimDynamics FALSE CACHE BOOL "Build Dynamic Simulation")
 
 INCLUDE (config.cmake)
 
 
 MESSAGE(STATUS "\n** SETTING Simox target directory to: ${Simox_BUILD_DIRECTORY}")
 add_subdirectory(VirtualRobot)
-add_subdirectory(MotionPlanning)
-add_subdirectory(GraspPlanning)
+if (Simox_BUILD_Saba)
+    add_subdirectory(MotionPlanning)
+endif()
+if (Simox_BUILD_GraspStudio)
+    add_subdirectory(GraspPlanning)
+endif()
+if (Simox_BUILD_SimDynamics)
+    add_subdirectory(SimDynamics)
+endif()
 add_subdirectory(doc)
 
 

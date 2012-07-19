@@ -78,8 +78,8 @@ std::vector<float> IKSolver::solveNoRNSUpdate(const Eigen::Matrix4f &globalPose,
     {
 		rns->getJointValues(result);
     }
-    
-    rns->setJointValues(v);     
+    RobotPtr rob = rns->getRobot();
+    rob->setJointValues(rns,v);     
     return result;
 }
 
@@ -166,7 +166,7 @@ bool IKSolver::solve( ManipulationObjectPtr object, GraspPtr grasp, CartesianSel
 		robot->applyJointValues();
 		return true;
 	}
-	rns->setJointValues(v);
+	robot->setJointValues(rns,v);  
 	robot->setUpdateVisualization(updateStatus);
 	return false;
 }
@@ -196,7 +196,8 @@ GraspPtr IKSolver::sampleSolution( ManipulationObjectPtr object, GraspSetPtr gra
 		return g;
 
 	// did not succeed, reset joint values and remove grasp from temporary set
-	rns->setJointValues(v);
+	RobotPtr rob = rns->getRobot();
+	rob->setJointValues(rns,v);  
 	if (removeGraspFromSet)
 		graspSet->removeGrasp(g);
 	return GraspPtr();

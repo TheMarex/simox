@@ -44,20 +44,6 @@ RobotNodePtr RobotNodePrismaticFactory::createRobotNodeDH(RobotPtr robot, const 
 	RobotNodePtr robotNode(new RobotNodePrismatic(robot, nodeName, childrenNames, limitLow, limitHigh, dhParameters.aMM(), dhParameters.dMM(), dhParameters.alphaRadian(), dhParameters.thetaRadian(), visualizationModel, collisionModel, jointValueOffset,p));
 
 	return robotNode;
-
-	/*
-	// fixed rotation around theta
-	Eigen::Matrix4f preJointTransformation = dhParameters.thetaRotationRadian();
-	// joint setup
-	Eigen::Vector3f jointTranslationDirection = Eigen::Vector3f(0,0,1);	// translation along the z axis
-	// compute postJointTransformation
-	Eigen::Matrix4f postJointTransformation = dhParameters.aTranslation() * dhParameters.alphaRotationRadian();
-
-	// unused but necessary for calling the method
-	Eigen::Vector3f jointRotationAxis = Eigen::Vector3f::Zero();
-
-	return createRobotNode(robot, nodeName, childrenNames, visualizationModel, collisionModel, limitLow, limitHigh, jointValueOffset, preJointTransformation, jointRotationAxis, postJointTransformation, jointTranslationDirection);
-	*/
 }
 
 

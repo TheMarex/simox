@@ -177,8 +177,8 @@ QString IKRRTWindow::formatString(const char *s, float f)
 
 void IKRRTWindow::resetSceneryAll()
 {
-	if (rns)
-		rns->setJointValues(startConfig);
+	if (rns && robot)
+		robot->setJointValues(rns, startConfig);
 }
 
 
@@ -610,7 +610,7 @@ void IKRRTWindow::sliderSolution( int pos )
 	float p = (float)pos/1000.0f;
 	Eigen::VectorXf iPos;
 	s->interpolate(p,iPos);
-	rns->setJointValues(iPos);
+	robot->setJointValues(rns,iPos);
 	m_pExViewer->scheduleRedraw();
 }
 

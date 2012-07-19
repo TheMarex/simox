@@ -82,6 +82,12 @@ public:
 	*/
 	virtual VisualizationNodePtr createUnitedVisualization(const std::vector<VisualizationNodePtr> &visualizations) const {return VisualizationNodePtr();}
 
+	/*!
+		Here, a manual cleanup can be called, no Coin3D access possible after this. 
+		Usually no need to call cleanup explicitly, since cleanup is performed automatically at application exit.
+	*/
+	virtual void cleanup(){;}
+
 };
 typedef boost::shared_ptr<VisualizationFactory::Color> ColorPtr;
 

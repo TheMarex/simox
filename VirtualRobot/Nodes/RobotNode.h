@@ -45,7 +45,7 @@
 namespace VirtualRobot
 {
 class Robot;
-
+class RobotNodeActuator;
 /*!
 	Each RobotNode owns three transformations:
 	* preJointTransformation: This transformation is fixed.
@@ -60,7 +60,9 @@ class Robot;
 class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNode : public boost::enable_shared_from_this<RobotNode>, public SceneObject
 {
 public:
+	friend class VirtualRobot::Robot;
 	friend class RobotFactory;
+	friend class RobotNodeActuator;
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	/*!
@@ -83,25 +85,9 @@ public:
 	virtual ~RobotNode();
 
 
-	RobotPtr getRobot();
+	RobotPtr getRobot() const;
 
-	/*!
-		Set the joint value.
-		\param q The joint value.
-		\param updateTransformations When true, the transformation matrices of this joint and all child joints are updated (by calling applyJointValue()).
-		\param clampToLimits Consider joint limits. When false an exception is thrown in case of invalid values.
-	*/
-	virtual void setJointValue(float q, bool updateTransformations = true, bool clampToLimits = true);
-
-	/*!
-		Compute/Update the transformations of this joint and all child joints.
-	*/
-	void applyJointValue();
-	/*!
-		This method is only useful for root nodes (e.g. no parents are available). Then the pose of the robot can be set here.
-	*/
-	virtual void applyJointValue(const Eigen::Matrix4f &globalPos);
-
+	
 
 	/*!
 		All children and their children (and so on) are collected.
@@ -137,7 +123,6 @@ public:
 		Usually RobotFactory manages the initialization.
 	*/
 	virtual bool initialize(RobotNodePtr parent, bool initializeChildren = false);
-	virtual void reset();
 
 	/*!
 		Calling this method will cause an exception, since RobotNodes are controlled via joint values.
@@ -200,7 +185,7 @@ public:
 	float getJointLimitHi();
 
 	/*!
-		Set joint limits [rad]
+		Set joint limits [rad]. 
 	*/
 	virtual void setJointLimits(float lo, float hi);
 
@@ -270,29 +255,54 @@ public:
 	*/
 	float getMaxTorque();
 
-	void setThreadsafe(bool);
-
-
 	//! Forbid cloning method from SceneObject. We need to know the new robot for cloning
 	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
 
 
 private: // Use the private setters and getters instead
-	float jointValue;							//< The joint value
 	std::vector<std::string> childrenNames;
 	std::vector< RobotNodePtr > children;
 	RobotNodeWeakPtr parent;
-	Eigen::Matrix4f preJointTransformation;
-	Eigen::Matrix4f postJointTransformation;
+
 
 protected:
+
+	/*!
+		Set the joint value. Only Robots are allowed to do this in order to synchronize the access.
+		If you want to update the joint, call \ref Robot::SetJointValue().
+		\param q The joint value.
+		\param updateTransformations When true, the transformation matrices of this joint and all child joints are updated (by calling applyJointValue()).
+		\param clampToLimits Consider joint limits. When false an exception is thrown in case of invalid values.
+	*/
+	virtual void setJointValue(float q, bool updateTransformations = true, bool clampToLimits = true);
+
+	/*!
+		Compute/Update the transformations of this joint and all child joints. This method is called by the robot in order to update the pose matrices.
+	*/
+	void applyJointValue();
+	/*!
+		This method is only useful for root nodes (e.g. no parents are available). Then the pose of the robot can be set here.
+	*/
+	virtual void applyJointValue(const Eigen::Matrix4f &globalPos);
+
+
+	/*!
+		Can be called by a RobotNodeActuator in order to set the pose of the visualization, which means that the preJointTransform is ignored and
+		the pos eof the visualization can be set directly.
+		This is useful, if the node is actuated externally, i.e. via a physics engine. 
+		todo: Protect such updates by a mutex.
+		\param globalPose The new global pose. The joint value is determined from this pose (implemented in derived RobtoNodes).
+		\param updateChildren Usually it is assumed that all RobotNodes are updated this way (updateChildren=false). If not, the children poses can be updated according to this node (updateCHildren=true).
+	*/
+	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, bool updateChildren = false);
+
 	///////////////////////// SETUP ////////////////////////////////////
 	mutable boost::recursive_mutex mutex; 
 	bool use_mutex;
 
 	RobotNode(){};
-	virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo);
-	virtual void setPreJointTransformation(const Eigen::Matrix4f &trafo);
+	//virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo);
+	//virtual void setPreJointTransformation(const Eigen::Matrix4f &trafo);
 
 	virtual std::vector<std::string> getChildrenNames() const {return childrenNames;};
 	virtual std::string getParentName() const {RobotNodePtr p = parent.lock();if (p) return p->getName(); else return std::string();};
@@ -303,6 +313,8 @@ protected:
 	float maxVelocity;			//! given in m/s
 	float maxAcceleration;		//! given in m/s^2
 	float maxTorque;			//! given in Nm
+	Eigen::Matrix4f preJointTransformation;
+	Eigen::Matrix4f postJointTransformation;
 	///////////////////////// SETUP ////////////////////////////////////
 
 	virtual void updateTransformationMatrices();
@@ -311,7 +323,8 @@ protected:
 	
 
 	Eigen::Matrix4f globalPosePostJoint;	//< The postJoint transformation applied to transformationJoint. Defines the starting pose for all child joints.
-
+	float jointValue;							//< The joint value
+	
 	/*!
 	Derived classes must implement their clone method here.
 	*/

@@ -157,7 +157,7 @@ void startRRTVisualization()
 
 
 
-	planningNodes->setJointValues(start);
+	robot->setJointValues(planningNodes,start);
 
 	// display robot
 	SoSeparator *sep = new SoSeparator();

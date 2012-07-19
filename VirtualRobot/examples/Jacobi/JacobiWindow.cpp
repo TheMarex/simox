@@ -232,11 +232,9 @@ void JacobiWindow::resetSceneryAll()
 
 	std::vector<RobotNodePtr> rn;
 	robot->getRobotNodes(rn);
+	std::vector<float> jv(rn.size(),0.0f);
+	robot->setJointValues(rn,jv);
 
-	for (unsigned int i=0;i<rn.size();i++)
-	{
-		rn[i]->setJointValue(0);
-	}
 	exViewer->render();
 }
 

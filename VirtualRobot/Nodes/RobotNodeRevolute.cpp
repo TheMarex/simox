@@ -7,8 +7,6 @@
  #include <Eigen/Geometry> 
 #include "../VirtualRobotException.h"
 
-#include "ConditionedLock.h"
-
 namespace VirtualRobot {
 
 
@@ -30,9 +28,9 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 {
 	initialized = false;
 	optionalDHParameter.isSet = false;
-	this->setPreJointTransformation(preJointTransform);
-	jointRotationAxis = axis;
-	this->setPostJointTransformation(postJointTransform);
+	this->preJointTransformation = preJointTransform;
+	this->jointRotationAxis = axis;
+	this->postJointTransformation = postJointTransform;
 	/*preJointTransformation = Eigen::Matrix4f::Identity();
 	postJointTransformation = Eigen::Matrix4f::Identity();
 	postJointTransformation.block<3,1>(0,3) = postJointTranslation;*/
@@ -78,23 +76,14 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 	RotAlpha(2,1) = sin(alpha);
 	RotAlpha(2,2) = cos(alpha);
 
-	this->setPreJointTransformation(RotTheta);//Eigen::Matrix4f::Identity();	// no pre transformation->why?
-	jointRotationAxis = Eigen::Vector3f(0,0,1);			// rotation around z axis
-	this->setPostJointTransformation(TransD*TransA*RotAlpha);
+	this->preJointTransformation = RotTheta;//Eigen::Matrix4f::Identity();	// no pre transformation->why?
+	this->jointRotationAxis = Eigen::Vector3f(0,0,1);			// rotation around z axis
+	this->postJointTransformation = TransD*TransA*RotAlpha;
 }
 
 
 RobotNodeRevolute::~RobotNodeRevolute()
 {
-}
-
-void RobotNodeRevolute::reset()
-{
-	{
-		WriteLock w(mutex,use_mutex);
-		jointRotationAxis = Eigen::Vector3f(1,0,0);
-	}
-	RobotNode::reset();
 }
 
 bool RobotNodeRevolute::initialize(RobotNodePtr parent, bool initializeChildren)
@@ -104,20 +93,17 @@ bool RobotNodeRevolute::initialize(RobotNodePtr parent, bool initializeChildren)
 
 void RobotNodeRevolute::updateTransformationMatrices()
 {
-	{
-		
-		WriteLock w(mutex,use_mutex);
-		
-		if (this->getParent())
-			globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
-		else
-			globalPose = getPreJointTransformation();
 
-		Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
-		globalPose *= tmpT.matrix();
+	if (this->getParent())
+		globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
+	else
+		globalPose = getPreJointTransformation();
 
-		globalPosePostJoint = globalPose*getPostJointTransformation();
-	}
+	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
+	globalPose *= tmpT.matrix();
+
+	globalPosePostJoint = globalPose*getPostJointTransformation();
+
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
 	SceneObject::setGlobalPose(globalPose);
@@ -125,17 +111,14 @@ void RobotNodeRevolute::updateTransformationMatrices()
 
 void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
-	THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
-	{
-		
-		WriteLock w(mutex,use_mutex);
-		this->globalPose = globalPose * getPreJointTransformation();
+	VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
+	this->globalPose = globalPose * getPreJointTransformation();
 
-		Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
-		this->globalPose *= tmpT.matrix();
+	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
+	this->globalPose *= tmpT.matrix();
 
-		globalPosePostJoint = this->globalPose*getPostJointTransformation();
-	}
+	globalPosePostJoint = this->globalPose*getPostJointTransformation();
+
 	// update collision and visualization model
 	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
 	SceneObject::setGlobalPose(this->globalPose);
@@ -144,7 +127,7 @@ void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &glob
 
 void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 {
-	ReadLock lock(mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 
 	if (printDecoration)
 		cout << "******** RobotNodeRevolute ********" << endl;
@@ -163,7 +146,7 @@ void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 
 RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
 {
-	ReadLock lock(mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	RobotNodePtr result;
 
 	if (optionalDHParameter.isSet)
@@ -180,7 +163,7 @@ bool RobotNodeRevolute::isRotationalJoint() const
 
 Eigen::Vector3f RobotNodeRevolute::getJointRotationAxis(const SceneObjectPtr coordSystem) const
 {
-	ReadLock lock(mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	Eigen::Vector4f result4f = Eigen::Vector4f::Zero();
 	result4f.segment(0,3) = jointRotationAxis;
 	result4f = getGlobalPoseJoint()*result4f;
@@ -192,6 +175,31 @@ Eigen::Vector3f RobotNodeRevolute::getJointRotationAxis(const SceneObjectPtr coo
 	}
 
 	return result4f.block(0,0,3,1);
+}
+
+void RobotNodeRevolute::updateVisualizationPose( const Eigen::Matrix4f &globalPose, bool updateChildren /*= false*/ )
+{
+	RobotNode::updateVisualizationPose(globalPose,updateChildren);
+
+	// compute the jointValue from pose
+
+	// jointRotationAxis is given in local joint coord system
+	// -> we need the pose in joint coord system
+	Eigen::Matrix4f localPose = getGlobalPoseJoint().inverse() * globalPose; //toLocalCoordinateSystem(globalPose);
+
+	Eigen::Vector3f localAxis;
+	float angle;
+	MathTools::eigen4f2axisangle(localPose,localAxis,angle);
+
+	// check pos/neg direction
+	if (jointRotationAxis.normalized().dot(localAxis.normalized()) < 0)
+	{
+		// pointing in opposite direction
+		angle = -angle;
+	}
+
+	// consider offset
+	jointValue = angle - jointValueOffset;
 }
 
 } // namespace

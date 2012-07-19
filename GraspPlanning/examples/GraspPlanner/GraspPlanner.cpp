@@ -23,9 +23,10 @@ int main(int argc, char *argv[])
 	// --robot robots/iCub/iCub.xml --endeffector "Left Hand" --preshape "Grasp Preshape"
 	std::string robot("robots/ArmarIII/ArmarIII.xml");
 	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robot);
-	std::string eef("Hand L");
+	std::string eef("Hand R");
 	//std::string object("objects/wok.xml");
-	std::string object("objects/riceBox.xml");
+	//std::string object("objects/riceBox.xml");
+	std::string object("objects/WaterBottleSmall.xml");
 	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(object);
 	std::string preshape("");
 

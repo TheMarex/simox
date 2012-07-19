@@ -1,5 +1,6 @@
 
 #include "Robot.h"
+#include "Trajectory.h"
 #include "VirtualRobotException.h"
 #include "CollisionDetection/CollisionChecker.h"
 #include "EndEffector/EndEffector.h"
@@ -8,11 +9,11 @@
 namespace VirtualRobot {
 
 Robot::Robot(const std::string &name, const std::string &type)  
-
 {
 	this->name = name;
 	this->type = type;
 	updateVisualization = true;
+	use_mutex = true;
 }
 
 Robot::Robot()  
@@ -47,7 +48,7 @@ void LocalRobot::setRootNode( RobotNodePtr node )
 	} else
 	{
 		// create all globalposes 
-		rootNode->applyJointValue(globalPose);
+		applyJointValues();
 
 		std::vector< RobotNodePtr > allNodes;
 		node->collectAllRobotNodes( allNodes );
@@ -63,13 +64,9 @@ void LocalRobot::setRootNode( RobotNodePtr node )
 	}
 }
 
-void Robot::setThreadsafe(bool flag){
-
-	std::vector< RobotNodePtr > nodes = this->getRobotNodes();
-	BOOST_FOREACH(RobotNodePtr node, nodes){
-		node->setThreadsafe(flag);
-	}
-
+void Robot::setThreadsafe(bool flag)
+{
+	use_mutex = flag;
 }	
 
 RobotNodePtr LocalRobot::getRobotNode( const std::string &robotNodeName )
@@ -331,9 +328,17 @@ RobotNodePtr LocalRobot::getRootNode()
  */
 void Robot::applyJointValues()
 {
+	WriteLock(mutex,use_mutex);
 	this->getRootNode()->applyJointValue(this->getGlobalPose());
 }
 
+/**
+ * Can be called internally, when lock is already set.
+ */
+void Robot::applyJointValuesNoLock()
+{
+	this->getRootNode()->applyJointValue(this->getGlobalPose());
+}
 
 /**
  * This method stores all nodes belonging to the robot in \p storeNodes.
@@ -487,12 +492,14 @@ VirtualRobot::CollisionCheckerPtr Robot::getCollisionChecker()
 
 void LocalRobot::setGlobalPose(const Eigen::Matrix4f &globalPose )
 {
+	WriteLock(mutex,use_mutex);
 	this->globalPose = globalPose;
-	applyJointValues();
+	applyJointValuesNoLock();
 }
 
 Eigen::Matrix4f LocalRobot::getGlobalPose()
 {
+	ReadLock(mutex,use_mutex);
 	return globalPose;
 }
 
@@ -659,9 +666,11 @@ VirtualRobot::RobotConfigPtr Robot::getConfig()
 
 bool Robot::setConfig( RobotConfigPtr c )
 {
-	if (c)
-		return c->applyToRobot(shared_from_this());
-	return false;
+	if (!c)
+		return false;
+	
+	setJointValues(c);
+	return true;
 }
 
 void Robot::setFilename( const std::string &filename )
@@ -672,6 +681,116 @@ void Robot::setFilename( const std::string &filename )
 std::string Robot::getFilename()
 {
 	return filename;
+}
+
+ReadLockPtr Robot::getReadLock()
+{
+	return ReadLockPtr(new ReadLock(mutex,use_mutex));
+}
+
+void Robot::setJointValue( const std::string &nodeName, float jointValue )
+{
+	RobotNodePtr rn = getRobotNode(nodeName);
+	setJointValue(rn, jointValue);
+}
+
+void Robot::setJointValue( RobotNodePtr rn, float jointValue )
+{
+	VR_ASSERT(rn);
+	WriteLock(mutex,use_mutex);
+	rn->setJointValue(jointValue);
+}
+
+void Robot::setJointValues( const std::map< std::string, float > &jointValues )
+{
+	WriteLock(mutex,use_mutex);
+
+	std::map< std::string, float >::const_iterator it = jointValues.begin();
+	while (it != jointValues.end())
+	{
+		RobotNodePtr rn = getRobotNode(it->first);
+		VR_ASSERT(rn);
+		rn->setJointValue(it->second,false);
+		it++;
+	}
+	applyJointValuesNoLock();
+}
+
+void Robot::setJointValues( RobotNodeSetPtr rns, const std::vector<float> &jointValues )
+{
+	VR_ASSERT(rns);
+	THROW_VR_EXCEPTION_IF(jointValues.size() != rns->getSize(), "Wrong vector dimension (robotNodes:" << rns->getSize() << ", jointValues: " << jointValues.size() << ")" << endl);
+	WriteLock(mutex,use_mutex);
+	for (unsigned int i=0;i<rns->getSize();i++)
+	{
+		rns->getNode(i)->setJointValue(jointValues[i],false);
+	}
+	rns->getKinematicRoot()->applyJointValue();
+}
+
+void Robot::setJointValues( RobotNodeSetPtr rns, const Eigen::VectorXf &jointValues )
+{
+	VR_ASSERT(rns);
+	THROW_VR_EXCEPTION_IF(jointValues.size() != rns->getSize(), "Wrong vector dimension (robotNodes:" << rns->getSize() << ", jointValues: " << jointValues.size() << ")" << endl);
+	WriteLock(mutex,use_mutex);
+	for (unsigned int i=0;i<rns->getSize();i++)
+	{
+		rns->getNode(i)->setJointValue(jointValues[i],false);
+	}
+	rns->getKinematicRoot()->applyJointValue();
+}
+
+void Robot::setJointValues( RobotConfigPtr config )
+{
+	VR_ASSERT(config);
+	WriteLock(mutex,use_mutex);
+	std::map < std::string, float > jv = config->getRobotNodeJointValueMap();
+	std::map< std::string, float >::const_iterator i = jv.begin();
+
+	while (i != jv.end())
+	{
+		RobotNodePtr rn = getRobotNode(i->first);
+		VR_ASSERT(rn);
+		rn->setJointValue(i->second,false);
+		i++;
+	}
+	applyJointValuesNoLock();
+}
+
+void Robot::setJointValues( TrajectoryPtr trajectory, float t )
+{
+	VR_ASSERT(trajectory);
+	Eigen::VectorXf c;
+	trajectory->interpolate(t,c);
+	setJointValues(trajectory->getRobotNodeSet(),c);
+}
+
+void Robot::setJointValues( RobotNodeSetPtr rns, RobotConfigPtr config )
+{
+	VR_ASSERT(rns);
+	VR_ASSERT(config);
+	WriteLock(mutex,use_mutex);
+	const std::vector<RobotNodePtr> robotNodes = rns->getAllRobotNodes();
+	for (unsigned int i=0;i<robotNodes.size();i++)
+	{
+		if (config->hasConfig(robotNodes[i]->getName()))
+			robotNodes[i]->setJointValue(config->getConfig(robotNodes[i]->getName()), false, true);
+	}
+	if (rns->getKinematicRoot() && rns->getKinematicRoot()!=getRootNode())
+		rns->getKinematicRoot()->applyJointValue();
+	else
+	{
+		applyJointValuesNoLock();
+	}
+}
+
+void Robot::setJointValues( const std::vector<RobotNodePtr> rn, const std::vector<float> &jointValues )
+{
+	VR_ASSERT(rn.size()==jointValues.size());
+	WriteLock(mutex,use_mutex);
+	for (size_t i=0;i<rn.size();i++)
+		rn[i]->setJointValue(jointValues[i],false);
+	applyJointValuesNoLock();
 }
 
 

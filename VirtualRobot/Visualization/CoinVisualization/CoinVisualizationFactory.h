@@ -212,6 +212,12 @@ public:
 	\see createOffscreenRenderer
 	*/
 	static bool renderOffscreen( SoOffscreenRenderer* renderer, SoCamera* cam, SoNode* scene, unsigned char **buffer);
+
+	/*!
+		Here, a manual cleanup can be called, no Coin3D access possible after this. 
+		Usually no need to call cleanup explicitly, since cleanup is performed automatically at application exit.
+	*/
+	virtual void cleanup();
 protected:
 	static void GetVisualizationFromSoInput(SoInput& soInput, VisualizationNodePtr& visualizationNode, bool bbox = false);
 

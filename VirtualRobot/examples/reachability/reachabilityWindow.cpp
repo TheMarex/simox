@@ -124,12 +124,8 @@ void reachabilityWindow::resetSceneryAll()
 		return;
 	std::vector< RobotNodePtr > nodes;
 	robot->getRobotNodes(nodes);
-
-	for (unsigned int i=0;i<nodes.size();i++)
-	{
-		nodes[i]->setJointValue(0);
-	}
-	robot->applyJointValues();
+	std::vector<float> jv(nodes.size(),0.0f);
+	robot->setJointValues(nodes,jv);
 }
 
 
@@ -255,7 +251,7 @@ void reachabilityWindow::jointValueChanged(int pos)
 	if (nr<0 || nr>=(int)allRobotNodes.size())
 		return;
 	float fPos = allRobotNodes[nr]->getJointLimitLo() + (float)pos / 1000.0f * (allRobotNodes[nr]->getJointLimitHi() - allRobotNodes[nr]->getJointLimitLo());
-	allRobotNodes[nr]->setJointValue(fPos);
+	robot->setJointValue(allRobotNodes[nr],fPos);
 	UI.lcdNumberJointValue->display((double)fPos);
 
 }

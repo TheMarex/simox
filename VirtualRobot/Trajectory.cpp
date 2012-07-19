@@ -301,6 +301,9 @@ std::vector<Eigen::Matrix4f > Trajectory::createWorkspaceTrajectory( VirtualRobo
 		r = rns->getTCP();
 	VR_ASSERT(r);
 
+	RobotPtr robot = rns->getRobot();
+	VR_ASSERT(robot);
+
 	Eigen::VectorXf jv;
 	rns->getJointValues(jv);
 
@@ -309,11 +312,11 @@ std::vector<Eigen::Matrix4f > Trajectory::createWorkspaceTrajectory( VirtualRobo
 	for (size_t i = 0; i < path.size(); i++)
 	{
 		// get tcp coords:
-		rns->setJointValues(path[i]);
+		robot->setJointValues(rns,path[i]);
 		Eigen::Matrix4f m;
 		result.push_back(r->getGlobalPose());
 	}
-	rns->setJointValues(jv);
+	robot->setJointValues(rns,jv);
 	return result;
 }
 
@@ -381,14 +384,15 @@ std::string Trajectory::getRobotName() const
 {
 	return rns->getRobot()->getName();
 }
-
+/*
 void Trajectory::apply( float t )
 {
 	if (!rns)
 		return;
+	RobotPtr robot = rns->getRobot();
 	Eigen::VectorXf c;
 	interpolate(t,c);
-	rns->setJointValues(c);
+	robot->setJointValues(rns,c);
 }
-
+*/
 }

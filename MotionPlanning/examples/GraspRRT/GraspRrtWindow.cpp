@@ -491,8 +491,8 @@ void GraspRrtWindow::selectStart(int nr)
 	//if (robotStart)
 	//	configs[nr]->applyToRobot(robotStart);
 	if (robot)
-		configs[nr]->applyToRobot(robot);
-	configs[nr]->setJointValues();
+		robot->setJointValues(configs[nr]);
+	//configs[nr]->setJointValues();
 	if (rns)
 		rns->getJointValues(startConfig);
 }
@@ -650,7 +650,7 @@ void GraspRrtWindow::testGraspPose()
 	// move towards object
 	Eigen::Matrix4f p = eef->getGCP()->getGlobalPose();
 	test_graspRrt->createWorkSpaceSamplingStep(p,globalGrasp,c);
-	rns->setJointValues(c);
+	robot->setJointValues(rns,c);
 
 	// test
 	/*Eigen::Matrix4f p1;
@@ -740,7 +740,7 @@ void GraspRrtWindow::sliderSolution( int pos )
 	float p = (float)pos/1000.0f;
 	Eigen::VectorXf iPos;
 	s->interpolate(p,iPos);
-	rns->setJointValues(iPos);
+	robot->setJointValues(rns,iPos);
 	redraw();
 }
 

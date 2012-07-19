@@ -22,16 +22,12 @@ RobotNodeSet::RobotNodeSet(const std::string &name,
 	this->robotNodes = robotNodes;
 	this->kinematicRoot = kinematicRoot;
 	this->tcp = tcp;
+	RobotPtr rob = robot.lock();
 	if (!kinematicRoot && robotNodes.size()>0)
-		this->kinematicRoot = robotNodes[0];
+		this->kinematicRoot = rob->getRootNode();
 	if (!tcp && robotNodes.size()>0)
 		this->tcp = robotNodes[robotNodes.size()-1];
 	this->robot = robot;
-
-	RobotPtr rob = robot.lock();
-	kinematicRootIsRobotRoot = false;
-	if (kinematicRoot && rob && kinematicRoot == rob->getRootNode())
-		kinematicRootIsRobotRoot = true;
 
 	// now, the objects are stored in the parent's (SceneObjectSet) data structure, so that the methods of SceneObjectSet do work
 	for(size_t i = 0; i < robotNodes.size(); i++)
@@ -48,7 +44,6 @@ RobotNodeSet::RobotNodeSet(const std::string &name,
 			}
 		}
 	}
-
 }
 
 
@@ -138,8 +133,7 @@ RobotNodeSetPtr RobotNodeSet::createRobotNodeSet(RobotPtr robot,
 	RobotNodePtr kinematicRootNode = kinematicRoot;
 	if (!kinematicRootNode)
 	{
-		THROW_VR_EXCEPTION_IF(robotNodes.empty(), "can not determine the root node need for creating a RobotNodeSet");
-		kinematicRootNode = robotNodes[0];
+		kinematicRootNode = robot->getRootNode();
 	}
 	RobotNodePtr tcpNode = tcp;
 	if (!tcpNode)
@@ -293,7 +287,7 @@ void RobotNodeSet::respectJointLimits(Eigen::VectorXf &jointValues) const
 		robotNodes[i]->respectJointLimits(jointValues[i]);
 	}
 }
-
+/*
 void RobotNodeSet::setJointValues(const std::vector<float> &jointValues)
 {
 	THROW_VR_EXCEPTION_IF(jointValues.size() != robotNodes.size(), "Wrong vector dimension (robotNodes:" << robotNodes.size() << ", jointValues: " << jointValues.size() << ")" << endl);
@@ -313,9 +307,9 @@ void RobotNodeSet::setJointValues(const std::vector<float> &jointValues)
 		else
 			VR_WARNING << "Robot of RNS " << name << " has been deleted! Could not set joint values!" << endl;
 	}
-}
+}*/
 
-
+/*
 void RobotNodeSet::setJointValues(const Eigen::VectorXf &jointValues)
 {
 	for (unsigned int i=0;i<robotNodes.size();i++)
@@ -332,8 +326,8 @@ void RobotNodeSet::setJointValues(const Eigen::VectorXf &jointValues)
 		else
 			VR_WARNING << "Robot of RNS " << name << " has been deleted! Could not set joint values!" << endl;
 	}
-}
-
+}*/
+/*
 void RobotNodeSet::setJointValues( const RobotConfigPtr jointValues )
 {
 	THROW_VR_EXCEPTION_IF(!jointValues,"NULL data");
@@ -353,7 +347,7 @@ void RobotNodeSet::setJointValues( const RobotConfigPtr jointValues )
 		else
 			VR_WARNING << "Robot of RNS " << name << " has been deleted! Could not set joint values!" << endl;
 	}
-}
+}*/
 
 
 

@@ -6,6 +6,7 @@
 
 #include "RuntimeEnvironment.h"
 #include "VirtualRobotException.h"
+#include "Visualization/VisualizationFactory.h"
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
@@ -316,6 +317,13 @@ namespace VirtualRobot
 			return RuntimeEnvironment::getValue(key);
 		}
 		return standardValue;
+	}
+
+	void RuntimeEnvironment::cleanup()
+	{
+		VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
+		if (visualizationFactory)
+			visualizationFactory->cleanup();
 	}
 
 

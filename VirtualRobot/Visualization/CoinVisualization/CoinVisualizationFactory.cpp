@@ -127,7 +127,7 @@ VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromString(const 
 
 /**
  * This method reads the data from the given \p soInput and creates a new CoinVisualizationNode
- * with the read Coin model if no error occured during reading the model.
+ * with the read Coin model if no error occurred during reading the model.
  * The newly created CoinVisualizationNode is then stored in \p visualisationNode.
  *
  * \param soInput SoInput instance from which the model is read.
@@ -221,7 +221,7 @@ std::string CoinVisualizationFactory::getName() {return "inventor";}
  */
 boost::shared_ptr<VisualizationFactory> CoinVisualizationFactory::createInstance(void*)
 {
-    if (!SoDB::isInitialized())
+	if (!SoDB::isInitialized())
         SoDB::init();
     boost::shared_ptr<CoinVisualizationFactory> coinFactory(new CoinVisualizationFactory());
     return coinFactory;
@@ -1604,8 +1604,7 @@ SoNode * CoinVisualizationFactory::getCoinVisualization( TrajectoryPtr t, Color 
 
 
 	res->addChild(sep);
-
-	rns->setJointValues(c);
+	rns->getRobot()->setJointValues(rns,c);
 
 	res->unrefNoDelete();
 	return res;
@@ -1939,6 +1938,12 @@ VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createUnitedVisuali
 	VisualizationNodePtr result(new CoinVisualizationNode(s));
 	s->unrefNoDelete();
 	return result;
+}
+
+void CoinVisualizationFactory::cleanup()
+{
+	if (SoDB::isInitialized())
+		SoDB::finish();
 }
 
 

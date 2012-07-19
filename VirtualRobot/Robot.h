@@ -27,8 +27,10 @@
 #include "Nodes/RobotNode.h"
 #include "RobotNodeSet.h"
 #include "RobotConfig.h"
+#include "Nodes/ConditionedLock.h"
 
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/mpl/assert.hpp>
 #include <boost/bind.hpp>
@@ -237,6 +239,78 @@ public:
 	*/
 	std::string getFilename();
 
+	/*!
+		This readlock can be used to protect data access. It returns a <multiple reads> / <single write> lock.
+	*/
+	ReadLockPtr getReadLock();
+
+	/*!
+		Set a joint value [rad].
+		The internal matrices and visualizations are updated accordingly.
+		If you intend to update multiple joints, use \ref setJointValues for faster access.
+	*/
+	void setJointValue(RobotNodePtr rn, float jointValue);
+	/*!
+		Set a joint value [rad].
+		The internal matrices and visualizations are updated accordingly.
+		If you intend to update multiple joints, use \ref setJointValues for faster access.
+	*/
+	void setJointValue(const std::string &nodeName, float jointValue);
+
+	/*!
+		Set a joint values [rad].
+		The complete robot is updated to apply the new joint values.
+		\param jointValues A map containing RobotNode names with according values.
+	*/
+	void setJointValues(const std::map< std::string, float > &jointValues );
+	/*!
+		Set a joint values [rad].
+		The complete robot is updated to apply the new joint values.
+		\param jointValues A map containing RobotNodes with according values.
+	*/
+	void setJointValues(const std::map< RobotNodePtr, float > &jointValues );
+	/*!
+		Set a joint values [rad].
+		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
+		\param rns The RobotNodeSet defines the joints
+		\param jointValues A vector with joint values, size must be equal to rns.
+	*/
+	void setJointValues(RobotNodeSetPtr rns, const std::vector<float> &jointValues);
+	/*!
+		Set a joint values [rad].
+		The complete robot is updated to apply the new joint values.
+		\param rn The RobotNodes 
+		\param jointValues A vector with joint values, size must be equal to rn.
+	*/
+	void setJointValues(const std::vector<RobotNodePtr> rn, const std::vector<float> &jointValues);
+	/*!
+		Set a joint values [rad].
+		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
+		\param rns The RobotNodeSet defines the joints
+		\param jointValues A vector with joint values, size must be equal to rns.
+	*/
+	void setJointValues(RobotNodeSetPtr rns, const Eigen::VectorXf &jointValues);
+	/*!
+		Set a joint values [rad].
+		The complete robot is updated to apply the new joint values.
+		\param config The RobotConfig defines the RobotNodes and joint values.
+	*/
+	void setJointValues(RobotConfigPtr config);
+	/*!
+		Set a joint values [rad].
+		Only those joints in config are affected which are present in rns.
+		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
+		\param rns Only joints in this rns are updated.
+		\param config The RobotConfig defines the RobotNodes and joint values.
+	*/
+	void setJointValues(RobotNodeSetPtr rns, RobotConfigPtr config);
+	/*!
+		Apply configuration of trajectory at time t 
+		\param trajectory The trajectory
+		\param t The time (0<=t<=1)
+	*/
+	void setJointValues(TrajectoryPtr trajectory, float t);
+
 protected:
 	Robot();
 	/*!
@@ -246,11 +320,18 @@ protected:
 	*/
 	void createVisualizationFromCollisionModels();
 
+	//! It is assumed that the mutex is already set
+	void applyJointValuesNoLock();
+
+
 	std::string filename; // RobotIO stores the filename here
 	std::string name;
 	std::string type;
 
 	bool updateVisualization;
+
+	boost::recursive_mutex mutex;
+	bool use_mutex;
 
 };
 
@@ -312,8 +393,6 @@ protected:
 	std::map< std::string, RobotNodePtr > robotNodeMap;
 	std::map< std::string, RobotNodeSetPtr > robotNodeSetMap;
 	std::map< std::string, EndEffectorPtr > endEffectorMap;
-	
-
 };
 
 

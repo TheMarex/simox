@@ -163,7 +163,8 @@ void showSceneWindow::sliderMoved(int pos)
 		return;
 
 	float fpos = (float)pos / 999.0f;
-	currentTrajectory->apply(fpos);
+	if (currentRobot)
+		currentRobot->setJointValues(currentTrajectory,fpos);
 }
 
 
@@ -298,7 +299,7 @@ void showSceneWindow::selectRobotConfig(int nr)
 	VirtualRobot::RobotConfigPtr rc = scene->getRobotConfig(currentRobot->getName(), UI.comboBoxRobotConfig->currentText().toStdString());
 	if (!rc)
 		return;
-	rc->setJointValues();
+	currentRobot->setJointValues(rc);
 }
 
 void showSceneWindow::selectTrajectory(int nr)

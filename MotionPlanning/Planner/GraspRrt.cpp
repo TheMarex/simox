@@ -29,8 +29,9 @@ GraspRrt::GraspRrt( CSpaceSampledPtr cspace,
 {
 	plannerInitialized = false;
 	name ="GraspRrt";
-	THROW_VR_EXCEPTION_IF(!cspace || !object || !eef || !cspace->getRobotNodeSet() || !measure, "NULL data");
+	THROW_VR_EXCEPTION_IF(!cspace || !object || !eef || !cspace->getRobotNodeSet() || !cspace->getRobot() || !measure, "NULL data");
 	rns = cspace->getRobotNodeSet();
+	robot = cspace->getRobot();
 	targetObject = object;
 	this->eef = eef;
 	this->graspQualityMeasure = measure;
@@ -362,8 +363,9 @@ bool GraspRrt::calculateGlobalGraspPose(const Eigen::VectorXf &c, Eigen::Matrix4
 	int nId1,nId2;
 	Eigen::Matrix4f mMat,mRotMat;
 
+
 	// set gcp object
-	rns->setJointValues(c);
+	robot->setJointValues(rns,c);
 	gcpOject->setGlobalPose(eef->getGCP()->getGlobalPose());
 
 	// get target position (position on grasp object with shortest distance to hand)
@@ -691,7 +693,7 @@ GraspRrt::MoveArmResult GraspRrt::createWorkSpaceSamplingStep(const Eigen::Matri
 	}
 	MathHelpers::deltaQuat(&(pExtendNode->cartPosTCP1[3]),&(pCartGoalPose[3]),&(pDeltaPosQuat_Global[3]));
 	*/
-	rns->setJointValues(extendNode->configuration);
+	robot->setJointValues(rns,extendNode->configuration);
 	Eigen::Matrix4f currentPose = mapConfigTcp[extendNode];
 	return createWorkSpaceSamplingStep (currentPose,goalPose,storeCSpaceConf);
 }
@@ -775,7 +777,7 @@ float GraspRrt::calculateGraspScore(const Eigen::VectorXf &c, int nId, bool bSto
 	clock_t timeStart = clock();
 	performanceMeasure.numberOfGraspScorings++;
 
-	rns->setJointValues(c);
+	robot->setJointValues(rns,c);
 	VirtualRobot::EndEffector::ContactInfoVector contactsAll = eef->closeActors(graspCollisionObjects);
 	VirtualRobot::EndEffector::ContactInfoVector contacts;
 	// we only need the targetObject contacts
@@ -981,7 +983,7 @@ bool GraspRrt::processNode( CSpaceNodePtr n )
 	if (!n)
 		return false;
 	// get tcp pose
-	rns->setJointValues(n->configuration);
+	robot->setJointValues(rns,n->configuration);
 
 	// using gcp!
 	Eigen::Matrix4f p = eef->getGCP()->getGlobalPose();

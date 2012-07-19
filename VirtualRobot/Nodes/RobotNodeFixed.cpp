@@ -8,8 +8,6 @@
 #include <boost/bind.hpp>
 #include "../VirtualRobotException.h"
 
-#include "ConditionedLock.h"
-
 namespace VirtualRobot {
 
 RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob, 
@@ -24,8 +22,8 @@ RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob,
 	) : RobotNode(rob,name,childrenNames,0.0f,0.0f,visualization,collisionModel,0.0f,p,colChecker)
 {
 	optionalDHParameter.isSet = false;
-	this->setPreJointTransformation(preJointTransform);
-	this->setPostJointTransformation(postJointTransform);
+	this->preJointTransformation = preJointTransform;
+	this->postJointTransformation = postJointTransform;
 }
 
 RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob, 
@@ -61,17 +59,12 @@ RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob,
 	RotAlpha(2,1) = sin(alpha);
 	RotAlpha(2,2) = cos(alpha);
 
-	this->setPreJointTransformation(RotTheta);
-	this->setPostJointTransformation(TransD*TransA*RotAlpha);
+	this->preJointTransformation = RotTheta;
+	this->postJointTransformation = TransD*TransA*RotAlpha;
 }
 
 RobotNodeFixed::~RobotNodeFixed()
 {
-}
-
-void RobotNodeFixed::reset()
-{
-	RobotNode::reset();
 }
 
 bool RobotNodeFixed::initialize(RobotNodePtr parent, bool initializeChildren)
@@ -81,17 +74,13 @@ bool RobotNodeFixed::initialize(RobotNodePtr parent, bool initializeChildren)
 
 void RobotNodeFixed::updateTransformationMatrices()
 {
-	{
-		WriteLock w(mutex,use_mutex);
+	if (this->getParent())
+		globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
+	else
+		globalPose = getPreJointTransformation();
 
-		if (this->getParent())
-			globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
-		else
-			globalPose = getPreJointTransformation();
+	globalPosePostJoint = globalPose*getPostJointTransformation();
 
-		globalPosePostJoint = globalPose*getPostJointTransformation();
-
-	}
 	// update collision and visualization model
 	SceneObject::setGlobalPose(globalPose);
 }
@@ -99,17 +88,13 @@ void RobotNodeFixed::updateTransformationMatrices()
 
 void RobotNodeFixed::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 {
-	{
-		WriteLock w(mutex,use_mutex);
-		
-		THROW_VR_EXCEPTION_IF(this->getParent(),"This method could only be called on RobotNodes without parents.");
+	VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
 
-		this->globalPose = globalPose * getPreJointTransformation();
+	this->globalPose = globalPose * getPreJointTransformation();
 
-		globalPosePostJoint = this->globalPose*getPostJointTransformation();
+	globalPosePostJoint = this->globalPose*getPostJointTransformation();
 
-		// update collision and visualization model
-	}
+	// update collision and visualization model
 	SceneObject::setGlobalPose(this->globalPose);
 }
 
@@ -132,7 +117,7 @@ void RobotNodeFixed::print( bool printChildren, bool printDecoration ) const
 
 RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
 {
-	ReadLock lock(mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	
 	RobotNodePtr result;
 

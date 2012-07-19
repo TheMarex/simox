@@ -123,12 +123,8 @@ public:
 	 */
 	virtual void interpolate(float t, Eigen::VectorXf &storePos, int *storeIndex = NULL) const;
 
-	 /*!
-		Interpolates and applies the resulting configuration at position t (0<=t<=1) to corresponding RobotNodeSet.
-	*/
-	 virtual void apply(float t);
+
 	/*!
-		
 	*/
 	unsigned int getDimension() const;
 

@@ -31,7 +31,7 @@ VirtualRobot::RobotNodePtr r2;
 void thread1(){
 	for (int i=0; i < 20;i++){
 		float angle = float(i) / 100.0f * 90.0f - 45.0f;
-		r1->setJointValue(angle, false);
+		rob->setJointValue(r1, angle);
 	}
 }
 

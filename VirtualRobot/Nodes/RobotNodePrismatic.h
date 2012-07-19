@@ -53,7 +53,7 @@ public:
 						float jointLimitLo,									//!< lower joint limit
 						float jointLimitHi,									//!< upper joint limit
 						const Eigen::Matrix4f &preJointTransform,			//!< This transformation is applied before the translation of the joint is done
-						const Eigen::Vector3f &translationDirection,		//!< This is the direction of the translation
+						const Eigen::Vector3f &translationDirection,		//!< This is the direction of the translation (local)
 						const Eigen::Matrix4f &postJointTransform,			//!< This is an additional transformation, that is applied after the translation is done
 						VisualizationNodePtr visualization = VisualizationNodePtr(),	//!< A visualization model
 						CollisionModelPtr collisionModel = CollisionModelPtr(),			//!< A collision model
@@ -81,7 +81,6 @@ public:
 	virtual ~RobotNodePrismatic();
 
 	virtual bool initialize(RobotNodePtr parent, bool initializeChildren = false);
-	virtual void reset();
 
 	/*!
 	Print status information.
@@ -91,18 +90,25 @@ public:
 	virtual bool isTranslationalJoint() const;
 
 	/*!
-		Standard: In local coord system.
+		In global coord system.
 		\param coordSystem When not set the direction is transformed to global coord system. Otherwise any scene object can be used as coord system.
 	*/
     Eigen::Vector3f getJointTranslationDirection(const SceneObjectPtr coordSystem = SceneObjectPtr()) const;
 
 protected:
+	/*!
+		Can be called by a RobotNodeActuator in order to set the pose of this node.
+		This is useful, if the node is actuated externally, i.e. via a physics engine. 
+		\param globalPose The new global pose. The joint value is determined from this pose (implemented in derived RobtoNodes).
+		\param updateChildren Usually it is assumed that all RobotNodes are updated this way (updateChildren=false). If not, the children poses can be updated according to this node (updateCHildren=true).
+	*/
+	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, bool updateChildren = false);
 
 	RobotNodePrismatic(){};
 	virtual void updateTransformationMatrices();
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &globalPose);
 
-	Eigen::Vector3f jointTranslationDirection;	// used when ePrismaticJoint 
+	Eigen::Vector3f jointTranslationDirection;	// used when ePrismaticJoint (local coord system)
 
 	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker);
 

@@ -119,6 +119,11 @@ public:
 
 		//! Print status 
 		static void print();
+
+		/*!
+			Free all resources. Usually not not needed, since on application exit all resources are freed automatically.
+		*/
+		static void cleanup();
 	protected:
 
 		RuntimeEnvironment(){}

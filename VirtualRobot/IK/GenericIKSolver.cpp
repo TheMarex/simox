@@ -68,7 +68,8 @@ void GenericIKSolver::setJointsRandom()
 		float v = ro->getJointLimitLo() + (ro->getJointLimitHi() - ro->getJointLimitLo()) * r;
 		jv.push_back(v);
 	}
-	rns->setJointValues(jv);
+	RobotPtr rob = rns->getRobot();
+	rob->setJointValues(rns,jv);  
 }
 
 bool GenericIKSolver::trySolve()

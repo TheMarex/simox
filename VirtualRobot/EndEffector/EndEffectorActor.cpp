@@ -52,13 +52,18 @@ std::string EndEffectorActor::getName()
 
 bool EndEffectorActor::moveActor(float angle)
 {
+	if (actors.size()==0)
+		return true;
+	RobotPtr robot = actors[0].robotNode->getRobot();
+	VR_ASSERT(robot);
 	bool res = true;
 	for(std::vector<ActorDefinition>::iterator n = actors.begin(); n != actors.end(); n++)
 	{
 		float v = n->robotNode->getJointValue() + angle * n->directionAndSpeed;
 		if(v <= n->robotNode->getJointLimitHi() && v >= n->robotNode->getJointLimitLo())
 		{
-			n->robotNode->setJointValue(v);
+			robot->setJointValue(n->robotNode,v);
+			//n->robotNode->setJointValue(v);
 			res = false;
 		}
 	}
@@ -67,10 +72,9 @@ bool EndEffectorActor::moveActor(float angle)
 
 bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, EndEffector::ContactInfoVector &storeContacts, SceneObjectSetPtr obstacles /*= SceneObjectSetPtr()*/, float angle /*= 0.02*/ )
 {
-	if (!eef)
-	{
-		THROW_VR_EXCEPTION ("NULL eef...");
-	}
+	VR_ASSERT(eef);
+	RobotPtr robot = eef->getRobot();
+	VR_ASSERT(robot);
 	bool res = true;
 	std::vector<EndEffectorActorPtr> eefActors;
 	eef->getActors(eefActors);
@@ -84,7 +88,8 @@ bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, EndEffector:
 		float v = oldV + angle * n->directionAndSpeed;
 		if(v <= n->robotNode->getJointLimitHi() && v >= n->robotNode->getJointLimitLo())
 		{
-			n->robotNode->setJointValue(v);
+			robot->setJointValue(n->robotNode,v);
+			//n->robotNode->setJointValue(v);
 
 			// check collision
 			bool collision = false;
@@ -121,7 +126,8 @@ bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, EndEffector:
 			else
 			{
 				// reset last position
-				n->robotNode->setJointValue(oldV);
+				//n->robotNode->setJointValue(oldV);
+				robot->setJointValue(n->robotNode,oldV);
 			}
 		}
 	}
@@ -154,7 +160,7 @@ bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, EndEffector:
 			Eigen::Vector3f contGlobal2 = newContacts[i].robotNode->toGlobalCoordinateSystemVec(contFinger);
 			newContacts[i].approachDirectionGlobal = contGlobal2 - contGlobal1;
 			newContacts[i].approachDirectionGlobal.normalize();
-			config->setJointValues();
+			robot->setJointValues(config);
 
 			storeContacts.push_back(newContacts[i]);
 		}

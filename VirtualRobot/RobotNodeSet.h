@@ -104,13 +104,13 @@ public:
 	bool checkJointLimits(std::vector<float> &jointValues, bool verbose = false) const;
 	bool checkJointLimits(Eigen::VectorXf &jointValues, bool verbose = false) const;	
 
-	void setJointValues(const std::vector<float> &jointValues);
-	void setJointValues(const Eigen::VectorXf &jointValues);
+	//void setJointValues(const std::vector<float> &jointValues);
+	//void setJointValues(const Eigen::VectorXf &jointValues);
 
 	/*! 
 		Set joints that are within the given RobotConfig. Joints of this NodeSet that are not stored in jointValues remain untouched.
 	*/
-	void setJointValues(const RobotConfigPtr jointValues);
+	//void setJointValues(const RobotConfigPtr jointValues);
 	
 	RobotNodePtr& operator[](int i);
 	
@@ -198,7 +198,7 @@ protected:
 	RobotNodePtr kinematicRoot;
 	RobotNodePtr tcp;
 
-	bool kinematicRootIsRobotRoot;
+	//bool kinematicRootIsRobotRoot;
 };
 
 } // namespace VirtualRobot

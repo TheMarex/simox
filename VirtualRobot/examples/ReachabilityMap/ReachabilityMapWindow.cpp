@@ -146,12 +146,8 @@ void ReachabilityMapWindow::resetSceneryAll()
 		return;
 	std::vector< RobotNodePtr > nodes;
 	robot->getRobotNodes(nodes);
-
-	for (unsigned int i=0;i<nodes.size();i++)
-	{
-		nodes[i]->setJointValue(0);
-	}
-	robot->applyJointValues();
+	std::vector<float> jv(nodes.size(),0.0f);
+	robot->setJointValues(nodes,jv);
 }
 
 void ReachabilityMapWindow::updateVisu()

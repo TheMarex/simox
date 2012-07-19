@@ -189,6 +189,7 @@ protected:
 	VirtualRobot::ObstaclePtr targetObject;
 	VirtualRobot::RobotNodeSetPtr rns;
 	VirtualRobot::EndEffectorPtr eef;
+	VirtualRobot::RobotPtr robot;
 
 	std::map < VirtualRobot::GraspPtr, Saba::CSpaceNodePtr > graspNodeMapping;
 	std::vector< Eigen::VectorXf > ikSolutions;

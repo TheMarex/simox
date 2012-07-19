@@ -23,6 +23,7 @@ Nodes/RobotNodeRevolute.cpp
 Nodes/RobotNodeRevoluteFactory.cpp
 Nodes/RobotNodeFixed.cpp
 Nodes/RobotNodeFixedFactory.cpp
+Nodes/RobotNodeActuator.cpp
 Transformation/Transformation.cpp
 Visualization/Visualization.cpp
 Visualization/VisualizationNode.cpp
@@ -82,6 +83,8 @@ Nodes/RobotNodeRevolute.h
 Nodes/RobotNodeRevoluteFactory.h
 Nodes/RobotNodeFixed.h
 Nodes/RobotNodeFixedFactory.h
+Nodes/RobotNodeActuator.h
+Nodes/ConditionedLock.h
 Transformation/DHParameter.h
 Transformation/Transformation.h
 Visualization/VisualizationFactory.h

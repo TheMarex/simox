@@ -68,7 +68,7 @@ void Reachability::addRandomTCPPoses( unsigned int loops, bool checkForSelfColli
 			VR_WARNING << "Could not find collision-free configuration...";
 	}
 	robot->setUpdateVisualization(visuSate);
-	nodeSet->setJointValues(c);
+	robot->setJointValues(nodeSet,c);
 }
 bool Reachability::isReachable( const Eigen::Matrix4f &globalPose )
 {

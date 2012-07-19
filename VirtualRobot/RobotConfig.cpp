@@ -144,7 +144,7 @@ RobotConfigPtr RobotConfig::clone( RobotPtr newRobot )
 	return result;
 }
 
-
+/*
 bool RobotConfig::setJointValues()
 {
 	RobotPtr r = robot.lock();
@@ -159,7 +159,7 @@ bool RobotConfig::setJointValues()
 	}
 	r->applyJointValues();
 	return true;
-}
+}*/
 
 bool RobotConfig::hasConfig( const std::string & name ) const
 {
@@ -216,7 +216,7 @@ std::map < std::string, float > RobotConfig::getRobotNodeJointValueMap()
 	}
 	return result;
 }
-
+/*
 bool RobotConfig::applyToRobot( RobotPtr r )
 {
 	if (!r)
@@ -245,7 +245,7 @@ bool RobotConfig::applyToRobot( RobotPtr r )
 	}
 	r->applyJointValues();
 	return true;
-}
+}*/
 
 std::string RobotConfig::getXMLString(int tabs)
 {

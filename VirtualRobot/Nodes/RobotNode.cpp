@@ -14,8 +14,6 @@
 
 #include <Eigen/Core>
 
-#include "ConditionedLock.h"
-
 namespace VirtualRobot {
 
 RobotNode::RobotNode(	RobotWeakPtr rob, 
@@ -28,8 +26,7 @@ RobotNode::RobotNode(	RobotWeakPtr rob,
 						float jointValueOffset,
 						const SceneObject::Physics &p,
 						CollisionCheckerPtr colChecker) 
-						: SceneObject(name,visualization,collisionModel,p,colChecker),
-						use_mutex(true)
+						: SceneObject(name,visualization,collisionModel,p,colChecker)
 
 
 {
@@ -53,8 +50,6 @@ RobotNode::RobotNode(	RobotWeakPtr rob,
 
 RobotNode::~RobotNode()
 {
-	reset();
-
 	// not needed here
 	// when robot is destroyed all references to this RobotNode are also destroyed
 	//RobotPtr rob = robot.lock();
@@ -62,23 +57,6 @@ RobotNode::~RobotNode()
 	//	rob->deregisterRobotNode(shared_from_this());
 }
 
-void RobotNode::reset()
-{
-	SceneObject::reset();
-	childrenNames.clear();
-	jointValueOffset = 0.0f;
-	jointLimitLo = 0.0f;
-	jointLimitHi = (float)M_PI;
-	jointValueOffset = 0.0f;
-	preJointTransformation = Eigen::Matrix4f::Identity();
-	postJointTransformation = Eigen::Matrix4f::Identity();
-	optionalDHParameter.isSet = false;
-	globalPosePostJoint = Eigen::Matrix4f::Identity();
-	jointValue = 0.0f;
-	children.clear();
-	parent.reset();
-	initialized = false;
-}
 
 bool RobotNode::initialize(RobotNodePtr parent, bool initializeChildren)
 {
@@ -127,16 +105,15 @@ bool RobotNode::initialize(RobotNodePtr parent, bool initializeChildren)
 }
 
 
-RobotPtr RobotNode::getRobot()
+RobotPtr RobotNode::getRobot() const
 {
 	RobotPtr result(robot);
 	return result;
 }
 
-void RobotNode::setJointValue(float q, bool updateTransformations /*= true*/,
-                              bool clampToLimits /*= true*/)
+void RobotNode::setJointValue(float q, bool updateTransformations,
+                              bool clampToLimits)
 {
-	WriteLock lock(mutex,use_mutex);
 
 	VR_ASSERT_MESSAGE( initialized, "Not initialized");
 	VR_ASSERT_MESSAGE( (!boost::math::isnan(q) && !boost::math::isinf(q)) ,"Not a valid number...");
@@ -169,26 +146,15 @@ void RobotNode::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
 
 }
 
-void RobotNode::setPostJointTransformation(const Eigen::Matrix4f &trafo) {
-	WriteLock lock(this->mutex,use_mutex);
-	postJointTransformation = trafo;
-}
-
-void RobotNode::setPreJointTransformation(const Eigen::Matrix4f &trafo) {
-	WriteLock lock(this->mutex,use_mutex);
-	preJointTransformation = trafo;
-}
-
 void RobotNode::applyJointValue()
 {
 	THROW_VR_EXCEPTION_IF(!initialized, "Not initialized");
 
 	updateTransformationMatrices();
 	
-	std::vector< RobotNodePtr > children = this->getChildren(); //Stefan
+	std::vector< RobotNodePtr > children = this->getChildren(); 
 	for (std::vector< RobotNodePtr >::iterator i = children.begin(); i!= children.end(); i++ )
 		(*i)->applyJointValue();
-	//std::for_each(children.begin(), children.end(), boost::mem_fn(&RobotNode::applyJointValue));
 }
 
 void RobotNode::applyJointValue(const Eigen::Matrix4f &globalPose)
@@ -197,10 +163,9 @@ void RobotNode::applyJointValue(const Eigen::Matrix4f &globalPose)
 
 	updateTransformationMatrices(globalPose);
 
-	std::vector< RobotNodePtr > children = this->getChildren(); //Stefan
+	std::vector< RobotNodePtr > children = this->getChildren(); 
 	for (std::vector< RobotNodePtr >::iterator i = children.begin(); i!= children.end(); i++ )
 		(*i)->applyJointValue();
-	//std::for_each(children.begin(), children.end(), boost::mem_fn(&RobotNode::applyJointValue));
 }
 
 void RobotNode::collectAllRobotNodes( std::vector< RobotNodePtr > &storeNodes )
@@ -215,13 +180,12 @@ void RobotNode::collectAllRobotNodes( std::vector< RobotNodePtr > &storeNodes )
 
 float RobotNode::getJointValue() const
 {
-	ReadLock lock(this->mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	return jointValue;
 }
 
 void RobotNode::respectJointLimits( float &jointValue ) const
 {
-	WriteLock lock(this->mutex,use_mutex);
 	if (jointValue < jointLimitLo)
 		jointValue = jointLimitLo;
 	if (jointValue > jointLimitHi)
@@ -230,7 +194,7 @@ void RobotNode::respectJointLimits( float &jointValue ) const
 
 bool RobotNode::checkJointLimits( float jointValue, bool verbose ) const
 {
-	ReadLock lock(this->mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	bool res = true;
 	if (jointValue < jointLimitLo)
 		res = false;
@@ -245,17 +209,11 @@ void RobotNode::setGlobalPose( const Eigen::Matrix4f &pose )
 	THROW_VR_EXCEPTION("Use setJointValues to control the position of a RobotNode");
 }
 
-void RobotNode::setThreadsafe(bool mode){
-	this->use_mutex = mode;
-}
-
-
 void RobotNode::print( bool printChildren, bool printDecoration ) const
 {
-	ReadLock lock(this->mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	if (printDecoration)
 		cout << "******** RobotNode ********" << endl;
-	cout << "* Thread-safe: " << use_mutex << endl;
 	cout << "* Name: " << name << endl;
 	cout << "* Parent: " << this->getParentName() << endl;
 	cout << "* Children: ";
@@ -281,7 +239,7 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 		cout << " a:" << optionalDHParameter.aMM() << ", d:" << optionalDHParameter.dMM() << ", alpha:" << optionalDHParameter.alphaRadian() << ", theta:" << optionalDHParameter.thetaRadian() << endl;
 	} else
 		cout << "* DH parameters: not specified." << endl;
-	cout << "* visualisation model: " <<endl;
+	cout << "* visualization model: " <<endl;
 	if (visualizationModel)
 		visualizationModel->print();
 	else
@@ -330,7 +288,7 @@ void RobotNode::addChildNode( RobotNodePtr child )
 
 bool RobotNode::hasChildNode( const RobotNodePtr child, bool recursive ) const
 {
-	std::vector< RobotNodePtr > children = this->getChildren(); //Stefan
+	std::vector< RobotNodePtr > children = this->getChildren();
 	for (unsigned int i = 0; i < children.size(); i++)
 	{
 		if (children[i] == child)
@@ -349,7 +307,7 @@ bool RobotNode::hasChildNode( const std::string &child, bool recursive ) const
 	RobotPtr rob(robot);
 	for (unsigned int i=0; i<this->getChildrenNames().size(); i++)
 	{
-	THROW_VR_EXCEPTION_IF(!rob, "no robot" );
+		VR_ASSERT(rob);
 
 		if (this->getChildrenNames()[i] == child)
 			return true;
@@ -365,7 +323,7 @@ bool RobotNode::hasChildNode( const std::string &child, bool recursive ) const
 
 RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodePtr initializeWithParent, CollisionCheckerPtr colChecker )
 {
-	ReadLock lock(this->mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	if (!newRobot)
 	{
 		VR_ERROR << "Attempting to clone RobotNode for invalid robot";
@@ -422,13 +380,13 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 
 float RobotNode::getJointLimitLo()
 {
-	ReadLock lock(this->mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	return jointLimitLo;
 }
 
 float RobotNode::getJointLimitHi()
 {
-	ReadLock lock(this->mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	return jointLimitHi;
 }
 	
@@ -485,7 +443,7 @@ void RobotNode::showCoordinateSystem( bool enable, float scaling, std::string *t
 
 void RobotNode::showStructure( bool enable, const std::string &visualizationType)
 {
-	ReadLock lock(this->mutex,use_mutex);
+	ReadLockPtr lock = getRobot()->getReadLock();
 	if (!enable && !visualizationModel)
 		return; // nothing to do
 
@@ -555,7 +513,6 @@ VirtualRobot::RobotNodePtr RobotNode::getParent()
 
 void RobotNode::setJointLimits( float lo, float hi )
 {
-	WriteLock lock(mutex,use_mutex);
 	jointLimitLo = lo;
 	jointLimitHi = hi;
 }
@@ -588,6 +545,24 @@ float RobotNode::getMaxAcceleration()
 float RobotNode::getMaxTorque()
 {
 	return maxTorque;
+}
+
+void RobotNode::updateVisualizationPose( const Eigen::Matrix4f &globalPose, bool updateChildren )
+{
+	{
+		this->globalPose = globalPose;// * getPreJointTransformation();
+		globalPosePostJoint = this->globalPose*getPostJointTransformation();
+	}
+	// update collision and visualization model
+	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
+	SceneObject::setGlobalPose(this->globalPose);
+
+	if (updateChildren)
+	{
+		std::vector< RobotNodePtr > children = this->getChildren(); 
+		for (std::vector< RobotNodePtr >::iterator i = children.begin(); i!= children.end(); i++ )
+			(*i)->applyJointValue();
+	}
 }
 
 

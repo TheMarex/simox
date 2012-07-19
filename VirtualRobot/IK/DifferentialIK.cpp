@@ -321,7 +321,12 @@ void DifferentialIK::checkImprovements( bool enable )
 
 bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNStep)
 {
+	VR_ASSERT(rns);
+	VR_ASSERT(nodes.size() == rns->getSize());
 	//std::vector<RobotNodePtr> rn = this->nodes;
+	RobotPtr robot = rns->getRobot();
+	VR_ASSERT(robot);
+	std::vector<float> jv(nodes.size(),0.0f);
 	int step = 0;
 	checkTolerances();
 	float lastDist = FLT_MAX;
@@ -329,10 +334,14 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 	while (step<maxNStep)
 	{
 		VectorXf dTheta = this->computeStep(stepSize);
+		
 		for (unsigned int i=0; i<nodes.size();i++)
         {
-                nodes[i]->setJointValue(nodes[i]->getJointValue() + dTheta[i]);
+			jv[i] = (nodes[i]->getJointValue() + dTheta[i]);
+            //nodes[i]->setJointValue(nodes[i]->getJointValue() + dTheta[i]);
 		}
+		robot->setJointValues(rns,jv);
+		
 		// check tolerances
 		if (checkTolerances())
 		{

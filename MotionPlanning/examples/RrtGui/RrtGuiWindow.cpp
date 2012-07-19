@@ -392,10 +392,10 @@ void RrtGuiWindow::selectStart(int nr)
 	if (nr<0 || nr>=(int)configs.size())
 		return;
 	if (robotStart)
-		configs[nr]->applyToRobot(robotStart);
+		robotStart->setJointValues(configs[nr]);
 	if (robot)
-		configs[nr]->applyToRobot(robot);
-	configs[nr]->setJointValues();
+		robot->setJointValues(configs[nr]);
+	//configs[nr]->setJointValues();
 	if (rns)
 		rns->getJointValues(startConfig);
 }
@@ -405,8 +405,8 @@ void RrtGuiWindow::selectGoal(int nr)
 	if (nr<0 || nr>=(int)configs.size())
 		return;
 	if (robotGoal)
-		configs[nr]->applyToRobot(robotGoal);
-	configs[nr]->setJointValues();
+		robotGoal->setJointValues(configs[nr]);
+	robot->setJointValues(configs[nr]);
 	if (rns)
 		rns->getJointValues(goalConfig);
 }
@@ -573,7 +573,7 @@ void RrtGuiWindow::sliderSolution( int pos )
 	float p = (float)pos/1000.0f;
 	Eigen::VectorXf iPos;
 	s->interpolate(p,iPos);
-	rns->setJointValues(iPos);
+	robot->setJointValues(rns,iPos);
 	redraw();
 }
 

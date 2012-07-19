@@ -134,11 +134,8 @@ void showRobotWindow::resetSceneryAll()
 {
 	if (!robot)
 		return;
-
-	for (unsigned int i=0;i<allRobotNodes.size();i++)
-	{
-		allRobotNodes[i]->setJointValue(0);
-	}
+	std::vector<float> jv(allRobotNodes.size(),0.0f);
+	robot->setJointValues(allRobotNodes,jv);
 
 	selectJoint(UI.comboBoxJoint->currentIndex());
 }
@@ -352,7 +349,7 @@ void showRobotWindow::jointValueChanged(int pos)
 	if (nr<0 || nr>=(int)currentRobotNodes.size())
 		return;
 	float fPos = currentRobotNodes[nr]->getJointLimitLo() + (float)pos / 1000.0f * (currentRobotNodes[nr]->getJointLimitHi() - currentRobotNodes[nr]->getJointLimitLo());
-	currentRobotNodes[nr]->setJointValue(fPos);
+	robot->setJointValue(currentRobotNodes[nr],fPos);
 	UI.lcdNumberJointValue->display((double)fPos);
 
 }

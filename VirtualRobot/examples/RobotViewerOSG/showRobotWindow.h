@@ -53,6 +53,7 @@
 
 class showRobotWindow : public QMainWindow
 {
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	Q_OBJECT
 public:
 	showRobotWindow(std::string &sRobotFilename, Qt::WFlags flags = 0);

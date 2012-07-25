@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Robot Type="MyDemoRobotType" StandardName="ExampleRobo" RootNode="Hand R Base">
+<Robot Type="ArmarIII RightHand" RootNode="Hand R Base">
 
 
     <RobotNode name="Hand R Base">
@@ -52,7 +52,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/palm1_r.iv</File>
 		</CollisionModel>
-		
+	    <Physics>
+			<Mass value="800" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>		
 		<Child name="Hand Palm 2 R"/>
 		<Child name="Thumb R"/>
 	</RobotNode>
@@ -75,7 +78,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/palm2_r.iv</File>
 		</CollisionModel>
-		
+	    <Physics>
+			<Mass value="800" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>		
 		<Child name="Pinky R"/>
 		<Child name="Ring R"/>
 		<Child name="Middle R"/>
@@ -118,7 +124,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/thumb_r1.iv</File>
 		</CollisionModel>
-		
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 		<Child name="Thumb R J1"/>
 	</RobotNode>
 	
@@ -141,6 +150,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/thumb_r2.iv</File>
 		</CollisionModel>
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 	</RobotNode>
 	
 	<RobotNode name="Pinky R">
@@ -179,6 +192,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/pinky_r1.iv</File>
 		</CollisionModel>
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 		
 		<Child name="Pinky R J1"/>
 	</RobotNode>
@@ -202,6 +219,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/pinky_r2.iv</File>
 		</CollisionModel>
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 	</RobotNode>
 	
 	<RobotNode name="Ring R">
@@ -240,6 +261,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/ring_r1.iv</File>
 		</CollisionModel>
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 		
 		<Child name="Ring R J1"/>
 	</RobotNode>
@@ -263,6 +288,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/ring_r2.iv</File>
 		</CollisionModel>
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 	</RobotNode>
 	
 	<RobotNode name="Middle R">
@@ -301,6 +330,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/middle_r1.iv</File>
 		</CollisionModel>
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 		
 		<Child name="Middle R J1"/>
 	</RobotNode>
@@ -324,6 +357,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/middle_r2.iv</File>
 		</CollisionModel>
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 	</RobotNode>
 	
 	<RobotNode name="Index R">
@@ -362,6 +399,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/index_r1.iv</File>
 		</CollisionModel>
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 		
 		<Child name="Index R J1"/>
 	</RobotNode>
@@ -385,6 +426,10 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/index_r2.iv</File>
 		</CollisionModel>
+	    <Physics>
+			<Mass value="500" unit="g"/>
+			<CoM location="VisualizationBBoxCenter"/>
+		</Physics>
 	</RobotNode>
 	
 	<RobotNodeSet name="RightHandColModel" kinematicRoot="Hand R Base" tcp="TCP R">

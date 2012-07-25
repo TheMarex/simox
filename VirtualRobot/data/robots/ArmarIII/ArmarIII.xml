@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Robot Type="Armar3" StandardName="Armar3" RootNode="Armar3_Base">
+<Robot Type="Armar3" RootNode="Armar3_Base">
 	
 	<RobotNode name="Armar3_Base">
 		<Visualization enable="true">
 			<CoordinateAxis  type="Inventor" enable="false" scaling="20"/>
 		</Visualization>
-		<Physics>
-        <CoM location="Joint"/>
-        <Mass value="1.340" units="kg" />
-    </Physics>
 		<Child name="Dummy_Platform"/>
 	</RobotNode>
 	
@@ -24,22 +20,6 @@
 		<Joint type="prismatic">
 			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
 			<Limits unit="mm" lo="-10000" hi="10000"/>
-			<!--
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="100"/>
-				</Transform>
-			</PreJointTransform>
-			-->
-			<!--
-			<Axis x="1" y="0" z="0"/>-->   <!-- definition of movement axis if DH not defined ?-->
-			<!--
-			<PostJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PostJointTransform>
-			-->
 		</Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -76,9 +56,9 @@
 			<File type="Inventor">fullmodel/platform.iv</File>
 		</Visualization>
 		<Physics>
-        <CoM location="Joint"/>
-        <Mass value="75" units="kg" />
-    </Physics>
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="75" units="kg" />
+        </Physics>
 		<CollisionModel>
 			<File type="Inventor">collisionModel/platform.iv</File>
 		</CollisionModel>
@@ -95,10 +75,7 @@
 				</Transform>
 			</PreJointTransform>
 		</Joint>
-		<Physics>
-        <CoM location="Joint"/>
-        <Mass value="0.793" units="kg" />
-    </Physics>
+
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/platform_pitch_link.iv</File>
@@ -111,10 +88,7 @@
 			<Axis x="0" y="1" z="0"/>
 			<Limits unit="degree" lo="-45" hi="45"/>
 		</Joint>
-		<Physics>
-        <CoM location="Joint"/>
-        <Mass value="0.415" units="kg" />
-    </Physics>
+
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/platform_roll_link.iv</File>
@@ -128,9 +102,9 @@
 			<Limits unit="degree" lo="-45" hi="45"/>
 		</Joint>
 		<Physics>
-        <CoM location="Joint"/>
-        <Mass value="15.415" units="kg" />
-    </Physics>
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="15.415" units="kg" />
+        </Physics>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/torso.iv</File>

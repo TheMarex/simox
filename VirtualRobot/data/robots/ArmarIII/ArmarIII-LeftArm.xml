@@ -18,8 +18,8 @@
 			<Limits unit="degree" lo="-106.91" hi="42.8"/>
 		</Joint>
 		<Physics>
-            <CoM location="Joint"/>
-            <Mass value="1.11988000" units="kg" />
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="3.65" units="kg" />
         </Physics>
         <Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -36,10 +36,10 @@
 			<DH a="0" d="0" theta="75" alpha="90" units="degree"/>
 			<Limits unit="degree" lo="-94.62" hi="13.85"/>  <!-- ?! -->
 		</Joint>
-		<Physics>
+		<!--Physics>
             <CoM location="Joint"/>
             <Mass value="2.54491000" units="kg" />
-        </Physics>
+        </Physics-->
         <Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/shoulder2_l_rot.iv</File>
@@ -75,10 +75,10 @@
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/elbow_l.iv</File>
 		</Visualization>
-		<Physics>
+		<!--Physics>
             <CoM location="Joint"/>
             <Mass value="1.15744000" units="kg" />
-        </Physics>
+        </Physics-->
 		<!-- TODO elbow_l.iv does not exist (currently not needed)-->
 		<!--<CollisionModel>-->
 			<!--<File type="Inventor">collisionModel/elbow_l.iv</File>-->
@@ -94,7 +94,7 @@
 		</Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
-            <Mass value="0.76566087" units="kg" />
+            <Mass value="2.26566087" units="kg" />
         </Physics>
         <Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -111,17 +111,17 @@
 			<DH a="0" d="0" theta="-90" alpha="-90" units="degree"/>
 			<Limits unit="degree" lo="-29.36" hi="24.11"/>
 		</Joint>
-		<Physics>
+		<!--Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="1.29945309" units="kg" />
-        </Physics>
+        </Physics-->
         <Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/wrist1_l.iv</File>
 		</Visualization>
-		<CollisionModel>
+		<!--CollisionModel>
 			<File type="Inventor">collisionModel/wrist1_l.iv</File>
-		</CollisionModel>
+		</CollisionModel-->
 		<Child name="Wrist 2 L"/>
 	</RobotNode>
 	
@@ -131,8 +131,8 @@
 			<Limits unit="degree" lo="-38.4" hi="44.32"/>
 		</Joint>
 		<Physics>
-            <CoM location="Joint"/>
-            <Mass value="1.13047000" units="kg" />
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="2.59945309" units="kg" />
         </Physics>
         <Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>

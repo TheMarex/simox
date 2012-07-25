@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Robot Type="MyDemoRobotType" StandardName="ExampleRobo" RootNode="Head Base">
+<Robot Type="ArmarIII Head" RootNode="Head Base">
     
     <RobotNode name="Head Base">
         <Joint type="revolute">
             <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
         </Joint>
-        <Visualization enable="true">
-            <CoordinateAxis type="Inventor" enable="false" scaling="1" text="Axis1"/>
-        </Visualization>
         <Child name="Neck_1_Pitch"/>
     </RobotNode>
 
@@ -16,10 +13,7 @@
         <Joint type="revolute">
             <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
         </Joint>
-        <Physics>
-            <CoM location="Joint"/>
-            <Mass value="1.41482052" units="kg" />
-        </Physics>
+
         <Visualization>
             <File type="Inventor">fullmodel/neck_pitch_link.iv</File>           
         </Visualization>
@@ -30,10 +24,6 @@
         <Joint type="revolute">
             <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
         </Joint>
-        <Physics>
-            <CoM location="Joint"/>
-            <Mass value="1.41482052" units="kg" />
-        </Physics>
         <Visualization>
             <File type="Inventor">fullmodel/neck_yaw_link.iv</File>
         </Visualization>
@@ -44,10 +34,6 @@
         <Joint type="revolute">
             <DH theta="90" d="120" a="0"  alpha="90" units="degree"/>
         </Joint>
-        <Physics>
-            <CoM location="Joint"/>
-            <Mass value="1.41482052" units="kg" />
-        </Physics>
         <Visualization>
             <File type="Inventor">fullmodel/neck_roll_link.iv</File>
         </Visualization>
@@ -59,8 +45,8 @@
             <DH theta="0" d="0" a="0"  alpha="-90" units="degree"/>
         </Joint>
         <Physics>
-            <CoM location="Joint"/>
-            <Mass value="2.29877000" units="kg" />
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="6.79877000" units="kg" />
         </Physics>
         <Visualization>
             <File type="Inventor">fullmodel/head.iv</File>

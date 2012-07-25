@@ -199,6 +199,11 @@ void RobotNodePrismatic::updateVisualizationPose( const Eigen::Matrix4f &globalP
 	jointValue = dist - jointValueOffset;
 }
 
+Eigen::Vector3f RobotNodePrismatic::getJointTranslationDirectionJointCoordSystem() const
+{
+	return jointTranslationDirection;
+}
+
 
 
 } // namespace

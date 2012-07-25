@@ -275,6 +275,11 @@ Eigen::Matrix4f SceneObject::getGlobalPose() const
 	 return globalPose;
 }
 
+Eigen::Matrix4f SceneObject::getGlobalPoseVisualization() const
+{
+	 return globalPose;
+}
+
 Eigen::Vector3f SceneObject::getCoMLocal()
 {
 	return physics.localCoM;
@@ -495,5 +500,6 @@ void SceneObject::setInertiaMatrix( const Eigen::Matrix3f &im )
 {
 	physics.intertiaMatrix = im;
 }
+
 
 } // namespace

@@ -93,7 +93,12 @@ public:
 		In global coord system.
 		\param coordSystem When not set the direction is transformed to global coord system. Otherwise any scene object can be used as coord system.
 	*/
-    Eigen::Vector3f getJointTranslationDirection(const SceneObjectPtr coordSystem = SceneObjectPtr()) const;
+	Eigen::Vector3f getJointTranslationDirection(const SceneObjectPtr coordSystem = SceneObjectPtr()) const;
+
+	/*!
+		This is the original joint axis, without any transformations applied.
+	*/
+	Eigen::Vector3f getJointTranslationDirectionJointCoordSystem() const;
 
 protected:
 	/*!

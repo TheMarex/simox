@@ -304,6 +304,7 @@ protected:
 		\param updateChildren Usually it is assumed that all RobotNodes are updated this way (updateChildren=false). If not, the children poses can be updated according to this node (updateCHildren=true).
 	*/
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, bool updateChildren = false);
+	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, float jointValue, bool updateChildren = false);
 
 	///////////////////////// SETUP ////////////////////////////////////
 	mutable boost::recursive_mutex mutex; 

@@ -185,7 +185,14 @@ void RobotNodeRevolute::updateVisualizationPose( const Eigen::Matrix4f &globalPo
 
 	// jointRotationAxis is given in local joint coord system
 	// -> we need the pose in joint coord system
-	Eigen::Matrix4f localPose = getGlobalPoseJoint().inverse() * globalPose; //toLocalCoordinateSystem(globalPose);
+
+	Eigen::Matrix4f initFrame;
+	if (this->getParent())
+		initFrame = this->getParent()->getGlobalPose() * getPreJointTransformation();
+	else
+		initFrame = getPreJointTransformation();
+
+	Eigen::Matrix4f localPose = initFrame.inverse() * globalPose; //toLocalCoordinateSystem(globalPose);
 
 	Eigen::Vector3f localAxis;
 	float angle;
@@ -200,6 +207,11 @@ void RobotNodeRevolute::updateVisualizationPose( const Eigen::Matrix4f &globalPo
 
 	// consider offset
 	jointValue = angle - jointValueOffset;
+}
+
+Eigen::Vector3f RobotNodeRevolute::getJointRotationAxisInJointCoordSystem() const
+{
+	return jointRotationAxis;
 }
 
 } // namespace

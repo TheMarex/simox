@@ -18,5 +18,10 @@ void RobotNodeActuator::updateVisualizationPose( const Eigen::Matrix4f& pose, bo
 	robotNode->updateVisualizationPose(pose, updateChildren);
 }
 
+void RobotNodeActuator::updateVisualizationPose( const Eigen::Matrix4f& pose, float jointValue, bool updateChildren )
+{
+	robotNode->updateVisualizationPose(pose, jointValue, updateChildren);
+}
+
 
 } // namespace

@@ -120,9 +120,19 @@ public:
 	void setName(const std::string &name);
 
 	/*!
-		The global pose defines the position of the joint in the world. This value is used for visualization.
+		The global pose defines the position of the object in the world. For non-joint objects it is identical with the visualization frame.
 	*/
 	virtual Eigen::Matrix4f getGlobalPose() const;
+	/*!
+		The global pose defines the position of the object's visualization in the world. 
+		Since RobotNodes do have a postJointTransformation, this value may differ from getGlobalPose(). 
+		For ManipulationObjects and Obstacles it is the same.
+	*/
+	virtual Eigen::Matrix4f getGlobalPoseVisualization() const;
+
+	/*!
+		Update the pose of this object. The visualization and collision models are updated accordingly.
+	*/
 	virtual void setGlobalPose(const Eigen::Matrix4f &pose);
 
 	virtual CollisionModelPtr getCollisionModel();
@@ -265,7 +275,7 @@ public:
 		 if (visualization)
 		     visualisationNode = visualization->getCoinVisualization();
 
-		@see CoinVisualization::getCoinVisualization() for convenient access!
+		@see CoinVisualizationFactory::getCoinVisualization() for convenient access!
 	*/
 	template <typename T> boost::shared_ptr<T> getVisualization(SceneObject::VisualizationType visuType = SceneObject::Full);
 

@@ -94,6 +94,11 @@ public:
 		\param coordSystem When not set the axis is transformed to global coordinate system. Otherwise any scene object can be used as coord system.
 	*/
 	Eigen::Vector3f getJointRotationAxis(const SceneObjectPtr coordSystem = SceneObjectPtr()) const;
+
+	/*!
+		This is the original joint axis, without any transformations applied.
+	*/
+	Eigen::Vector3f getJointRotationAxisInJointCoordSystem() const;
 protected:
 	/*!
 		Can be called by a RobotNodeActuator in order to set the pose of this node.

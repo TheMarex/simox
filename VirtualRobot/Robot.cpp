@@ -490,11 +490,12 @@ VirtualRobot::CollisionCheckerPtr Robot::getCollisionChecker()
 	return (*robotNodes.begin())->getCollisionChecker();
 }
 
-void LocalRobot::setGlobalPose(const Eigen::Matrix4f &globalPose )
+void LocalRobot::setGlobalPose(const Eigen::Matrix4f &globalPose, bool applyValues )
 {
 	WriteLock(mutex,use_mutex);
 	this->globalPose = globalPose;
-	applyJointValuesNoLock();
+	if (applyValues)
+		applyJointValuesNoLock();
 }
 
 Eigen::Matrix4f LocalRobot::getGlobalPose()

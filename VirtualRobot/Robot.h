@@ -191,7 +191,7 @@ public:
 	/*!
 		Set the global position of this robot
 	*/
-	virtual void setGlobalPose(const Eigen::Matrix4f &globalPose) = 0;
+	virtual void setGlobalPose(const Eigen::Matrix4f &globalPose, bool applyValues = true) = 0;
 
 	/*!
 		Set the global pose of this robot so that the RobotNode node is at position globalPoseNode
@@ -408,7 +408,7 @@ public:
 	virtual EndEffectorPtr getEndEffector(const std::string& endEffectorName);
 	virtual void getEndEffectors(std::vector<EndEffectorPtr> &storeEEF);
 
-	virtual void setGlobalPose(const Eigen::Matrix4f &globalPose);
+	virtual void setGlobalPose(const Eigen::Matrix4f &globalPose, bool applyValues = true);
 	virtual Eigen::Matrix4f getGlobalPose();
 
 

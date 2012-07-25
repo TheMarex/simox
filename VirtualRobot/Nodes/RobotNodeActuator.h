@@ -46,6 +46,7 @@ public:
 	virtual ~RobotNodeActuator();
 
 	virtual void updateVisualizationPose (const Eigen::Matrix4f& pose, bool updateChildren = false);
+	virtual void updateVisualizationPose (const Eigen::Matrix4f& pose, float jointValue, bool updateChildren = false);
 
 protected:
 

@@ -548,8 +548,23 @@ float RobotNode::getMaxTorque()
 	return maxTorque;
 }
 
+void RobotNode::updateVisualizationPose( const Eigen::Matrix4f &globalPose, float jointValue, bool updateChildren )
+{
+	updateVisualizationPose(globalPose,updateChildren);
+	this->jointValue = jointValue;
+}
 void RobotNode::updateVisualizationPose( const Eigen::Matrix4f &globalPose, bool updateChildren )
 {
+	// check if we are a root node
+	if (!getParent())
+	{
+		RobotPtr rob = getRobot();
+		if (rob && rob->getRootNode() == shared_from_this())
+		{
+			Eigen::Matrix4f gpPre = getPreJointTransformation().inverse() * globalPose;
+			rob->setGlobalPose(gpPre, false);
+		}
+	}
 	{
 		this->globalPose = globalPose;// * getPreJointTransformation();
 		globalPosePostJoint = this->globalPose*getPostJointTransformation();

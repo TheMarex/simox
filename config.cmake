@@ -35,7 +35,7 @@ IF (NOT Simox_CONFIGURED)
     	SET(VirtualRobot_INSTALL_LIB_DIR ${Simox_INSTALL_LIB_DIR})
         SET(VirtualRobot_INSTALL_BIN_DIR ${Simox_INSTALL_BIN_DIR})
         SET(VirtualRobot_INSTALL_HEADER_DIR ${Simox_INSTALL_HEADER_DIR})
-        include (VirtualRobot/config.cmake)
+        include (${CMAKE_CURRENT_LIST_DIR}/VirtualRobot/config.cmake)
         # set SIMOX vars according to VirtualRobot config
        	SET(Simox_VISUALIZATION ${VirtualRobot_VISUALIZATION})
 		SET(Simox_USE_COIN_VISUALIZATION ${VirtualRobot_USE_COIN_VISUALIZATION})

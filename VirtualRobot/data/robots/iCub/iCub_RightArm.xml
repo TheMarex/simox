@@ -54,7 +54,7 @@
 			<File type="Inventor">model/Arms/rightUpperArmCol.iv</File>
 		</CollisionModel>
 		<Physics>
-			<Mass value="1" unit="kg"/>
+			<Mass value="2" unit="kg"/>
 		</Physics>
 		<Child name="Right Arm Elbow1"/>
 	</RobotNode>
@@ -80,7 +80,7 @@
 			<File type="Inventor">model/Arms/rightLowerArmCol.iv</File>
 		</CollisionModel>
 		<Physics>
-			<Mass value="1" unit="kg"/>
+			<Mass value="2" unit="kg"/>
 		</Physics>
 		<Child name="Right Arm Wrist1"/>
 	</RobotNode>

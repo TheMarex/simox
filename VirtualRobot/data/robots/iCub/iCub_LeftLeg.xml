@@ -52,13 +52,16 @@
 		<CollisionModel>
 			<File type="Inventor">model/Legs/leftUpperLegCol.iv</File>
 		</CollisionModel>
+		<Physics>
+			<Mass value="3" unit="kg"/>
+		</Physics>
 		<Child name="Left Leg Knee"/>
 	</RobotNode>
 	
 	
 	<RobotNode name="Left Leg Knee">
 		<Joint type="revolute">
-			<DH a="-213" d="0" theta="90" alpha="180" units="degree"/>
+			<DH a="-213" d="0" theta="90" alpha="0" units="degree"/>
 			<Limits unit="degree" lo="-125" hi="0"/>
 		</Joint>
 		<Visualization enable="true">
@@ -67,6 +70,9 @@
 		<CollisionModel>
 			<File type="Inventor">model/Legs/leftLowerLegCol.iv</File>
 		</CollisionModel>
+		<Physics>
+			<Mass value="3" unit="kg"/>
+		</Physics>
 		<Child name="Left Leg Foot1"/>
 	</RobotNode>
 	
@@ -91,22 +97,26 @@
 		<CollisionModel>
 			<File type="Inventor">model/Legs/leftFootCol.iv</File>
 		</CollisionModel>
+		<Physics>
+			<Mass value="2" unit="kg"/>
+		</Physics>
 		<Child name="Left Leg Foot TCP"/>
 	</RobotNode>
 	
 	<RobotNode name="Left Leg Foot TCP">
-		<!--Joint type="fixed">
+		<Joint type="fixed">
 			<PreJointTransform>
 				<Transform>
-					<matrix4x4>
+				    <Translation x="0" y="0" z="-60"/>
+					<!--matrix4x4>
 						<row1 c1="0" c2="0"  c3="-1" c4="0"/>
 						<row2 c1="0" c2="-1"  c3="0" c4="0"/>
 						<row3 c1="-1" c2="0"  c3="0" c4="0"/>
 						<row4 c1="0" c2="0"  c3="0" c4="1"/>
-					</matrix4x4>
+					</matrix4x4-->
 				</Transform>
 			</PreJointTransform>
-		</Joint-->
+		</Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>

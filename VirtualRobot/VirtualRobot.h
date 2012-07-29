@@ -227,4 +227,4 @@ namespace VirtualRobot
 
 } // namespace
 
-#endif // _VirtualRobot_RobotNode_h_
+#endif // _VirtualRobot_BasicDefinitions_h_

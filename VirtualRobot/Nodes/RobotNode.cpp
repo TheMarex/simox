@@ -1,7 +1,8 @@
 
 #include "RobotNode.h"
-#include "../Robot.h"
 #include "../VirtualRobotException.h"
+#include "../Robot.h"
+#include "../RobotNodeSet.h"
 #include "../Visualization/VisualizationFactory.h"
 #include "../Visualization/Visualization.h"
 #include "../Visualization/TriMeshModel.h"
@@ -579,6 +580,24 @@ void RobotNode::updateVisualizationPose( const Eigen::Matrix4f &globalPose, bool
 		for (std::vector< RobotNodePtr >::iterator i = children.begin(); i!= children.end(); i++ )
 			(*i)->applyJointValue();
 	}
+}
+
+Eigen::Matrix4f RobotNode::getGlobalPoseJoint() const
+{
+	ReadLockPtr lock = getRobot()->getReadLock();
+	return globalPose;
+}
+
+Eigen::Matrix4f RobotNode::getGlobalPoseVisualization() const
+{
+	ReadLockPtr lock = getRobot()->getReadLock();
+	return globalPose;
+}
+
+Eigen::Matrix4f RobotNode::getGlobalPose() const
+{
+	ReadLockPtr lock = getRobot()->getReadLock();
+	return globalPosePostJoint;
 }
 
 

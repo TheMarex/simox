@@ -31,6 +31,7 @@
 #include "../CollisionDetection/CollisionModel.h"
 #include "../Transformation/DHParameter.h"
 #include "../Visualization/VisualizationNode.h"
+#include "ConditionedLock.h"
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -44,7 +45,6 @@
 
 namespace VirtualRobot
 {
-class Robot;
 class RobotNodeActuator;
 /*!
 	Each RobotNode owns three transformations:
@@ -136,28 +136,28 @@ public:
 	*/
 	virtual void setGlobalPose( const Eigen::Matrix4f &pose );
 
-
 	/*
 		The global pose of a joint is not identical with the pose of it's visualization, 
 		since the visualization is linked to the joint coordinate system but the complete 
 		transformation of the robot node must consider the post-joint transformation.
 		So, the ScenObject's getGlobalPose method is overwritten in order to serve the valid global pose.
 	*/
-	virtual Eigen::Matrix4f getGlobalPose() const {return globalPosePostJoint;}
+	virtual Eigen::Matrix4f getGlobalPose() const;
 
 	/*!
 		The visualization is linked to this globalPose of this node.
 		The end point of this node additionally considers the postJointTransformation.
 		@see getGlobalPose()
 	*/
-	virtual Eigen::Matrix4f getGlobalPoseVisualization() const {return globalPose;}
+	virtual Eigen::Matrix4f getGlobalPoseVisualization() const;
 
 	/*!
 		The joint of this robot node is located this pose.
 		The end point of this node additionally considers the postJointTransformation 
 		@see getGlobalPose()
 	*/
-	virtual Eigen::Matrix4f getGlobalPoseJoint() const {return globalPose;}
+	virtual Eigen::Matrix4f getGlobalPoseJoint() const;
+
 
 	/*!
 		Display the coordinate system of this RobotNode. This is the global pose of it's visualization with applying the postJoint transformation.
@@ -307,8 +307,8 @@ protected:
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, float jointValue, bool updateChildren = false);
 
 	///////////////////////// SETUP ////////////////////////////////////
-	mutable boost::recursive_mutex mutex; 
-	bool use_mutex;
+	//mutable boost::recursive_mutex mutex; 
+	//bool use_mutex;
 
 	RobotNode(){};
 	//virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo);

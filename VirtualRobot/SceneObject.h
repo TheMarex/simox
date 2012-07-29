@@ -53,7 +53,7 @@ public:
 		enum CoMLocation
 		{
 			eCustom,			//!< Not related to 3d model, the position is set by hand
-			eVisuBBoxCenter		//!< The CoM position is automatically computed from the bounding box of the visualization model
+			eVisuBBoxCenter		//!< The CoM position is automatically computed from the bounding box of the collision model
 		};
 		Physics()
 		{
@@ -61,7 +61,7 @@ public:
 			localCoM.setZero();
 			intertiaMatrix.setIdentity();
 			massKg = 0.0f;
-			comLocation = eCustom;
+			comLocation = eVisuBBoxCenter;
 		}
 		void print()
 		{

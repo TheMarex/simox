@@ -47,12 +47,12 @@
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="1" units="kg" />
         </Physics>
-        <Child name="Joint3a"/>
-	</RobotNode>
-	
-	<RobotNode name="Joint3a">
         <Child name="Joint3"/>
 	</RobotNode>
+
+  <!-->RobotNode name="Joint3a">
+        <Child name="Joint3"/>
+	</RobotNode-->
 	
 	<RobotNode name="Joint3">
 		<Joint type="fixed">

@@ -301,24 +301,24 @@ bool SceneObject::initializePhysics()
 		// check if physics node's CoM location hast to be calculated
 	if (physics.comLocation == SceneObject::Physics::eVisuBBoxCenter)
 	{
-		if (!visualizationModel && !collisionModel)
+		/*if (!visualizationModel && !collisionModel)
 		{
-			VR_WARNING << "Physics tag CoM is set to eVisuBBoxCenter, but no visualization model is loaded, setting CoM to local position (0/0/0)" << endl;
-		} else
+			VR_WARNING << getName() << ": Physics tag CoM is set to eVisuBBoxCenter, but no visualization model is loaded, setting CoM to local position (0/0/0)" << endl;
+		} else*/
+		if (visualizationModel || collisionModel)
 		{
 			TriMeshModelPtr tm;
 			// since globalPose and visualization's global pose may differ, we transform com to local coord system (globalpose)
 			Eigen::Matrix4f posVisu;
-			if (visualizationModel)
+			if (collisionModel)
+			{
+				tm = collisionModel->getTriMeshModel();
+				posVisu = collisionModel->getGlobalPose();
+			} else
 			{
 				tm = visualizationModel->getTriMeshModel();
 				posVisu = visualizationModel->getGlobalPose();
-			} else
-			{
-				VR_WARNING << "Physics tag CoM is set to eVisuBBoxCenter, but no visualization model is loaded, using collision model" << endl;
-				tm = collisionModel->getTriMeshModel();
-				posVisu = collisionModel->getGlobalPose();
-			}
+			} 
 			if (!tm)
 			{
 				VR_WARNING << "Could not create trimeshmodel for CoM computation, setting CoM to local position (0/0/0)" << endl;

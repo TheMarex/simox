@@ -1,6 +1,7 @@
 #include "WorkspaceRepresentation.h"
 #include "../VirtualRobotException.h"
 #include "../Robot.h"
+#include "../RobotNodeSet.h"
 #include "../Compression/CompressionRLE.h"
 #include "../Compression/CompressionBZip2.h"
 #include "../SceneObjectSet.h"

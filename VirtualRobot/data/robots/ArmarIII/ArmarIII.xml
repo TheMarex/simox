@@ -56,7 +56,7 @@
 			<File type="Inventor">fullmodel/platform.iv</File>
 		</Visualization>
 		<Physics>
-            <CoM location="VisualizationBBoxCenter"/>
+            <CoM location="Joint" x="0" y="0" z="200"/>
             <Mass value="75" units="kg" />
         </Physics>
 		<CollisionModel>

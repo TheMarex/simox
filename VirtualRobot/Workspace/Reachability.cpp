@@ -1,6 +1,7 @@
 #include "Reachability.h"
 #include "../VirtualRobotException.h"
 #include "../Robot.h"
+#include "../RobotNodeSet.h"
 #include "../ManipulationObject.h"
 #include "../Grasping/Grasp.h"
 #include "../Grasping/GraspSet.h"

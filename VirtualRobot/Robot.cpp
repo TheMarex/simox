@@ -1,5 +1,6 @@
 
 #include "Robot.h"
+#include "RobotConfig.h"
 #include "Trajectory.h"
 #include "VirtualRobotException.h"
 #include "CollisionDetection/CollisionChecker.h"

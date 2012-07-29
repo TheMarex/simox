@@ -1,7 +1,8 @@
 
 #include "Grasp.h"
-#include <VirtualRobot/Robot.h>
-#include <VirtualRobot/VirtualRobotException.h>
+#include "../RobotConfig.h"
+#include "..//Robot.h"
+#include "../VirtualRobotException.h"
 #include <iomanip>
 
 namespace VirtualRobot 

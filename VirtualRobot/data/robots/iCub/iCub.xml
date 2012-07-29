@@ -64,10 +64,20 @@
 		<Joint type="fixed">
 			<DH a="0" d="-143.3" theta="0" alpha="0" units="degree"/>
 		</Joint>
+	
+		<!--Child name="UpperBodyModel"/-->
+		<Visualization enable="true">
+			<File type="Inventor">model/upperbody.iv</File>
+		</Visualization>
+		<CollisionModel>
+			<File type="Inventor">model/upperbodyCol.iv</File>
+		</CollisionModel>
 		<Physics>
-			<Mass value="5" unit="kg"/>
+			<Mass value="8" unit="kg"/>
 		</Physics>
-		<Child name="UpperBodyModel"/>
+		
+		
+		
 		<ChildFromRobot>
 			<File>iCub_Head.xml</File>
 		</ChildFromRobot>
@@ -118,14 +128,17 @@
 	
 
 		
-	<RobotNode name="UpperBodyModel">
+	<!--RobotNode name="UpperBodyModel">
 		<Visualization enable="true">
 			<File type="Inventor">model/upperbody.iv</File>
 		</Visualization>
 		<CollisionModel>
 			<File type="Inventor">model/upperbodyCol.iv</File>
 		</CollisionModel>
-	</RobotNode>
+		<Physics>
+			<Mass value="8" unit="kg"/>
+		</Physics>
+	</RobotNode-->
 
 
 
@@ -161,12 +174,12 @@
 
 	
 	<RobotNodeSet name="UpperbodyHeadColModel">
-		<Node name="UpperBodyModel"/>
+		<Node name="CenterArms"/>
 		<Node name="Neck3"/>
 	</RobotNodeSet>
 	
 	<RobotNodeSet name="BodyHeadLegsColModel">
-		<Node name="UpperBodyModel"/>
+		<Node name="CenterArms"/>
 		<Node name="LowerBody"/>
 		<Node name="Neck3"/>
 		<Node name="Left Leg Waist3"/>

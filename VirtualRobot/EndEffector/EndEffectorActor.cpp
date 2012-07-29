@@ -9,6 +9,7 @@
 #include "../VirtualRobotException.h"
 #include "../Nodes/RobotNode.h"
 #include "../Robot.h"
+#include "../RobotConfig.h"
 #include "../SceneObjectSet.h"
 #include "../CollisionDetection/CollisionChecker.h"
 #include "EndEffector.h"

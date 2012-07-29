@@ -119,6 +119,8 @@ protected:
 	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker);
 };
 
+typedef boost::shared_ptr<RobotNodeRevolute> RobotNodeRevolutePtr;
+
 } // namespace VirtualRobot
 
 #endif // _VirtualRobot_RobotNodeRevolute_h_

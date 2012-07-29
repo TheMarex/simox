@@ -24,9 +24,8 @@
 #define _VirtualRobot_Robot_h_
 
 #include "VirtualRobotImportExport.h"
+#include "SceneObject.h"
 #include "Nodes/RobotNode.h"
-#include "RobotNodeSet.h"
-#include "RobotConfig.h"
 #include "Nodes/ConditionedLock.h"
 
 #include <boost/enable_shared_from_this.hpp>
@@ -47,6 +46,7 @@
 namespace VirtualRobot
 {
 class Visualization;
+class RobotNode;
 
 /*!
 	This is the main object defining the kinematic structure of a robot.
@@ -245,7 +245,7 @@ public:
 
 		Exemplary usage:
 		{
-			ReadLockPtr lock = robot->getReadlock();
+			ReadLockPtr lock = robot->getReadLock();
 			// now the mutex is locked
 			
 			// access data
@@ -260,7 +260,7 @@ public:
 
 		Exemplary usage:
 		{
-			WriteLockPtr lock = robot->getReadlock();
+			WriteLockPtr lock = robot->getWriteLock();
 			// now the mutex is locked
 			
 			// access data

@@ -31,6 +31,9 @@
                 <CollisionModel>
 			<File type="Inventor">model/Head/headCol.iv</File>
 		</CollisionModel>
+		<Physics>
+			<Mass value="5" unit="kg"/>
+		</Physics>
 		<Child name="EyesCenter"/>
 	</RobotNode>
 

@@ -161,7 +161,7 @@ void BulletOpenGLViewer::myinit(void)
 
 void BulletOpenGLViewer::enableContraintsDebugDrawing()
 {
-	m_dynamicsWorld->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawConstraints|btIDebugDraw::DBG_DrawConstraintLimits);
+	m_dynamicsWorld->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawConstraints|btIDebugDraw::DBG_DrawConstraintLimits|btIDebugDraw::DBG_DrawContactPoints);
 
 }
 

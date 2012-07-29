@@ -59,7 +59,9 @@ public:
 	virtual void setPose(const Eigen::Matrix4f &pose);
 
 	Eigen::Vector3f getCom(){return com;}
-	
+
+	virtual Eigen::Vector3f getLinearVelocity();
+	virtual Eigen::Vector3f getAngularVelocity();
 protected:
 
 	btConvexHullShape* createConvexHullShape(VirtualRobot::TriMeshModelPtr trimesh);

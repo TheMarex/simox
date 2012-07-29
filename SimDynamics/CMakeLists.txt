@@ -33,6 +33,7 @@ if (SimDynamics_DYNAMICSENGINE)
     	DynamicsEngine/BulletEngine/BulletObject.cpp
     	DynamicsEngine/BulletEngine/BulletRobot.cpp
     	DynamicsEngine/BulletEngine/SimoxMotionState.cpp
+     	DynamicsEngine/BulletEngine/SimoxCollisionDispatcher.cpp
     	)
     
     	SET(INCLUDES
@@ -42,6 +43,7 @@ if (SimDynamics_DYNAMICSENGINE)
     	DynamicsEngine/BulletEngine/BulletObject.h
     	DynamicsEngine/BulletEngine/BulletRobot.h
     	DynamicsEngine/BulletEngine/SimoxMotionState.h
+     	DynamicsEngine/BulletEngine/SimoxCollisionDispatcher.h
     	)
     	
     	if (SimDynamics_BULLET_OpenGL)

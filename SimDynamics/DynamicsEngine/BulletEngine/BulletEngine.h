@@ -27,6 +27,7 @@
 #include "BulletRobot.h"
 
 #include "btBulletDynamicsCommon.h"
+#include <boost/enable_shared_from_this.hpp>
 
 namespace SimDynamics
 {
@@ -35,7 +36,7 @@ namespace SimDynamics
 	This class encapsulates all calls to the bullet physics engine. 
 	Usually there is no need to instantiate this object by your own, it is automatically created when calling DynamicsWorld::Init().
 */
-class SIMDYNAMICS_IMPORT_EXPORT BulletEngine : public DynamicsEngine
+class SIMDYNAMICS_IMPORT_EXPORT BulletEngine : public DynamicsEngine, public boost::enable_shared_from_this<BulletEngine>
 {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -65,6 +66,13 @@ public:
 
 
 	btDynamicsWorld* getBulletWorld();
+
+	/*!
+		Wake up all objects. 
+		Bullet sends objects to sleeping state when no interaction is detected. 
+		But this might be unwanted, e.g. robots should be active all the time.
+	*/
+	void activateAllObjects();
 
 	void print();
 
@@ -96,6 +104,7 @@ protected:
 			SimDynamics::BulletObject* o0 = static_cast<SimDynamics::BulletObject*>(bt0->getUserPointer());
 			SimDynamics::BulletObject* o1 = static_cast<SimDynamics::BulletObject*>(bt1->getUserPointer());
 			return engine->checkCollisionEnabled(o0,o1);
+			//return true;//btOverlapFilterCallback::needBroadphaseCollision(proxy0,proxy1);
 		}
 	protected:
 		BulletEngine* engine;

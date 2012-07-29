@@ -70,6 +70,9 @@ public:
 	void removeVisualization(DynamicsObjectPtr o);
 	void removeVisualization(DynamicsRobotPtr r);
 
+	//! Stop callbacks
+	void stopCB();
+
 protected:
 
 	
@@ -114,6 +117,8 @@ protected:
 	std::map<DynamicsObjectPtr,SoNode*> addedVisualizations;
 	std::map<DynamicsRobotPtr,SoNode*> addedRobotVisualizations;
 
+	SoSeparator* sceneGraphRoot;
+	SoSeparator* floor;
 	SoSelection* sceneGraph;
 };
 

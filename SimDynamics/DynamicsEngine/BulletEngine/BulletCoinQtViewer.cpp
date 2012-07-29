@@ -27,8 +27,12 @@ BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 	SIMDYNAMICS_ASSERT(bulletEngine);
 
 	/*sceneGraph = new SoSeparator;*/
+	sceneGraphRoot = new SoSeparator();
+	sceneGraphRoot->ref();
+	floor = new SoSeparator();
+	sceneGraphRoot->addChild(floor);
 	sceneGraph = new SoSelection();
-	sceneGraph->ref();
+	sceneGraphRoot->addChild(sceneGraph);
 
 	//SoSelection *selection = new SoSelection();
 	//sceneGraph->addChild( selection );
@@ -47,9 +51,9 @@ BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 
 BulletCoinQtViewer::~BulletCoinQtViewer()
 {
-	SoSensorManager *sensor_mgr = SoDB::getSensorManager();
-	sensor_mgr->removeTimerSensor(timerSensor);
-	sceneGraph->unref();
+	stopCB();
+	sceneGraphRoot->unref();
+	sceneGraphRoot = NULL;
 }
 
 void BulletCoinQtViewer::selectionCB( void *userdata, SoPath *path )
@@ -101,17 +105,21 @@ void BulletCoinQtViewer::initSceneGraph( QFrame* embedViewer, SoNode* scene )
 	viewer->setFeedbackVisibility(true);
 	if (bulletEngine->getFloor())
 	{
-		addVisualization(bulletEngine->getFloor());
+		SceneObjectPtr so = bulletEngine->getFloor()->getSceneObject();
+		SoNode * n = CoinVisualizationFactory::getCoinVisualization(so,SceneObject::Full);
+		if (n)
+			floor->addChild(n);
+		//addVisualization(bulletEngine->getFloor());
 	}
 	if (scene)
 		sceneGraph->addChild(scene);
-	viewer->setSceneGraph(sceneGraph);
+	viewer->setSceneGraph(sceneGraphRoot);
 	viewer->viewAll();
 }
 
 void BulletCoinQtViewer::scheduleRedraw()
 {
-	sceneGraph->touch();
+	sceneGraphRoot->touch();
 }
 
 void BulletCoinQtViewer::stepPhysics()
@@ -127,6 +135,7 @@ void BulletCoinQtViewer::stepPhysics()
 	{
 		btScalar dt1 = btScalar(ms / 1000000.0f);
 
+		bulletEngine->activateAllObjects(); // avoid sleeping objects
 		updateMotors(dt1);
 
 		bulletEngine->getBulletWorld()->stepSimulation(dt1,4);
@@ -156,7 +165,9 @@ btScalar BulletCoinQtViewer::getDeltaTimeMicroseconds()
 
 void BulletCoinQtViewer::viewAll()
 {
-	viewer->viewAll();
+
+	viewer->getCamera()->viewAll(sceneGraph,viewer->getViewportRegion());
+	//viewer->viewAll();
 }
 
 void BulletCoinQtViewer::addVisualization(DynamicsObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType)
@@ -221,6 +232,22 @@ void BulletCoinQtViewer::removeVisualization( DynamicsRobotPtr r )
 	{
 		sceneGraph->removeChild(addedRobotVisualizations[r]);
 		addedRobotVisualizations.erase(r);
+	}
+}
+
+void BulletCoinQtViewer::stopCB()
+{
+	if (timerSensor)
+	{
+		SoSensorManager *sensor_mgr = SoDB::getSensorManager();
+		sensor_mgr->removeTimerSensor(timerSensor);
+		delete timerSensor;
+		timerSensor = NULL;
+	}
+	if (sceneGraph)
+	{
+		sceneGraph->removeSelectionCallback(selectionCB,this);
+		sceneGraph->removeDeselectionCallback(deselectionCB,this);
 	}
 }
 

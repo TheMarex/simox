@@ -14,7 +14,11 @@ namespace
 
 DynamicsWorldPtr DynamicsWorld::world;
 
+#if 0
+bool DynamicsWorld::convertMM2M = false;
+#else
 bool DynamicsWorld::convertMM2M = true;
+#endif
 
 DynamicsWorld::Cleanup::~Cleanup()
 {

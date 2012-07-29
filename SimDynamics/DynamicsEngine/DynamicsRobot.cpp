@@ -101,6 +101,33 @@ void DynamicsRobot::actuateJoints(float dt)
 
 }
 
+bool DynamicsRobot::isNodeActuated( VirtualRobot::RobotNodePtr node )
+{
+	VR_ASSERT(node);
+	if (actuationTargets.find(node) == actuationTargets.end())
+		return false;
+	return actuationTargets[node].enabled;
+}
+
+float DynamicsRobot::getNodeTarget( VirtualRobot::RobotNodePtr node )
+{
+	VR_ASSERT(node);
+	if (actuationTargets.find(node) == actuationTargets.end())
+		return 0.0f;
+	return actuationTargets[node].jointValueTarget;
+
+}
+
+float DynamicsRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
+{
+	return 0.0f;
+}
+
+float DynamicsRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
+{
+	return 0.0f;
+}
+
 /*
 void DynamicsRobot::setPose( const Eigen::Matrix4f &pose )
 {

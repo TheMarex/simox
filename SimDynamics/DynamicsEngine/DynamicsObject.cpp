@@ -47,5 +47,15 @@ VirtualRobot::SceneObjectPtr DynamicsObject::getSceneObject()
 	return sceneObject;
 }
 
+Eigen::Vector3f DynamicsObject::getLinearVelocity()
+{
+	return Eigen::Vector3f::Zero();
+}
+
+Eigen::Vector3f DynamicsObject::getAngularVelocity()
+{
+	return Eigen::Vector3f::Zero();
+}
+
 
 } // namespace SimDynamics

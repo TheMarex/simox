@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>841</width>
-    <height>589</height>
+    <width>854</width>
+    <height>657</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,7 +53,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>70</y>
+         <y>270</y>
          <width>81</width>
          <height>16</height>
         </rect>
@@ -66,13 +66,175 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>90</y>
+         <y>290</y>
          <width>141</width>
          <height>17</height>
         </rect>
        </property>
        <property name="text">
         <string>Collision Model</string>
+       </property>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>399</y>
+         <width>181</width>
+         <height>181</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Joint Info</string>
+       </property>
+       <widget class="QLabel" name="label_RNTarget">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>60</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Joint target: 0</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_RNVelocity">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>80</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Joint velocity: 0</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_RNValue">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>40</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Joint value: 0</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_RNName">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>20</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Name: &lt;not set&gt;</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QComboBox" name="comboBoxRobotNode">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>171</width>
+         <height>22</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_7">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>60</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>RobotNode</string>
+       </property>
+      </widget>
+      <widget class="QSlider" name="horizontalSliderTarget">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>150</y>
+         <width>160</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>-100</number>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>120</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Target Joint Value</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_TargetMin">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>170</y>
+         <width>41</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-1</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_TargetMax">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>170</y>
+         <width>31</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBoxContacts">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>310</y>
+         <width>141</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Contacts</string>
        </property>
       </widget>
      </widget>
@@ -84,7 +246,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>841</width>
+     <width>854</width>
      <height>21</height>
     </rect>
    </property>

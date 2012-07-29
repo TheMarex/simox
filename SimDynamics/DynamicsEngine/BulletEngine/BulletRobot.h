@@ -65,6 +65,8 @@ public:
 
 	bool hasLink(VirtualRobot::RobotNodePtr node1, VirtualRobot::RobotNodePtr node2);
 
+	//! Returns true if the joint of node is covered by a link
+	bool hasLink( VirtualRobot::RobotNodePtr node );
 	
 	std::vector<LinkInfo> getLinks();
 
@@ -76,6 +78,9 @@ public:
 	*/
 	virtual void actuateJoints(float dt);
 
+	virtual float getJointAngle(VirtualRobot::RobotNodePtr rn);
+	virtual float getJointSpeed(VirtualRobot::RobotNodePtr rn);
+	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
 
 	// experimental...
 	virtual void ensureKinematicConstraints();
@@ -84,7 +89,7 @@ protected:
 
 	/*!
 		Returns links where the given node is the second connected node. 
-		There could only one link with this setup, since on VirtualRobot side node2 is the actauted one.
+		There could only one link with this setup, since on VirtualRobot side node2 is the actuated one.
 	*/
 	LinkInfo getLink(VirtualRobot::RobotNodePtr node);
 

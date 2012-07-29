@@ -62,6 +62,8 @@ public:
 	*/
 	virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue);
 	virtual void disableNodeActuation(VirtualRobot::RobotNodePtr node);
+	virtual bool isNodeActuated(VirtualRobot::RobotNodePtr node);
+	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
 
 	/*!
 		Usually this method is called by the framework in every tick to perform joint actuation.
@@ -77,6 +79,10 @@ public:
 	// Then the physics simulation takes over.
 	//virtual void setPosition(const Eigen::Vector3f &posMM);
 	//virtual void setPose(const Eigen::Matrix4f &pose);
+
+
+	virtual float getJointAngle(VirtualRobot::RobotNodePtr rn);
+	virtual float getJointSpeed(VirtualRobot::RobotNodePtr rn);
 
 protected:
 

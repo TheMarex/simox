@@ -72,6 +72,12 @@ public:
 	std::vector<DynamicsRobotPtr> getRobots();
 
 	/*!
+		Returns all objects that are currently registered.
+		Note, that all RobotNdoes are internally handled as DynamicObjects.
+	*/
+	std::vector<DynamicsObjectPtr> getObjects();
+
+	/*!
 		Set floor. A standard floor object is created and added to the dynamics world.
 	*/
 	virtual void createFloorPlane(const Eigen::Vector3f &pos, const Eigen::Vector3f &up);
@@ -82,12 +88,27 @@ public:
 	*/
 	virtual void disableCollision(DynamicsObject* o1, DynamicsObject* o2);
 	virtual void enableCollision(DynamicsObject* o1, DynamicsObject* o2);
+	//! removes all <collision disabled> settings for object o
 	virtual void resetCollisions(DynamicsObject* o);
+
+	/*!
+		Disables collision check to all objects.
+	*/
+	virtual void disableCollision(DynamicsObject* o1);
+	/*!
+		Enables collision check to all objects.
+	*/
+	virtual void enableCollision(DynamicsObject* o1);
+
 
 	/*!
 		Check if two objects should be considered for collision detection.
 	*/
 	virtual bool checkCollisionEnabled(DynamicsObject* o1, DynamicsObject* o2);
+	/*!
+		Check if object should be considered for collision detection.
+	*/
+	virtual bool checkCollisionEnabled(DynamicsObject* o1);
 
 	DynamicsObjectPtr getFloor(){return floor;}
 
@@ -98,6 +119,7 @@ protected:
 	std::vector<DynamicsRobotPtr> robots;
 
 	std::map < DynamicsObject*, std::vector<DynamicsObject*> > collisionDisabled;
+	std::vector<DynamicsObject*> collisionToAllDisabled;
 	DynamicsObjectPtr floor;
 
 	Eigen::Vector3f floorPos;

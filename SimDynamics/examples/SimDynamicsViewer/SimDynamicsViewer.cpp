@@ -36,8 +36,9 @@ int main(int argc, char *argv[])
 	
 	cout << " --- START --- " << endl;
 	// --robot "robots/iCub/iCub.xml"
+	//std::string filename("robots/iCub/iCub.xml");
 	std::string filename("robots/ArmarIII/ArmarIII.xml");
-	//std::string filename("robots/examples/SimpleRobot/Joint3DH.xml");
+	//std::string filename("robots/examples/SimpleRobot/Joint1.xml");
 
 	if (VirtualRobot::RuntimeEnvironment::hasValue("robot"))
 	{

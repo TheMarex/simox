@@ -63,6 +63,9 @@ public:
 
 	VirtualRobot::SceneObjectPtr getSceneObject();
 
+	virtual Eigen::Vector3f getLinearVelocity();
+	virtual Eigen::Vector3f getAngularVelocity();
+
 protected:
 
 	VirtualRobot::SceneObjectPtr sceneObject;

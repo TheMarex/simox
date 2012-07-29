@@ -8,6 +8,7 @@
 #include <VirtualRobot/RuntimeEnvironment.h>
 
 using namespace std;
+using namespace VirtualRobot;
 using namespace SimDynamics;
 
 int main(int argc,char* argv[])
@@ -26,12 +27,13 @@ int main(int argc,char* argv[])
 
 
 	//std::string robFile("robots/examples/SimpleRobot/Joint3DH.xml");
-	///std::string robFile("robots/iCub/iCub.xml");
 	//std::string robFile("robots/iCub/iCub.xml");
+	//std::string robFile("robots/iCub/iCub_LeftLegTest.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-RightArm.xml");
-	//std::string robFile("robots/ArmarIII/ArmarIII-RightHand.xml");
+	//std::string robFile("robots/ArmarIII/ArmarIII-RightHandTest.xml");
+	std::string robFile("robots/ArmarIII/ArmarIII-HeadTest.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-RightArmTest2.xml");
-	std::string robFile("robots/ArmarIII/ArmarIII.xml");
+	//std::string robFile("robots/ArmarIII/ArmarIII.xml");
 	//std::string robFile("robots/iCub/iCub_RightHand.xml");
 	//std::string robFile("robots/iCub/iCub_testFinger.xml");
 	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robFile);
@@ -39,13 +41,47 @@ int main(int argc,char* argv[])
 	if (robot)
 	{
 		Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
-		gp(2,3) = 20.0f;
+		//gp(2,3) = 35.0f;
+		gp(2,3) = 400.0f;
 		robot->setGlobalPose(gp);
 		DynamicsRobotPtr dynRob = world->CreateDynamicsRobot(robot);
 		world->addRobot(dynRob);
 
 	}
-	BulletOpenGLViewer demoApp(world);
+	BulletOpenGLViewer viewer(world);
+	viewer.enableContraintsDebugDrawing();
 
-	return glutmain(argc, argv,640,480,"Show SimDynamics Scene",&demoApp);
+#if 1
+	cout << "TEST7" << endl;
+	ObstaclePtr o = Obstacle::createBox(10,10,1500);
+	DynamicsObjectPtr do1 = DynamicsWorld::GetWorld()->CreateDynamicsObject(o,DynamicsObject::eStatic);
+	ObstaclePtr o2 = Obstacle::createBox(10,10,1000);
+	Eigen::Matrix4f gpxy = Eigen::Matrix4f::Identity();
+	//gpxy(1,3) -= 213.0f;
+	gpxy(0,3) += 3000.0f;
+	o2->setGlobalPose(gpxy);
+	DynamicsObjectPtr do2 = DynamicsWorld::GetWorld()->CreateDynamicsObject(o2,DynamicsObject::eStatic);
+	DynamicsEnginePtr e = DynamicsWorld::GetWorld()->getEngine();
+	e->disableCollision(do1.get());	
+	e->disableCollision(do2.get());
+	/*
+	std::vector<DynamicsObjectPtr> dos = e->getObjects();
+	for (size_t i=0;i<dos.size();i++)
+	{
+		e->disableCollision(do1.get(),dos[i].get());
+		e->disableCollision(do2.get(),dos[i].get());
+		if (e->checkCollisionEnabled(do1.get(),dos[i].get()))
+		{
+			cout << "OOPS" << endl;
+		}
+		if (e->checkCollisionEnabled(do2.get(),dos[i].get()))
+		{
+			cout << "OOPS" << endl;
+		}
+	}*/
+	e->addObject(do1);
+	e->addObject(do2);
+#endif
+
+	return glutmain(argc, argv,640,480,"Show SimDynamics Scene",&viewer);
 }

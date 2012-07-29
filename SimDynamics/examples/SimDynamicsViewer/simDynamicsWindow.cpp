@@ -3,6 +3,7 @@
 #include "VirtualRobot/EndEffector/EndEffector.h"
 #include "VirtualRobot/Workspace/Reachability.h"
 #include <VirtualRobot/RuntimeEnvironment.h>
+#include <VirtualRobot/Nodes/RobotNodeRevolute.h>
 
 #include <QFileDialog>
 #include <Eigen/Geometry>
@@ -50,22 +51,41 @@ SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags fla
 	dynamicsObject->setPosition(Eigen::Vector3f(3000,3000,10000.0f));
 	dynamicsWorld->addObject(dynamicsObject);
 
-	loadRobot();
-
 	setupUI();
+	loadRobot();
 
 	// build visualization
 	collisionModel();
 
 	viewer->viewAll();
+
+	// register callback
+	float TIMER_MS = 30.0f;
+	SoSensorManager *sensor_mgr = SoDB::getSensorManager();
+	timerSensor = new SoTimerSensor(timerCB, this);
+	timerSensor->setInterval(SbTime(TIMER_MS/1000.0f));
+	sensor_mgr->insertTimerSensor(timerSensor);
 }
 
 
 SimDynamicsWindow::~SimDynamicsWindow()
 {
+	stopCB();
+	dynamicsWorld.reset();
+	SimDynamics::DynamicsWorld::Close();
 	robot.reset();
 	dynamicsRobot.reset();
 	sceneSep->unref();
+}
+
+void SimDynamicsWindow::timerCB(void * data, SoSensor * sensor)
+{
+	SimDynamicsWindow *window = static_cast<SimDynamicsWindow*>(data);
+	VR_ASSERT(window);
+
+	// now its safe to update physical information and set the models to the according poses
+	window->updateJointInfo();
+
 }
 
 
@@ -77,7 +97,8 @@ void SimDynamicsWindow::setupUI()
 	viewer->initSceneGraph(UI.frameViewer,sceneSep);
 	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(collisionModel()));
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));
-
+	connect(UI.comboBoxRobotNode, SIGNAL(activated(int)), this, SLOT(selectRobotNode(int)));
+	connect(UI.horizontalSliderTarget, SIGNAL(valueChanged(int)), this, SLOT(jointValueChanged(int)));
 
 	/*connect(UI.pushButtonLoad, SIGNAL(clicked()), this, SLOT(selectRobot()));
 	connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeHand()));
@@ -146,6 +167,7 @@ int SimDynamicsWindow::main()
 void SimDynamicsWindow::quit()
 {
 	std::cout << "SimDynamicsWindow: Closing" << std::endl;
+	stopCB();
 	this->close();
 	SoQt::exitMainLoop();
 }
@@ -156,6 +178,35 @@ void SimDynamicsWindow::quit()
 	m_sRobotFilename = std::string(fi.toAscii());
 	loadRobot();
 }*/
+
+void SimDynamicsWindow::updateJoints()
+{
+	if (!robot)
+	{
+		cout << " ERROR while creating list of nodes" << endl;
+		return;
+	}
+	robotNodes.clear();
+	UI.comboBoxRobotNode->clear();
+	std::vector<RobotNodePtr> nodes = robot->getRobotNodes();
+	for (size_t i=0;i<nodes.size();i++)
+	{
+		if (nodes[i]->isRotationalJoint())
+		{
+			RobotNodeRevolutePtr rn = boost::dynamic_pointer_cast<RobotNodeRevolute>(nodes[i]);
+			if (rn)
+			{
+				robotNodes.push_back(rn);
+				QString qstr(rn->getName().c_str());
+				UI.comboBoxRobotNode->addItem(qstr);
+			}
+		}
+	}
+	if (robotNodes.size()>0)
+		selectRobotNode(0);
+	else
+		selectRobotNode(-1);
+}
 
 void SimDynamicsWindow::loadRobot()
 {
@@ -183,5 +234,111 @@ void SimDynamicsWindow::loadRobot()
 	dynamicsRobot = dynamicsWorld->CreateDynamicsRobot(robot);
 	dynamicsWorld->addRobot(dynamicsRobot);
 
+	updateJoints();
+
+}
+
+void SimDynamicsWindow::selectRobotNode( int n )
+{
+	UI.comboBoxRobotNode->setCurrentIndex(n);
+	RobotNodeRevolutePtr rn;
+	if (n>=0 && n<(int)robotNodes.size())
+	{	
+		rn = robotNodes[n];
+	}
+	if (rn)
+	{
+		int pos = 0;
+		if (rn->getJointValue()<0 && rn->getJointLimitLo()<0)
+		{
+			pos = int(rn->getJointValue()/rn->getJointLimitLo() * 100.0f + 0.5f);
+		}
+		if (rn->getJointValue()>0 && rn->getJointLimitHi()>0)
+		{
+			pos = int(rn->getJointValue()/rn->getJointLimitHi() * 100.0f + 0.5f);
+		}
+		UI.horizontalSliderTarget->setValue(pos);
+		UI.horizontalSliderTarget->setEnabled(true);
+	} else
+	{
+		UI.horizontalSliderTarget->setValue(0);
+		UI.horizontalSliderTarget->setEnabled(false);
+	}
+}
+
+void SimDynamicsWindow::updateJointInfo()
+{
+	int n = UI.comboBoxRobotNode->currentIndex();
+	QString qMin("0");
+	QString qMax("0");
+	QString qName("Name: <not set>");
+	QString qJV("Joint value: 0");
+	QString qTarget("Joint target: 0");
+	QString qVel("Joint velocity: 0");
+
+	RobotNodeRevolutePtr rn;
+	if (n>=0 && n<(int)robotNodes.size())
+	{	
+		rn = robotNodes[n];
+	}
+	//SimDynamics::DynamicsObjectPtr dynRN = dynamicsRobot->getDynamicsRobotNode(rn);
+	if (rn)
+	{
+		qMin = QString::number(rn->getJointLimitLo(),'g',4);
+		qMax = QString::number(rn->getJointLimitHi(),'g',4);
+		qName = QString("Name: ");
+		qName += QString(rn->getName().c_str());
+		qJV = QString("Joint value: ");
+		qJV += QString::number(rn->getJointValue(),'g',3);
+		qJV += QString(" / ");
+		qJV += QString::number(dynamicsRobot->getJointAngle(rn),'g',3);
+		qTarget = QString("Joint target: ");
+		qTarget += QString::number(dynamicsRobot->getNodeTarget(rn),'g',4);
+		qVel = QString("Joint velocity: ");
+		qVel += QString::number(dynamicsRobot->getJointSpeed(rn),'g',4);
+		
+	} 
+	UI.label_TargetMin->setText(qMin);
+	UI.label_TargetMax->setText(qMax);
+	UI.label_RNName->setText(qName);
+	UI.label_RNValue->setText(qJV);
+	UI.label_RNTarget->setText(qTarget);
+	UI.label_RNVelocity->setText(qVel);
+}
+
+void SimDynamicsWindow::jointValueChanged( int n )
+{
+	int j = UI.comboBoxRobotNode->currentIndex();
+	RobotNodeRevolutePtr rn;
+	if (j>=0 && j<(int)robotNodes.size())
+	{	
+		rn = robotNodes[j];
+	}
+	if (!rn || !dynamicsRobot)
+		return;
+
+	float pos = 0;
+	if (n<0)
+	{
+		pos = (float(n) / 100.0f * fabs(rn->getJointLimitLo()));
+	}
+	if (n>0)
+	{
+		pos = (float(n) / 100.0f * fabs(rn->getJointLimitHi()));
+	}
+	dynamicsRobot->actuateNode(rn,pos);
+
+}
+
+void SimDynamicsWindow::stopCB()
+{
+	if (timerSensor)
+	{
+		SoSensorManager *sensor_mgr = SoDB::getSensorManager();
+		sensor_mgr->removeTimerSensor(timerSensor);
+		delete timerSensor;
+		timerSensor = NULL;
+	}
+	viewer.reset();
 }
 

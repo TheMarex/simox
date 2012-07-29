@@ -11,6 +11,8 @@
 
 #include <BulletCollision/CollisionShapes/btShapeHull.h>
 
+//#define DEBUG_FIXED_OBJECTS
+
 using namespace VirtualRobot;
 
 namespace SimDynamics {
@@ -18,11 +20,12 @@ namespace SimDynamics {
 BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 	: DynamicsObject(o, type)
 {
+	float interatiaFactor = 5.0f;
 	btMargin=(btScalar)(0.000001);
 	com.setZero();
 	THROW_VR_EXCEPTION_IF(!o,"NULL object");
 	CollisionModelPtr colModel = o->getCollisionModel();
-#if 1
+
 	if (!colModel)
 	{
 		VR_WARNING << "Building empty collision shape for object " << o->getName() << endl;
@@ -42,23 +45,7 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 		THROW_VR_EXCEPTION_IF( ( !trimesh || trimesh->faces.size()==0) , "No TriMeshModel, could not create dynamics model...");
 		collisionShape.reset(createConvexHullShape(trimesh));
 	}
-#else
 
-	if (!colModel)
-	{
-		VR_WARNING << "Building Collision model for object " << o->getName() << endl;
-		VirtualRobot::ObstaclePtr ob = Obstacle::createBox(10.0f,10.0f,10.0f);
-		ob->setGlobalPose(o->getGlobalPose());
-		colModel = ob->getCollisionModel();
-	} 
-
-	TriMeshModelPtr trimesh;
-	THROW_VR_EXCEPTION_IF(!colModel,"No CollisionModel, could not create dynamics model...");
-	trimesh = colModel->getTriMeshModel();
-	THROW_VR_EXCEPTION_IF( ( !trimesh || trimesh->faces.size()==0) , "No TriMeshModel, could not create dynamics model...");
-	collisionShape.reset(createConvexHullShape(trimesh));
-	
-#endif
 	collisionShape->setMargin(btMargin);
 
 	btScalar mass = o->getMass();
@@ -66,13 +53,18 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 	if (mass<=0 && type==eDynamic)
 	{
 		//THROW_VR_EXCEPTION ("mass == 0 -> SimulationType must not be eDynamic! ");
-		mass = btScalar(1.0f); // give object a dummy mass (must be >=0.5 kg, otherwise joints start oszillating?!)
+		mass = btScalar(1.0f); // give object a dummy mass
 		//type = eKinematic;
 		if (colModel)
 		{
 			VR_WARNING << "Object:" << o->getName() << ": mass == 0 -> SimulationType must not be eDynamic! Setting mass to 1" << endl;
 		}
 	}
+#ifdef DEBUG_FIXED_OBJECTS
+	cout << "TEST" << endl;
+	mass = 0;
+	localInertia.setValue(0.0f, 0.0f, 0.0f);
+#else
 	if (type != eDynamic) {
 		mass = 0;
 		localInertia.setValue(0.0f, 0.0f, 0.0f);
@@ -88,12 +80,18 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 			localInertia.setValue(btScalar(1),btScalar(1),btScalar(1)); // give Object a dummy inertia matrix
 		//localInertia.setValue(btScalar(40),btScalar(40),btScalar(40)); // give Object a dummy inertia matrix (large values needed, otherwise the objects will not stay connected on strong impulses) 
 	}
+#endif
+	localInertia *= interatiaFactor;
 	motionState = new SimoxMotionState(o);
 	btRigidBody::btRigidBodyConstructionInfo btRBInfo(mass,motionState,collisionShape.get(),localInertia);
 	btRBInfo.m_additionalDamping = true;
 
 	rigidBody.reset(new btRigidBody(btRBInfo));
 	rigidBody->setUserPointer((void*)(this));
+#if 0
+	rigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+	cout << "TEST3" << endl;
+#endif
 }
 	
 BulletObject::~BulletObject()
@@ -176,5 +174,20 @@ void BulletObject::setPose( const Eigen::Matrix4f &pose )
 	rigidBody->setWorldTransform(btT);
 
 }
+
+Eigen::Vector3f BulletObject::getLinearVelocity()
+{
+	if (!rigidBody)
+		return Eigen::Vector3f::Zero();
+	return (BulletEngine::getVecEigen(rigidBody->getLinearVelocity()));
+}
+
+Eigen::Vector3f BulletObject::getAngularVelocity()
+{
+	if (!rigidBody)
+		return Eigen::Vector3f::Zero();
+	return (BulletEngine::getVecEigen(rigidBody->getAngularVelocity()));
+}
+
 
 } // namespace VirtualRobot

@@ -73,10 +73,23 @@ bool DynamicsEngine::removeRobot( DynamicsRobotPtr r )
 
 void DynamicsEngine::disableCollision( DynamicsObject* o1, DynamicsObject* o2 )
 {
-	//if (o1 < o2)
+	std::vector<DynamicsObject*>::iterator i1 = find(collisionDisabled[o1].begin(),collisionDisabled[o1].end(),o2);
+	if (i1==collisionDisabled[o1].end())
+	{
 		collisionDisabled[o1].push_back(o2);
-	//else
+	}
+	std::vector<DynamicsObject*>::iterator i2 = find(collisionDisabled[o2].begin(),collisionDisabled[o2].end(),o1);
+	if (i2==collisionDisabled[o2].end())
+	{
 		collisionDisabled[o2].push_back(o1);
+	}
+}
+
+void DynamicsEngine::disableCollision( DynamicsObject* o1 )
+{
+	std::vector<DynamicsObject*>::iterator i1 = find(collisionToAllDisabled.begin(),collisionToAllDisabled.end(),o1);
+	if (i1 == collisionToAllDisabled.end())
+		collisionToAllDisabled.push_back(o1);
 }
 
 void DynamicsEngine::enableCollision( DynamicsObject* o1, DynamicsObject* o2 )
@@ -98,8 +111,25 @@ void DynamicsEngine::enableCollision( DynamicsObject* o1, DynamicsObject* o2 )
 	//}
 }
 
+void DynamicsEngine::enableCollision( DynamicsObject* o1 )
+{
+	std::vector<DynamicsObject*>::iterator i1 = find(collisionToAllDisabled.begin(),collisionToAllDisabled.end(),o1);
+	if (i1 != collisionToAllDisabled.end())
+		collisionToAllDisabled.erase(i1);
+}
+
+bool DynamicsEngine::checkCollisionEnabled( DynamicsObject* o1 )
+{
+	std::vector<DynamicsObject*>::iterator i1 = find(collisionToAllDisabled.begin(),collisionToAllDisabled.end(),o1);
+	return (i1 == collisionToAllDisabled.end());
+}
+
 bool DynamicsEngine::checkCollisionEnabled( DynamicsObject* o1, DynamicsObject* o2 )
 {
+	if (!checkCollisionEnabled(o1))
+		return false;
+	if (!checkCollisionEnabled(o2))
+		return false;
 	//if (o1 < o2)
 	//{
 		std::vector<DynamicsObject*>::iterator i1 = find(collisionDisabled[o1].begin(),collisionDisabled[o1].end(),o2);
@@ -128,11 +158,17 @@ void DynamicsEngine::resetCollisions( DynamicsObject* o )
 		}
 		i1++;
 	}
+	enableCollision(o);
 }
 
 std::vector<DynamicsRobotPtr> DynamicsEngine::getRobots()
 {
 	return robots;
+}
+
+std::vector<DynamicsObjectPtr> DynamicsEngine::getObjects()
+{
+	return objects;
 }
 
 } // namespace SimDynamics

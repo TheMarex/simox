@@ -1,8 +1,12 @@
 #include "BulletEngine.h"
 #include "BulletObject.h"
+#include "SimoxCollisionDispatcher.h"
 #include "../../DynamicsWorld.h"
 #include <VirtualRobot/Obstacle.h>
 #include <VirtualRobot/MathTools.h>
+
+
+//#define DEBUG_FIXED_OBJECTS
 
 namespace SimDynamics {
 
@@ -34,7 +38,7 @@ bool BulletEngine::init(const DynamicsWorldInfo &info)
 
 	// Setup the bullet world
 	collision_config = new btDefaultCollisionConfiguration();
-	dispatcher = new btCollisionDispatcher(collision_config);
+	dispatcher = new SimoxCollisionDispatcher(this,collision_config);
 
 	/*
 	btVector3 worldAabbMin(-10000,-10000,-10000);
@@ -42,6 +46,7 @@ bool BulletEngine::init(const DynamicsWorldInfo &info)
 	overlappingPairCache = new btAxisSweep3 (worldAabbMin, worldAabbMax);
 	*/
 	overlappingPairCache = new btDbvtBroadphase();
+	//overlappingPairCache = new btSimpleBroadphase();
 
 
 	constraintSolver = new btSequentialImpulseConstraintSolver;
@@ -117,8 +122,8 @@ bool BulletEngine::addObject( DynamicsObjectPtr o )
 	btObject->getRigidBody()->setRestitution(bulletRestitution);
 	btObject->getRigidBody()->setFriction(bulletFriction);
 	btObject->getRigidBody()->setDamping(bulletDampingLinear,bulletDampingAngular);
-	btObject->getRigidBody()->setDeactivationTime(0.8f);
-	btObject->getRigidBody()->setSleepingThresholds(1.6f, 2.5f);
+	btObject->getRigidBody()->setDeactivationTime(5.0f);
+	btObject->getRigidBody()->setSleepingThresholds(0.05f, 0.05f);
 
 	//btScalar defaultContactProcessingThreshold = BT_LARGE_FLOAT;
 	//btObject->getRigidBody()->setContactProcessingThreshold(defaultContactProcessingThreshold);
@@ -295,7 +300,11 @@ bool BulletEngine::removeRobot( DynamicsRobotPtr r )
 
 bool BulletEngine::addLink( BulletRobot::LinkInfo &l )
 {
+#ifdef DEBUG_FIXED_OBJECTS
+	cout << "TEST2" << endl;
+#else
 	dynamicsWorld->addConstraint(l.joint.get(), true);
+#endif
 	for (size_t i=0; i<l.disabledCollisionPairs.size();i++)
 	{
 		this->disableCollision(static_cast<DynamicsObject*>(l.disabledCollisionPairs[i].first.get()),static_cast<DynamicsObject*>(l.disabledCollisionPairs[i].second.get()));
@@ -342,6 +351,18 @@ void BulletEngine::print()
 	}
 
 	cout << "------------------ Bullet Engine ------------------" << endl;
+}
+
+void BulletEngine::activateAllObjects()
+{
+	for (size_t i=0;i<objects.size();i++)
+	{
+		BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(objects[i]);
+		if (bo)
+		{
+			bo->getRigidBody()->activate();
+		}
+	}
 }
 
 

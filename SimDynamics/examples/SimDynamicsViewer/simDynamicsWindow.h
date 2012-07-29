@@ -11,6 +11,7 @@
 #include <VirtualRobot/Obstacle.h>
 #include "VirtualRobot/Visualization/CoinVisualization/CoinVisualizationNode.h"
 #include "VirtualRobot/Visualization/CoinVisualization/CoinVisualization.h"
+#include <VirtualRobot/Nodes/RobotNodeRevolute.h>
 
 #include "SimDynamics/DynamicsEngine/BulletEngine/BulletCoinQtViewer.h"
 
@@ -51,10 +52,17 @@ public slots:
 	void collisionModel();
 
 	void loadRobot();
+
+	void selectRobotNode(int n);
+	void jointValueChanged(int n);
 	
+	void updateJointInfo();
 protected:
 	void setupUI();
-	
+	void updateJoints();
+
+	void stopCB();
+
 	SimDynamics::DynamicsWorldPtr dynamicsWorld;
 	SimDynamics::DynamicsRobotPtr dynamicsRobot;
 	SimDynamics::DynamicsObjectPtr dynamicsObject;
@@ -67,6 +75,12 @@ protected:
 	
 	VirtualRobot::RobotPtr robot;
 	std::string robotFilename;
+
+	// beside the viewer cb we need also a callback to update joint info
+	static void timerCB(void * data, SoSensor * sensor);
+	SoTimerSensor *timerSensor;
+
+	std::vector<VirtualRobot::RobotNodeRevolutePtr> robotNodes;
 
 	bool useColModel;
 };

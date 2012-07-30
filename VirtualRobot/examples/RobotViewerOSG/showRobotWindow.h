@@ -30,8 +30,9 @@
 #include <VirtualRobot/XML/RobotIO.h>
 #include <VirtualRobot/Visualization/VisualizationFactory.h>
 #include <VirtualRobot/Obstacle.h>
-#include "VirtualRobot/Visualization/OSGVisualization/OSGVisualizationNode.h"
-#include "VirtualRobot/Visualization/OSGVisualization/OSGVisualization.h"
+#include <VirtualRobot/RobotNodeSet.h>
+#include <VirtualRobot/Visualization/OSGVisualization/OSGVisualizationNode.h>
+#include <VirtualRobot/Visualization/OSGVisualization/OSGVisualization.h>
 
 #include <string.h>
 #include <QtCore/QtGlobal>

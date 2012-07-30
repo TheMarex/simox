@@ -95,7 +95,24 @@ void DynamicsRobot::disableNodeActuation( VirtualRobot::RobotNodePtr node )
 		actuationTargets.erase(node);
 	}
 }
-
+void DynamicsRobot::enableActuation()
+{
+	std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget>::iterator it = actuationTargets.begin();
+	while (it!=actuationTargets.end())
+	{
+		it->second.enabled = true;
+		it++;
+	}
+}
+void DynamicsRobot::disableActuation()
+{
+	std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget>::iterator it = actuationTargets.begin();
+	while (it!=actuationTargets.end())
+	{
+		it->second.enabled = false;
+		it++;
+	}
+}
 void DynamicsRobot::actuateJoints(float dt)
 {
 

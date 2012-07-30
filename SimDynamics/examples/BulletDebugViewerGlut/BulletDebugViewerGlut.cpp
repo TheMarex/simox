@@ -26,12 +26,12 @@ int main(int argc,char* argv[])
 	world->addObject(dynObj);*/
 
 
-	//std::string robFile("robots/examples/SimpleRobot/Joint3DH.xml");
+	std::string robFile("robots/examples/SimpleRobot/Joint3DH.xml");
 	//std::string robFile("robots/iCub/iCub.xml");
 	//std::string robFile("robots/iCub/iCub_LeftLegTest.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-RightArm.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-RightHandTest.xml");
-	std::string robFile("robots/ArmarIII/ArmarIII-HeadTest.xml");
+	//std::string robFile("robots/ArmarIII/ArmarIII-HeadTest.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-RightArmTest2.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII.xml");
 	//std::string robFile("robots/iCub/iCub_RightHand.xml");
@@ -45,8 +45,8 @@ int main(int argc,char* argv[])
 		gp(2,3) = 400.0f;
 		robot->setGlobalPose(gp);
 		DynamicsRobotPtr dynRob = world->CreateDynamicsRobot(robot);
+		dynRob->disableActuation();
 		world->addRobot(dynRob);
-
 	}
 	BulletOpenGLViewer viewer(world);
 	viewer.enableContraintsDebugDrawing();

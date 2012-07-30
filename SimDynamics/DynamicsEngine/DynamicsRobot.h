@@ -64,6 +64,8 @@ public:
 	virtual void disableNodeActuation(VirtualRobot::RobotNodePtr node);
 	virtual bool isNodeActuated(VirtualRobot::RobotNodePtr node);
 	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
+	virtual void enableActuation();
+	virtual void disableActuation();
 
 	/*!
 		Usually this method is called by the framework in every tick to perform joint actuation.

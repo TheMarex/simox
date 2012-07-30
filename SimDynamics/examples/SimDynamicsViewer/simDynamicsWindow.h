@@ -50,6 +50,7 @@ public slots:
 
 	void resetSceneryAll();
 	void collisionModel();
+	void actuation();
 
 	void loadRobot();
 
@@ -63,6 +64,8 @@ protected:
 
 	void stopCB();
 
+	void updateContactVisu();
+
 	SimDynamics::DynamicsWorldPtr dynamicsWorld;
 	SimDynamics::DynamicsRobotPtr dynamicsRobot;
 	SimDynamics::DynamicsObjectPtr dynamicsObject;
@@ -70,6 +73,7 @@ protected:
 	Ui::MainWindowBulletViewer UI;
 
 	SoSeparator* sceneSep;
+	SoSeparator* contactsSep;
 
 	SimDynamics::BulletCoinQtViewerPtr viewer;
 	

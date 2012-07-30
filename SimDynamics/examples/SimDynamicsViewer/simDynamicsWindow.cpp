@@ -35,6 +35,9 @@ SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags fla
 	sceneSep = new SoSeparator;
 	sceneSep->ref();
 
+	contactsSep = new SoSeparator;
+	sceneSep->addChild(contactsSep);
+
 	// optional visualizations (not considered by dynamics)
 	SoSeparator *cc = CoinVisualizationFactory::CreateCoordSystemVisualization(10.0f);
 	sceneSep->addChild(cc);
@@ -86,6 +89,8 @@ void SimDynamicsWindow::timerCB(void * data, SoSensor * sensor)
 	// now its safe to update physical information and set the models to the according poses
 	window->updateJointInfo();
 
+	window->updateContactVisu();
+
 }
 
 
@@ -96,6 +101,7 @@ void SimDynamicsWindow::setupUI()
 	viewer.reset(new SimDynamics::BulletCoinQtViewer(dynamicsWorld));
 	viewer->initSceneGraph(UI.frameViewer,sceneSep);
 	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(collisionModel()));
+	connect(UI.checkBoxActuation, SIGNAL(clicked()), this, SLOT(actuation()));
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));
 	connect(UI.comboBoxRobotNode, SIGNAL(activated(int)), this, SLOT(selectRobotNode(int)));
 	connect(UI.horizontalSliderTarget, SIGNAL(valueChanged(int)), this, SLOT(jointValueChanged(int)));
@@ -134,6 +140,18 @@ void SimDynamicsWindow::resetSceneryAll()
 
 
 
+void SimDynamicsWindow::actuation()
+{
+	if (!dynamicsRobot)
+		return;
+
+	bool actuate = UI.checkBoxActuation->checkState() == Qt::Checked;
+
+	if (actuate)
+		dynamicsRobot->enableActuation();
+	else
+		dynamicsRobot->disableActuation();
+}
 
 void SimDynamicsWindow::collisionModel()
 {
@@ -340,5 +358,37 @@ void SimDynamicsWindow::stopCB()
 		timerSensor = NULL;
 	}
 	viewer.reset();
+}
+
+void SimDynamicsWindow::updateContactVisu()
+{
+	contactsSep->removeAllChildren();
+	if (!UI.checkBoxContacts->isChecked())
+		return;
+	std::vector<SimDynamics::DynamicsEngine::DynamicsContactInfo> c = dynamicsWorld->getEngine()->getContacts();
+	for (size_t i=0;i<c.size();i++)
+	{
+		SoSeparator *normal = new SoSeparator;
+		SoMatrixTransform *m = new SoMatrixTransform;
+		SbMatrix ma;
+		ma.makeIdentity();
+		ma.setTranslate(SbVec3f(c[i].posGlobalB(0),c[i].posGlobalB(1),c[i].posGlobalB(2)));
+		m->matrix.setValue(ma);
+		normal->addChild(m);
+		SoSeparator *n = CoinVisualizationFactory::CreateArrow(c[i].normalGlobalB,50.0f);
+		if (n)
+			normal->addChild(n);
+		SoSeparator *normal2 = new SoSeparator;
+		SoMatrixTransform *m2 = new SoMatrixTransform;
+		ma.makeIdentity();
+		ma.setTranslate(SbVec3f(c[i].posGlobalA(0),c[i].posGlobalA(1),c[i].posGlobalA(2)));
+		m2->matrix.setValue(ma);
+		normal2->addChild(m2);
+		SoSeparator *n2 = CoinVisualizationFactory::CreateArrow(-c[i].normalGlobalB,50.0f);
+		if (n2)
+			normal2->addChild(n2);
+		contactsSep->addChild(normal);
+		contactsSep->addChild(normal2);
+	}
 }
 

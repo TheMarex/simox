@@ -237,6 +237,22 @@
         <string>Contacts</string>
        </property>
       </widget>
+      <widget class="QCheckBox" name="checkBoxActuation">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>220</y>
+         <width>141</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Joint actuation</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>

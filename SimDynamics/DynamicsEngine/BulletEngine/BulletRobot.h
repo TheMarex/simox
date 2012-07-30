@@ -99,6 +99,8 @@ protected:
 
 	std::vector<LinkInfo> links;
 
+	btScalar bulletMaxMotorImulse;
+
 };
 
 typedef boost::shared_ptr<BulletRobot> BulletRobotPtr;

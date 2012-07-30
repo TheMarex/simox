@@ -19,6 +19,7 @@ namespace SimDynamics {
 BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
 	: DynamicsRobot(rob)
 {
+	bulletMaxMotorImulse = 5.0f; 
 	buildBulletModels(enableJointMotors);
 }
 	
@@ -103,9 +104,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 	Eigen::Matrix4f anchor_inNode1 = coordSystemNode1.inverse() * anchorPointGlobal; 
 	Eigen::Matrix4f anchor_inNode2 = coordSystemNode2.inverse() * anchorPointGlobal; 
 
-#if 0
-	cout << "TEST6 (wrong)" << endl;
-#else
+
 	// The bullet model was adjusted, so that origin is at local com
 	// since we computed the anchor in from simox models, we must re-adjust the anchor, in order to consider the com displacement
 	Eigen::Matrix4f com1;
@@ -117,7 +116,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 	com2.setIdentity();
 	com2.block(0,3,3,1) = -drn2->getCom();
 	anchor_inNode2 = com2 * anchor_inNode2;
-#endif
+
 #ifdef DEBUG_SHOW_LINKS
 	cout << "TEST4" << endl;
 	ObstaclePtr o = Obstacle::createSphere(20);
@@ -441,7 +440,7 @@ void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointValue
 		LinkInfo link = getLink(node);
 		boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
 		VR_ASSERT(hinge);
-		hinge->enableAngularMotor(true,0.0f,10.0f);// is max impulse ok?! (10 seems to be ok, 1 oscillates)
+		hinge->enableAngularMotor(true,0.0f,bulletMaxMotorImulse);// is max impulse ok?! (10 seems to be ok, 1 oscillates)
 		DynamicsRobot::actuateNode(node,-jointValue); // inverted joint direction in bullet
 	} else
 	{

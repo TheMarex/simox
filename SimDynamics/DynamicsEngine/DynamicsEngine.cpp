@@ -171,4 +171,10 @@ std::vector<DynamicsObjectPtr> DynamicsEngine::getObjects()
 	return objects;
 }
 
+std::vector<DynamicsEngine::DynamicsContactInfo> DynamicsEngine::getContacts()
+{
+	std::vector<DynamicsEngine::DynamicsContactInfo> result;
+	return result;
+}
+
 } // namespace SimDynamics

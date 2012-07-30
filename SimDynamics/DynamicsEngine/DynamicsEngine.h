@@ -112,6 +112,18 @@ public:
 
 	DynamicsObjectPtr getFloor(){return floor;}
 
+	struct DynamicsContactInfo 
+	{
+		DynamicsObject* objectA;
+		DynamicsObject* objectB;
+		Eigen::Vector3f posGlobalA;
+		Eigen::Vector3f posGlobalB;
+		Eigen::Vector3f normalGlobalB;
+	};
+
+	virtual std::vector<DynamicsEngine::DynamicsContactInfo> getContacts();
+
+
 protected:
 	DynamicsWorldInfo dynamicsInfo;
 

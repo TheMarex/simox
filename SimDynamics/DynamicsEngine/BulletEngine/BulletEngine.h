@@ -74,6 +74,9 @@ public:
 	*/
 	void activateAllObjects();
 
+
+	virtual std::vector<DynamicsEngine::DynamicsContactInfo> getContacts();
+
 	void print();
 
 	/*!

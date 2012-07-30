@@ -366,5 +366,43 @@ void BulletEngine::activateAllObjects()
 }
 
 
+std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
+{
+	//Assume world->stepSimulation or world->performDiscreteCollisionDetection has been called
+
+	std::vector<DynamicsEngine::DynamicsContactInfo> result;
+
+	int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
+	for (int i=0;i<numManifolds;i++)
+	{
+		btPersistentManifold* contactManifold =  dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
+		btCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
+		SimDynamics::BulletObject* dynObjA = static_cast<SimDynamics::BulletObject*>(obA->getUserPointer());
+		SimDynamics::BulletObject* dynObjB = static_cast<SimDynamics::BulletObject*>(obB->getUserPointer());
+		int numContacts = contactManifold->getNumContacts();
+		for (int j=0;j<numContacts;j++)
+		{
+			btManifoldPoint& pt = contactManifold->getContactPoint(j);
+			if (pt.getDistance()<0.f)
+			{
+				DynamicsContactInfo i;
+				i.objectA = dynObjA;
+				i.objectB = dynObjB;
+				const btVector3& ptA = pt.getPositionWorldOnA();
+				const btVector3& ptB = pt.getPositionWorldOnB();
+				const btVector3& normalOnB = pt.m_normalWorldOnB;
+				i.posGlobalA = getVecEigen(ptA);
+				i.posGlobalB = getVecEigen(ptB);
+				i.normalGlobalB(0) = normalOnB.x();
+				i.normalGlobalB(1) = normalOnB.y();
+				i.normalGlobalB(2) = normalOnB.z();
+				result.push_back(i);
+			}
+		}
+	}
+	return result;
+}
+
 
 } // namespace SimDynamics

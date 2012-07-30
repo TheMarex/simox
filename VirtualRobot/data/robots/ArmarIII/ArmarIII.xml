@@ -57,7 +57,7 @@
 		</Visualization>
 		<Physics>
             <CoM location="Joint" x="0" y="0" z="200"/>
-            <Mass value="75" units="kg" />
+            <Mass value="200" units="kg" />
         </Physics>
 		<CollisionModel>
 			<File type="Inventor">collisionModel/platform.iv</File>

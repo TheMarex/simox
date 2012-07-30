@@ -18,12 +18,12 @@ int main(int argc,char* argv[])
 
 	world->createFloorPlane();
 
-	/*VirtualRobot::ObstaclePtr o = VirtualRobot::Obstacle::createBox(100.0f,100.0f,100.0f);
+	VirtualRobot::ObstaclePtr o = VirtualRobot::Obstacle::createBox(100.0f,100.0f,100.0f);
 	o->setMass(1.0f); // 1kg
 
 	SimDynamics::DynamicsObjectPtr dynObj = world->CreateDynamicsObject(o);
 	dynObj->setPosition(Eigen::Vector3f(3000,3000,1000.0f));
-	world->addObject(dynObj);*/
+	world->addObject(dynObj);
 
 
 	std::string robFile("robots/examples/SimpleRobot/Joint3DH.xml");
@@ -51,7 +51,7 @@ int main(int argc,char* argv[])
 	BulletOpenGLViewer viewer(world);
 	viewer.enableContraintsDebugDrawing();
 
-#if 1
+#if 0
 	cout << "TEST7" << endl;
 	ObstaclePtr o = Obstacle::createBox(10,10,1500);
 	DynamicsObjectPtr do1 = DynamicsWorld::GetWorld()->CreateDynamicsObject(o,DynamicsObject::eStatic);

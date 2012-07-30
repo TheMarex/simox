@@ -393,18 +393,19 @@ void BulletRobot::actuateJoints(float dt)
 
 	while (it!=actuationTargets.end())
 	{
-		if (it->second.enabled)
+		BulletObjectPtr drn = boost::dynamic_pointer_cast<BulletObject>(it->second.dynNode);
+		VR_ASSERT(drn);
+		if (it->second.node->isRotationalJoint())
 		{
-			BulletObjectPtr drn = boost::dynamic_pointer_cast<BulletObject>(it->second.dynNode);
-			VR_ASSERT(drn);
-			if (it->second.node->isRotationalJoint())
+			LinkInfo link = getLink(it->second.node);
+			boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
+			VR_ASSERT(hinge);
+			if (it->second.enabled)
 			{
-				LinkInfo link = getLink(it->second.node);
-				boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
-				VR_ASSERT(hinge);
 				hinge->enableMotor(true);
 				hinge->setMotorTarget(it->second.jointValueTarget+link.jointValueOffset,dt);
-			}
+			} else
+				hinge->enableMotor(false);
 		}
 
 		it++;

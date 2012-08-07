@@ -9,9 +9,10 @@
 #include <boost/format.hpp>
 
 #include <boost/bind.hpp>
-//#include <boost/format.hpp>
-#include <algorithm>
 
+#include <boost/math/special_functions/fpclassify.hpp>
+
+#include <algorithm>
 #include <float.h>
 
 using namespace Eigen;
@@ -169,27 +170,30 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 	return result;
 };
 
-Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode)
+Eigen::MatrixXf DifferentialIK::computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m)
 {
 #if 0
-	MatrixXf Jacobian = this->getJacobianMatrix(tcp,mode);
-	MatrixXf pseudo = Jacobian.transpose() * (Jacobian*Jacobian.transpose()).inverse();
+	MatrixXf pseudo = m.transpose() * (m*m.transpose()).inverse();
 	return pseudo;
 #else
-	MatrixXf Jacobian = this->getJacobianMatrix(tcp,mode);
-	float pinvtoler = 0.00001;
-	Eigen::JacobiSVD<Eigen::MatrixXf> svd(Jacobian, Eigen::ComputeThinU | Eigen::ComputeThinV);
+	float pinvtoler = 0.00001f;
+	Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
 	Eigen::MatrixXf U = svd.matrixU();
 	Eigen::MatrixXf V = svd.matrixV();
 	Eigen::VectorXf sv = svd.singularValues();
 	for (int i=0;i<sv.rows();i++)
 		if ( sv(i) > pinvtoler )
-			sv(i)=1.0/sv(i);
+			sv(i)=1.0f/sv(i);
 		else sv(i)=0;
 
-	MatrixXf pseudo = (V*sv.asDiagonal()*U.transpose());
-	return pseudo;
+		MatrixXf pseudo = (V*sv.asDiagonal()*U.transpose());
+		return pseudo;
 #endif
+}
+Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode)
+{
+	MatrixXf Jacobian = this->getJacobianMatrix(tcp,mode);
+	return computePseudoInverseJacobianMatrix(Jacobian);
 }
 
 
@@ -272,7 +276,8 @@ VectorXf DifferentialIK::computeStep(float stepSize )
 	VectorXf dTheta(nDoF);
 
 	//MatrixXf pseudo = (Jacobian.transpose() * Jacobian).inverse() * Jacobian.transpose();
-	MatrixXf pseudo = Jacobian.transpose() * (Jacobian*Jacobian.transpose()).inverse();
+	//MatrixXf pseudo = Jacobian.transpose() * (Jacobian*Jacobian.transpose()).inverse();
+	MatrixXf pseudo = computePseudoInverseJacobianMatrix(Jacobian);
 	//cout << "PSEUDO:" << endl;
 	//cout << pseudo << endl;
 
@@ -354,8 +359,14 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 		for (unsigned int i=0; i<nodes.size();i++)
         {
 			jv[i] = (nodes[i]->getJointValue() + dTheta[i]);
+			if (boost::math::isnan(jv[i]) || boost::math::isinf(jv[i]))
+			{
+				VR_WARNING << "Aborting, invalid joint value (nan)" << endl;
+				return false;
+			}
             //nodes[i]->setJointValue(nodes[i]->getJointValue() + dTheta[i]);
 		}
+		
 		robot->setJointValues(rns,jv);
 		
 		// check tolerances

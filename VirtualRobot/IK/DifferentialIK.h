@@ -193,7 +193,8 @@ public:
 	 * \f[ J^t \cdot \left( J \cdot J^t \right)^{-1}.\f]
 	 */
 	Eigen::MatrixXf getPseudoInverseJacobianMatrix(RobotNodePtr tcp= RobotNodePtr(), IKSolver::CartesianSelection mode=IKSolver::All);
-	
+	Eigen::MatrixXf DifferentialIK::computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m);
+
 
 	/*!	@brief Compute a single IK step. 
 	 	@param stepSize Controls the amount of error to be reduced in each step: \f$ 0 < \beta \leq 1 \f$
@@ -250,7 +251,6 @@ protected:
 	
 	void setNRows();
 	bool checkTolerances();
-
 	RobotNodeSetPtr rns; 
 	std::vector<RobotNodePtr> tcp_set;
 	RobotNodePtr coordSystem;

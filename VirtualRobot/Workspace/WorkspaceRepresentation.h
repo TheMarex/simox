@@ -255,7 +255,10 @@ public:
 	*/
 	std::vector<WorkspaceCut2DTransformationPtr> createCutTransformations(WorkspaceCut2DPtr cutXY, RobotNodePtr referenceNode = RobotNodePtr());
 
-
+	/*!
+		Computes the bounding box of this object in global coordinate system.
+		Note, that the bbox changes when the robot moves.
+	*/
 	bool getWorkspaceExtends(Eigen::Vector3f &storeMinBBox, Eigen::Vector3f &storeMaxBBox) const;
 
 	float getDiscretizeParameterTranslation();

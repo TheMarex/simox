@@ -190,7 +190,7 @@ public:
 	/*! @brief Returns the pseudo inverse of the Jacobian matrix for a given tcp of the robot.
 	 * @see getJacobianMatrix
 	 * @details The pseudo inverse \f$J^{+}\f$ can be calculated from the Jacobian matrix \f$ J \f$ using the following formula:
-	 * \f[ J^t \cdot \left( J \cdot J^t \right)^{-1}.\f]
+     * \f[ J^t \cdot \left( J \cdot J^t \right)^{-1}.\f]. Update: In order to improve stability, we are now using singular value decomposition (SVD).
 	 */
 	Eigen::MatrixXf getPseudoInverseJacobianMatrix(RobotNodePtr tcp= RobotNodePtr(), IKSolver::CartesianSelection mode=IKSolver::All);
     Eigen::MatrixXf computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m);

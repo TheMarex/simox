@@ -171,9 +171,25 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 
 Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode)
 {
+#if 0
 	MatrixXf Jacobian = this->getJacobianMatrix(tcp,mode);
 	MatrixXf pseudo = Jacobian.transpose() * (Jacobian*Jacobian.transpose()).inverse();
 	return pseudo;
+#else
+	MatrixXf Jacobian = this->getJacobianMatrix(tcp,mode);
+	float pinvtoler = 0.00001;
+	Eigen::JacobiSVD<Eigen::MatrixXf> svd(Jacobian, Eigen::ComputeThinU | Eigen::ComputeThinV);
+	Eigen::MatrixXf U = svd.matrixU();
+	Eigen::MatrixXf V = svd.matrixV();
+	Eigen::VectorXf sv = svd.singularValues();
+	for (int i=0;i<sv.rows();i++)
+		if ( sv(i) > pinvtoler )
+			sv(i)=1.0/sv(i);
+		else sv(i)=0;
+
+	MatrixXf pseudo = (V*sv.asDiagonal()*U.transpose());
+	return pseudo;
+#endif
 }
 
 

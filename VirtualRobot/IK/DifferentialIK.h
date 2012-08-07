@@ -246,6 +246,11 @@ public:
 	void convertModelScalingtoM(bool enable);
 
 	void setVerbose(bool enable);
+
+	/*!
+		Returns distance to goal. If multiple goals/TCPs are defined the mean distance is returned.
+	*/
+	float getMeanErrorPosition();
 	
 protected:
 	

@@ -321,6 +321,20 @@ float DifferentialIK::getErrorRotation(RobotNodePtr tcp)
 	return aa.angle();	
 }
 
+float DifferentialIK::getMeanErrorPosition()
+{
+	if (tcp_set.size() == 0)
+		return 0.0f;
+	float res = 0;
+	for (size_t i=0; i<tcp_set.size();i++){
+		RobotNodePtr tcp = tcp_set[i];
+		res += getErrorPosition(tcp);
+	}
+	res /= float(tcp_set.size());
+	return res;
+}
+
+
 bool DifferentialIK::checkTolerances()
 {
 	bool result = true;
@@ -348,6 +362,7 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 	RobotPtr robot = rns->getRobot();
 	VR_ASSERT(robot);
 	std::vector<float> jv(nodes.size(),0.0f);
+	std::vector<float> jvBest = rns->getJointValues();
 	int step = 0;
 	checkTolerances();
 	float lastDist = FLT_MAX;
@@ -383,13 +398,16 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 				VR_INFO << "Could not improve result any more (dTheta.norm()=" << d << "), loop:" << step << endl;
 			return false;
 		}
-		if (checkImprovement && d>lastDist)
+		float posDist = getMeanErrorPosition();
+		if (checkImprovement && posDist>lastDist)
 		{
 			if (verbose)
-				VR_INFO << "Could not improve result any more (dTheta.norm()=" << d << ", last loop's norm:" << lastDist << "), loop:" << step << endl;
+				VR_INFO << "Could not improve result any more (current position error=" << posDist << ", last loop's error:" << lastDist << "), loop:" << step << endl;
+			robot->setJointValues(rns,jvBest);
 			return false;
 		}
-		lastDist = d;
+		jvBest = jv;
+		lastDist = posDist;
 		step++;
 	}
 	if (verbose)

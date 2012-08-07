@@ -193,7 +193,7 @@ public:
 	 * \f[ J^t \cdot \left( J \cdot J^t \right)^{-1}.\f]
 	 */
 	Eigen::MatrixXf getPseudoInverseJacobianMatrix(RobotNodePtr tcp= RobotNodePtr(), IKSolver::CartesianSelection mode=IKSolver::All);
-	Eigen::MatrixXf DifferentialIK::computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m);
+    Eigen::MatrixXf computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m);
 
 
 	/*!	@brief Compute a single IK step. 

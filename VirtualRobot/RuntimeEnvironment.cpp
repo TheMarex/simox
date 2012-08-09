@@ -72,9 +72,11 @@ namespace VirtualRobot
 			  boost::filesystem::path p1 = boost::filesystem::operator/(p,"../VirtualRobot/data");
 			  boost::filesystem::path p2 = boost::filesystem::operator/(p,"../../VirtualRobot/data");
 			  boost::filesystem::path p3 = boost::filesystem::operator/(p,"../../../VirtualRobot/data");
+			  boost::filesystem::path p4 = boost::filesystem::operator/(p,"../../../../VirtualRobot/data");
 			  pathFound = pathFound | addDataPath(p1.string(),true);
 			  pathFound = pathFound | addDataPath(p2.string(),true);
 			  pathFound = pathFound | addDataPath(p3.string(),true);
+			  pathFound = pathFound | addDataPath(p4.string(),true);
 			}
 		}
 	}

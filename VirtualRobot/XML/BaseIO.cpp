@@ -583,7 +583,7 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
 	std::string res = diffpath.string();
 	if (found && origPath.extension()!="")
 	{
-#if (BOOST_VERSION>105000)
+#if (BOOST_VERSION>=105000)
 		std::string ext = origPath.extension().generic_string().c_str(); // should work with with V3 and V2
 #else
 		std::string ext = origPath.extension().c_str(); // should work with with V3 and V2

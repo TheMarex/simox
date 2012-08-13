@@ -1256,38 +1256,44 @@ float WorkspaceRepresentation::getDiscretizeParameterRotation()
 
 void WorkspaceRepresentation::setEntry( const Eigen::Matrix4f &poseGlobal, unsigned char e )
 {
-	Eigen::Matrix4f p = poseGlobal;
-	toLocal(p);
+    setEntryCheckNeighbors(poseGlobal,e,0);
+}
 
-	float x[6];
-	MathTools::eigen4f2rpy(p,x);
+void WorkspaceRepresentation::setEntryCheckNeighbors( const Eigen::Matrix4f &poseGlobal, unsigned char e, unsigned int neighborVoxels )
+{
+    Eigen::Matrix4f p = poseGlobal;
+    toLocal(p);
 
-	// check for achieved values
-	for (int i=0;i<6;i++)
-	{
-		if (x[i] < achievedMinValues[i])
-			achievedMinValues[i] = x[i];
-		if (x[i] > achievedMaxValues[i])
-			achievedMaxValues[i] = x[i];
-	}
+    float x[6];
+    MathTools::eigen4f2rpy(p,x);
 
-	// get voxels
-	unsigned int v[6];
-	if (getVoxelFromPose(x,v))
-	{
+    // check for achieved values
+    for (int i=0;i<6;i++)
+    {
+        if (x[i] < achievedMinValues[i])
+            achievedMinValues[i] = x[i];
+        if (x[i] > achievedMaxValues[i])
+            achievedMaxValues[i] = x[i];
+    }
+
+    // get voxels
+    unsigned int v[6];
+    if (getVoxelFromPose(x,v))
+    {
 #if 0
-		cout << "pose:";
-		for (int i=0;i<6;i++)
-			cout << x[i] << ",";
-		cout << "Voxel:";
-		for (int i=0;i<6;i++)
-			cout << v[i] << ",";
-		cout << endl;
+        cout << "pose:";
+        for (int i=0;i<6;i++)
+            cout << x[i] << ",";
+        cout << "Voxel:";
+        for (int i=0;i<6;i++)
+            cout << v[i] << ",";
+        cout << endl;
 #endif
-		data->setDatum(v,e);
-	}
+        data->setDatumCheckNeighbors(v,e,neighborVoxels);
+    }
 
-	buildUpLoops++;
+    buildUpLoops++;
+
 }
 
 } // namespace VirtualRobot

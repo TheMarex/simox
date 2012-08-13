@@ -278,6 +278,7 @@ public:
 
 	void setVoxelEntry( unsigned int v[6], unsigned char e );
 	void setEntry( const Eigen::Matrix4f &poseGlobal, unsigned char e );
+    void setEntryCheckNeighbors( const Eigen::Matrix4f &poseGlobal, unsigned char e, unsigned int neighborVoxels );
 
 	virtual void toLocal(Eigen::Matrix4f &p) const;
 	virtual void toGlobal(Eigen::Matrix4f &p) const;

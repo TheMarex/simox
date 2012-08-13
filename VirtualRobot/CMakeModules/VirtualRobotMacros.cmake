@@ -9,6 +9,10 @@ function(VirtualRobotQtApplication name srcs incs mocFiles uiFiles)
     qt4_wrap_ui(generatedUiFiles ${uiFiles})
     INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} )
 
+	IF(MSVC)
+			ADD_DEFINITIONS(/MP)
+	ENDIF(MSVC)
+
     ################################## EXECUTABLE ##############################
     ADD_EXECUTABLE(${name} ${srcs} ${incs} ${generatedUiFiles} ${generatedMocFiles})
     TARGET_LINK_LIBRARIES(${name} VirtualRobot ${VirtualRobot_VISUALIZATION_LIBS})

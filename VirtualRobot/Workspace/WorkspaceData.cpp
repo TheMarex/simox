@@ -152,6 +152,37 @@ void WorkspaceData::bisectData()
 	    maxEntry = maxEntry / 2;
 }
 
+void WorkspaceData::setDatumCheckNeighbors( unsigned int x[6], unsigned char value, unsigned int neighborVoxels )
+{
+    setDatum(x,value);
+    if (neighborVoxels==0)
+        return;
+    int minX[6];
+    int maxX[6];
+    for (int i=0;i<6;i++)
+    {
+        minX[i] = x[i] - neighborVoxels;
+        maxX[i] = x[i] + neighborVoxels;
+        if (minX[i]<0)
+            minX[i] = 0;
+        if (maxX[i]>=(int)sizes[i])
+            maxX[i] = sizes[i]-1;
+    }
+
+    for (int a=minX[0]; a<=maxX[0]; a++)
+        for (int b=minX[1]; b<=maxX[1]; b++)
+            for (int c=minX[2]; c<=maxX[2]; c++)
+                for (int d=minX[3]; d<=maxX[3]; d++)
+                    for (int e=minX[4]; e<=maxX[4]; e++)
+                        for (int f=minX[5]; f<=maxX[5]; f++)
+                        {
+                            if (get(a,b,c,d,e,f)<value)
+                            {
+                                setDatum((unsigned int)a,(unsigned int)b,(unsigned int)c,(unsigned int)d,(unsigned int)e,(unsigned int)f,value);
+                            }
+                        }
+}
+
 
 
 } // namespace VirtualRobot

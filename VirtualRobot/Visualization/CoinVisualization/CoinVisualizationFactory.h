@@ -175,7 +175,10 @@ public:
 	*/
 	static SoNode* getCoinVisualization(WorkspaceGridPtr reachGrid, VirtualRobot::ColorMap cm, bool transformToGlobalPose = true);	
 
-	static SoNode* getCoinVisualization( VirtualRobot::WorkspaceRepresentation::WorkspaceCut2DPtr cutXY, VirtualRobot::ColorMap cm );
+	/*!
+		Create quads according to cutXY plane. Normal can be UnitX, UnitY or UnitZ.
+	*/
+	static SoNode* getCoinVisualization( VirtualRobot::WorkspaceRepresentation::WorkspaceCut2DPtr cutXY, VirtualRobot::ColorMap cm, const Eigen::Vector3f &normal = Eigen::Vector3f::UnitY());
 
 	/*!
 		Create an offscreen renderer object with the given width and height.

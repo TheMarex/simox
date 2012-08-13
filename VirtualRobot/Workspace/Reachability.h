@@ -52,7 +52,7 @@ public:
 	Reachability(RobotPtr robot);
 
 	/*!
-		Returns true, if the corresponding reachability entry is nun zero.
+		Returns true, if the corresponding reachability entry is non zero.
 	*/
 	bool isReachable(const Eigen::Matrix4f &globalPose);
 

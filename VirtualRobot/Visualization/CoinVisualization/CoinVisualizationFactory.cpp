@@ -1249,8 +1249,9 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 			Eigen::Matrix4f pose;
 			MathTools::posrpy2eigen4f(posLocal,i->second[j],pose);
 
-			if (transformToGlobalPose && reachSpace->baseNode)
-				pose = reachSpace->baseNode->toGlobalCoordinateSystem(pose);
+			if (transformToGlobalPose)
+				reachSpace->toGlobal(pose);
+				//pose = reachSpace->baseNode->toGlobalCoordinateSystem(pose);
 			SoMatrixTransform *mt = getMatrixTransform(pose);
 			sep->addChild(mt);
 			sep->addChild(arrow);
@@ -1278,11 +1279,12 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 	Eigen::Matrix4f m;
 	Eigen::Vector3f oLocal = fixedEEFOrientationGlobalRPY;
 	MathTools::rpy2eigen4f(fixedEEFOrientationGlobalRPY(0),fixedEEFOrientationGlobalRPY(1),fixedEEFOrientationGlobalRPY(2),m);
-	if (reachSpace->baseNode)
+	reachSpace->toLocal(m);
+	/*if (reachSpace->baseNode)
 	{
 		m = reachSpace->baseNode->toLocalCoordinateSystem(m);
 		MathTools::eigen4f2rpy(m,oLocal);
-	}
+	}*/
 
 	Eigen::Vector3f voxelPosition, size;
 	int d,e,f;
@@ -1327,9 +1329,10 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 				if(value >= minValue)
 				{
 					MathTools::posrpy2eigen4f(voxelPosition,oLocal,m);
-					if(transformToGlobalPose && reachSpace->baseNode)
+					if(transformToGlobalPose)
 					{
-						m = reachSpace->baseNode->toGlobalCoordinateSystem(m);
+						reachSpace->toGlobal(m);
+						//m = reachSpace->baseNode->toGlobalCoordinateSystem(m);
 					}
 					SoSeparator *sep = new SoSeparator;
 					float intensity = (float)value;
@@ -1480,7 +1483,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 			}
 		}
 	}
-
+	Eigen::Vector3f resPos;
 	for(int a = 0; a < reachSpace->numVoxels[0]; a+=step)
 	{
 		voxelPosition(0) = reachSpace->minBounds[0] + (a + 0.5f)*size(0);
@@ -1497,9 +1500,11 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 				int value = reachSpace->sumAngleReachabilities(a, b, c);
 				if (value>0)
 				{
-					if(transformToGlobalPose && reachSpace->baseNode)
+					resPos = voxelPosition;
+					if(transformToGlobalPose)// && reachSpace->baseNode)
 					{
-						voxelPosition = reachSpace->baseNode->toGlobalCoordinateSystemVec(voxelPosition);
+						reachSpace->toGlobalVec(resPos);
+						//voxelPosition = reachSpace->baseNode->toGlobalCoordinateSystemVec(voxelPosition);
 					}
 					float intensity = (float)value;
 					if (maxValue>0)
@@ -1508,7 +1513,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 						intensity = 1.0f;
 					color = cm.getColor(intensity);
 
-					SoNode *n = CreateVertexVisualization(voxelPosition,radius, color.transparency,color.r,color.g,color.b);
+					SoNode *n = CreateVertexVisualization(resPos,radius, color.transparency,color.r,color.g,color.b);
 					if (n)
 						res->addChild(n);
 				}
@@ -1715,13 +1720,16 @@ SoNode* CoinVisualizationFactory::getCoinVisualization( WorkspaceGridPtr reachGr
 
 }
 
-SoNode* CoinVisualizationFactory::getCoinVisualization( WorkspaceRepresentation::WorkspaceCut2DPtr cutXY, VirtualRobot::ColorMap cm )
+SoNode* CoinVisualizationFactory::getCoinVisualization( WorkspaceRepresentation::WorkspaceCut2DPtr cutXY, VirtualRobot::ColorMap cm, const Eigen::Vector3f &normal )
 {
 	SoSeparator *res = new SoSeparator;
 	if (!cutXY)
 		return res;
 
-	Eigen::Matrix4f gp = cutXY->referenceGlobalPose;
+	//Eigen::Matrix4f gp = cutXY->referenceGlobalPose;
+	Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
+	// set z component
+	gp(2,3) = cutXY->referenceGlobalPose(2,3);
 
 	int nX = cutXY->entries.rows();
 	int nY = cutXY->entries.cols();
@@ -1732,9 +1740,22 @@ SoNode* CoinVisualizationFactory::getCoinVisualization( WorkspaceRepresentation:
 
 	float ro,gr,bl;
 	SoCube *cube = new SoCube();
-	cube->width = sizeX;
-	cube->height = sizeY;
-	cube->depth = 1.0f;
+	if (normal(0) > 0)
+	{
+		cube->width = sizeX;
+		cube->depth = sizeY;
+		cube->height = 1.0;
+	} else if (normal(1)>0)
+	{
+		cube->width = 1.0f;
+		cube->depth = sizeX;
+		cube->height = sizeY;
+	} else
+	{
+		cube->width = sizeX;
+		cube->depth = 1.0f;
+		cube->height = sizeY;
+	}
 	int maxEntry = cutXY->entries.maxCoeff();
 
 	if (maxEntry==0)

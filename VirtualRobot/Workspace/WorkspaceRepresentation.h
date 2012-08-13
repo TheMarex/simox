@@ -199,6 +199,11 @@ public:
 	virtual bool getVoxelFromPose(const Eigen::Matrix4f &globalPose, unsigned int v[6]) const;
 
 	/*!
+		Computes center of corresponding voxel in global coord system.
+	*/				
+	Eigen::Matrix4f getPoseFromVoxel(unsigned int v[6], bool transformToGlobalPose = true);
+
+	/*!
 		Returns the maximum that can be achieved by calling sumAngleReachabilities() 
 	*/
 	virtual int getMaxSummedAngleReachablity();
@@ -264,6 +269,20 @@ public:
 	float getDiscretizeParameterTranslation();
 	float getDiscretizeParameterRotation();
 
+	RobotPtr getRobot(){return robot;}
+
+	SceneObjectSetPtr getCollisionModelStatic(){return staticCollisionModel;}
+	SceneObjectSetPtr getCollisionModelDynamic(){return dynamicCollisionModel;}
+	RobotNodePtr getTcp(){return tcpNode;}
+	bool getAdjustOnOverflow(){return adjustOnOverflow;}
+
+	void setVoxelEntry( unsigned int v[6], unsigned char e );
+	void setEntry( const Eigen::Matrix4f &poseGlobal, unsigned char e );
+
+	virtual void toLocal(Eigen::Matrix4f &p) const;
+	virtual void toGlobal(Eigen::Matrix4f &p) const;
+	void toLocalVec(Eigen::Vector3f &positionGlobal) const;
+	void toGlobalVec(Eigen::Vector3f &positionLocal) const;
 protected:
 	/*!
 		Derived classes may implement some custom data access.
@@ -290,10 +309,10 @@ protected:
 	//! Compress the data
 	unsigned char *compressData(const unsigned char *source, int size, int &compressedSize);
 
-	//! Refetch the base joint's transformation, in case this joint has moved
-	void updateBaseTransformation();
-
 	virtual bool getVoxelFromPose(float x[6], unsigned int v[6]) const;
+
+	virtual Eigen::Matrix4f getToLocalTransformation() const;
+	virtual Eigen::Matrix4f getToGlobalTransformation() const;
 
 
 	RobotPtr robot;
@@ -336,7 +355,6 @@ protected:
 	int versionMinor;
 
 };
-
 
 } // namespace VirtualRobot
 

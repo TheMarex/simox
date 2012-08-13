@@ -25,8 +25,9 @@ void Reachability::addCurrentTCPPose()
 	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No reachability data loaded");
 
 	Eigen::Matrix4f p = tcpNode->getGlobalPose();
-	if (baseNode)
-		p = baseNode->toLocalCoordinateSystem(p);
+	toLocal(p);
+	//if (baseNode)
+		//p = baseNode->toLocalCoordinateSystem(p);
 
 	float x[6];
 	MathTools::eigen4f2rpy(p,x);
@@ -58,8 +59,6 @@ void Reachability::addRandomTCPPoses( unsigned int loops, bool checkForSelfColli
 	nodeSet->getJointValues(c);
 	bool visuSate = robot->getUpdateVisualizationStatus();
 	robot->setUpdateVisualization(false);
-
-	updateBaseTransformation();
 
 	for (unsigned int i=0;i<loops;i++)
 	{

@@ -31,11 +31,6 @@ WorkspaceRepresentation::WorkspaceRepresentation(RobotPtr robot)
 	reset();
 }
 
-void WorkspaceRepresentation::updateBaseTransformation()
-{
-	baseTransformation = baseNode->getGlobalPose().inverse();
-}
-
 int WorkspaceRepresentation::sumAngleReachabilities(int x0, int x1, int x2) const
 {
 	int res = 0;
@@ -249,10 +244,10 @@ void WorkspaceRepresentation::load(const std::string &filename)
 			readString(tmpString, file);
 			baseNode = robot->getRobotNode(tmpString);
 			THROW_VR_EXCEPTION_IF(!baseNode, "Unknown Base Joint");
-			updateBaseTransformation();
+			//updateBaseTransformation();
 		}
-		else
-			baseTransformation.setIdentity();
+		//else
+			//baseTransformation.setIdentity();
 
 		// Static collision model
 		readString(tmpString, file);
@@ -600,13 +595,61 @@ RobotNodeSetPtr WorkspaceRepresentation::getNodeSet()
 {
 	return nodeSet;
 }
+
+Eigen::Matrix4f WorkspaceRepresentation::getToLocalTransformation() const
+{
+	if (baseNode)
+		return baseNode->getGlobalPose().inverse();
+	else
+		return Eigen::Matrix4f::Identity();
+}
+
+Eigen::Matrix4f WorkspaceRepresentation::getToGlobalTransformation() const
+{
+	if (baseNode)
+		return baseNode->getGlobalPose();
+	else
+		return Eigen::Matrix4f::Identity();
+}
+
+void WorkspaceRepresentation::toLocal(Eigen::Matrix4f &p) const
+{
+	p = getToLocalTransformation() * p;
+	//if (baseNode)
+	//p = baseNode->toLocalCoordinateSystem(p);
+}
+void WorkspaceRepresentation::toGlobal(Eigen::Matrix4f &p) const
+{
+	p = getToGlobalTransformation() * p;
+	//if (baseNode)
+	//p = baseNode->toGlobalCoordinateSystem(p);
+}
+
+void WorkspaceRepresentation::toLocalVec(Eigen::Vector3f &positionGlobal) const
+{
+	Eigen::Matrix4f t;
+	t.setIdentity();
+	t.block(0,3,3,1)=positionGlobal;
+	toLocal(t);
+	positionGlobal = t.block(0,3,3,1);
+}
+
+
+void WorkspaceRepresentation::toGlobalVec(Eigen::Vector3f &positionLocal) const
+{
+	Eigen::Matrix4f t;
+	t.setIdentity();
+	t.block(0,3,3,1)=positionLocal;
+	toGlobal(t);
+	positionLocal = t.block(0,3,3,1);
+}
+
 void WorkspaceRepresentation::setCurrentTCPPoseEntryIfLower(unsigned char e)
 {
 	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No WorkspaceRepresentation data loaded");
 
 	Eigen::Matrix4f p = tcpNode->getGlobalPose();
-	if (baseNode)
-		p = baseNode->toLocalCoordinateSystem(p);
+	toLocal(p);
 
 	float x[6];
 	MathTools::eigen4f2rpy(p,x);
@@ -653,8 +696,9 @@ bool WorkspaceRepresentation::getVoxelFromPose( const Eigen::Matrix4f &globalPos
 	float x[6];
 
 	Eigen::Matrix4f p = globalPose;
-	if (baseNode)
-		p = baseNode->toLocalCoordinateSystem(p);
+	toLocal(p);
+	//if (baseNode)
+		//p = baseNode->toLocalCoordinateSystem(p);
 
 	MathTools::eigen4f2rpy(p,x);
 	return getVoxelFromPose(x,v);
@@ -804,7 +848,6 @@ void WorkspaceRepresentation::initialize( RobotNodeSetPtr nodeSet, float discret
 		THROW_VR_EXCEPTION("Robot does not know basenode:" << baseNode->getName());
 	}
 	THROW_VR_EXCEPTION_IF (nodeSet->hasRobotNode(baseNode)," baseNode is part of RobotNodeSet! This is not a good idea, since the globalPose of the baseNode will change during buildup of WorkspaceRepresentation data...");
-	updateBaseTransformation();
 	this->staticCollisionModel = staticCollisionModel;
 	this->dynamicCollisionModel = dynamicCollisionModel;
 	if (!staticCollisionModel || !dynamicCollisionModel)
@@ -831,8 +874,8 @@ void WorkspaceRepresentation::initialize( RobotNodeSetPtr nodeSet, float discret
 			numVoxels[i] = (int)(spaceSize[i] / discretizeStepRotation) + 1;
 		THROW_VR_EXCEPTION_IF( (numVoxels[i]<=0), " numVoxels <= 0 in dimension " << i);
 	}
-	data.reset(new WorkspaceData(numVoxels[0],numVoxels[1],numVoxels[2],numVoxels[3],numVoxels[4],numVoxels[5],adjustOnOverflow));
 
+	data.reset(new WorkspaceData(numVoxels[0],numVoxels[1],numVoxels[2],numVoxels[3],numVoxels[4],numVoxels[5],adjustOnOverflow));
 }
 
 void WorkspaceRepresentation::binarize()
@@ -864,6 +907,20 @@ unsigned char WorkspaceRepresentation::getEntry( const Eigen::Matrix4f &globalPo
 }
 
 
+Eigen::Matrix4f WorkspaceRepresentation::getPoseFromVoxel(unsigned int v[6],bool transformToGlobalPose)
+{
+	float x[6];
+	for (int j=0;j<6;j++)
+	{
+		x[j] = minBounds[j] + ((float)v[j]+0.5f) * getVoxelSize(j);
+	}
+	Eigen::Matrix4f m;
+	MathTools::posrpy2eigen4f(x,m);
+	if (transformToGlobalPose)
+		toGlobal(m);
+	return m;
+}
+
 Eigen::Matrix4f WorkspaceRepresentation::sampleCoveredPose()
 {
 	int maxLoops = 10000;
@@ -886,8 +943,9 @@ Eigen::Matrix4f WorkspaceRepresentation::sampleCoveredPose()
 				x[j] = minBounds[j] + ((float)nV[j]+0.5f) * getVoxelSize(j);
 			}
 			MathTools::posrpy2eigen4f(x,m);
-			if (baseNode)
-				m = baseNode->toGlobalCoordinateSystem(m);
+			toGlobal(m);
+			//if (baseNode)
+				//m = baseNode->toGlobalCoordinateSystem(m);
 			return m;
 
 		}
@@ -967,6 +1025,9 @@ float WorkspaceRepresentation::getMaxBound( int dim ) const
 
 unsigned char WorkspaceRepresentation::getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f) const
 {
+	if (a<0 || b<0 || c<0 || d<0 || e<0 || f<0 
+		|| a>=numVoxels[0] || b>=numVoxels[1] || c>=numVoxels[2] || d>=numVoxels[3] || e>=numVoxels[4] || f>=numVoxels[5])
+		return 0;
 	return data->get(a,b,c,d,e,f);
 }
 
@@ -993,34 +1054,20 @@ bool WorkspaceRepresentation::isCovered( const Eigen::Matrix4f &globalPose )
 	return (getEntry(globalPose) > 0);
 }
 
+
+void WorkspaceRepresentation::setVoxelEntry( unsigned int v[6], unsigned char e )
+{
+	data->setDatum(v,e);
+	buildUpLoops++;
+}
+
 void WorkspaceRepresentation::setCurrentTCPPoseEntry( unsigned char e )
 {
 	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No WorkspaceRepresentation data loaded");
 
 	Eigen::Matrix4f p = tcpNode->getGlobalPose();
-	if (baseNode)
-		p = baseNode->toLocalCoordinateSystem(p);
+	setEntry(p,e);
 
-	float x[6];
-	MathTools::eigen4f2rpy(p,x);
-
-	// check for achieved values
-	for (int i=0;i<6;i++)
-	{
-		if (x[i] < achievedMinValues[i])
-			achievedMinValues[i] = x[i];
-		if (x[i] > achievedMaxValues[i])
-			achievedMaxValues[i] = x[i];
-	}
-
-	// get voxels
-	unsigned int v[6];
-	if (getVoxelFromPose(x,v))
-	{
-		data->setDatum(v,e);
-	}
-
-	buildUpLoops++;
 }
 
 bool WorkspaceRepresentation::checkForParameters( RobotNodeSetPtr nodeSet, float steps, float storeMinBounds[6], float storeMaxBounds[6],RobotNodePtr baseNode, RobotNodePtr tcpNode )
@@ -1057,8 +1104,9 @@ bool WorkspaceRepresentation::checkForParameters( RobotNodeSetPtr nodeSet, float
 	{
 		setRobotNodesToRandomConfig(nodeSet,false);
 		Eigen::Matrix4f p = tcpNode->getGlobalPose();
-		if (baseNode)
-			p = baseNode->toLocalCoordinateSystem(p);
+		toLocal(p);
+		//if (baseNode)
+			//p = baseNode->toLocalCoordinateSystem(p);
 
 		float x[6];
 		MathTools::eigen4f2rpy(p,x);
@@ -1138,11 +1186,12 @@ bool WorkspaceRepresentation::getWorkspaceExtends( Eigen::Vector3f &storeMinBBox
 	maxBB(0) = maxBounds[0];
 	maxBB(1) = maxBounds[1];
 	maxBB(2) = maxBounds[2];
-	if (baseNode)
-	{
-		minBB = baseNode->toGlobalCoordinateSystemVec(minBB);
-		maxBB = baseNode->toGlobalCoordinateSystemVec(maxBB);
-	}
+
+	//minBB = baseNode->toGlobalCoordinateSystemVec(minBB);
+	//maxBB = baseNode->toGlobalCoordinateSystemVec(maxBB);
+	toGlobalVec(minBB);
+	toGlobalVec(maxBB);
+
 	for (int i=0;i<3;i++)
 		if (minBB(i) < maxBB(i))
 		{
@@ -1203,6 +1252,42 @@ float WorkspaceRepresentation::getDiscretizeParameterTranslation()
 float WorkspaceRepresentation::getDiscretizeParameterRotation()
 {
 	return discretizeStepRotation;
+}
+
+void WorkspaceRepresentation::setEntry( const Eigen::Matrix4f &poseGlobal, unsigned char e )
+{
+	Eigen::Matrix4f p = poseGlobal;
+	toLocal(p);
+
+	float x[6];
+	MathTools::eigen4f2rpy(p,x);
+
+	// check for achieved values
+	for (int i=0;i<6;i++)
+	{
+		if (x[i] < achievedMinValues[i])
+			achievedMinValues[i] = x[i];
+		if (x[i] > achievedMaxValues[i])
+			achievedMaxValues[i] = x[i];
+	}
+
+	// get voxels
+	unsigned int v[6];
+	if (getVoxelFromPose(x,v))
+	{
+#if 0
+		cout << "pose:";
+		for (int i=0;i<6;i++)
+			cout << x[i] << ",";
+		cout << "Voxel:";
+		for (int i=0;i<6;i++)
+			cout << v[i] << ",";
+		cout << endl;
+#endif
+		data->setDatum(v,e);
+	}
+
+	buildUpLoops++;
 }
 
 } // namespace VirtualRobot

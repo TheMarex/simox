@@ -1026,7 +1026,7 @@ float WorkspaceRepresentation::getMaxBound( int dim ) const
 unsigned char WorkspaceRepresentation::getVoxelEntry(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e, unsigned int f) const
 {
 	if (a<0 || b<0 || c<0 || d<0 || e<0 || f<0 
-		|| a>=numVoxels[0] || b>=numVoxels[1] || c>=numVoxels[2] || d>=numVoxels[3] || e>=numVoxels[4] || f>=numVoxels[5])
+		|| int(a)>=numVoxels[0] || int(b)>=numVoxels[1] || int(c)>=numVoxels[2] || int(d)>=numVoxels[3] || int(e)>=numVoxels[4] || int(f)>=numVoxels[5])
 		return 0;
 	return data->get(a,b,c,d,e,f);
 }
@@ -1178,31 +1178,43 @@ WorkspaceRepresentation::WorkspaceCut2DPtr WorkspaceRepresentation::createCut( c
 
 bool WorkspaceRepresentation::getWorkspaceExtends( Eigen::Vector3f &storeMinBBox, Eigen::Vector3f &storeMaxBBox ) const
 {
-	Eigen::Vector3f minBB;
-	minBB(0) = minBounds[0];
-	minBB(1) = minBounds[1];
-	minBB(2) = minBounds[2];
-	Eigen::Vector3f maxBB;
-	maxBB(0) = maxBounds[0];
-	maxBB(1) = maxBounds[1];
-	maxBB(2) = maxBounds[2];
-
-	//minBB = baseNode->toGlobalCoordinateSystemVec(minBB);
-	//maxBB = baseNode->toGlobalCoordinateSystemVec(maxBB);
-	toGlobalVec(minBB);
-	toGlobalVec(maxBB);
-
-	for (int i=0;i<3;i++)
-		if (minBB(i) < maxBB(i))
+	Eigen::Vector3f quadPos[8];
+	float x,y,z;
+	for (int i=0;i<8;i++)
+	{
+		if (i%2 == 0)
+			x = minBounds[0];
+		else
+			x = maxBounds[0];
+		if ((i>>1) % 2 == 0)
+			y = minBounds[1];
+		else
+			y = maxBounds[1];
+		if ((i>>2) % 2 == 0)
+			z = minBounds[2];
+		else
+			z = maxBounds[2];
+		quadPos[i](0) = x;
+		quadPos[i](1) = y;
+		quadPos[i](2) = z;
+		toGlobalVec(quadPos[i]);
+	}
+	storeMinBBox = quadPos[0];
+	storeMaxBBox = quadPos[0];
+	for (int k=0;k<8;k++)
+	{
+		for (int i=0;i<3;i++)
 		{
-			storeMinBBox(i) = minBB(i);
-			storeMaxBBox(i) = maxBB(i);
-		} else
-		{
-			storeMinBBox(i) = maxBB(i);
-			storeMaxBBox(i) = minBB(i);
-		} 
-
+			if (quadPos[k](i) < storeMinBBox(i))
+			{
+				storeMinBBox(i) = quadPos[k](i);
+			} 
+			if (quadPos[k](i) > storeMaxBBox(i))
+			{
+				storeMaxBBox(i) = quadPos[k](i);
+			} 
+		}
+	}
 	return true;
 }
 

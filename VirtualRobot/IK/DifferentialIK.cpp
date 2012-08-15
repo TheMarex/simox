@@ -15,12 +15,14 @@
 #include <algorithm>
 #include <float.h>
 
+//#define CHECK_PERFORMANCE
+
 using namespace Eigen;
 namespace VirtualRobot
 {
 
-DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem) : 
-	rns(_rns), coordSystem(_coordSystem),nRows(0)
+DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem, InverseJacobiMethod invJacMethod) :
+    rns(_rns), coordSystem(_coordSystem),nRows(0), inverseMethod(invJacMethod)
 {
 	if (!rns)
 		THROW_VR_EXCEPTION("Null data");
@@ -80,6 +82,11 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 
 	// Iterate over all degrees of freedom
 	for (size_t i=0; i<nDoF;i++){
+
+#ifdef CHECK_PERFORMANCE
+        clock_t startT = clock();
+#endif
+
 		RobotNodePtr dof = this->nodes[i];
 		//std::vector<RobotNodePtr> parents = parents[tcp];//tcp->getAllParents(this->rns);
 
@@ -135,8 +142,18 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 				// no orientation part required with prismatic joints
 			}
 		}
-	}
 
+#ifdef CHECK_PERFORMANCE
+        clock_t endT = clock();
+        float diffClock = (float)(((float)(endT - startT) / (float)CLOCKS_PER_SEC) * 1000.0f);
+        if (diffClock>0.0f)
+            cout << "Jacobi Loop " << i << ": RobotNode: " << dof->getName() << ", time:" << diffClock << endl;
+#endif
+
+	}
+#ifdef CHECK_PERFORMANCE
+        clock_t startT = clock();
+#endif
 	// obtain the size of the matrix.
 	unsigned int size=0;
 	if (mode & IKSolver::X) size++;
@@ -167,33 +184,74 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 
 	//cout << "partial JACOBIAN: (row 1-3)" << endl;
 	//cout << result.block(0,0,3,3) << endl;
+
+#ifdef CHECK_PERFORMANCE
+        clock_t endT = clock();
+        float diffClock = (float)(((float)(endT - startT) / (float)CLOCKS_PER_SEC) * 1000.0f);
+        if (diffClock>1.0f)
+            cout << "Jacobirest time:" << diffClock << endl;
+#endif
 	return result;
 };
 
 Eigen::MatrixXf DifferentialIK::computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m)
 {
-#if 0
-	MatrixXf pseudo = m.transpose() * (m*m.transpose()).inverse();
-	return pseudo;
-#else
-	float pinvtoler = 0.00001f;
-	Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
-	Eigen::MatrixXf U = svd.matrixU();
-	Eigen::MatrixXf V = svd.matrixV();
-	Eigen::VectorXf sv = svd.singularValues();
-	for (int i=0;i<sv.rows();i++)
-		if ( sv(i) > pinvtoler )
-			sv(i)=1.0f/sv(i);
-		else sv(i)=0;
-
-		MatrixXf pseudo = (V*sv.asDiagonal()*U.transpose());
-		return pseudo;
+#ifdef CHECK_PERFORMANCE
+        clock_t startT = clock();
 #endif
+    MatrixXf pseudo;
+    switch (inverseMethod)
+    {
+    case eTranspose:
+    {
+        pseudo = m.transpose() * (m*m.transpose()).inverse();
+        break;
+    }
+    case eSVD:
+    {
+        float pinvtoler = 0.00001f;
+        Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
+        Eigen::MatrixXf U = svd.matrixU();
+        Eigen::MatrixXf V = svd.matrixV();
+        Eigen::VectorXf sv = svd.singularValues();
+        for (int i=0;i<sv.rows();i++)
+            if ( sv(i) > pinvtoler )
+                sv(i)=1.0f/sv(i);
+            else sv(i)=0;
+
+        pseudo = (V*sv.asDiagonal()*U.transpose());
+        break;
+    }
+    default:
+        THROW_VR_EXCEPTION("Inverse Jacobi Method nyi...");
+    }
+#ifdef CHECK_PERFORMANCE
+        clock_t endT = clock();
+        float diffClock = (float)(((float)(endT - startT) / (float)CLOCKS_PER_SEC) * 1000.0f);
+        //if (diffClock>10.0f)
+            cout << "Inverse Jacobi time:" << diffClock << endl;
+#endif
+
+    return pseudo;
 }
+
 Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode)
 {
+#ifdef CHECK_PERFORMANCE
+        clock_t startT = clock();
+#endif
 	MatrixXf Jacobian = this->getJacobianMatrix(tcp,mode);
-	return computePseudoInverseJacobianMatrix(Jacobian);
+#ifdef CHECK_PERFORMANCE
+        clock_t startT2 = clock();
+#endif
+    Eigen::MatrixXf res = computePseudoInverseJacobianMatrix(Jacobian);
+#ifdef CHECK_PERFORMANCE
+        clock_t endT = clock();
+        float diffClock1 = (float)(((float)(startT2 - startT) / (float)CLOCKS_PER_SEC) * 1000.0f);
+        float diffClock2 = (float)(((float)(endT - startT2) / (float)CLOCKS_PER_SEC) * 1000.0f);
+        cout << "getPseudoInverseJacobianMatrix time1:" << diffClock1 << ", time2: " << diffClock2 << endl;
+#endif
+    return res;
 }
 
 

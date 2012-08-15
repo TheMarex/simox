@@ -108,17 +108,15 @@ class VIRTUAL_ROBOT_IMPORT_EXPORT DifferentialIK : public boost::enable_shared_f
 {
 public:
 
-	/*! @brief Flags for the selection of the target components.
-	  @details The flags can be combined with the +-operator.
-	  */
-	/*enum eCartesianSelection {
-		X=1,
-		Y=2,
-		Z=4,
-		Position=7,
-		Orientation=8,
-		All=15
-	};*/
+    /*!
+      @brief Several methods are offered for inverting the Jacobi (i.e. building the Pseudoinvese)
+    */
+    enum InverseJacobiMethod
+    {
+        eSVD,       //<! Performing SVD and setting very small eigen values to zero results in a quite stabel invertation of the Jacobi. (default)
+        eTranspose  //<! The Jacobi Transpose method is faster than SVD and works well for redundant kinematic chains.
+    };
+
 
 
 	/*!
@@ -126,7 +124,7 @@ public:
 		\param rns The robotNodes (i.e., joints) for which the Jacobians should be calculated.
 		\param coordSystem The coordinate system in which the Jacobians are defined. By default the global coordinate system is used.
 	*/
-	DifferentialIK(RobotNodeSetPtr rns, RobotNodePtr coordSystem = RobotNodePtr());
+    DifferentialIK(RobotNodeSetPtr rns, RobotNodePtr coordSystem = RobotNodePtr(), InverseJacobiMethod invJacMethod = eSVD);
 	
 
 	/*!	@brief Sets the target position for (one of) the tcp(s).  
@@ -275,6 +273,7 @@ protected:
 	std::vector <RobotNodePtr> nodes;
 	std::map< RobotNodePtr, std::vector<RobotNodePtr> > parents;
 
+    InverseJacobiMethod inverseMethod;
 	bool verbose;
 
 };

@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(testMathToolsSegemntPlaneIntersection)
     BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectSegmentPlane(segment_noIntersect,plane,res),VirtualRobot::MathTools::eNoIntersection);
     BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectSegmentPlane(segment_intersect,plane,res),VirtualRobot::MathTools::eIntersection);
     // should be (0,0,0)
-    BOOST_CHECK_CLOSE ( res.norm(), 0.0f, 1e-6f );
+    BOOST_CHECK_CLOSE( res.norm(), 0.0f, 1e-6f );
 
     BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectSegmentPlane(segment_intersect2,plane,res),VirtualRobot::MathTools::eIntersection);
     BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectSegmentPlane(segment_parallel,plane,res),VirtualRobot::MathTools::eNoIntersection);
@@ -147,11 +147,12 @@ BOOST_AUTO_TEST_CASE(testMathToolsOOBBPlaneIntersection)
     VirtualRobot::MathTools::OOBB oobb(Eigen::Vector3f(-100.0f,-100.0f,-100.0f),Eigen::Vector3f(100.0f,100.0f,100.0f),pose);
     VirtualRobot::MathTools::Plane plane(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,1.0f));
     
-    Eigen::Vector3f res[4];
-    BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectOOBBPlane(oobb,plane,res),VirtualRobot::MathTools::eNoIntersection);
+    std::vector<Eigen::Vector3f> res;
+    BOOST_CHECK_EQUAL (VirtualRobot::MathTools::intersectOOBBPlane(oobb,plane,res),VirtualRobot::MathTools::eNoIntersection);
     pose(2,3) = -50.0f;
     oobb.pose = pose;
-    BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectOOBBPlane(oobb,plane,res),VirtualRobot::MathTools::eIntersection);
+    BOOST_CHECK_EQUAL (VirtualRobot::MathTools::intersectOOBBPlane(oobb,plane,res),VirtualRobot::MathTools::eIntersection);
+    BOOST_CHECK_EQUAL (res.size(),4);
     BOOST_CHECK_CLOSE ( res[0](0), -100.0f, 1e-6f);
     BOOST_CHECK_CLOSE ( res[0](1), 100.0f, 1e-6f );
     BOOST_CHECK_CLOSE ( res[0](2), 0.0f, 1e-6f );

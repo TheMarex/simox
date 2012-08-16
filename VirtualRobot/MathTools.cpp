@@ -1329,6 +1329,94 @@ float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getCartesianPoseDiff( const Eigen::
 	return (tr+ro*rotInfluence);
 }
 
+MathTools::IntersectionResult VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::intersectSegmentPlane( const Segment &segment, const Plane &plane, Eigen::Vector3f &storeResult )
+{
+    // check for same side
+    if (onNormalPointingSide(segment.p0,plane) == onNormalPointingSide(segment.p1,plane))
+        return eNoIntersection;
+
+    Eigen::Vector3f u = segment.p1 - segment.p0;
+    Eigen::Vector3f w = segment.p0 - plane.p;
+
+    float     D = plane.n.dot(u);// dot(Pn.n, u);
+    float     N = -plane.n.dot(w);//-dot(Pn.n, w);
+
+    // check for parallel
+    if (fabs(D) < MIN_TO_ZERO) {
+        return eNoIntersection;
+        /*if (N == 0)                     // segment lies in plane
+            return 2;
+        else
+            return 0;                   // no intersection*/
+    }
+
+    float sI = N / D;
+    if (sI < 0 || sI > 1)
+        return eNoIntersection; // no intersection (should be handled above, just to be sure)
+
+    storeResult = segment.p0 + sI * u;                 // compute segment intersect point
+    return eIntersection;
+}
+
+MathTools::IntersectionResult VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::intersectOOBBPlane( const OOBB &oobb, const Plane &plane, Eigen::Vector3f storeResult[4] )
+{
+    std::vector<Eigen::Vector3f> oobbPoint = oobb.getOOBBPoints();
+    Segment s[12];
+    s[0].p0 = oobbPoint[0];
+    s[0].p1 = oobbPoint[1];
+
+    s[1].p0 = oobbPoint[0];
+    s[1].p1 = oobbPoint[2];
+
+    s[2].p0 = oobbPoint[2];
+    s[2].p1 = oobbPoint[3];
+
+    s[3].p0 = oobbPoint[1];
+    s[3].p1 = oobbPoint[3];
+
+    s[4].p0 = oobbPoint[4];
+    s[4].p1 = oobbPoint[5];
+
+    s[5].p0 = oobbPoint[4];
+    s[5].p1 = oobbPoint[6];
+
+    s[6].p0 = oobbPoint[5];
+    s[6].p1 = oobbPoint[7];
+
+    s[7].p0 = oobbPoint[6];
+    s[7].p1 = oobbPoint[7];
+
+    s[8].p0 = oobbPoint[2];
+    s[8].p1 = oobbPoint[6];
+
+    s[9].p0 = oobbPoint[0];
+    s[9].p1 = oobbPoint[4];
+
+    s[10].p0 = oobbPoint[1];
+    s[10].p1 = oobbPoint[5];
+
+    s[11].p0 = oobbPoint[3];
+    s[11].p1 = oobbPoint[7];
+
+    Eigen::Vector3f res;
+    std::vector<Eigen::Vector3f> intersectionPoints;
+    for (int i=0;i<12;i++)
+    {
+
+        if (intersectSegmentPlane(s[i],plane,res) == eIntersection)
+        {
+            intersectionPoints.push_back(res);
+        }
+    }
+    if (intersectionPoints.size()!=4)
+        return eNoIntersection;
+
+    for (int i=0;i<4;i++)
+        storeResult[i] = intersectionPoints[i];
+
+    return eIntersection;
+}
+
 
 } // namespace
 

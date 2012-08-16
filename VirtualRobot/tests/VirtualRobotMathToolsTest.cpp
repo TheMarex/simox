@@ -119,4 +119,51 @@ BOOST_AUTO_TEST_CASE(testMathToolsBasisChange)
 }
 
 
+BOOST_AUTO_TEST_CASE(testMathToolsSegemntPlaneIntersection)
+{
+    VirtualRobot::MathTools::Plane plane(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,1.0f));
+
+    VirtualRobot::MathTools::Segment segment_noIntersect(Eigen::Vector3f(0,0,10.0f), Eigen::Vector3f(1.0f,20.0f,100.0f));
+    VirtualRobot::MathTools::Segment segment_intersect(Eigen::Vector3f(0,0,-1.0f), Eigen::Vector3f(0,0,1.0f));
+    VirtualRobot::MathTools::Segment segment_intersect2(Eigen::Vector3f(200.0f,30.0f,-100.0f), Eigen::Vector3f(50.0f,200.0f,100.0f));
+    VirtualRobot::MathTools::Segment segment_parallel(Eigen::Vector3f(0,0,0), Eigen::Vector3f(1.0f,0,0));
+
+    Eigen::Vector3f res;
+    BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectSegmentPlane(segment_noIntersect,plane,res),VirtualRobot::MathTools::eNoIntersection);
+    BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectSegmentPlane(segment_intersect,plane,res),VirtualRobot::MathTools::eIntersection);
+    // should be (0,0,0)
+    BOOST_CHECK_CLOSE ( res.norm(), 0.0f, 1e-6f );
+
+    BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectSegmentPlane(segment_intersect2,plane,res),VirtualRobot::MathTools::eIntersection);
+    BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectSegmentPlane(segment_parallel,plane,res),VirtualRobot::MathTools::eNoIntersection);
+}
+
+/*
+BOOST_AUTO_TEST_CASE(testMathToolsOOBBPlaneIntersection)
+{
+    Eigen::Matrix4f pose;
+    pose.setIdentity();
+    pose(2,3) = 150.0f;
+    VirtualRobot::MathTools::OOBB oobb(Eigen::Vector3f(-100.0f,-100.0f,-100.0f),Eigen::Vector3f(100.0f,100.0f,100.0f),pose);
+    VirtualRobot::MathTools::Plane plane(Eigen::Vector3f(0,0,0), Eigen::Vector3f(0,0,1.0f));
+    
+    Eigen::Vector3f res[4];
+    BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectOOBBPlane(oobb,plane,res),VirtualRobot::MathTools::eNoIntersection);
+    pose(2,3) = -50.0f;
+    oobb.pose = pose;
+    BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectOOBBPlane(oobb,plane,res),VirtualRobot::MathTools::eIntersection);
+    BOOST_CHECK_CLOSE ( res[0](0), -100.0f, 1e-6f);
+    BOOST_CHECK_CLOSE ( res[0](1), 100.0f, 1e-6f );
+    BOOST_CHECK_CLOSE ( res[0](2), 0.0f, 1e-6f );
+    BOOST_CHECK_CLOSE ( res[1](0), -100.0f, 1e-6f);
+    BOOST_CHECK_CLOSE ( res[1](1), -100.0f, 1e-6f );
+    BOOST_CHECK_CLOSE ( res[1](2), 0.0f, 1e-6f );
+    BOOST_CHECK_CLOSE ( res[2](0), 100.0f, 1e-6f);
+    BOOST_CHECK_CLOSE ( res[2](1), -100.0f, 1e-6f );
+    BOOST_CHECK_CLOSE ( res[2](2), 0.0f, 1e-6f );
+    BOOST_CHECK_CLOSE ( res[3](0), 100.0f, 1e-6f);
+    BOOST_CHECK_CLOSE ( res[3](1), 100.0f, 1e-6f );
+    BOOST_CHECK_CLOSE ( res[3](2), 0.0f, 1e-6f );
+}
+*/
 BOOST_AUTO_TEST_SUITE_END()

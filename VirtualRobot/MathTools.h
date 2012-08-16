@@ -164,7 +164,65 @@ namespace MathTools
 		Eigen::Vector3f	p;	// point
 		Eigen::Vector3f d;	// direction (unit length)
 	};
+
+    struct Segment
+    {
+        Segment()
+        {
+            p0.setZero();
+            p1.setZero();
+        }
+        Segment(const Eigen::Vector3f &point0, const Eigen::Vector3f &point1)
+        {
+            p0 = point0;
+            p1 = point1;
+        }
+        Eigen::Vector3f	p0;
+        Eigen::Vector3f	p1;
+    };
 	
+    struct OOBB
+    {
+        OOBB()
+        {
+            minBB.setZero();
+            maxBB.setZero();
+            pose.setIdentity();
+        }
+        OOBB(const Eigen::Vector3f &minLocal, const Eigen::Vector3f &maxLocal, const Eigen::Matrix4f &globalPose)
+        {
+            minBB = minLocal;
+            maxBB = maxLocal;
+            pose = globalPose;
+        }
+        //! Returns the 8 bounding box points transformed to global frame
+        std::vector<Eigen::Vector3f> getOOBBPoints() const
+        {
+            Eigen::Vector4f result[8];
+            std::vector<Eigen::Vector3f> result3;
+            result[0] << minBB(0),minBB(1),minBB(2),0;
+            result[1] << maxBB(0),minBB(1),minBB(2),0;
+            result[2] << minBB(0),maxBB(1),minBB(2),0;
+            result[3] << maxBB(0),maxBB(1),minBB(2),0;
+            result[4] << minBB(0),minBB(1),maxBB(2),0;
+            result[5] << maxBB(0),minBB(1),maxBB(2),0;
+            result[6] << minBB(0),maxBB(1),maxBB(2),0;
+            result[7] << maxBB(0),maxBB(1),maxBB(2),0;
+            for (int i=0;i<8;i++)
+            {
+                result[i] = pose*result[i];
+                result3.push_back(result[i].segment(0,3));
+            }
+            return result3;
+        }
+
+        // the bounding box is defined via min and max values (in local frame)
+        Eigen::Vector3f	minBB;
+        Eigen::Vector3f	maxBB;
+
+        Eigen::Matrix4f pose; // the transformation of the bounding box in global frame.
+    };
+
 	/*! 
 		Convenient structs for handling 3D/6D vertices, faces and convex hulls.
 	*/
@@ -207,12 +265,37 @@ namespace MathTools
 		float offset;			// offset value of facet, determined by qhull
 	};
 
+    enum IntersectionResult
+    {
+        eParallel,
+        eNoIntersection,
+        eIntersection
+    };
+
 
 	//! Get the projected point in 3D
 	Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT projectPointToPlane(const Eigen::Vector3f &point, const Plane &plane);
 
-	//! Get the intersection line of two planes. If planes are parallel, the resulting line is invalid, i.e. has a zero direction vector!
-	Line VIRTUAL_ROBOT_IMPORT_EXPORT intersectPlanes(const Plane &p1, const Plane &p2);
+    //! Get the intersection line of two planes. If planes are parallel, the resulting line is invalid, i.e. has a zero direction vector!
+    Line VIRTUAL_ROBOT_IMPORT_EXPORT intersectPlanes(const Plane &p1, const Plane &p2);
+
+    /*! 
+        Get the intersection of segment and plane. 
+        \param segment The segment
+        \param plane The plane
+        \param storeResult In case the intersection exists, the result is stored here
+        \result If there is no intersection the result is eNoIntersection. In case the result is eIntersection, the resulting intersection point is stored in storeResult.
+    */
+    IntersectionResult VIRTUAL_ROBOT_IMPORT_EXPORT intersectSegmentPlane(const Segment &segment, const Plane &plane, Eigen::Vector3f &storeResult);
+
+    /*!
+    Intersect an object oriented bounding box (oobb) with a plane.
+    \param oobb The oobb
+    \param plane The plane
+    \param storeResult In case an intersection exists, the intersection area is defined by these 4 points.
+    \result If the oobb does not intersect eNoIntersection is returned, otherwise eIntersection.
+    */
+    IntersectionResult VIRTUAL_ROBOT_IMPORT_EXPORT intersectOOBBPlane(const OOBB &oobb, const Plane &plane, Eigen::Vector3f storeResult[4]);
 
 	//! Returns nearest point to p on line l
 	Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT nearestPointOnLine(const Line &l, const Eigen::Vector3f &p);

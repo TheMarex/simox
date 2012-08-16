@@ -1358,62 +1358,32 @@ MathTools::IntersectionResult VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::intersectSe
     return eIntersection;
 }
 
-MathTools::IntersectionResult VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::intersectOOBBPlane( const OOBB &oobb, const Plane &plane, Eigen::Vector3f storeResult[4] )
+MathTools::IntersectionResult VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::intersectOOBBPlane( const OOBB &oobb, const Plane &plane, std::vector<Eigen::Vector3f> &storeResult )
 {
-    std::vector<Eigen::Vector3f> oobbPoint = oobb.getOOBBPoints();
-    Segment s[12];
-    s[0].p0 = oobbPoint[0];
-    s[0].p1 = oobbPoint[1];
-
-    s[1].p0 = oobbPoint[0];
-    s[1].p1 = oobbPoint[2];
-
-    s[2].p0 = oobbPoint[2];
-    s[2].p1 = oobbPoint[3];
-
-    s[3].p0 = oobbPoint[1];
-    s[3].p1 = oobbPoint[3];
-
-    s[4].p0 = oobbPoint[4];
-    s[4].p1 = oobbPoint[5];
-
-    s[5].p0 = oobbPoint[4];
-    s[5].p1 = oobbPoint[6];
-
-    s[6].p0 = oobbPoint[5];
-    s[6].p1 = oobbPoint[7];
-
-    s[7].p0 = oobbPoint[6];
-    s[7].p1 = oobbPoint[7];
-
-    s[8].p0 = oobbPoint[2];
-    s[8].p1 = oobbPoint[6];
-
-    s[9].p0 = oobbPoint[0];
-    s[9].p1 = oobbPoint[4];
-
-    s[10].p0 = oobbPoint[1];
-    s[10].p1 = oobbPoint[5];
-
-    s[11].p0 = oobbPoint[3];
-    s[11].p1 = oobbPoint[7];
+	std::vector<MathTools::Segment> s = oobb.getSegments();
+	VR_ASSERT(s.size() == 12);
 
     Eigen::Vector3f res;
     std::vector<Eigen::Vector3f> intersectionPoints;
     for (int i=0;i<12;i++)
     {
-
         if (intersectSegmentPlane(s[i],plane,res) == eIntersection)
         {
-            intersectionPoints.push_back(res);
+			// check for double entries
+			bool ok = true;
+			for (size_t j=0;j<intersectionPoints.size();j++)
+			{
+				if ((intersectionPoints[j]-res).norm()<=1e-6)
+					ok = false;
+			}
+			if (ok)
+				intersectionPoints.push_back(res);
         }
     }
-    if (intersectionPoints.size()!=4)
+    if (intersectionPoints.size()<3)
         return eNoIntersection;
 
-    for (int i=0;i<4;i++)
-        storeResult[i] = intersectionPoints[i];
-
+	storeResult = intersectionPoints;
     return eIntersection;
 }
 

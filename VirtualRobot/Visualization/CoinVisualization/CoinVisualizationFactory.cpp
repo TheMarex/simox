@@ -1967,6 +1967,56 @@ void CoinVisualizationFactory::cleanup()
 		SoDB::finish();
 }
 
+SoSeparator* CoinVisualizationFactory::CreateOOBBVisualization( const MathTools::OOBB& oobb, Color colorLine /*= Color::Gray()*/, float lineSize /*= 4.0f*/ )
+{
+	SoSeparator *res = new SoSeparator;
+	res->ref();
+
+	SoSeparator *sep = new SoSeparator();
+
+	std::vector<MathTools::Segment> s = oobb.getSegments();
+	for (size_t i = 0; i <s.size(); i++)
+	{
+		sep->addChild(CreateSegmentVisualization(s[i],colorLine,lineSize));
+	}
+
+	res->addChild(sep);
+	res->unrefNoDelete();
+	return res;
+}
+
+SoSeparator* CoinVisualizationFactory::CreateSegmentVisualization( const MathTools::Segment& s, Color colorLine /*= Color::Gray()*/, float lineSize /*= 4.0f*/ )
+{
+	SoSeparator *res = new SoSeparator;
+	res->ref();
+
+	SoMaterial *materialLineSolution = new SoMaterial();
+	materialLineSolution->ambientColor.setValue(colorLine.r,colorLine.g,colorLine.b);
+	materialLineSolution->diffuseColor.setValue(colorLine.r,colorLine.g,colorLine.b);
+	SoDrawStyle *lineSolutionStyle = new SoDrawStyle();
+	lineSolutionStyle->lineWidth.setValue(lineSize);
+
+	SbVec3f points[2];
+	points[0].setValue(s.p0(0),s.p0(1),s.p0(2));
+	points[1].setValue(s.p1(0),s.p1(1),s.p1(2));
+
+	res->addChild(lineSolutionStyle);
+	res->addChild(materialLineSolution);
+
+	SoCoordinate3* coordinate3 = new SoCoordinate3;
+	coordinate3->point.set1Value(0,points[0]);
+	coordinate3->point.set1Value(1,points[1]);
+	res->addChild(coordinate3);
+
+	SoLineSet* lineSet = new SoLineSet;
+	lineSet->numVertices.setValue(2);
+	lineSet->startIndex.setValue(0);
+	res->addChild(lineSet);
+
+	res->unrefNoDelete();
+	return res;
+}
+
 
 
 } // namespace VirtualRobot

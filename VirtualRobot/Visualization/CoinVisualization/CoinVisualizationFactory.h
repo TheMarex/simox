@@ -94,6 +94,10 @@ public:
 	static SoSeparator* CreatePointsVisualization(const std::vector<MathTools::ContactPoint> &points, bool showNormals = false);
 	static SoSeparator* CreateArrow(const Eigen::Vector3f &n, float length = 50.0f, float width = 2.0f, const Color &color = Color::Gray());
 	static SoSeparator* CreateVertexVisualization( const Eigen::Vector3f &position, float radius, float transparency, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f );
+
+	static SoSeparator* CreateOOBBVisualization( const MathTools::OOBB& oobb, Color colorLine = Color::Gray(), float lineSize = 4.0f);
+	static SoSeparator* CreateSegmentVisualization( const MathTools::Segment& s, Color colorLine = Color::Gray(), float lineSize = 4.0f);
+
 	/*!
 		Creates a colored model, by creating a new SoSeparator and adding a basecolor with overide flags followed by the model.
 	*/

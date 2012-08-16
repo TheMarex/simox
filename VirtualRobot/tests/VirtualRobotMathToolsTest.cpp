@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(testMathToolsSegemntPlaneIntersection)
     BOOST_CHECK_EQUAL(VirtualRobot::MathTools::intersectSegmentPlane(segment_parallel,plane,res),VirtualRobot::MathTools::eNoIntersection);
 }
 
-/*
+
 BOOST_AUTO_TEST_CASE(testMathToolsOOBBPlaneIntersection)
 {
     Eigen::Matrix4f pose;
@@ -165,5 +165,5 @@ BOOST_AUTO_TEST_CASE(testMathToolsOOBBPlaneIntersection)
     BOOST_CHECK_CLOSE ( res[3](1), 100.0f, 1e-6f );
     BOOST_CHECK_CLOSE ( res[3](2), 0.0f, 1e-6f );
 }
-*/
+
 BOOST_AUTO_TEST_SUITE_END()

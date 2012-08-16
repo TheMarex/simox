@@ -25,6 +25,7 @@
 
 #include "../VirtualRobotImportExport.h"
 #include "WorkspaceData.h"
+#include "../MathTools.h"
 
 
 #include <boost/enable_shared_from_this.hpp>
@@ -261,10 +262,17 @@ public:
 	std::vector<WorkspaceCut2DTransformationPtr> createCutTransformations(WorkspaceCut2DPtr cutXY, RobotNodePtr referenceNode = RobotNodePtr());
 
 	/*!
-		Computes the bounding box of this object in global coordinate system.
+		Computes the axis aligned bounding box of this object in global coordinate system.
 		Note, that the bbox changes when the robot moves.
 	*/
 	bool getWorkspaceExtends(Eigen::Vector3f &storeMinBBox, Eigen::Vector3f &storeMaxBBox) const;
+
+	/*!
+		The bounding box in global frame.
+		\param achievedValues If not ste the bounding box as defined on construction is returned. If set the min/max achieved positions are used.
+		\return The object oriented bounding box
+	*/
+	MathTools::OOBB getOOBB(bool achievedValues = false) const;
 
 	float getDiscretizeParameterTranslation();
 	float getDiscretizeParameterRotation();

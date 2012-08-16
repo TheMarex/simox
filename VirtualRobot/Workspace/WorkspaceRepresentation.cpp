@@ -1308,4 +1308,21 @@ void WorkspaceRepresentation::setEntryCheckNeighbors( const Eigen::Matrix4f &pos
 
 }
 
+MathTools::OOBB WorkspaceRepresentation::getOOBB(bool achievedValues) const
+{
+	Eigen::Vector3f minBB;
+	Eigen::Vector3f maxBB;
+	if (achievedValues)
+	{
+		minBB << achievedMinValues[0],achievedMinValues[1],achievedMinValues[2];
+		maxBB << achievedMaxValues[0],achievedMaxValues[1],achievedMaxValues[2];
+	} else
+	{
+		minBB << minBounds[0],minBounds[1],minBounds[2];
+		maxBB << maxBounds[0],maxBounds[1],maxBounds[2];
+	}
+	MathTools::OOBB oobb(minBB,maxBB,getToGlobalTransformation());
+	return oobb;
+}
+
 } // namespace VirtualRobot

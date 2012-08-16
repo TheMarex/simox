@@ -11,6 +11,7 @@
 #include "../Visualization/VisualizationFactory.h"
 #include "../Visualization/TriMeshModel.h"
 #include "../RobotConfig.h"
+#include "../RuntimeEnvironment.h"
 #include "rapidxml.hpp"
 #include <boost/pointer_cast.hpp>
 #include <boost/filesystem.hpp>
@@ -1021,12 +1022,19 @@ VirtualRobot::RobotPtr RobotIO::createRobotFromString( const std::string &xmlStr
 
 VirtualRobot::RobotPtr RobotIO::loadRobot(const std::string &xmlFile, RobotDescription loadMode)
 {
+    std::string fullFile = xmlFile;
+    if (!RuntimeEnvironment::getDataFileAbsolute(fullFile))
+    {
+        VR_ERROR <<"Could not open XML file:" << xmlFile << endl;
+		return RobotPtr();
+	}
+    
 	// load file
-	std::ifstream in(xmlFile.c_str());
+	std::ifstream in(fullFile.c_str());
 
 	if (!in.is_open())
 	{
-		VR_ERROR <<"Could not open XML file:" << xmlFile << endl;
+		VR_ERROR <<"Could not open XML file:" << fullFile << endl;
 		return RobotPtr();
 	}
 
@@ -1042,7 +1050,7 @@ VirtualRobot::RobotPtr RobotIO::loadRobot(const std::string &xmlFile, RobotDescr
     VirtualRobot::RobotPtr res = createRobotFromString(robotXML, basePath, loadMode);
 	if (!res)
 	{
-		VR_ERROR << "Error while parsing file " << xmlFile << endl;
+		VR_ERROR << "Error while parsing file " << fullFile << endl;
 	}
 
 	res->applyJointValues();

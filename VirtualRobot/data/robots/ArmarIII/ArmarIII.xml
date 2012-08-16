@@ -252,6 +252,57 @@
 		<Node name="Wrist 1 R"/>
 		<Node name="Wrist 2 R"/>
 	</RobotNodeSet>	
+	
+	<RobotNodeSet name="Robot" kinematicRoot="Platform">
+		<Node name="Neck_1_Pitch"/>
+		<Node name="Neck_2_Roll"/>
+		<Node name="Neck_3_Yaw"/>
+		<Node name="Head_Tilt"/>
+		<Node name="Cameras"/>
+		<Node name="Eye_Left"/>
+		<Node name="Eye_Right"/>
+		<Node name="Hip Pitch"/>
+		<Node name="Hip Roll"/>
+		<Node name="Hip Yaw"/>
+		<Node name="Shoulder 1 L"/>
+		<Node name="Shoulder 2 L"/>
+		<Node name="Upperarm L"/>
+		<Node name="Elbow L"/>
+		<Node name="Underarm L"/>
+		<Node name="Wrist 1 L"/>
+		<Node name="Wrist 2 L"/>
+		<Node name="Shoulder 1 R"/>
+		<Node name="Shoulder 2 R"/>
+		<Node name="Upperarm R"/>
+		<Node name="Elbow R"/>
+		<Node name="Underarm R"/>
+		<Node name="Wrist 1 R"/>
+		<Node name="Wrist 2 R"/>
+		<Node name="Hand Palm 1 L"/>
+		<Node name="Hand Palm 2 L"/>
+		<Node name="Thumb L J0"/>
+		<Node name="Thumb L J1"/>
+		<Node name="Index L J0"/>
+		<Node name="Index L J1"/>
+		<Node name="Middle L J0"/>
+		<Node name="Middle L J1"/>
+		<Node name="Ring L J0"/>
+		<Node name="Ring L J1"/>
+		<Node name="Pinky L J0"/>
+		<Node name="Pinky L J1"/>
+		<Node name="Hand Palm 1 R"/>
+		<Node name="Hand Palm 2 R"/>
+		<Node name="Thumb R J0"/>
+		<Node name="Thumb R J1"/>
+		<Node name="Index R J0"/>
+		<Node name="Index R J1"/>
+		<Node name="Middle R J0"/>
+		<Node name="Middle R J1"/>
+		<Node name="Ring R J0"/>
+		<Node name="Ring R J1"/>
+		<Node name="Pinky R J0"/>
+		<Node name="Pinky R J1"/>
+	</RobotNodeSet>	
 
 	<RobotNodeSet name="PlatformYawTorsoLeftArm" kinematicRoot="Armar3_Base" tcp="TCP L">
 	    <Node name="Yaw_Platform"/>

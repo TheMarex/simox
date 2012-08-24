@@ -7,7 +7,7 @@
             <postjointtransform>
                 <transform>
                     <translation x="3000" y="0" z="0"/>
-                </transfrom>
+                </transform>
             </postjointtransform>
         </Joint>
 		<Visualization enable="true">
@@ -79,5 +79,11 @@
             <Mass value="1" units="kg" />
         </Physics>
 	</RobotNode>
+
+
+
+  <RobotNodeSet name="Joint2" kinematicRoot="Joint1" tcp="Joint3">
+    <Node name="Joint2b"/>
+  </RobotNodeSet>
 
 </Robot>

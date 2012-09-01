@@ -135,6 +135,17 @@ public:
 	*/
 	virtual void setCurrentTCPPoseEntry(unsigned char e);
 
+	/*
+		Add pose to data.
+		This means that the entry of the corresponding WorkspaceData voxel is increased by 1.
+	*/
+	virtual void addPose(const Eigen::Matrix4f &globalPose);
+
+	/*!
+		Clears all data
+	*/
+	virtual void clear();
+
 
 	/*!
 		Generate a random configuration for the robot node set. This configuration is within the joint limits of the current robot node set.
@@ -210,6 +221,14 @@ public:
 	virtual int getMaxSummedAngleReachablity();
 
 	/*!
+		Returns true if for the given 3d position is at least one entry >0
+		\param x Voxel position x0
+		\param y Voxel position x1
+		\param z Voxel position x2
+	*/
+	virtual bool hasEntry(unsigned int x, unsigned int y, unsigned int z);
+
+	/*!
 		Estimate a parameter setup for the given RNS by randomly set configurations and check for achieved workspace extends. The results are slightly scaled.
 		\param ndoeSet
 		\param steps How many loops should be performed to estimate the result. Chose a value >= 1000.
@@ -269,7 +288,7 @@ public:
 
 	/*!
 		The bounding box in global frame.
-		\param achievedValues If not ste the bounding box as defined on construction is returned. If set the min/max achieved positions are used.
+		\param achievedValues If not set the bounding box as defined on construction is returned. If set the min/max achieved positions are used.
 		\return The object oriented bounding box
 	*/
 	MathTools::OOBB getOOBB(bool achievedValues = false) const;
@@ -328,7 +347,7 @@ protected:
 	RobotNodePtr baseNode;
 	RobotNodePtr tcpNode;
 	RobotNodeSetPtr nodeSet;
-	Eigen::Matrix4f baseTransformation;
+	//Eigen::Matrix4f baseTransformation;
 	SceneObjectSetPtr staticCollisionModel;
 	SceneObjectSetPtr dynamicCollisionModel;
 

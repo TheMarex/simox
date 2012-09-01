@@ -1167,14 +1167,13 @@ VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createTrajectory(Tr
 	return node;
 }
 
+#define TEST_SHOW_VOXEL
 
 SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace, int a, int b, int c, /*const Eigen::Vector3f &positionGlobal,*/ int nrBestEntries, SoSeparator* arrow, const VirtualRobot::ColorMap &cm, bool transformToGlobalPose, unsigned char minValue)
 {
-	SoSeparator *res = new SoSeparator;
-	res->ref();
+
 	if(!reachSpace || reachSpace->numVoxels[0] <= 0 || reachSpace->numVoxels[1] <= 0 || reachSpace->numVoxels[2] <= 0)
 	{
-		res->unrefNoDelete();
 		return NULL;
 	}
 
@@ -1193,7 +1192,11 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 	sizePos(1) = reachSpace->spaceSize[1] / reachSpace->numVoxels[1];
 	sizePos(2) = reachSpace->spaceSize[2] / reachSpace->numVoxels[2];
 	Eigen::Vector3f posLocal(reachSpace->minBounds[0] + ((float)a + 0.5f)*sizePos(0),reachSpace->minBounds[1] + ((float)b + 0.5f)*sizePos(1),reachSpace->minBounds[2] + ((float)c + 0.5f)*sizePos(2));
+#ifdef TEST_SHOW_VOXEL
+	Eigen::Vector3f posLocalMin(reachSpace->minBounds[0] + ((float)a)*sizePos(0),reachSpace->minBounds[1] + ((float)b)*sizePos(1),reachSpace->minBounds[2] + ((float)c)*sizePos(2));
+	Eigen::Vector3f posLocalMax(reachSpace->minBounds[0] + ((float)a + 1.0f)*sizePos(0),reachSpace->minBounds[1] + ((float)b + 1.0f)*sizePos(1),reachSpace->minBounds[2] + ((float)c + 1.0f)*sizePos(2));
 
+#endif
 
 	Eigen::Vector3f size;//voxelOrientationLocal, size;
 	size(0) = reachSpace->spaceSize[3] / reachSpace->numVoxels[3];
@@ -1215,21 +1218,33 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 				v[5] = f;//reachSpace->minBounds[5] + (f + 0.5f)*size(2);	
 				unsigned int entry = reachSpace->data->get(v);
 				if (entry>0)
+				{
 					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d + 0.5f)*size(0),reachSpace->minBounds[4] + ((float)e + 0.5f)*size(1),reachSpace->minBounds[5] + ((float)f + 0.5f)*size(2)));
+#ifdef TEST_SHOW_VOXEL
+					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
+					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
+					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
+					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
+					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
+					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
+					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
+					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
+#endif
+				}
 			}
 		}
 	}
 	if (entryRPY.size()==0)
 	{
-		res->unrefNoDelete();
 		return NULL;
 	}
+	SoSeparator *res = new SoSeparator;
+	res->ref();
 	VirtualRobot::VisualizationFactory::Color color = VirtualRobot::VisualizationFactory::Color::None();
-	std::map< unsigned char, std::vector<Eigen::Vector3f> >::iterator i = entryRPY.end();
+	std::map< unsigned char, std::vector<Eigen::Vector3f> >::reverse_iterator  i = entryRPY.rbegin();
 	int nr = 0;
-	while (i!= entryRPY.begin() && nr<nrBestEntries)
+	while (i!= entryRPY.rend() && nr<nrBestEntries)
 	{
-		i--;
 		for (size_t j=0; j<i->second.size();j++)
 		{
 			// create visu
@@ -1251,16 +1266,35 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 
 			if (transformToGlobalPose)
 				reachSpace->toGlobal(pose);
-				//pose = reachSpace->baseNode->toGlobalCoordinateSystem(pose);
+				
 			SoMatrixTransform *mt = getMatrixTransform(pose);
 			sep->addChild(mt);
 			sep->addChild(arrow);
 			res->addChild(sep);
+#ifdef TEST_SHOW_VOXEL
+			Eigen::VectorXf tempA(3);
+			Eigen::VectorXf tempB(3);			
+			Eigen::VectorXf tempC(3);
+			tempA << posLocalMin(0),posLocalMin(1),posLocalMin(2);
+			tempB << posLocalMax(0),posLocalMax(1),posLocalMax(2);
+			for (int k=0;k<8;k++)
+			{
+				tempC = MathTools::getPermutation(tempA,tempB,k);
+				MathTools::posrpy2eigen4f(tempC.segment(0,3),i->second[j],pose);
+				if (transformToGlobalPose)
+					reachSpace->toGlobal(pose);
+				sep = new SoSeparator;
+				mt = getMatrixTransform(pose);
+				sep->addChild(mt);
+				sep->addChild(arrow);
+				res->addChild(sep);
+			}
+#endif
 			nr++;
 			if (nr>=nrBestEntries)
 				break;
 		}
-		i--;
+		i++;
 	}
 	res->unrefNoDelete();
 	return res;
@@ -1404,7 +1438,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 }
 */
 
-SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace, VirtualRobot::ColorMap cm, const Eigen::Vector3f &axis, bool transformToGlobalPose, unsigned char minValue, float arrowSize)
+SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace, VirtualRobot::ColorMap cm, const Eigen::Vector3f &axis, bool transformToGlobalPose, unsigned char minValue, float arrowSize, int nrRotations)
 {
 	SoSeparator *res = new SoSeparator;
 	res->ref();
@@ -1439,9 +1473,12 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 			for(int c = 0; c < cSize; c+=step)
 			{
 				voxelPosition(2) = reachSpace->minBounds[2] + (c + 0.5f)*size(2);
-				SoNode *n = getCoinVisualization(reachSpace, a,b,c, 1, arrow, cm, transformToGlobalPose, minValue);
-				if (n)
-					res->addChild(n);
+				if (reachSpace->hasEntry(a,b,c))
+				{
+					SoNode *n = getCoinVisualization(reachSpace, a,b,c, nrRotations, arrow, cm, transformToGlobalPose, minValue);
+					if (n)
+						res->addChild(n);
+				}
 			}
 		}
 	}

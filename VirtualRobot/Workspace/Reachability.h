@@ -77,7 +77,7 @@ public:
 
 	//! returns a random pose that is covered by the workspace data.
 	Eigen::Matrix4f sampleReachablePose();
-	    
+
 protected:
 
 };

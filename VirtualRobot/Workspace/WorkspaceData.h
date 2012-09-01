@@ -72,6 +72,7 @@ public:
 	inline void setDatum(unsigned int x0, unsigned int x1, unsigned int x2,
 		                 unsigned int x3, unsigned int x4, unsigned int x5, unsigned char value)
 	{
+		ensureData(x0,x1,x2);
 		unsigned int posTr = 0, posRot = 0;
 		getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
 		if (data[posTr][posRot]==0)
@@ -83,6 +84,7 @@ public:
 
 	inline void setDatum(unsigned int x[6], unsigned char value)
 	{
+		ensureData(x[0],x[1],x[2]);
 		unsigned int posTr = 0, posRot = 0;
 		getPos(x,posTr,posRot);
 		if (data[posTr][posRot]==0)
@@ -97,6 +99,7 @@ public:
 	inline void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
 								unsigned int x3, unsigned int x4, unsigned int x5)
 	{
+		ensureData(x0,x1,x2);
 		unsigned int posTr = 0, posRot = 0;
 		getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
 		unsigned char e = data[posTr][posRot];
@@ -112,6 +115,7 @@ public:
 	}
 	inline void increaseDatum(	unsigned int x[6] )
 	{
+		ensureData(x[0],x[1],x[2]);
 		unsigned int posTr = 0, posRot = 0;
 		getPos(x,posTr,posRot);
 		unsigned char e = data[posTr][posRot];
@@ -132,7 +136,7 @@ public:
 	/*!
 		Get rotation data for given x,y,z position.
 	*/
-	const unsigned char *getDataRot(unsigned int x, unsigned int y, unsigned int z) const;
+	const unsigned char *getDataRot(unsigned int x, unsigned int y, unsigned int z);
 
 	//! Simulates a multi-dimensional array access
 	inline unsigned char get(unsigned int x0, unsigned int x1, unsigned int x2,
@@ -140,7 +144,10 @@ public:
 	{
 		unsigned int posTr = 0, posRot = 0;
 		getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
-		return data[posTr][posRot];
+		if (data[posTr])
+			return data[posTr][posRot];
+		else
+			return 0;
 	}
 
 	//! Simulates a multi-dimensional array access
@@ -148,15 +155,29 @@ public:
 	{
 		unsigned int posTr = 0, posRot = 0;
 		getPos(x,posTr,posRot);
-		return data[posTr][posRot];
+		if (data[posTr])
+			return data[posTr][posRot];
+		else
+			return 0;
 	}
+
+	bool hasEntry(unsigned int x, unsigned int y, unsigned int z);
+
+	// Set all entries to 0
+	void clear();
 
 	unsigned char getMaxEntry() const;
 	unsigned int getVoxelFilledCount() const;
 	void binarize();
 
 	void bisectData();
+	void ensureData(unsigned int x, unsigned int y, unsigned int z);
 
+	void setVoxelFilledCount(int c){voxelFilledCount = c;}
+	void setMaxEntry(unsigned char m){maxEntry = m;}
+
+	unsigned int getSize(int dim){return sizes[dim];}
+protected:
 	unsigned int sizes[6];
 	unsigned int sizeTr0,sizeTr1;
 	unsigned int sizeRot0,sizeRot1;

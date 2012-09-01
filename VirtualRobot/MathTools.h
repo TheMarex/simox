@@ -476,7 +476,7 @@ namespace MathTools
 	*/
 	Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT getBasisTransformation(const Eigen::MatrixXf &basisSrc, const Eigen::MatrixXf &basisDst);
 
-
+	Eigen::VectorXf VIRTUAL_ROBOT_IMPORT_EXPORT getPermutation(const Eigen::VectorXf &inputA, const Eigen::VectorXf &inputB, unsigned int i);
 	/************************************************************************/
 	/* HELPERS and IO                                                       */
 	/************************************************************************/

@@ -1387,6 +1387,20 @@ MathTools::IntersectionResult VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::intersectOO
     return eIntersection;
 }
 
+Eigen::VectorXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getPermutation( const Eigen::VectorXf &inputA, const Eigen::VectorXf &inputB, unsigned int i )
+{
+	VR_ASSERT (inputA.rows() == inputB.rows());
+	Eigen::VectorXf result = inputA;
+
+	for (int j=0;j<inputA.rows();j++)
+	{
+		if (i%2 == 0)
+			result(j) = inputB(j);
+		i = i >> 1;
+	}
+	return result;
+}
+
 
 } // namespace
 

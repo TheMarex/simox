@@ -189,5 +189,21 @@ Eigen::Vector3f BulletObject::getAngularVelocity()
 	return (BulletEngine::getVecEigen(rigidBody->getAngularVelocity()));
 }
 
+void BulletObject::setLinearVelocity( const Eigen::Vector3f &vel )
+{
+	if (!rigidBody)
+		return;
+	btVector3 btVel = BulletEngine::getVecBullet(vel,false);
+	rigidBody->setLinearVelocity(btVel);
+}
+
+void BulletObject::setAngularVelocity( const Eigen::Vector3f &vel )
+{
+	if (!rigidBody)
+		return;
+	btVector3 btVel = BulletEngine::getVecBullet(vel,false);
+	rigidBody->setAngularVelocity(btVel);
+}
+
 
 } // namespace VirtualRobot

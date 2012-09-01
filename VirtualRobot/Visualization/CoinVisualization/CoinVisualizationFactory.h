@@ -165,7 +165,7 @@ public:
 	/*! 
 		Creates a visualization of the reachability data. For each 3D point, the orientation with maximum entry is determined and visualized as an arrow. The direction of this arrow is aligned to the param axis.
 	*/
-	static SoNode* getCoinVisualization(WorkspaceRepresentationPtr reachSpace, VirtualRobot::ColorMap cm, const Eigen::Vector3f &axis, bool transformToGlobalPose = true, unsigned char minValue = 0, float arrowSize = 0);	
+	static SoNode* getCoinVisualization(WorkspaceRepresentationPtr reachSpace, VirtualRobot::ColorMap cm, const Eigen::Vector3f &axis, bool transformToGlobalPose = true, unsigned char minValue = 0, float arrowSize = 0, int nrRotations = 1);	
 	//! Helper method: Create reach space visualization of a fixed orientation
 	static SoNode* getCoinVisualization(WorkspaceRepresentationPtr reachSpace, const Eigen::Vector3f &fixedEEFOrientationGlobalRPY, VirtualRobot::ColorMap cm = VirtualRobot::ColorMap(VirtualRobot::ColorMap::eHot), bool transformToGlobalPose = true, const Eigen::Vector3f &axis = Eigen::Vector3f(0,0,1.0f), unsigned char minValue = 0, float arrowSize = 0);
 	//! helper method: create nrBestEntries arrows in direction of maximum orientation for voxelPosition (a,b,c)

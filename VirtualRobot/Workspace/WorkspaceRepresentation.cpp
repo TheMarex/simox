@@ -34,6 +34,8 @@ WorkspaceRepresentation::WorkspaceRepresentation(RobotPtr robot)
 int WorkspaceRepresentation::sumAngleReachabilities(int x0, int x1, int x2) const
 {
 	int res = 0;
+	if (!data->hasEntry(x0,x1,x2))
+		return 0;
 	for(int d = 0; d < numVoxels[3]; d++)
 	{
 		for(int e = 0; e < numVoxels[4]; e++)
@@ -391,8 +393,8 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		}
 
 
-		data->voxelFilledCount = voxelFilledCount;
-		data->maxEntry = maxEntry;
+		data->setVoxelFilledCount(voxelFilledCount);
+		data->setMaxEntry(maxEntry);
 
 		readString(tmpString, file);
 		THROW_VR_EXCEPTION_IF(tmpString != "DATA_END", "Bad file format, expecting DATA_END");
@@ -734,6 +736,37 @@ bool WorkspaceRepresentation::setRobotNodesToRandomConfig( VirtualRobot::RobotNo
 	return false;
 }
 
+
+
+void WorkspaceRepresentation::addPose(const Eigen::Matrix4f &globalPose)
+{
+	VR_ASSERT(data);
+	Eigen::Matrix4f p = globalPose;
+	toLocal(p);
+
+	float x[6];
+	MathTools::eigen4f2rpy(p,x);
+
+	// check for achieved values
+	for (int i=0;i<6;i++)
+	{
+		if (x[i] < achievedMinValues[i])
+			achievedMinValues[i] = x[i];
+		if (x[i] > achievedMaxValues[i])
+			achievedMaxValues[i] = x[i];
+	}
+
+	// get voxels
+	unsigned int v[6];
+	if (getVoxelFromPose(x,v))
+	{
+		data->increaseDatum(v);
+	}
+
+	buildUpLoops++;
+}
+
+
 void WorkspaceRepresentation::print()
 {
 	cout << "-----------------------------------------------------------" << endl;
@@ -818,7 +851,7 @@ void WorkspaceRepresentation::reset()
 		numVoxels[i] = 0;
 		spaceSize[i] = 0;
 	}
-	baseTransformation.setIdentity();
+	//baseTransformation.setIdentity();
 }
 
 void WorkspaceRepresentation::initialize( RobotNodeSetPtr nodeSet, float discretizeStepTranslation, float discretizeStepRotation, 
@@ -993,7 +1026,6 @@ int WorkspaceRepresentation::fillHoles()
 									res++;
 									sum /= count;
 									data->setDatum(x,(unsigned char)sum);
-									data->voxelFilledCount++;
 								}
 								
 
@@ -1323,6 +1355,23 @@ MathTools::OOBB WorkspaceRepresentation::getOOBB(bool achievedValues) const
 	}
 	MathTools::OOBB oobb(minBB,maxBB,getToGlobalTransformation());
 	return oobb;
+}
+
+void WorkspaceRepresentation::clear()
+{
+	data->clear();
+	buildUpLoops = 0;
+	collisionConfigs = 0;
+	for (int i=0;i<6;i++)
+	{
+		achievedMinValues[i] = FLT_MAX;
+		achievedMaxValues[i] = -FLT_MAX;
+	}
+}
+
+bool WorkspaceRepresentation::hasEntry( unsigned int x, unsigned int y, unsigned int z )
+{
+	return data->hasEntry(x,y,z);
 }
 
 } // namespace VirtualRobot

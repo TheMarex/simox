@@ -42,6 +42,7 @@ IK/PoseQualityManipulability.cpp
 Workspace/WorkspaceData.cpp
 Workspace/WorkspaceRepresentation.cpp
 Workspace/Reachability.cpp
+Workspace/Manipulability.cpp
 Workspace/WorkspaceGrid.cpp
 Grasping/Grasp.cpp
 Grasping/GraspSet.cpp
@@ -105,6 +106,7 @@ IK/PoseQualityManipulability.h
 Workspace/WorkspaceData.h
 Workspace/WorkspaceRepresentation.h
 Workspace/Reachability.h
+Workspace/Manipulability.h
 Workspace/VoxelTree6D.hpp
 Workspace/VoxelTree6DElement.hpp
 Workspace/WorkspaceGrid.h

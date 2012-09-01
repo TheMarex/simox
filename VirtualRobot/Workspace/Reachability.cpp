@@ -25,30 +25,8 @@ void Reachability::addCurrentTCPPose()
 	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No reachability data loaded");
 
 	Eigen::Matrix4f p = tcpNode->getGlobalPose();
-	toLocal(p);
-	//if (baseNode)
-		//p = baseNode->toLocalCoordinateSystem(p);
 
-	float x[6];
-	MathTools::eigen4f2rpy(p,x);
-
-	// check for achieved values
-	for (int i=0;i<6;i++)
-	{
-		if (x[i] < achievedMinValues[i])
-			achievedMinValues[i] = x[i];
-		if (x[i] > achievedMaxValues[i])
-			achievedMaxValues[i] = x[i];
-	}
-
-	// get voxels
-	unsigned int v[6];
-	if (getVoxelFromPose(x,v))
-	{
-		data->increaseDatum(v);
-	}
-
-	buildUpLoops++;
+	addPose(p);
 }
 
 void Reachability::addRandomTCPPoses( unsigned int loops, bool checkForSelfCollisions )

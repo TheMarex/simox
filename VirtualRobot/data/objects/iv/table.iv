@@ -13,7 +13,7 @@ Separator {
     }
     Transform {
       rotation 1 0 0 -1.57
-      translation 0 0 700 
+      translation 0 0 825 
     }
     Scale { 
     	scaleFactor 1.1 1.2 1.1

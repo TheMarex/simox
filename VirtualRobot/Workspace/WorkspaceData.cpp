@@ -37,9 +37,9 @@ WorkspaceData::WorkspaceData(unsigned int size1, unsigned int size2, unsigned in
 			{
 				for (unsigned int z=0;z<size3;z++)
 				{
-
-					data[x*sizeTr0+y*sizeTr1+z] = new unsigned char[(unsigned int)sizeRot];
-					memset(data[x*sizeTr0+y*sizeTr1+z],0,(unsigned int)sizeRot*sizeof(unsigned char));
+					data[x*sizeTr0+y*sizeTr1+z] = NULL;
+					//data[x*sizeTr0+y*sizeTr1+z] = new unsigned char[(unsigned int)sizeRot];
+					//memset(data[x*sizeTr0+y*sizeTr1+z],0,(unsigned int)sizeRot*sizeof(unsigned char));
 				}
 			}
 		}
@@ -87,13 +87,24 @@ unsigned int WorkspaceData::getSizeRot() const
 	return sizes[3]*sizes[4]*sizes[5];
 }
 
+void WorkspaceData::ensureData(unsigned int x, unsigned int y, unsigned int z)
+{
+	if (data[x*sizeTr0+y*sizeTr1+z])
+		return;
+	unsigned long long sizeRot = (unsigned long long)sizes[3] * (unsigned long long)sizes[4] * (unsigned long long)sizes[5];
+	data[x*sizeTr0+y*sizeTr1+z] = new unsigned char[(unsigned int)sizeRot];
+	memset(data[x*sizeTr0+y*sizeTr1+z],0,(unsigned int)sizeRot*sizeof(unsigned char));
+}
+
 void WorkspaceData::setDataRot(unsigned char *data, unsigned int x, unsigned int y, unsigned int z)
 {
+	ensureData(x,y,z);
 	memcpy(this->data[x*sizeTr0+y*sizeTr1+z], data, getSizeRot()*sizeof(unsigned char));
 }
 
-const unsigned char *WorkspaceData::getDataRot(unsigned int x, unsigned int y, unsigned int z) const
+const unsigned char *WorkspaceData::getDataRot(unsigned int x, unsigned int y, unsigned int z)
 {
+	ensureData(x,y,z);
 	return data[x*sizeTr0+y*sizeTr1+z];
 }
 
@@ -123,8 +134,9 @@ void WorkspaceData::binarize()
 						for (unsigned int f=0;f<sizes[5];f++)
 						{
 							getPos(a,b,c,d,e,f, posTr, posRot);
-							if (data[posTr][posRot]>1)
-								data[posTr][posRot] = 1;
+							if (data[posTr])
+								if (data[posTr][posRot]>1)
+									data[posTr][posRot] = 1;
 						}
 					}
 				}
@@ -145,8 +157,9 @@ void WorkspaceData::bisectData()
 						for (unsigned int x5=0;x5<sizes[5];x5++)
 						{
 							getPos(x0,x1,x2,x3,x4,x5, posTr, posRot);
-							if (data[posTr][posRot]>1)
-								data[posTr][posRot] /= 2;
+							if (data[posTr])
+								if (data[posTr][posRot]>1)
+									data[posTr][posRot] /= 2;
 						}
 	if (maxEntry>1)
 	    maxEntry = maxEntry / 2;
@@ -181,6 +194,35 @@ void WorkspaceData::setDatumCheckNeighbors( unsigned int x[6], unsigned char val
                                 setDatum((unsigned int)a,(unsigned int)b,(unsigned int)c,(unsigned int)d,(unsigned int)e,(unsigned int)f,value);
                             }
                         }
+}
+
+void WorkspaceData::clear()
+{
+	for (unsigned int x=0;x<sizes[0];x++)
+	{
+		for (unsigned int y=0;y<sizes[1];y++)
+		{
+			for (unsigned int z=0;z<sizes[2];z++)
+			{
+				if (data[x*sizeTr0+y*sizeTr1+z])
+				{
+					delete [] data[x*sizeTr0+y*sizeTr1+z];
+					data[x*sizeTr0+y*sizeTr1+z] = NULL;
+				}
+				//if (data[x*sizeTr0+y*sizeTr1+z])
+					//memset(data[x*sizeTr0+y*sizeTr1+z],0,getSizeRot()*sizeof(unsigned char));
+			}
+		}
+	}
+	maxEntry = 0;
+	voxelFilledCount = 0;
+}
+
+bool WorkspaceData::hasEntry( unsigned int x, unsigned int y, unsigned int z )
+{
+	if (x<0 || y<0 || z<0 || x>=sizes[0] || y>=sizes[1] || z>=sizes[2])
+		return false;
+	return (data[x*sizeTr0+y*sizeTr1+z]!=NULL);
 }
 
 

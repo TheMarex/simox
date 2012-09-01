@@ -62,6 +62,9 @@ public:
 
 	virtual Eigen::Vector3f getLinearVelocity();
 	virtual Eigen::Vector3f getAngularVelocity();
+
+	void setLinearVelocity(const Eigen::Vector3f &vel);
+	void setAngularVelocity(const Eigen::Vector3f &vel);
 protected:
 
 	btConvexHullShape* createConvexHullShape(VirtualRobot::TriMeshModelPtr trimesh);

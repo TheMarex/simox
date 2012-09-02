@@ -85,7 +85,7 @@ namespace MathTools
 		The translation is set to zero.
 	*/
 	void VIRTUAL_ROBOT_IMPORT_EXPORT rpy2eigen4f (float r, float p, float y, Eigen::Matrix4f &m);
-	void VIRTUAL_ROBOT_IMPORT_EXPORT posrpy2eigen4f (float x[6], Eigen::Matrix4f &m);
+	void VIRTUAL_ROBOT_IMPORT_EXPORT posrpy2eigen4f (const float x[6], Eigen::Matrix4f &m);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT posrpy2eigen4f (const Eigen::Vector3f &pos, const Eigen::Vector3f &rpy, Eigen::Matrix4f &m);
 
 	/*!

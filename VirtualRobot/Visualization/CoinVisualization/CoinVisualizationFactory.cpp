@@ -1167,7 +1167,7 @@ VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createTrajectory(Tr
 	return node;
 }
 
-#define TEST_SHOW_VOXEL
+//#define TEST_SHOW_VOXEL
 
 SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPtr reachSpace, int a, int b, int c, /*const Eigen::Vector3f &positionGlobal,*/ int nrBestEntries, SoSeparator* arrow, const VirtualRobot::ColorMap &cm, bool transformToGlobalPose, unsigned char minValue)
 {
@@ -1202,7 +1202,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 	size(0) = reachSpace->spaceSize[3] / reachSpace->numVoxels[3];
 	size(1) = reachSpace->spaceSize[4] / reachSpace->numVoxels[4];
 	size(2) = reachSpace->spaceSize[5] / reachSpace->numVoxels[5];
-	std::map< unsigned char, std::vector<Eigen::Vector3f> > entryRPY;
+	std::map< unsigned char, std::vector<Eigen::Vector3f> > entryRot;
 
 	for(unsigned int d = 0; d < (unsigned int)reachSpace->numVoxels[3]; d++)
 	{
@@ -1219,31 +1219,33 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 				unsigned int entry = reachSpace->data->get(v);
 				if (entry>0)
 				{
-					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d + 0.5f)*size(0),reachSpace->minBounds[4] + ((float)e + 0.5f)*size(1),reachSpace->minBounds[5] + ((float)f + 0.5f)*size(2)));
+					entryRot[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d + 0.5f)*size(0),reachSpace->minBounds[4] + ((float)e + 0.5f)*size(1),reachSpace->minBounds[5] + ((float)f + 0.5f)*size(2)));
 #ifdef TEST_SHOW_VOXEL
-					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
-					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
-					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
-					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
-					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
-					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
-					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
-					entryRPY[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
+					entryRot[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
+					entryRot[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
+					entryRot[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
+					entryRot[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f)*size(2)));
+					entryRot[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
+					entryRot[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
+					entryRot[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
+					entryRot[entry].push_back(Eigen::Vector3f(reachSpace->minBounds[3] + ((float)d+1.0f)*size(0),reachSpace->minBounds[4] + ((float)e+1.0f)*size(1),reachSpace->minBounds[5] + ((float)f+1.0f)*size(2)));
 #endif
 				}
 			}
 		}
 	}
-	if (entryRPY.size()==0)
+	if (entryRot.size()==0)
 	{
 		return NULL;
 	}
 	SoSeparator *res = new SoSeparator;
 	res->ref();
 	VirtualRobot::VisualizationFactory::Color color = VirtualRobot::VisualizationFactory::Color::None();
-	std::map< unsigned char, std::vector<Eigen::Vector3f> >::reverse_iterator  i = entryRPY.rbegin();
+	std::map< unsigned char, std::vector<Eigen::Vector3f> >::reverse_iterator  i = entryRot.rbegin();
 	int nr = 0;
-	while (i!= entryRPY.rend() && nr<nrBestEntries)
+    float x[6];
+   
+	while (i!= entryRot.rend() && nr<nrBestEntries)
 	{
 		for (size_t j=0; j<i->second.size();j++)
 		{
@@ -1262,7 +1264,14 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 			col->transparency.setValue(color.transparency);
 			sep->addChild(col);
 			Eigen::Matrix4f pose;
-			MathTools::posrpy2eigen4f(posLocal,i->second[j],pose);
+            x[0] = posLocal(0);
+            x[1] = posLocal(1);
+            x[2] = posLocal(2);
+            x[3] = i->second[j](0);
+            x[4] = i->second[j](1);
+            x[5] = i->second[j](2);
+            reachSpace->vector2Matrix(x,pose);
+			//MathTools::posrpy2eigen4f(posLocal,i->second[j],pose);
 
 			if (transformToGlobalPose)
 				reachSpace->toGlobal(pose);
@@ -1271,6 +1280,7 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 			sep->addChild(mt);
 			sep->addChild(arrow);
 			res->addChild(sep);
+            /*
 #ifdef TEST_SHOW_VOXEL
 			Eigen::VectorXf tempA(3);
 			Eigen::VectorXf tempB(3);			
@@ -1280,16 +1290,24 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 			for (int k=0;k<8;k++)
 			{
 				tempC = MathTools::getPermutation(tempA,tempB,k);
-				MathTools::posrpy2eigen4f(tempC.segment(0,3),i->second[j],pose);
+                x[0] = tempC.segment(0,3)(0);
+                x[1] = tempC.segment(0,3)(1);
+                x[2] = tempC.segment(0,3)(2);
+                x[3] = i->second[j](0);
+                x[4] = i->second[j](1);
+                x[5] = i->second[j](2);
+                reachSpace->vector2Matrix(x,pose);
+				//MathTools::posrpy2eigen4f(tempC.segment(0,3),i->second[j],pose);
 				if (transformToGlobalPose)
 					reachSpace->toGlobal(pose);
-				sep = new SoSeparator;
-				mt = getMatrixTransform(pose);
-				sep->addChild(mt);
-				sep->addChild(arrow);
-				res->addChild(sep);
+				SoSeparator *sep2 = new SoSeparator;
+				SoMatrixTransform *mt2 = getMatrixTransform(pose);
+				sep2->addChild(mt2);
+				sep2->addChild(arrow);
+				res->addChild(sep2);
 			}
-#endif
+#endif*/
+            
 			nr++;
 			if (nr>=nrBestEntries)
 				break;
@@ -1314,6 +1332,11 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 	Eigen::Vector3f oLocal = fixedEEFOrientationGlobalRPY;
 	MathTools::rpy2eigen4f(fixedEEFOrientationGlobalRPY(0),fixedEEFOrientationGlobalRPY(1),fixedEEFOrientationGlobalRPY(2),m);
 	reachSpace->toLocal(m);
+    float x[6];
+    reachSpace->matrix2Vector(m,x);
+    oLocal(0) = x[3];
+    oLocal(1) = x[4];
+    oLocal(2) = x[5];
 	/*if (reachSpace->baseNode)
 	{
 		m = reachSpace->baseNode->toLocalCoordinateSystem(m);
@@ -1362,7 +1385,8 @@ SoNode* CoinVisualizationFactory::getCoinVisualization(WorkspaceRepresentationPt
 					value = 0;
 				if(value >= minValue)
 				{
-					MathTools::posrpy2eigen4f(voxelPosition,oLocal,m);
+                    reachSpace->vector2Matrix(voxelPosition,oLocal,m);
+					//MathTools::posrpy2eigen4f(voxelPosition,oLocal,m);
 					if(transformToGlobalPose)
 					{
 						reachSpace->toGlobal(m);

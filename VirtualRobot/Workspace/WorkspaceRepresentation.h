@@ -43,8 +43,9 @@ namespace VirtualRobot
 
 /*!
 		This class represents a voxelized approximation of the workspace that is covered by a kinematic chain of a robot. 
-		The voxel grid covers the 6d Cartesian space: xyz translations (mm) and rpy orientations.
-		Each voxels holds a counter (uchar) that holds information, e.g. about reachbaility.
+		The voxel grid covers the 6d Cartesian space: xyz translations (mm) and Tait–Bryan angles (eulerXYZ, fixed frame) orientations.
+        Older versions (<=2.5) used RPY for storing orientations, but it turned out that this representation is not suitable for discretization.
+		Each voxels holds a counter (uchar) that holds information, e.g. about reachability.
 		The discretized data can be written to and loaded from binary files.
 
 		The data is linked to a base coordinate system which is defined by a robot joint.
@@ -59,6 +60,13 @@ public:
 	friend class CoinVisualizationFactory;
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+
+    enum eOrientationType
+    {
+        RPY,            
+        EulerXYZ        // fixed frame (standard)
+    };
 
 	WorkspaceRepresentation(RobotPtr robot);
 
@@ -213,7 +221,8 @@ public:
 	/*!
 		Computes center of corresponding voxel in global coord system.
 	*/				
-	Eigen::Matrix4f getPoseFromVoxel(unsigned int v[6], bool transformToGlobalPose = true);
+    Eigen::Matrix4f getPoseFromVoxel(unsigned int v[6], bool transformToGlobalPose = true);
+    Eigen::Matrix4f getPoseFromVoxel(float v[6], bool transformToGlobalPose = true);
 
 	/*!
 		Returns the maximum that can be achieved by calling sumAngleReachabilities() 
@@ -311,7 +320,19 @@ public:
 	virtual void toGlobal(Eigen::Matrix4f &p) const;
 	void toLocalVec(Eigen::Vector3f &positionGlobal) const;
 	void toGlobalVec(Eigen::Vector3f &positionLocal) const;
+
+    //! Convert a 4x4 matrix to a pos + ori vector
+    void matrix2Vector(const Eigen::Matrix4f &m, float x[6]) const;
+    void vector2Matrix(const float x[6], Eigen::Matrix4f &m) const;
+    void vector2Matrix( const Eigen::Vector3f &pos, const Eigen::Vector3f &rot, Eigen::Matrix4f &m ) const;
+
+    /*!
+        Usually not needed. Don't call this method after data has been loaded or created!
+    */
+    void setOrientationType(eOrientationType t);
+
 protected:
+
 	/*!
 		Derived classes may implement some custom data access.
 	*/
@@ -381,6 +402,9 @@ protected:
 
 	int versionMajor;
 	int versionMinor;
+
+    //! Specifies how the rotation part (x[3],x[4],x[5]) of an 6D voxel entry is encoded.
+    eOrientationType orientationType;
 
 };
 

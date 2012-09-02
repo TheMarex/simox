@@ -264,7 +264,7 @@ void MathTools::rpy2eigen4f (float r, float p, float y, Eigen::Matrix4f &m)
 }
 
 
-void MathTools::posrpy2eigen4f( float x[6], Eigen::Matrix4f &m )
+void MathTools::posrpy2eigen4f( const float x[6], Eigen::Matrix4f &m )
 {
 	rpy2eigen4f(x[3],x[4],x[5],m);
 	m(0,3) = x[0];

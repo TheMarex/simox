@@ -38,7 +38,9 @@ void Manipulability::addCurrentTCPPose()
 	toLocal(p);
 
 	float x[6];
-	MathTools::eigen4f2rpy(p,x);
+
+    matrix2Vector(p,x);
+	//MathTools::eigen4f2rpy(p,x);
 
 	// check for achieved values
 	for (int i=0;i<6;i++)

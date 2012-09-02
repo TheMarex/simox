@@ -76,7 +76,6 @@
         </Joint>
         <Visualization> 
             <File type="Inventor">fullmodel/jaw.iv</File>
-            <UseAsCollisionModel/>
         </Visualization>
     </RobotNode>
 
@@ -207,4 +206,13 @@
         <Node name="Eye_Left"/>
         <Node name="Eye_Right"/>
     </RobotNodeSet>
+
+
+    <RobotNodeSet name="Neck" kinematicRoot="Neck_1_Pitch">
+        <Node name="Neck_1_Pitch"/>
+        <Node name="Neck_2_Roll"/>
+        <Node name="Neck_3_Yaw"/>
+        <Node name="Head_Tilt"/>
+    </RobotNodeSet>
+
 </Robot>

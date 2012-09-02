@@ -27,7 +27,8 @@ WorkspaceRepresentation::WorkspaceRepresentation(RobotPtr robot)
 	this->robot = robot;
 	type = "WorkspaceRepresentation";
 	versionMajor = 2;
-	versionMinor = 5;
+	versionMinor = 6;
+    orientationType = EulerXYZ;
 	reset();
 }
 
@@ -210,6 +211,11 @@ void WorkspaceRepresentation::load(const std::string &filename)
 				(version[0] == 1 && !(version[1] == 0 || version[1] == 2 || version[1] == 3)
 				),	"Wrong file format version");
 		}
+        if (version[0]>2 || (version[0]==2 && version[1]>5))
+            orientationType = EulerXYZ;
+        else
+            orientationType = RPY;
+     
 		//versionMajor = version[0];
 		//versionMinor = version[1];
 		// Check Robot name
@@ -654,7 +660,8 @@ void WorkspaceRepresentation::setCurrentTCPPoseEntryIfLower(unsigned char e)
 	toLocal(p);
 
 	float x[6];
-	MathTools::eigen4f2rpy(p,x);
+    matrix2Vector(p,x);
+	//MathTools::eigen4f2rpy(p,x);
 
 	// check for achieved values
 	for (int i=0;i<6;i++)
@@ -699,10 +706,9 @@ bool WorkspaceRepresentation::getVoxelFromPose( const Eigen::Matrix4f &globalPos
 
 	Eigen::Matrix4f p = globalPose;
 	toLocal(p);
-	//if (baseNode)
-		//p = baseNode->toLocalCoordinateSystem(p);
 
-	MathTools::eigen4f2rpy(p,x);
+    matrix2Vector(p,x);
+	//MathTools::eigen4f2rpy(p,x);
 	return getVoxelFromPose(x,v);
 }
 
@@ -745,7 +751,8 @@ void WorkspaceRepresentation::addPose(const Eigen::Matrix4f &globalPose)
 	toLocal(p);
 
 	float x[6];
-	MathTools::eigen4f2rpy(p,x);
+    matrix2Vector(p,x);
+	//MathTools::eigen4f2rpy(p,x);
 
 	// check for achieved values
 	for (int i=0;i<6;i++)
@@ -786,6 +793,11 @@ void WorkspaceRepresentation::print()
 			cout << tcpNode->getName() << endl;
 		else 
 			cout << "<not set>" << endl;
+        cout << "Orientation represenation: ";
+        if (orientationType == EulerXYZ)
+            cout << "EulerXYZ" << endl;
+        else
+            cout << "RPY" << endl;
 		cout << "CollisionModel static: ";
 		if (staticCollisionModel)
 			cout << staticCollisionModel->getName() << endl;
@@ -851,7 +863,6 @@ void WorkspaceRepresentation::reset()
 		numVoxels[i] = 0;
 		spaceSize[i] = 0;
 	}
-	//baseTransformation.setIdentity();
 }
 
 void WorkspaceRepresentation::initialize( RobotNodeSetPtr nodeSet, float discretizeStepTranslation, float discretizeStepRotation, 
@@ -935,8 +946,6 @@ unsigned char WorkspaceRepresentation::getEntry( const Eigen::Matrix4f &globalPo
 		// position is outside WorkspaceRepresentation data
 		return 0;
 	}
-
-
 }
 
 
@@ -945,13 +954,24 @@ Eigen::Matrix4f WorkspaceRepresentation::getPoseFromVoxel(unsigned int v[6],bool
 	float x[6];
 	for (int j=0;j<6;j++)
 	{
-		x[j] = minBounds[j] + ((float)v[j]+0.5f) * getVoxelSize(j);
+		x[j] = float(v[j])+0.5f;
 	}
-	Eigen::Matrix4f m;
-	MathTools::posrpy2eigen4f(x,m);
-	if (transformToGlobalPose)
-		toGlobal(m);
-	return m;
+    return getPoseFromVoxel(x,transformToGlobalPose);
+}
+
+Eigen::Matrix4f WorkspaceRepresentation::getPoseFromVoxel( float v[6], bool transformToGlobalPose /*= true*/ )
+{
+    float x[6];
+    for (int j=0;j<6;j++)
+    {
+        x[j] = minBounds[j] + v[j] * getVoxelSize(j);
+    }
+    Eigen::Matrix4f m;
+    vector2Matrix(x,m);
+    //MathTools::posrpy2eigen4f(x,m);
+    if (transformToGlobalPose)
+        toGlobal(m);
+    return m;
 }
 
 Eigen::Matrix4f WorkspaceRepresentation::sampleCoveredPose()
@@ -975,12 +995,10 @@ Eigen::Matrix4f WorkspaceRepresentation::sampleCoveredPose()
 			{
 				x[j] = minBounds[j] + ((float)nV[j]+0.5f) * getVoxelSize(j);
 			}
-			MathTools::posrpy2eigen4f(x,m);
+            vector2Matrix(x,m);
+			//MathTools::posrpy2eigen4f(x,m);
 			toGlobal(m);
-			//if (baseNode)
-				//m = baseNode->toGlobalCoordinateSystem(m);
 			return m;
-
 		}
 	
 		i++;
@@ -1141,7 +1159,8 @@ bool WorkspaceRepresentation::checkForParameters( RobotNodeSetPtr nodeSet, float
 			//p = baseNode->toLocalCoordinateSystem(p);
 
 		float x[6];
-		MathTools::eigen4f2rpy(p,x);
+        matrix2Vector(p,x);
+        //MathTools::eigen4f2rpy(p,x);
 
 		// check for achieved values
 		for (int i=0;i<6;i++)
@@ -1309,7 +1328,8 @@ void WorkspaceRepresentation::setEntryCheckNeighbors( const Eigen::Matrix4f &pos
     toLocal(p);
 
     float x[6];
-    MathTools::eigen4f2rpy(p,x);
+    matrix2Vector(p,x);
+    //MathTools::eigen4f2rpy(p,x);
 
     // check for achieved values
     for (int i=0;i<6;i++)
@@ -1372,6 +1392,96 @@ void WorkspaceRepresentation::clear()
 bool WorkspaceRepresentation::hasEntry( unsigned int x, unsigned int y, unsigned int z )
 {
 	return data->hasEntry(x,y,z);
+}
+
+void WorkspaceRepresentation::matrix2Vector( const Eigen::Matrix4f &m, float x[6] ) const
+{
+    if (orientationType == EulerXYZ)
+    {
+        x[0] = m(0,3);
+        x[1] = m(1,3);
+        x[2] = m(2,3);
+
+        Eigen::Matrix3f m_3 = m.block(0,0,3,3);
+        Eigen::Vector3f rotEulerxyz = m_3.eulerAngles(0,1,2);
+
+        // extrinsic (fixed coord system) rotation (x y z)
+        x[3] = rotEulerxyz(0);
+        x[4] = rotEulerxyz(1);
+        x[5] = rotEulerxyz(2);
+
+    } else
+    {
+        MathTools::eigen4f2rpy(m,x);
+    }
+}
+/*
+works
+Eigen::Vector3f rotEulerxyz = m_3.eulerAngles(0,1,2);
+x[3] = rotEulerxyz(0);
+x[4] = rotEulerxyz(1);
+x[5] = rotEulerxyz(2);
+m_3 =  Eigen::AngleAxisf(x[3], Eigen::Vector3f::UnitX())
+* Eigen::AngleAxisf(x[4], Eigen::Vector3f::UnitY())
+* Eigen::AngleAxisf(x[5], Eigen::Vector3f::UnitZ());
+m.block(0,0,3,3) = m_3;
+== OR ==
+float s1 = sin(x[3]);float s2 = sin(x[4]);float s3 = sin(x[5]);
+float c1 = cos(x[3]);float c2 = cos(x[4]);float c3 = cos(x[5]);
+// Euler XYZ
+m_3(0,0) =  c2*c3;               m_3(0,1) =  -c2*s3;              m_3(0,2) =  s2;
+m_3(1,0) =  c1*s3+c3*s1*s2;      m_3(1,1) =  c1*c3-s1*s2*s3;      m_3(1,2) =  -c2*s1;
+m_3(2,0) =  s1*s3-c1*c3*s2;      m_3(2,1) =  c3*s1+c1*s2*s3;      m_3(2,2) =  c1*c2;
+m.block(0,0,3,3) = m_3;
+*/
+void WorkspaceRepresentation::vector2Matrix( const float x[6], Eigen::Matrix4f &m ) const
+{
+    if (orientationType == EulerXYZ)
+    {
+        m.setIdentity();
+        m(0,3) = x[0];
+        m(1,3) = x[1];
+        m(2,3) = x[2];
+        Eigen::Matrix3f m_3;
+        m_3 =  Eigen::AngleAxisf(x[3], Eigen::Vector3f::UnitX())
+            * Eigen::AngleAxisf(x[4], Eigen::Vector3f::UnitY())
+            * Eigen::AngleAxisf(x[5], Eigen::Vector3f::UnitZ());
+        /*
+        float s1 = sin(x[3]);float s2 = sin(x[4]);float s3 = sin(x[5]);
+        float c1 = cos(x[3]);float c2 = cos(x[4]);float c3 = cos(x[5]);
+        // Euler XYZ
+        m_3(0,0) =  c2*c3;               m_3(0,1) =  -c2*s3;              m_3(0,2) =  s2;
+        m_3(1,0) =  c1*s3+c3*s1*s2;      m_3(1,1) =  c1*c3-s1*s2*s3;      m_3(1,2) =  -c2*s1;
+        m_3(2,0) =  s1*s3-c1*c3*s2;      m_3(2,1) =  c3*s1+c1*s2*s3;      m_3(2,2) =  c1*c2;
+        */
+         /*
+        // Euler ZYX
+        m_3(0,0) =  c1*c2;    m_3(0,1) =  c1*s2*s3-c3*s1;   m_3(0,2) =  s1*s3+c1*c3*s2;
+        m_3(1,0) =  c2*s1;    m_3(1,1) =  c1*c3+s1*s2*s3;   m_3(1,2) =  c3*s1*s2-c1*s3;
+        m_3(2,0) =  -s2;      m_3(2,1) =  c2*s3;            m_3(2,2) =  c2*c3;
+        */
+        
+        m.block(0,0,3,3) = m_3;
+
+
+    } else
+        MathTools::posrpy2eigen4f(x,m);
+}
+void WorkspaceRepresentation::vector2Matrix( const Eigen::Vector3f &pos, const Eigen::Vector3f &rot, Eigen::Matrix4f &m ) const
+{
+    float x[6];
+    x[0] = pos[0];
+    x[1] = pos[1];
+    x[2] = pos[2];
+    x[3] = rot[0];
+    x[4] = rot[1];
+    x[5] = rot[2];
+    vector2Matrix(x,m);
+}
+
+void WorkspaceRepresentation::setOrientationType( eOrientationType t)
+{
+    orientationType = t;
 }
 
 } // namespace VirtualRobot

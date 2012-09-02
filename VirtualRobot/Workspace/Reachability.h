@@ -32,7 +32,7 @@ namespace VirtualRobot
 
 /*!
 		This class represents an approximation of the reachability distribution of a kinematic chain (e.g. an arm).
-		Consists of voxels covering the 6D space for position (XYZ) and orientation (RPY).
+		Consists of voxels covering the 6D space for position (XYZ) and orientation (Tait–Bryan angles, EulerXYZ, static frame).
 		Each voxels holds a counter with the number of successful IK solver calls, 
 		representing the approximated probability that an IK solver call can be successfully answered.
 		The discretized reachability data can be written to and loaded from binary files.

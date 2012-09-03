@@ -123,27 +123,60 @@ configure_file(
 install(FILES
     "${Simox_BUILD_DIRECTORY}/InstallFiles/SimoxConfig.cmake"
     "${Simox_BUILD_DIRECTORY}/InstallFiles/SimoxConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}")
+    DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    COMPONENT ApplicationData
+    )
 install(FILES
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxExternalLibrarySetup.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxMacros.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
-    DESTINATION "${Simox_CMAKE_DIR}")
+    DESTINATION "${Simox_CMAKE_DIR}"
+    COMPONENT ApplicationData
+    )
 install(FILES
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxExternalLibrarySetup.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxMacros.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
-    DESTINATION "${Simox_CMAKE_DIR}")
+    DESTINATION "${Simox_CMAKE_DIR}"
+    COMPONENT ApplicationData
+    )
 
 
-#
-#INSTALL(TARGETS Simox 
-#        EXPORT SimoxLibraryDepends
-#        RUNTIME DESTINATION ${Simox_INSTALL_BIN_DIR}
-#        LIBRARY DESTINATION ${Simox_INSTALL_LIB_DIR}
-#        ARCHIVE DESTINATION ${Simox_INSTALL_LIB_DIR}
-#        )
 
+#############################################################
+# PACKAGING (DEB)
+
+
+
+INCLUDE(InstallRequiredSystemLibraries)
+SET(CPACK_SET_DESTDIR "on")
+SET(CPACK_PACKAGING_INSTALL_PREFIX "/tmp")
+SET(CPACK_DEBIAN_PACKAGE_NAME "simox")
+SET(CPACK_GENERATOR "DEB")
+SET(CPACK_PACKAGE_DESCRIPTION "Simox - A Robot Simulation, Motion and Grasp Planning Toolbox")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Simox - A Robot Simulation, Motion and Grasp Planning Toolbox")
+SET(CPACK_PACKAGE_VENDOR "KIT")
+SET(CPACK_PACKAGE_CONTACT "Nikolaus Vahrenkamp, <vahrenkamp at kit dot edu>")
+SET(CPACK_PACKAGE_VERSION_MAJOR "${Simox_MAJOR_VERSION}")
+SET(CPACK_PACKAGE_VERSION_MINOR "${Simox_MINOR_VERSION}")
+SET(CPACK_PACKAGE_VERSION_PATCH "${Simox_PATCH_VERSION}")
+SET(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION}")
+SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION}")
+ 
+#SET(CPACK_DEBIAN_PACKAGE_DEPENDS "kdebase-runtime (>= 4:4.2.1), kdelibs5 (>= 4:4.2.1), libc6 (>= 2.1.3), libgcc1 (>= 1:4.1.1), libplasma3, libqt4-dbus (>= 4.5.0), libqtcore4 (>= 4.5.0), libqtgui4 (>= 4.5.0), libstdc++6 (>= 4.2.1)")
+#SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+#SET(CPACK_DEBIAN_PACKAGE_SECTION "kde")
+SET(CPACK_DEBIAN_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})
+
+#GET_PROPERTY(result GLOBAL ENABLED_FEATURES)
+#message(" enabled features: ${result}")
+set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "Simox Examples")
+set(CPACK_COMPONENT_APPLICATIONDATA_DISPLAY_NAME "Simox Data")
+set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Simox Libraries")
+set(CPACK_COMPONENT_HEADERS_DISPLAY_NAME "Simox C++ Headers")
+
+SET(CPACK_COMPONENTS_ALL Applications Headers Libraries ApplicationData)
+INCLUDE(CPack)
 
 
 

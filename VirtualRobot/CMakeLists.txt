@@ -330,15 +330,20 @@ configure_file(
     ${VR_DIR}/CMakeModules/VirtualRobotConfigVersion.cmake.in
     "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfigVersion.cmake"
     @ONLY)
+
 install(FILES
     "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfig.cmake"
     "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}")
+    DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    COMPONENT ApplicationData
+    )
+
 install(FILES
     "${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotExternalLibrarySetup.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotMacros.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/FindVirtualRobot.cmake"
-    DESTINATION "${VirtualRobot_CMAKE_DIR}")
+    DESTINATION "${VirtualRobot_CMAKE_DIR}"
+    COMPONENT ApplicationData)
 
 
 INSTALL(TARGETS VirtualRobot 
@@ -346,18 +351,22 @@ INSTALL(TARGETS VirtualRobot
         RUNTIME DESTINATION ${VirtualRobot_INSTALL_BIN_DIR}
         LIBRARY DESTINATION ${VirtualRobot_INSTALL_LIB_DIR}
         ARCHIVE DESTINATION ${VirtualRobot_INSTALL_LIB_DIR}
+	COMPONENT Libraries
         )
 
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION ${VirtualRobot_INSTALL_HEADER_DIR}
+	COMPONENT Headers
         FILES_MATCHING PATTERN "*.h"
         PATTERN ".svn" EXCLUDE
         PATTERN "CMakeModules" EXCLUDE
         PATTERN "tests" EXCLUDE
         PATTERN "build*" EXCLUDE
         PATTERN "data" EXCLUDE
-        PATTERN "examples" EXCLUDE)
+        PATTERN "examples" EXCLUDE
+	)
 
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX}
+	COMPONENT ApplicationData
         FILES_MATCHING 
         PATTERN "*.xml"
         PATTERN "*.XML"
@@ -367,4 +376,6 @@ INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX}
         PATTERN "*.png"
         PATTERN "*.jpg"
         PATTERN "*.bin"
-        PATTERN ".svn" EXCLUDE)
+        PATTERN ".svn" EXCLUDE
+	)
+

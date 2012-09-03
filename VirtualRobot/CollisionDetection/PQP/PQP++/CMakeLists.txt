@@ -30,5 +30,7 @@ MESSAGE(STATUS " ** ${PROJECT_NAME}  will be placed into " ${VirtualRobot_LIB_DI
 MESSAGE(STATUS " ** make install will install " ${PROJECT_NAME} " into " ${VirtualRobot_INSTALL_LIB_DIR})
 INSTALL(TARGETS ${PROJECT_NAME}
         EXPORT VirtualRobotLibraryDepends
-        DESTINATION ${VirtualRobot_INSTALL_LIB_DIR})
+        DESTINATION ${VirtualRobot_INSTALL_LIB_DIR}
+	COMPONENT Libraries
+)
 

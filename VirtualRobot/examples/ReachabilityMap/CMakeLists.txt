@@ -28,7 +28,9 @@ IF(Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)
     
      # install
     INSTALL(TARGETS ${PROJECT_NAME}
-        DESTINATION ${VirtualRobot_INSTALL_BIN_DIR})
+        DESTINATION ${VirtualRobot_INSTALL_BIN_DIR}
+	COMPONENT Applications
+	)
         
     MESSAGE( STATUS ${PROJECT_NAME} " will be placed into " ${VirtualRobot_BIN_DIR})
     MESSAGE( STATUS ${PROJECT_NAME} " will be installed into " ${VirtualRobot_INSTALL_BIN_DIR})

@@ -373,7 +373,18 @@ void WorkspaceRepresentation::load(const std::string &filename)
 								file.close();
 								return;
 							}
-							data->setDataRot(uncompressedData,x,y,z);
+							// check if we need to set the data (avoid to allocate memory for empty data blocks)
+							bool empty = true;
+							for (int i=0;i<dataSize;i++)
+							{
+								if (uncompressedData[i]!=0)
+								{
+									empty=false;
+									break;
+								}
+							}
+							if (!empty)
+								data->setDataRot(uncompressedData,x,y,z);
 						}
 						delete[] uncompressedData;
 						bzip2->close();
@@ -515,11 +526,22 @@ void WorkspaceRepresentation::save(const std::string &filename)
 				}
 		delete []compressedData;*/
 		CompressionBZip2Ptr bzip2(new CompressionBZip2(&file));
+		unsigned char* emptyData = new unsigned char[data->getSizeRot()];
+		memset(emptyData,0,data->getSizeRot()*sizeof(unsigned char));
 		for (int x=0;x<numVoxels[0];x++)
 			for (int y=0;y<numVoxels[1];y++)
 				for (int z=0;z<numVoxels[2];z++)
 				{
-					if (!bzip2->write((void*)(data->getDataRot(x,y,z)),data->getSizeRot()))
+					void* dataBlock;
+					// this avoids that an empty data block is created within the workspace data when no data is available.
+					if (data->hasEntry(x,y,z))
+					{
+						dataBlock = (void*)(data->getDataRot(x,y,z));
+					} else
+					{
+						dataBlock = (void*)emptyData;
+					}
+					if (!bzip2->write(dataBlock,data->getSizeRot()*sizeof(unsigned char)))
 					{
 						VR_ERROR << "Error writing to file.." << endl;
 						bzip2->close();
@@ -527,6 +549,7 @@ void WorkspaceRepresentation::save(const std::string &filename)
 						return;
 					}
 				}
+		delete [] emptyData;
 
 		bzip2->close();
 		writeString(file, "DATA_END");

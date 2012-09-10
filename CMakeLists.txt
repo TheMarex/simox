@@ -47,15 +47,6 @@ set(Simox_EXECUTABLES "")
 # (this registers the build-tree with a global CMake-registry)
 EXPORT(PACKAGE Simox)
 
-# Install the export set for use with the install-tree
-#install(
-#    EXPORT SimoxLibraryDepends
-#    DESTINATION "${CMAKE_INSTALL_PREFIX}/share/Simox/cmake")
-
-
-#get_property(VirtualRobot_external_INCLUDE_DIRS TARGET VirtualRobot PROPERTY EXTERNAL_INCLUDE_DIRS)
-#message(STATUS "VirtualRobot_external_INCLUDE_DIRS: ${VirtualRobot_external_INCLUDE_DIRS}")
-
 # import Virtual-Robot configs (build)
 SET (VirtualRobot_CONFIG_INBUILD "${Simox_BUILD_DIRECTORY}/VirtualRobotConfig.cmake")
 SET (VirtualRobot_CONFIG_INSTALL_LOCAL "${Simox_BUILD_DIRECTORY}/InstallFiles/VirtualRobotConfig.cmake")

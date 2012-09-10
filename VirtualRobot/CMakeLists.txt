@@ -249,12 +249,22 @@ SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${Virt
 
 ############################################
 MESSAGE(STATUS " * Generating CMake files")
-
-set(VirtualRobot_MAJOR_VERSION 2)
-set(VirtualRobot_MINOR_VERSION 1)
-set(VirtualRobot_PATCH_VERSION 3)
+IF (NOT DEFINED Simox_VERSION)
+	set(VirtualRobot_MAJOR_VERSION 2)
+	set(VirtualRobot_MINOR_VERSION 1)
+	set(VirtualRobot_PATCH_VERSION 3)
+ELSE()
+	set(VirtualRobot_MAJOR_VERSION ${SIMOX_MAJOR_VERSION})
+	set(VirtualRobot_MINOR_VERSION ${SIMOX_MINOR_VERSION})
+	set(VirtualRobot_PATCH_VERSION ${SIMOX_PATCH_VERSION})
+ENDIF()
 set(VirtualRobot_VERSION
     ${VirtualRobot_MAJOR_VERSION}.${VirtualRobot_MINOR_VERSION}.${VirtualRobot_PATCH_VERSION})
+set_target_properties( VirtualRobot  PROPERTIES
+	VERSION ${VirtualRobot_VERSION}
+	SOVERSION ${VirtualRobot_MAJOR_VERSION}
+	)
+MESSAGE(STATUS " * VirtualRobot Version: ${VirtualRobot_VERSION}")
 
 set(VirtualRobot_LIBRARIES VirtualRobot)
 set(VirtualRobot_EXECUTABLES "")
@@ -263,7 +273,6 @@ set(VirtualRobot_EXECUTABLES "")
 # (this registers the build-tree with a global CMake-registry)
 EXPORT(PACKAGE VirtualRobot)
  
-
 #get_property(VirtualRobot_external_INCLUDE_DIRS TARGET VirtualRobot PROPERTY EXTERNAL_INCLUDE_DIRS)
 #message(STATUS "VirtualRobot_external_INCLUDE_DIRS: ${VirtualRobot_external_INCLUDE_DIRS}")
 

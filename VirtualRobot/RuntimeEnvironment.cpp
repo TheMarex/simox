@@ -65,6 +65,12 @@ namespace VirtualRobot
 #ifdef VIRTUAL_ROBOT_DATA_PATH
 			pathFound = pathFound | addDataPath(std::string(VIRTUAL_ROBOT_DATA_PATH),true);
 #endif
+			// check stnadard linux install path
+			if (!pathFound)
+			{
+				pathFound = addDataPath(std::string("/usr/local/data"),true);
+			}
+
 			// last chance, check for inbuild paths
 			if (!pathFound)
 			{

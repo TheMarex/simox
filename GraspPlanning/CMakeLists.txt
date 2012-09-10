@@ -6,6 +6,7 @@ CMAKE_POLICY(VERSION 2.6)
 MESSAGE (STATUS "\n ***** CONFIGURING Simox project GraspStudio *****")
 INCLUDE (config.cmake)
 
+
 ########### QHULL #################
 OPTION(BUILD_qhull "if on builds qhull external library" ON)
 IF(BUILD_qhull)
@@ -71,6 +72,23 @@ ADD_SUBDIRECTORY(examples/)
 
 # include unit tests
 #ADD_SUBDIRECTORY(tests/)
+
+IF (NOT DEFINED Simox_VERSION)
+	set(GraspStudio_MAJOR_VERSION 2)
+	set(GraspStudio_MINOR_VERSION 1)
+	set(GraspStudio_PATCH_VERSION 3)
+ELSE()
+	set(GraspStudio_MAJOR_VERSION ${SIMOX_MAJOR_VERSION})
+	set(GraspStudio_MINOR_VERSION ${SIMOX_MINOR_VERSION})
+	set(GraspStudio_PATCH_VERSION ${SIMOX_PATCH_VERSION})
+ENDIF()
+set(GraspStudio_VERSION
+    ${GraspStudio_MAJOR_VERSION}.${GraspStudio_MINOR_VERSION}.${GraspStudio_PATCH_VERSION})
+set_target_properties( GraspStudio  PROPERTIES
+	VERSION ${GraspStudio_VERSION}
+	SOVERSION ${GraspStudio_MAJOR_VERSION}
+	)
+MESSAGE(STATUS " * GraspStudio Version: ${GraspStudio_VERSION}")
 
 
 # .DLL path

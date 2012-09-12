@@ -60,12 +60,12 @@ namespace VirtualRobot
 				}
 			}
 #ifdef Simox_DATA_PATH
-			pathFound = pathFound | addDataPath(std::string(SIMOX_DATA_PATH),true);
+			pathFound = pathFound | addDataPath(std::string(Simox_DATA_PATH),true);
 #endif
 #ifdef VirtualRobot_DATA_PATH
-			pathFound = pathFound | addDataPath(std::string(VIRTUAL_ROBOT_DATA_PATH),true);
+			pathFound = pathFound | addDataPath(std::string(VirtualRobot_DATA_PATH),true);
 #endif
-			// check stnadard linux install path
+			// check standard linux install path
 			if (!pathFound)
 			{
 				pathFound = addDataPath(std::string("/usr/local/data"),true);

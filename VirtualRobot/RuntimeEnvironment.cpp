@@ -65,6 +65,9 @@ namespace VirtualRobot
 #ifdef VirtualRobot_DATA_PATH
 			pathFound = pathFound | addDataPath(std::string(VirtualRobot_DATA_PATH),true);
 #endif
+#ifdef VirtualRobot_SRC_DATA_PATH
+			pathFound = pathFound | addDataPath(std::string(VirtualRobot_SRC_DATA_PATH),true);
+#endif
 			// check standard linux install path
 			if (!pathFound)
 			{

@@ -56,16 +56,23 @@ public:
 	void addGraspSet(GraspSetPtr graspSet);
 
 	/*!
-		Get grasp set for the given end effector.
+		Get grasp set for the given end effector. In case multiple grasp sets for the eef are present, the first one is returned.
 		An empty GraspSetPtr is returned when no GraspSet for eef is found.
 	*/
 	GraspSetPtr getGraspSet(EndEffectorPtr eef);
 
 	/*!
-		Get grasp set for the given robotType and end effector.
+		Get grasp set for the given robotType and end effector. In case multiple grasp sets for the robot/eef combination are present, the first one is returned.
 		An empty GraspSetPtr is returned when no GraspSet for robot&eef is found.
 	*/
 	GraspSetPtr getGraspSet(const std::string &robotType,const std::string &eefName);
+
+	/*!
+		Get grasp set by name.
+		\param name The name of the grasp set.
+		\return An empty GraspSetPtr is returned when no GraspSet with the given name is found.
+	*/
+	GraspSetPtr getGraspSet(const std::string &name);
 
 	/*!
 		Creates an XML representation of this object.

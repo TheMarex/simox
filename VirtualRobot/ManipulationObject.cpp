@@ -38,7 +38,8 @@ void ManipulationObject::addGraspSet( GraspSetPtr graspSet )
 {
 	THROW_VR_EXCEPTION_IF(!graspSet,"NULL data");
 	THROW_VR_EXCEPTION_IF(hasGraspSet(graspSet),"Grasp set already added");
-	THROW_VR_EXCEPTION_IF(hasGraspSet(graspSet->getRobotType(), graspSet->getEndEffector()), "Only one GraspSet per EEF allowed.");
+	// don't be too strict
+	//THROW_VR_EXCEPTION_IF(hasGraspSet(graspSet->getRobotType(), graspSet->getEndEffector()), "Only one GraspSet per EEF allowed.");
 	this->graspSets.push_back(graspSet);
 }
 
@@ -72,6 +73,14 @@ VirtualRobot::GraspSetPtr ManipulationObject::getGraspSet( const std::string &ro
 {
 	for (size_t i=0;i<graspSets.size();i++)
 		if (graspSets[i]->getRobotType() == robotType && graspSets[i]->getEndEffector() == eefName)
+			return graspSets[i];
+	return GraspSetPtr();
+}
+
+VirtualRobot::GraspSetPtr ManipulationObject::getGraspSet( const std::string &name )
+{
+	for (size_t i=0;i<graspSets.size();i++)
+		if (graspSets[i]->getName() == name)
 			return graspSets[i];
 	return GraspSetPtr();
 }

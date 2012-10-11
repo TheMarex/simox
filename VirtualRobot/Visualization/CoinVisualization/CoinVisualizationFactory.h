@@ -41,6 +41,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <string>
+#include <fstream>
 
 namespace VirtualRobot
 {
@@ -58,6 +59,7 @@ public:
 	virtual ~CoinVisualizationFactory();
 
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false);
+	virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromString(const std::string& modelString, bool boundingBox = false);
 	virtual VisualizationNodePtr createBox(float width, float height, float depth, float colorR, float colorG, float colorB);
 	virtual VisualizationNodePtr createLine(const Eigen::Vector3f &from, const Eigen::Vector3f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
@@ -237,6 +239,9 @@ public:
 private:
 	static SubClassRegistry registry;
 };
+
+typedef boost::shared_ptr<CoinVisualizationFactory> CoinVisualizationFactoryPtr;
+
 
 } // namespace VirtualRobot
 

@@ -27,6 +27,8 @@
 #include "BaseIO.h"
 #include "../Scene.h"
 
+#include <fstream>
+
 // using forward declarations here, so that the rapidXML header does not have to be parsed when this file is included
 namespace rapidxml
 {
@@ -48,6 +50,14 @@ public:
         @return Returns an empty pointer, when file access failed.
 	*/
     static ManipulationObjectPtr loadManipulationObject(const std::string &xmlFile);
+    
+ 	/*!
+        Load ManipulationObject from a file stream.
+		@param xmlFile The file stream
+		@param basePath If file tags are given, the base path for searching the object files can be specified.
+        @return Returns an empty pointer, when file access failed.
+	*/
+	static ManipulationObjectPtr loadManipulationObject(const std::ifstream &xmlFile, const std::string &basePath = "");
 
 	/*!
         Save ManipulationObject to file.

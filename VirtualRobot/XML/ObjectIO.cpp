@@ -27,19 +27,27 @@ VirtualRobot::ManipulationObjectPtr ObjectIO::loadManipulationObject( const std:
 	std::ifstream in(xmlFile.c_str());
 
 	THROW_VR_EXCEPTION_IF (!in.is_open(),"Could not open XML file:" << xmlFile);
-
-	std::stringstream buffer;
-	buffer << in.rdbuf();
-	std::string objectXML(buffer.str());
+	
 	boost::filesystem::path filenameBaseComplete(xmlFile);
 	boost::filesystem::path filenameBasePath = filenameBaseComplete.branch_path();
 	std::string basePath = filenameBasePath.string();
-
-	in.close();
-
-	VirtualRobot::ManipulationObjectPtr res = createManipulationObjectFromString(objectXML, basePath);
+	VirtualRobot::ManipulationObjectPtr res = loadManipulationObject(in,basePath);
 	THROW_VR_EXCEPTION_IF (!res,"Error while parsing file " << xmlFile);
 	res->setFilename(xmlFile);
+	return res;
+}
+
+VirtualRobot::ManipulationObjectPtr ObjectIO::loadManipulationObject( const std::ifstream &xmlFile, const std::string &basePath /*= ""*/ )
+{
+	// load file
+	THROW_VR_EXCEPTION_IF (!xmlFile.is_open(),"Could not open XML file");
+
+	std::stringstream buffer;
+	buffer << xmlFile.rdbuf();
+	std::string objectXML(buffer.str());
+
+	VirtualRobot::ManipulationObjectPtr res = createManipulationObjectFromString(objectXML, basePath);
+	THROW_VR_EXCEPTION_IF (!res,"Error while parsing file.");
 	return res;
 }
 

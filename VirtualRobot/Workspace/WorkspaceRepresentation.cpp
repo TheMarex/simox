@@ -204,6 +204,7 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		// first check if the current version is used
 		if (version[0] != versionMajor || version[1] != versionMinor)
 		{
+            cout << "File version: " << version[0] << "." << version[1] << endl;
 			// now check if an older version is used
 			THROW_VR_EXCEPTION_IF(
 				(version[0] > 2) || 

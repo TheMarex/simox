@@ -43,14 +43,14 @@ public:
 
 	/*!
         Load scene from file.
-		\param xmlFile The file
+		\param xmlFile The file.
         \return Returns an empty pointer, when file access failed.
 	*/
 	static ScenePtr loadScene(const std::string &xmlFile);
 
 	/*!
 		Save a scene to file.
-		\param s The scen to be saved.
+		\param s The scene to be saved.
 		\param xmlFile The absolute filename.
 		\return true on success.
 	*/

@@ -100,6 +100,30 @@ VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromFile(const st
 	return visualizationNode;
 }
 
+VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox)
+{
+	VisualizationNodePtr visualizationNode(new VisualizationNode);
+
+	// passing an empty string to SoInput and trying to open it aborts the program
+	if (!ifs)
+	{
+		std::cerr <<  "Filestream not valid" << std::endl;
+		return visualizationNode;
+	}
+	
+	// try to open the given file
+	std::ostringstream oss;
+	oss << ifs.rdbuf();
+
+	if(!ifs && !ifs.eof())
+	{
+		std::cerr <<  "Error reading filestream " << std::endl;
+		return visualizationNode;
+	}
+	std::string contents(oss.str());
+	return getVisualizationFromString(contents);
+}
+
 /**
  * This method creates a VirtualRobot::CoinVisualizationNode from a given \p modelString.
  * An instance of VirtualRobot::VisualizationNode is returned in case of an occured error.

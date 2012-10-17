@@ -1,6 +1,9 @@
 #Inventor V2.1 ascii
 
 Separator {
+    Units {
+            units METERS
+    }
 
 
 	Transform {
@@ -9,7 +12,7 @@ Separator {
 	}
 
 Transform {
-		translation 0 5 -137
+		translation 0 0.005 -0.137
 		rotation 1 0 0 -1.57 
 	}
 	

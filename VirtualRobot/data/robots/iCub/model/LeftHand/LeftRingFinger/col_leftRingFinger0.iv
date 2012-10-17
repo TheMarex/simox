@@ -3,16 +3,6 @@
 Separator {
 
 
-	Transform {
-		translation 0 0 0
-		rotation 0 0 1 0
-	}
-
-	Transform {
-		translation 0 0 0
-		rotation 0 1 0 0
-	}
-
 	Separator 
 	{
 		File {name col_LeftRingFinger0.wrl }

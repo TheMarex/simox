@@ -8,11 +8,6 @@ Separator {
 		rotation 0 1 0 3.14
 	}
 
-	Transform {
-		translation 0 0 0
-		rotation 1 0 0 0
-	}
-
 	Separator 
 	{
 		File {name full_LeftIndexFingerTip_b.wrl }

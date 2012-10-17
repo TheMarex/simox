@@ -146,7 +146,9 @@ void CoinVisualizationNode::InventorTriangleCB(void* data, SoCallbackAction* act
 	}
 
 	SbMatrix mm = action->getModelMatrix();
-
+    SbMatrix scale;
+    scale.setScale(1000.0f); // simox operates in mm, coin3d in m
+    mm = mm.multRight(scale);
 	SbVec3f triangle[3];
 	mm.multVecMatrix(v1->getPoint(), triangle[0]);
 	mm.multVecMatrix(v2->getPoint(), triangle[1]);
@@ -187,6 +189,10 @@ void CoinVisualizationNode::setGlobalPose( const Eigen::Matrix4f &m )
 	if (globalPoseTransform && updateVisualization)
 	{
 		SbMatrix m(reinterpret_cast<SbMat*>(globalPose.data()));
+        // mm -> m
+        m[3][0] *= 0.001f;
+        m[3][1] *= 0.001f;
+        m[3][2] *= 0.001f;
 		globalPoseTransform->matrix.setValue(m);
 	}
 }

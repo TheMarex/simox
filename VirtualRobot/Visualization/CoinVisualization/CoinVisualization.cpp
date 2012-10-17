@@ -10,6 +10,7 @@
 
 #include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/nodes/SoMatrixTransform.h>
+#include <Inventor/nodes/SoUnits.h>
 
 #include <boost/foreach.hpp>
 #include <algorithm>
@@ -46,6 +47,9 @@ bool CoinVisualization::buildVisualization()
 	/*SbMatrix m(reinterpret_cast<SbMat*>(globalPose.data()));
 	mtr->matrix.setValue(m);
 	selection->addChild(mtr);*/
+    SoUnits *u = new SoUnits();
+    u->units = SoUnits::METERS;
+    visualization->addChild(u);
 	selection->addChild(visualization);
 
     BOOST_FOREACH(VisualizationNodePtr visualizationNode, visualizationNodes)

@@ -188,11 +188,11 @@ void stabilityWindow::buildVisu()
 		material->diffuseColor.setValue(1.0f,0.2f,0.2f);
 		comVisu->addChild(material);
 		SoSphere *s = new SoSphere;
-		s->radius.setValue(30.0f);
+		s->radius.setValue(0.0300f);
 		SoCube *c = new SoCube;
-		c->width.setValue(50);
-		c->height.setValue(50);
-		c->depth.setValue(50);
+		c->width.setValue(0.050f);
+		c->height.setValue(0.050f);
+		c->depth.setValue(0.050f);
 		comVisu->addChild(c);
 		comVisu->addChild(s);
 
@@ -202,11 +202,11 @@ void stabilityWindow::buildVisu()
 		material->diffuseColor.setValue(0.2f,0.2f,1.0f);
 		comProjectionVisu->addChild(material);
 		s = new SoSphere;
-		s->radius.setValue(30.0f);
+		s->radius.setValue(0.030f);
 		c = new SoCube;
-		c->width.setValue(50);
-		c->height.setValue(50);
-		c->depth.setValue(50);
+		c->width.setValue(0.050f);
+		c->height.setValue(0.050f);
+		c->depth.setValue(0.050f);
 		comProjectionVisu->addChild(c);
 		comProjectionVisu->addChild(s);
 
@@ -216,11 +216,11 @@ void stabilityWindow::buildVisu()
 		material->diffuseColor.setValue(0.2f,0.2f,0.2f);
 		comTargetVisu->addChild(material);
 		s = new SoSphere;
-		s->radius.setValue(30.0f);
+		s->radius.setValue(0.0300f);
 		c = new SoCube;
-		c->width.setValue(50);
-		c->height.setValue(50);
-		c->depth.setValue(50);
+		c->width.setValue(0.050f);
+		c->height.setValue(0.050f);
+		c->depth.setValue(0.050f);
 		comTargetVisu->addChild(c);
 		comTargetVisu->addChild(s);
 		updateCoM();
@@ -251,6 +251,10 @@ void stabilityWindow::updateCoM()
 	if (m)
 	{
 		SbMatrix ma(reinterpret_cast<SbMat*>(globalPoseCoM.data()));
+        // mm -> m
+        ma[3][0] *= 0.001f;
+        ma[3][1] *= 0.001f;
+        ma[3][2] *= 0.001f;
 		m->matrix.setValue(ma);
 	}
 
@@ -262,6 +266,10 @@ void stabilityWindow::updateCoM()
 		if(m)
 		{
 			SbMatrix ma(reinterpret_cast<SbMat*>(globalPoseCoM.data()));
+            // mm -> m
+            ma[3][0] *= 0.001f;
+            ma[3][1] *= 0.001f;
+            ma[3][2] *= 0.001f;
 			m->matrix.setValue(ma);
 		}
 	}
@@ -522,6 +530,10 @@ void stabilityWindow::comTargetMovedX(int value)
 		if(m)
 		{
 			SbMatrix ma(reinterpret_cast<SbMat*>(T.data()));
+            // mm -> m
+            ma[3][0] *= 0.001f;
+            ma[3][1] *= 0.001f;
+            ma[3][2] *= 0.001f;
 			m->matrix.setValue(ma);
 		}
 	}
@@ -543,6 +555,10 @@ void stabilityWindow::comTargetMovedY(int value)
 		if(m)
 		{
 			SbMatrix ma(reinterpret_cast<SbMat*>(T.data()));
+            // mm -> m
+            ma[3][0] *= 0.001f;
+            ma[3][1] *= 0.001f;
+            ma[3][2] *= 0.001f;
 			m->matrix.setValue(ma);
 		}
 	}

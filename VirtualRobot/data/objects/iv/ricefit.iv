@@ -2,6 +2,9 @@
 
 
 Separator {
+    Units {
+            units MILLIMETERS
+    }
     RotationXYZ {
         angle 3.14
         axis X

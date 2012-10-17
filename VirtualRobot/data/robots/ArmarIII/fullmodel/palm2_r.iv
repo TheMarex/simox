@@ -10,9 +10,6 @@ Separator {
 		rotation 0 1 0 -1.57
 	} 
 
-#File {name armar/hands/axis_arrows.iv }
-
-
 	Separator 
 	{
 		File {name armar/hands/palm2_r.iv }

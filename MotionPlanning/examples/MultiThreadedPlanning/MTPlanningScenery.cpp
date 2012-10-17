@@ -179,6 +179,7 @@ void MTPlanningScenery::buildScene()
 	environment.reset(new VirtualRobot::SceneObjectSet("Environment"));
 
 	obstSep = new SoSeparator();
+
 	sceneSep->addChild(obstSep);
 
 	int ob = 2000;
@@ -342,10 +343,10 @@ void MTPlanningScenery::buildPlanningThread(bool bMultiCollisionCheckers, int id
 		return;
 	pRobot->setJointValues(kinChain,start);
 	Eigen::Matrix4f gp = rn->getGlobalPose();
-	SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransform(gp);
+	SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransformM(gp);//no transformation -> our scene is already in MM units
 	pRobot->setJointValues(kinChain,goal);
 	gp = rn->getGlobalPose();
-	SoMatrixTransform *mt2 =CoinVisualizationFactory::getMatrixTransform(gp);
+	SoMatrixTransform *mt2 =CoinVisualizationFactory::getMatrixTransformM(gp);//no transformation -> our scene is already in MM units
 
 	SoSeparator *sep1 = new SoSeparator();
 	sep1->addChild(mt);

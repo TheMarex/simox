@@ -1,6 +1,9 @@
 #Inventor V1.0 ascii
 
 Separator {
+    Units {
+            units MILLIMETERS
+    }
 
     Cube {
         width 100

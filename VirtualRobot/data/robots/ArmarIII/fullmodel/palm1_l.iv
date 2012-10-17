@@ -6,12 +6,6 @@ Separator {
 		translation 0 0 0
 		rotation 0 0 -1 1.57
 	} 
-#	Transform {
-#		translation 0 0 0
-#		rotation 0 1 0 3.1415
-#	} 
-#File {name armar/hands/axis_arrows.iv }
-
 
 	Separator 
 	{

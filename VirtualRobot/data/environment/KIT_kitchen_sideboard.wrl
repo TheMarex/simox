@@ -9,7 +9,10 @@ RotationXYZ {
 axis Z
 angle 1.57
 }
-
+# transform to m
+Transform {
+   scaleFactor         0.001 0.001 0.001
+}
 Switch {
 	DEF Darkgrey
 	Material {

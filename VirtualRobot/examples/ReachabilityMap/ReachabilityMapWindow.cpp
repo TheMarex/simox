@@ -457,7 +457,7 @@ void ReachabilityMapWindow::setObjectRandom()
 		gp.setIdentity();
 		gp(0,3) = 50.0f + (float)(rand()%1100);
 		gp(1,3) = -50.0f - (float)(rand()%720);
-		gp(2,3) = 900.0f;
+		gp(2,3) = 1030.0f;
 
 		graspObject->setGlobalPose(gp);
 		selectGrasp();

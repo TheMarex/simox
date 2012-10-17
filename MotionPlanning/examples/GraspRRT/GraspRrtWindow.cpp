@@ -129,7 +129,7 @@ void GraspRrtWindow::setupUI()
 	viewer->setAntialiasing(true, 4);
 
 	viewer->setGLRenderAction(new SoLineHighlightRenderAction);
-	viewer->setTransparencyType(SoGLRenderAction::SORTED_LAYERS_BLEND);
+	viewer->setTransparencyType(SoGLRenderAction::SORTED_OBJECT_BLEND);
 	viewer->setFeedbackVisibility(true);
 	viewer->setSceneGraph(allSep);
 	viewer->viewAll();
@@ -199,7 +199,7 @@ void GraspRrtWindow::buildVisu()
 
 			Eigen::Matrix4f m = grasps[i]->getTcpPoseGlobal(targetObject->getGlobalPose());
 			SoSeparator *sep1 = new SoSeparator();
-			SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransform(m);
+			SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransformMM(m);
 			sep1->addChild(mt);
 			sep1->addChild(eefVisu);
 			graspsSep->addChild(sep1);

@@ -2,9 +2,9 @@
 
 Separator {
     
-    #Units {
-     #       units MILLIMETERS
-    #}
+    Units {
+            units MILLIMETERS
+    }
     Material {
         diffuseColor    1 1 1
     }

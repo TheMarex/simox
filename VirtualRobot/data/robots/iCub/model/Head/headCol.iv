@@ -2,8 +2,12 @@
 
 Separator {
 
+    Units {
+            units METERS
+    }
+
 	Transform {
-		translation 0 90 -25
+		translation 0 0.090 -0.025
 		rotation 1 0 0 1.57
 	}	
 

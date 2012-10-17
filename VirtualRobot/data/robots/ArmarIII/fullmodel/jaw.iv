@@ -2,6 +2,9 @@
 
 Separator { 
 
+    Units {
+            units MILLIMETERS
+    }
 	Transform {
 		translation 0 10 0 
 		rotation 0 0 1 1.57

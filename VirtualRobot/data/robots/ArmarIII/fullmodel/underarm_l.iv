@@ -1,7 +1,9 @@
 #Inventor V2.1 ascii
 
 Separator {
-#File {name armar/hands/axis_arrows.iv }
+    Units {
+            units MILLIMETERS
+    }
 	Transform {
 		translation 0 0 -46.5
 		rotation 0 0 0 0 
@@ -16,7 +18,6 @@ Separator {
 	}
 
    	File { 
-#      		name "armar/left_arm/underarm.iv"
       		name "armar/left_arm/underarm_l.iv"
     	}
 }

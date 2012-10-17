@@ -4,6 +4,10 @@ Separator {
     ShapeHints {
         hints    (SOLID | ORDERED | CONVEX)
     }
+        Units {
+            units MILLIMETERS
+    }
+
     Material {
         diffuseColor    0.867564 0.849066 0.868687
     }

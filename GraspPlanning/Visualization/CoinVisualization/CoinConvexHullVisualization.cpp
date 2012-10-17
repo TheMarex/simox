@@ -86,6 +86,10 @@ SoSeparator* CoinConvexHullVisualization::createConvexHullVisualization(VirtualR
 		return result;
 	result->ref();
 
+    SoUnits *u = new SoUnits;
+    u->units = SoUnits::MILLIMETERS;
+    result->addChild(u);
+
 	SoCoordinate3* pCoords = new SoCoordinate3();
 	SoFaceSet* pFaceSet = new SoFaceSet();
 
@@ -166,6 +170,11 @@ SoSeparator* CoinConvexHullVisualization::createConvexHullVisualization(VirtualR
 	if (!convHull || convHull->vertices.size()==0 || convHull->faces.size()==0)
 		return result;
 	result->ref();
+
+    SoUnits *u = new SoUnits;
+    u->units = SoUnits::MILLIMETERS;
+    result->addChild(u);
+
 	SoScale *sc = new SoScale();
 	float fc = 400.0f;
 	sc->scaleFactor.setValue(fc,fc,fc);

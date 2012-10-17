@@ -1,7 +1,6 @@
 #Inventor V2.1 ascii
 
 Separator { #Model
-#File {name armar/hands/axis_arrows.iv }
 RotationXYZ{
  	axis Z
 	angle 1.57

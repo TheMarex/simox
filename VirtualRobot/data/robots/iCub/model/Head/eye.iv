@@ -2,6 +2,9 @@
 
 Separator {
 
+    Units {
+            units MILLIMETERS
+    }
 
       
    Material {

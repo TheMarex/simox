@@ -97,6 +97,11 @@ bool CoinRrtWorkspaceVisualization::addCSpacePath(CSpacePathPtr path, CoinRrtWor
 	float x2 = 0.0f,y2 = 0.0f,z2 = 0.0f;
 
 	SoSeparator *sep = new SoSeparator();
+    sep->ref();
+
+    SoUnits *u = new SoUnits;
+    u->units = SoUnits::MILLIMETERS;
+    sep->addChild(u);
 
 	SoComplexity *comple;
 	comple = new SoComplexity();
@@ -165,6 +170,7 @@ bool CoinRrtWorkspaceVisualization::addCSpacePath(CSpacePathPtr path, CoinRrtWor
 
 
 	visualization->addChild(sep);
+    sep->unref();
 	return true;
 }
 
@@ -214,6 +220,11 @@ bool CoinRrtWorkspaceVisualization::addTree(CSpaceTreePtr tree, CoinRrtWorkspace
 	lineStyle->lineWidth.setValue(treeLineSize);
 
 	SoSeparator *sep = new SoSeparator();
+    sep->ref();
+
+    SoUnits *u = new SoUnits;
+    u->units = SoUnits::MILLIMETERS;
+    sep->addChild(u);
 
 	SoComplexity *comple;
 	comple = new SoComplexity();
@@ -302,6 +313,7 @@ bool CoinRrtWorkspaceVisualization::addTree(CSpaceTreePtr tree, CoinRrtWorkspace
 		} 
 	}
 	visualization->addChild(sep);
+    sep->unref();
 
 	robot->setUpdateVisualization(updateVisMode);
 
@@ -337,6 +349,12 @@ bool CoinRrtWorkspaceVisualization::addConfiguration( const Eigen::VectorXf &c, 
 
 	SoSeparator *sep = new SoSeparator();
 
+    sep->ref();
+
+    SoUnits *u = new SoUnits;
+    u->units = SoUnits::MILLIMETERS;
+    sep->addChild(u);
+
 	// create 3D model for nodes
 	SoSeparator *s = new SoSeparator();
 
@@ -347,9 +365,9 @@ bool CoinRrtWorkspaceVisualization::addConfiguration( const Eigen::VectorXf &c, 
 	robot->setJointValues(robotNodeSet,c);
 	Eigen::Matrix4f m;
 	m = TCPNode->getGlobalPose();
-	x = m(0,3);//[0][3];
-	y = m(1,3);//m[1][3];
-	z = m(2,3);//m[2][3];
+	x = m(0,3);
+	y = m(1,3);
+	z = m(2,3);
 
 	t->translation.setValue(x,y,z);
 	s->addChild(t);
@@ -358,6 +376,7 @@ bool CoinRrtWorkspaceVisualization::addConfiguration( const Eigen::VectorXf &c, 
 	sep->addChild(s);
 
 	visualization->addChild(sep);
+    sep->unref();
 	return true;
 }
 

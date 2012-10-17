@@ -1,6 +1,9 @@
 #Inventor V2.0 ascii
 
 Separator {
+    Units {
+            units MILLIMETERS
+    }
 Cube {width 50 height 50 depth 50}
 Separator {
     BaseColor {

@@ -3,6 +3,10 @@
 Separator {
 
 
+    Units {
+            units METERS
+    }
+
 	Transform {
 		translation 0 0 0
 		rotation 1 0 0 1.57
@@ -10,7 +14,7 @@ Separator {
 
 
 Transform {
-		translation 0 137 5
+		translation 0 0.137 0.005
 		rotation 0 1 0 0
 	}
 	

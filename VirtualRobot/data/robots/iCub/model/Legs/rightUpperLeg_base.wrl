@@ -10,7 +10,7 @@
 DEF OB_Mesh_007 Transform {
 	translation 0.000000 0.000000 0.000000
 	rotation 1.000000 0.000000 0.000000 0.000000
-	scale 1000.000000 1000.000000 1000.000000
+	scale 1.000000 1.000000 1.000000
 	children [
 		DEF ME_Mesh_007 Group {
 			children [

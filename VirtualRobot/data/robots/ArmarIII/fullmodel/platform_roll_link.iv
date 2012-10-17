@@ -1,6 +1,9 @@
 #Inventor V2.1 ascii
 
 Separator { #Model
+    Units {
+            units MILLIMETERS
+    }
 RotationXYZ{
   axis Z
   angle 1.57

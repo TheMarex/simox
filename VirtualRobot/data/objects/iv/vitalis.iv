@@ -2,6 +2,9 @@
 
 
 Separator {
+    Units {
+            units MILLIMETERS
+    }
   Texture2 {
     filename "vitalis2.png"
   }

@@ -7,12 +7,6 @@ Separator {
 		translation 0 0 0
 		rotation 0 1 0 3.14
 	}
-
-	Transform {
-		translation 0 0 0
-		rotation 1 0 0 0
-	}
-
 	Separator 
 	{
 		File {name col_LeftIndexFingerTip.wrl }

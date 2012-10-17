@@ -7,9 +7,8 @@ Separator {
   }
   Transform {
 	translation 0 0 0
-rotation 0 0 1 1.57  
-}
-  #File {name armar/hands/axis_arrows.iv }
+  rotation 0 0 1 1.57  
+  }
     	File { 
       		name "armar/left_arm/shoulder_link_l.iv"
     	}

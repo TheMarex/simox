@@ -1,6 +1,10 @@
 #Inventor V2.1 ascii
 
 Separator {
+    Units {
+            units MILLIMETERS
+    }
+
 
 	Transform {
 		translation 0 0 3.5

@@ -1,10 +1,9 @@
 #Inventor V2.0 ascii
 
 Separator {
-    
-    #Units {
-     #       units MILLIMETERS
-    #}
+    Units {
+            units MILLIMETERS
+    }
     Material {
         diffuseColor    1 1 1
     }

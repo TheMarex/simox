@@ -6,7 +6,7 @@ NavigationInfo {
 	type [ "EXAMINE", "ANY" ]
 }
 Transform {
-  scale 10 10 10
+  scale 0.010 0.010 0.010
   translation 0 0 0
   children
   [

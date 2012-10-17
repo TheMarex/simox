@@ -1,9 +1,9 @@
 <ManipulationObject name='WaterBottle'>
 	<Visualization>
-		<File type='inventor'>c:/projects/simox2/virtualrobot/data/objects/iv/WaterBottleSmall.wrl</File>
+		<File type='inventor'>objects/iv/WaterBottleSmall.wrl</File>
 	</Visualization>
 	<CollisionModel>
-		<File type='inventor'>c:/projects/simox2/virtualrobot/data/objects/iv/WaterBottleSmall_col.wrl</File>
+		<File type='inventor'>objects/iv/WaterBottleSmall_col.wrl</File>
 	</CollisionModel>
 	<GraspSet name='Grasp Planner - Hand R' RobotType='Armar3' EndEffector='Hand R'>
 		<Grasp name='Grasp 1' quality='0.538147' Creation='Simox - GraspStudio - GraspWrenchSpace'>

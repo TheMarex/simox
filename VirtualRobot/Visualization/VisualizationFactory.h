@@ -60,6 +60,9 @@ public:
 
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false){return VisualizationNodePtr();};
+    /*!
+        A box, dimensions are given in mm.
+    */
 	virtual VisualizationNodePtr createBox(float length, float height, float width, float colorR, float colorG, float colorB){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createLine(const Eigen::Vector3f &from, const Eigen::Vector3f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}

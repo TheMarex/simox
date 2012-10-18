@@ -49,6 +49,7 @@ IF (NOT SABA_CONFIGURED)
     	   SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Simox_BIN_DIR})
     	ENDIF(NOT UNIX)
     	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES FOLDER "Saba Tests")
-    	ADD_TEST( Saba_${TEST_NAME} ${TEST_NAME} --output_format=XML --log_level=all --report_level=no)
+        ADD_TEST(NAME Saba_${TEST_NAME}
+    	         COMMAND ${VirtualRobot_TEST_DIR}/${TEST_NAME} --output_format=XML --log_level=all --report_level=no)
     ENDMACRO(ADD_SABA_TEST)
 ENDIF(NOT SABA_CONFIGURED)

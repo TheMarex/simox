@@ -137,6 +137,7 @@ IF (NOT SimDynamics_CONFIGURED)
     	   SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Simox_BIN_DIR})
     	ENDIF(NOT UNIX)
     	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES FOLDER "SimDynamics Tests")
-    	ADD_TEST( SimDynamics_${TEST_NAME} ${TEST_NAME} --output_format=XML --log_level=all --report_level=no)
+        ADD_TEST(NAME SimDynamics_${TEST_NAME}
+    	         COMMAND ${VirtualRobot_TEST_DIR}/${TEST_NAME} --output_format=XML --log_level=all --report_level=no)
     ENDMACRO(ADD_SIMDYNAMICS_TEST)
 ENDIF(NOT SimDynamics_CONFIGURED)

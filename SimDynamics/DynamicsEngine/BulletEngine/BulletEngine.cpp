@@ -376,8 +376,8 @@ std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 	for (int i=0;i<numManifolds;i++)
 	{
 		btPersistentManifold* contactManifold =  dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
-		btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
-		btCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
+		const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
+		const btCollisionObject* obB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
 		SimDynamics::BulletObject* dynObjA = static_cast<SimDynamics::BulletObject*>(obA->getUserPointer());
 		SimDynamics::BulletObject* dynObjB = static_cast<SimDynamics::BulletObject*>(obB->getUserPointer());
 		int numContacts = contactManifold->getNumContacts();

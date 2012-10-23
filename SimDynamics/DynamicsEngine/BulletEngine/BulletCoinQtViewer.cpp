@@ -18,6 +18,8 @@ namespace SimDynamics
 
 BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 {
+	bulletMaxSubSteps = 10;
+
 	const float TIMER_MS = 30.0f;
 
 	SIMDYNAMICS_ASSERT(world);
@@ -138,7 +140,7 @@ void BulletCoinQtViewer::stepPhysics()
 		bulletEngine->activateAllObjects(); // avoid sleeping objects
 		updateMotors(dt1);
 
-		bulletEngine->getBulletWorld()->stepSimulation(dt1,4);
+		bulletEngine->getBulletWorld()->stepSimulation(dt1,bulletMaxSubSteps);
 
 		//optional but useful: debug drawing
 		//m_dynamicsWorld->debugDrawWorld();
@@ -251,4 +253,11 @@ void BulletCoinQtViewer::stopCB()
 	}
 }
 
+void BulletCoinQtViewer::setBulletSimMaxSubSteps(int n)
+{
+	VR_ASSERT(n>=0);
+	bulletMaxSubSteps = n;
 }
+
+}
+

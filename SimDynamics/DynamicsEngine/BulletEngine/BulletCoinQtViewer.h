@@ -73,6 +73,12 @@ public:
 	//! Stop callbacks
 	void stopCB();
 
+	/*!
+		Parameter that is passed to bulletstepSimulation.
+		Specifies how many sub steps should be performed. Higher value means better simulation but lower performance.
+	*/
+	void setBulletSimMaxSubSteps(int n);
+
 protected:
 
 	
@@ -120,6 +126,8 @@ protected:
 	SoSeparator* sceneGraphRoot;
 	SoSeparator* floor;
 	SoSelection* sceneGraph;
+
+	int bulletMaxSubSteps; 
 };
 
 

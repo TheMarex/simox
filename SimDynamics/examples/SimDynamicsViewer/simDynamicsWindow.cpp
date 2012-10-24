@@ -17,6 +17,7 @@
 #include <Inventor/nodes/SoShapeHints.h>
 #include <Inventor/nodes/SoLightModel.h>
 #include <Inventor/nodes/SoCube.h>
+#include <Inventor/nodes/SoUnits.h>
 
 #include <sstream>
 using namespace std;
@@ -246,6 +247,7 @@ void SimDynamicsWindow::loadRobot()
 		cout << " ERROR while creating robot" << endl;
 		return;
 	}
+	//robot->print();
 	Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
 	gp(2,3) = 20.0f;
 	robot->setGlobalPose(gp);
@@ -363,6 +365,9 @@ void SimDynamicsWindow::stopCB()
 void SimDynamicsWindow::updateContactVisu()
 {
 	contactsSep->removeAllChildren();
+	SoUnits *u = new SoUnits;
+	u->units = SoUnits::MILLIMETERS;
+	contactsSep->addChild(u);
 	if (!UI.checkBoxContacts->isChecked())
 		return;
 	std::vector<SimDynamics::DynamicsEngine::DynamicsContactInfo> c = dynamicsWorld->getEngine()->getContacts();

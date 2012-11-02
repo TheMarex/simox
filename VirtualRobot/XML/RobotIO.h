@@ -103,6 +103,7 @@ protected:
                                              RobotPtr robo,
                                              const std::string &basePath,
                                              int &robotNodeCounter,
+											 std::vector< std::string > &childrenNames,
                                              std::vector< ChildFromRobotDef > &childrenFromRobot,
                                              RobotDescription loadMode = eFull);
 	static EndEffectorPtr processEndeffectorNode(rapidxml::xml_node<char>* endeffectorXMLNode, RobotPtr robo);
@@ -113,8 +114,7 @@ protected:
 	//static RobotNodeSetPtr processRobotNodeSet(rapidxml::xml_node<char> *setXMLNode, RobotPtr robo, const std::string &rootName, int &robotNodeSetCounter);
 	static void processChildNode(rapidxml::xml_node<char> *childXMLNode, std::vector<std::string> &childrenNames);
 	static RobotNodePtr processJointNode(rapidxml::xml_node<char> *jointXMLNode, const std::string& robotNodeName,
-		RobotPtr robot, const std::vector<std::string> &childrenNames,
-		VisualizationNodePtr visualizationNode, CollisionModelPtr collisionModel, SceneObject::Physics &physics);
+		RobotPtr robot, VisualizationNodePtr visualizationNode, CollisionModelPtr collisionModel, SceneObject::Physics &physics);
 	static void processChildFromRobotNode(rapidxml::xml_node<char> *childXMLNode, const std::string &nodeName, std::vector< ChildFromRobotDef > &childrenFromRobot);
 	static void processLimitsNode(rapidxml::xml_node<char> *limitsXMLNode, float &jointLimitLo, float &jointLimitHi);
 	static std::map<std::string,int> robot_name_counter;

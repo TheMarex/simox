@@ -73,21 +73,27 @@ void SimoxMotionState::setGlobalPoseSimox( const Eigen::Matrix4f& worldPose )
 	if (!sceneObject)
 		return;
 
+	// inv com as matrix4f
+	Eigen::Matrix4f comLocal;
+	comLocal.setIdentity();
+	comLocal.block(0,3,3,1) = -com;
 
 	// worldPose -> local visualization frame
-	Eigen::Matrix4f localPose = sceneObject->getGlobalPoseVisualization().inverse() * worldPose;
+	/*Eigen::Matrix4f localPose = sceneObject->getGlobalPoseVisualization().inverse() * worldPose;
 
 	// com as matrix4f
-	/*Eigen::Matrix4f comLocal;
+	Eigen::Matrix4f comLocal;
 	comLocal.setIdentity();
-	comLocal.block(0,3,3,1) = -com;*/
+	comLocal.block(0,3,3,1) = -com;
 
 	// apply com
-	//Eigen::Matrix4f localPoseAdjusted =  localPose * comLocal;
-	Eigen::Matrix4f localPoseAdjusted =  localPose;
-	localPoseAdjusted.block(0,3,3,1) -= com;
+	Eigen::Matrix4f localPoseAdjusted =  comLocal * localPose;
+	//Eigen::Matrix4f localPoseAdjusted =  localPose;
+	//localPoseAdjusted.block(0,3,3,1) -= com;
 
 	Eigen::Matrix4f resPose = sceneObject->getGlobalPoseVisualization() * localPoseAdjusted;
+	*/
+	Eigen::Matrix4f resPose = worldPose * comLocal;
 
 	//Eigen::Matrix4f resPose = worldPose;
 	// assuming we get the com adjusted pose

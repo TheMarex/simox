@@ -48,7 +48,6 @@ public:
 	*/
 	RobotNodeFixed(RobotWeakPtr rob,				//!< The robot
 		const std::string &name,					//!< The name
-		const std::vector<std::string> &childrenNames, //!< The list of all children
 		const Eigen::Matrix4f &preJointTransform,   //!<  This is the fixed transformation of this RobotNode (used to compute globalPose)
 		const Eigen::Matrix4f &postJointTransform,	//!<  This is the fixed transformation of this RobotNode (used to compute transformation to children)
 		VisualizationNodePtr visualization = VisualizationNodePtr(),//!< A visualization model
@@ -67,7 +66,6 @@ public:
 	*/
 	RobotNodeFixed(RobotWeakPtr rob,						//!< The robot
 		const std::string &name,							//!< The name
-		const std::vector<std::string> &childrenNames,		//!< The list of all children
 		float a, 											//!< Use fixed DH parameters to specify the transformation of this RobotNode
 		float d, 											//!< Use fixed DH parameters to specify the transformation of this RobotNode
 		float alpha, 										//!< Use fixed DH parameters to specify the transformation of this RobotNode
@@ -82,7 +80,7 @@ public:
 	*/
 	virtual ~RobotNodeFixed();
 
-	virtual bool initialize(RobotNodePtr parent, bool initializeChildren = false);
+	virtual bool initialize(SceneObjectPtr parent = SceneObjectPtr(), const std::vector<SceneObjectPtr> &children = std::vector<SceneObjectPtr>());
 
 	/*!
 	Print status information.
@@ -92,9 +90,8 @@ public:
 protected:
 
 	RobotNodeFixed(){};
-	virtual void updateTransformationMatrices();
-	virtual void updateTransformationMatrices(const Eigen::Matrix4f &globalPose);
-	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker);
+	virtual void updateTransformationMatrices(const Eigen::Matrix4f &parentPose);
+	virtual RobotNodePtr _clone(const RobotPtr newRobot, /*const std::vector<std::string> newChildren,*/ const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker);
 };
 
 } // namespace VirtualRobot

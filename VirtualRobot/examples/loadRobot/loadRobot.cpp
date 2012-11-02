@@ -17,16 +17,15 @@ using namespace VirtualRobot;
 
 int main(int argc, char *argv[])
 {
-	cout << "test" << endl;
 
 	boost::shared_ptr<Robot> robot = RobotFactory::createRobot("Robbi");
 	std::vector< boost::shared_ptr<RobotNode> > robotNodes;
-	const std::vector<std::string> childrenNames;
 	VirtualRobot::RobotNodeRevoluteFactory revoluteNodeFactory;
 	DHParameter dhParameter(0, 0, 0, 0, true);
-	boost::shared_ptr<RobotNode> node1 = revoluteNodeFactory.createRobotNodeDH(robot, "RootNode", childrenNames, VisualizationNodePtr(), CollisionModelPtr(), (float)-M_PI, (float)M_PI, 0.0f, dhParameter);
+	boost::shared_ptr<RobotNode> node1 = revoluteNodeFactory.createRobotNodeDH(robot, "RootNode", VisualizationNodePtr(), CollisionModelPtr(), (float)-M_PI, (float)M_PI, 0.0f, dhParameter);
 	robotNodes.push_back(node1);
-	bool resInit = RobotFactory::initializeRobot(robot,robotNodes,node1);
+	std::map<RobotNodePtr, std::vector<std::string> > childrenMap;
+	bool resInit = RobotFactory::initializeRobot(robot,robotNodes,childrenMap,node1);
 
 	cout << "resInit:" << resInit << endl;
 	cout << "First robot:" << endl;

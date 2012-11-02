@@ -39,6 +39,7 @@ IK/GenericIKSolver.cpp
 IK/CoMIK.cpp
 IK/PoseQualityMeasurement.cpp
 IK/PoseQualityManipulability.cpp
+IK/PoseQualityExtendedManipulability.cpp
 Workspace/WorkspaceData.cpp
 Workspace/WorkspaceRepresentation.cpp
 Workspace/Reachability.cpp
@@ -103,6 +104,7 @@ IK/GenericIKSolver.h
 IK/CoMIK.h
 IK/PoseQualityMeasurement.h
 IK/PoseQualityManipulability.h
+IK/PoseQualityExtendedManipulability.h
 Workspace/WorkspaceData.h
 Workspace/WorkspaceRepresentation.h
 Workspace/Reachability.h
@@ -224,6 +226,7 @@ ADD_SUBDIRECTORY(examples/)
 # create configuration file which contains all compile time defines
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/definesVR.h.cmake ${PROJECT_SOURCE_DIR}/definesVR.h)
 
+MESSAGE (STATUS " * Setting standard data path to ${CMAKE_INSTALL_PREFIX}/data")
 ADD_DEFINITIONS(-DVirtualRobot_DATA_PATH="${CMAKE_INSTALL_PREFIX}/data")
 ADD_DEFINITIONS(-DVirtualRobot_SRC_DATA_PATH="${PROJECT_SOURCE_DIR}/data")
 

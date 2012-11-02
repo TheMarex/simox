@@ -32,8 +32,11 @@ RobotPtr RobotFactory::createRobot( const std::string &name )
 
 bool RobotFactory::initializeRobot( RobotPtr robot, 
 									std::vector<RobotNodePtr > &robotNodes, 
-									RobotNodePtr rootNode )
+									std::map< RobotNodePtr, std::vector<std::string> > childrenMap,
+									RobotNodePtr rootNode
+									)
 {
+	VR_ASSERT(robot);
 	bool result = true;
 
 	// check for root
@@ -51,30 +54,40 @@ bool RobotFactory::initializeRobot( RobotPtr robot,
 	}
 	THROW_VR_EXCEPTION_IF(!foundRoot, "Invalid robot node (root is not available)");
 
-	// initialize robotNodes
-	if (!initRobotNode(rootNode,RobotNodePtr(),robotNodes))
+	// process children
+	std::map< RobotNodePtr, std::vector< std::string > >::iterator iterC = childrenMap.begin();
+	while (iterC!= childrenMap.end())
 	{
-		VR_ERROR << "Error while initializing RobotNodes" << endl;
-		result = false;
-	}
-	if (robotNodes.size()!=0)
-	{
-		VR_ERROR << "There are " << robotNodes.size() << " RobotNodes without parent:" << endl;
-		for (unsigned int i=0;i<robotNodes.size();i++)
+		std::vector< std::string > childNames = iterC->second;
+		RobotNodePtr node = iterC->first;
+		for (size_t i=0;i<childNames.size();i++)
 		{
-			cout << "-> " << robotNodes[i]->getName() << endl;
-			//really?
-			//robot->deregisterRobotNode(robotNodes[i]);
+			std::string childName = childNames[i];
+			if (!robot->hasRobotNode(childName))
+			{
+				THROW_VR_EXCEPTION("Robot " << robot->getName() << ": corrupted RobotNode <" << node->getName() << " child :" << childName << " does not exist...");
+			}
+			RobotNodePtr c = robot->getRobotNode(childName);
+			node->attachChild(c);
 		}
+		iterC++;
 	}
 
-	// register root:
+	// register root (performs an initialization of all robot nodes)
 	robot->setRootNode(rootNode);
+
+	for (size_t i=0;i<robotNodes.size();i++)
+	{
+		if (!robotNodes[i]->getParent() && robotNodes[i]!=rootNode)
+		{
+			VR_ERROR << "RobotNode " << robotNodes[i]->getName() << " is not connected to kinematic structure..." << endl;
+		}
+	}
 
 	return result;
 }
 
-
+/*
 bool RobotFactory::initRobotNode(RobotNodePtr n, RobotNodePtr parent, std::vector< RobotNodePtr > &robotNodes)
 {
 	std::vector< RobotNodePtr >::iterator nodeIter = std::find(robotNodes.begin(), robotNodes.end(), n);
@@ -89,16 +102,16 @@ bool RobotFactory::initRobotNode(RobotNodePtr n, RobotNodePtr parent, std::vecto
 
 	bool result = true;
 	// now the children
-	std::vector< RobotNodePtr > children = n->children;
+	std::vector< SceneObjectPtr > children = n->children;
 	for (unsigned int i=0; i<children.size(); i++)
 	{
-		if (!initRobotNode(children[i],n,robotNodes))
+		if (!initRobotNode(boost::dynamic_pointer_cast<RobotNode>(children[i]),n,robotNodes))
 		{
 			VR_ERROR << "Could not initialize node " << children[i]->getName() << endl;
 			result = false;
 		}
 	}
 	return result;
-}
+}*/
 
 } // namespace VirtualRobot

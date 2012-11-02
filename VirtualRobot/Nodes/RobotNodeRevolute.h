@@ -50,7 +50,6 @@ public:
 
 	RobotNodeRevolute(	RobotWeakPtr rob, 									//!< The robot
 						const std::string &name,							//!< The name
-						const std::vector<std::string> &childrenNames,		//!< The list of all children
 						float jointLimitLo,									//!< lower joint limit
 						float jointLimitHi,									//!< upper joint limit
 						const Eigen::Matrix4f &preJointTransform,			//!< This transformation is applied before the translation of the joint is done
@@ -64,7 +63,6 @@ public:
 						);
 	RobotNodeRevolute(	RobotWeakPtr rob, 									//!< The robot
 						const std::string &name,							//!< The name
-						const std::vector<std::string> &childrenNames,		//!< The list of all children
 						float jointLimitLo,									//!< lower joint limit
 						float jointLimitHi,									//!< upper joint limit
 						float a, 											//!< dh paramters
@@ -81,7 +79,7 @@ public:
 	*/
 	virtual ~RobotNodeRevolute();
 
-	virtual bool initialize(RobotNodePtr parent, bool initializeChildren = false);
+	virtual bool initialize(SceneObjectPtr parent = SceneObjectPtr(), const std::vector<SceneObjectPtr> &children = std::vector<SceneObjectPtr>());
 
 	/*!
 	Print status information.
@@ -111,12 +109,11 @@ protected:
 
 	RobotNodeRevolute(){};
 	
-	virtual void updateTransformationMatrices();
-	virtual void updateTransformationMatrices(const Eigen::Matrix4f &globalPose);
+	virtual void updateTransformationMatrices(const Eigen::Matrix4f &parentPose);
 
 	Eigen::Vector3f jointRotationAxis;			// eRevoluteJoint  (given in local joint coord system)
 
-	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker);
+	virtual RobotNodePtr _clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker);
 };
 
 typedef boost::shared_ptr<RobotNodeRevolute> RobotNodeRevolutePtr;

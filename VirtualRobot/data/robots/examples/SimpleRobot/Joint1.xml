@@ -50,7 +50,7 @@
         <Child name="Joint3"/>
 	</RobotNode>
 
-  <!-->RobotNode name="Joint3a">
+	<!--RobotNode name="Joint3a">
         <Child name="Joint3"/>
 	</RobotNode-->
 	

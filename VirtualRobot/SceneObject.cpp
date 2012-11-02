@@ -8,6 +8,7 @@
 #include "VirtualRobotException.h"
 #include "Robot.h"
 #include <cmath>
+#include <algorithm>
 
 namespace VirtualRobot {
 
@@ -37,22 +38,73 @@ SceneObject::SceneObject( const std::string &name, VisualizationNodePtr visualiz
 
 SceneObject::~SceneObject()
 {
+	for (size_t i=0;i<children.size();i++)
+		children[i]->detachedFromParent();
 }
 
 
-bool SceneObject::initialize()
+bool SceneObject::initialize(SceneObjectPtr parent, const std::vector<SceneObjectPtr> &children)
 {
+	// parent
+	if (parent)
+	{
+		if (!parent->hasChild(shared_from_this()))
+			parent->attachChild(shared_from_this());
+	} 
+	this->parent = parent;
+
+	// children
+	for (size_t i=0;i<children.size();i++)
+	{
+		if (!this->hasChild(children[i]))
+			this->attachChild(children[i]);
+	}
+	// init all children
+	std::vector<SceneObjectPtr> c = getChildren();
+	for (size_t i=0;i<c.size();i++)
+	{
+		c[i]->initialize(shared_from_this());
+	}
+
+	Eigen::Matrix4f m = Eigen::Matrix4f::Identity();
+	if (parent)
+		m = parent->getGlobalPose();
+
 	initialized = true;
+	updatePose(m);
 	return initializePhysics();	
 }
 
 void SceneObject::setGlobalPose( const Eigen::Matrix4f &pose )
 {
-	globalPose = pose;
+	SceneObjectPtr p = getParent();
+	if (p)
+	{
+		VR_ERROR << "Could not set pose of <" << name << ">. The object is attached to <" << p->getName() << ">" << endl;
+		return;
+	}
+	updatePose(pose);
+}
+
+
+void SceneObject::updatePose( bool updateChildren)
+{
+	Eigen::Matrix4f gp = getGlobalPoseVisualization();
 	if (visualizationModel)
-		visualizationModel->setGlobalPose(pose);
+		visualizationModel->setGlobalPose(gp);
 	if (collisionModel)
-		collisionModel->setGlobalPose(pose);
+		collisionModel->setGlobalPose(gp);
+	if (updateChildren)
+		for (size_t i=0;i<children.size();i++)
+		{
+			children[i]->updatePose(getGlobalPose());
+		}
+}
+
+void SceneObject::updatePose( const Eigen::Matrix4f &parentPose, bool updateChildren )
+{
+	globalPose = parentPose;
+	updatePose(updateChildren);
 }
 
 std::string SceneObject::getName() const
@@ -116,6 +168,7 @@ bool SceneObject::ensureVisualization(const std::string &visualizationType)
 	setVisualization(visualizationFactory->createVisualization());
 	return true;
 }
+
 void SceneObject::showCoordinateSystem( bool enable, float scaling, std::string *text)
 {
 	if (!enable && !visualizationModel)
@@ -298,7 +351,7 @@ float SceneObject::getMass()
 
 bool SceneObject::initializePhysics()
 {
-		// check if physics node's CoM location hast to be calculated
+		// check if physics node's CoM location has to be calculated
 	if (physics.comLocation == SceneObject::Physics::eVisuBBoxCenter)
 	{
 		/*if (!visualizationModel && !collisionModel)
@@ -346,7 +399,7 @@ bool SceneObject::initializePhysics()
 	return true;
 }
 
-void SceneObject::print( bool printDecoration /*= true*/ )
+void SceneObject::print( bool printChildren, bool printDecoration /*= true*/ ) const
 {
 	if (printDecoration)
 		cout << "**** SceneObject ****" << endl;
@@ -374,9 +427,21 @@ void SceneObject::print( bool printDecoration /*= true*/ )
 		collisionModel->print();
 	else
 		cout << "<not set>" << endl;
-
+	std::vector<SceneObjectPtr> children = this->getChildren();
+	if (children.size()>0)
+	{
+		cout << " * Children:" << endl;
+		for (size_t i=0;i<children.size();i++)
+			cout << " ** " << children[i]->getName();
+	}
 	if (printDecoration)
 		cout << endl;
+
+	if (printChildren)
+	{
+		for (unsigned int i = 0; i < children.size(); i++)
+			children[i]->print(true, true);
+	}
 }
 
 void SceneObject::showBoundingBox( bool enable, bool wireframe )
@@ -499,6 +564,73 @@ void SceneObject::setMass( float m )
 void SceneObject::setInertiaMatrix( const Eigen::Matrix3f &im )
 {
 	physics.intertiaMatrix = im;
+}
+
+bool SceneObject::hasChild( SceneObjectPtr child, bool recursive ) const
+{
+	VR_ASSERT(child);
+	for (size_t i=0;i<children.size();i++)
+	{
+		if (children[i] == child)
+			return true;
+		if (recursive && children[i]->hasChild(child,true))
+			return true;
+	}
+	return false;
+}
+
+void SceneObject::detachChild( SceneObjectPtr child )
+{
+	VR_ASSERT(child);
+	if (!hasChild(child))
+	{
+		VR_WARNING << " Trying to detach a not attached object: " << getName() << "->" << child->getName() << endl;
+		return;
+	}
+	children.erase(std::find(children.begin(), children.end(), child));
+	child->detachedFromParent();
+}
+
+bool SceneObject::attachChild( SceneObjectPtr child )
+{
+	VR_ASSERT(child);
+	if (hasChild(child))
+	{
+		VR_WARNING << " Trying to attach already attached object: " << getName() << "->" << child->getName() << endl;
+		return true; // no error
+	}
+	if (child->hasParent())
+	{
+		VR_WARNING << " Trying to attach object that has already a parent: " << getName() << "->" << child->getName() << ", child's parent:" << child->getParent()->getName() << endl;
+		return false;
+	}
+	children.push_back(child);
+	child->attached(shared_from_this());
+	return true;
+}
+
+bool SceneObject::hasParent()
+{
+	return (getParent());
+}
+
+VirtualRobot::SceneObjectPtr SceneObject::getParent() const
+{
+	SceneObjectPtr p = parent.lock();
+	return p;
+}
+
+void SceneObject::detachedFromParent( )
+{
+	this->parent.reset();
+}
+
+void SceneObject::attached( SceneObjectPtr parent )
+{
+	VR_ASSERT(parent);
+	SceneObjectPtr p = getParent();
+	THROW_VR_EXCEPTION_IF( p && p!=parent ,"SceneObject already attached to a different parent");
+	this->parent = parent;
 }
 
 

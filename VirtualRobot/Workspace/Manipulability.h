@@ -34,14 +34,19 @@ namespace VirtualRobot
 
 /*!
 		This class represents an approximation of the distribution of a kinematic chain's manipulability.
-		Therefore, the Cartesian space (6D) is voxelized. Each voxels holds a quality value, approximatively
+		Therefore, the Cartesian space (6D) is voxelized. Each voxel holds a quality value, approximatively
 		representing the maximum manipulability that can be achieved at the given pose.
 		The discretized manipulability data can be written to and loaded from binary files.
 
 		The manipulability is linked to a base coordinate system which is defined by a robot joint.
 		This base system is used to align the data when the robot is moving.
-		I.E. think of an arm of a humanoid where the manipulability data is linked to the shoulder.
+		I.e. think of an arm of a humanoid where the manipulability data is linked to the shoulder.
 		When the torso moves, the manipulability also changes it's position according to the position of the shoulder.
+
+		For buildup different manipulability measures can be incorporated (e.g. Yoshikawa's manipulability measure or extensions to this approach).
+		\see PoseQualityMeasurement
+		\see PoseQualityManipulability
+		\see PoseQualityExtendedManipulability
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT Manipulability : public WorkspaceRepresentation, public boost::enable_shared_from_this<Manipulability>
 {
@@ -152,7 +157,7 @@ public:
 	GraspSetPtr getReachableGrasps(GraspSetPtr grasps, ManipulationObjectPtr object);
 
 	/*!
-		Access self distance config.
+		Access self distance configuration.
 	*/
 	void getSelfDistConfig(bool &storeConsiderSelfDist, RobotNodeSetPtr &storeStatic, RobotNodeSetPtr &storeDynamic);
 

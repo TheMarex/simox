@@ -23,6 +23,7 @@
 #ifndef _VirtualRobot_SceneObject_h_
 #define _VirtualRobot_SceneObject_h_
 
+#include "VirtualRobot.h"
 #include "VirtualRobotImportExport.h"
 #include "Visualization/VisualizationNode.h"
 #include <Eigen/Core>
@@ -31,12 +32,13 @@
 #include <vector>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/mpl/assert.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 namespace VirtualRobot
 {
 class Robot;
 
-class VIRTUAL_ROBOT_IMPORT_EXPORT SceneObject
+class VIRTUAL_ROBOT_IMPORT_EXPORT SceneObject : public boost::enable_shared_from_this<SceneObject>
 {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -150,7 +152,10 @@ public:
 	*/
 	virtual VisualizationNodePtr getVisualization(SceneObject::VisualizationType visuType = SceneObject::Full);
 
-	virtual bool initialize();
+	/*!
+		Initialize this object. Optionally the parents and children can be specified.
+	*/
+	virtual bool initialize(SceneObjectPtr parent = SceneObjectPtr(), const std::vector<SceneObjectPtr> &children = std::vector<SceneObjectPtr>());
 
 	/*!
 		Enables/Disables the visualization updates of collision model and visualization model.
@@ -264,7 +269,7 @@ public:
 	void setInertiaMatrix(const Eigen::Matrix3f &im);
 
 
-	virtual void print(bool printDecoration = true);
+	virtual void print(bool printChildren = false, bool printDecoration = true) const;
 
 
 	/*!
@@ -282,6 +287,9 @@ public:
 	/*!
 	  Convenient method for highlighting the visualization of this object.
 	  It is automatically checked whether the collision model or the full model is part of the visualization.
+
+	  @see \fn VisualizationNode->highlight()
+
 	  \param visualization The visualization for which the highlighting should be performed.
 	  \param enable Set or unset highlighting.
 	*/
@@ -292,10 +300,48 @@ public:
 	*/
 	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {return SceneObjectPtr(_clone(name,colChecker));}
 
+	/*! 
+		Attach a connected object. The connected object is linked to this SceneObject and moves accordingly. 
+		Any call to the child's setGlobalPose is forbidden and will fail.
+		\param child The child to attach
+	*/
+	virtual bool attachChild(SceneObjectPtr child);
 
+	/*!
+		Removes the child from children list. 
+	*/
+	virtual void detachChild(SceneObjectPtr child);
+
+
+	/*!
+		\return true, if child is attached
+	*/
+	virtual bool hasChild(SceneObjectPtr child, bool recursive = false) const;
+
+	/*!
+		\return true, if this object is attached to another object.
+	*/
+	virtual bool hasParent();
+
+	/*!
+		\return If this object is attached, the parent is returned. Otherwise an empty object is returned.
+	*/
+	virtual SceneObjectPtr getParent() const;
+
+	virtual std::vector<SceneObjectPtr> getChildren() const {return children;}
 
 protected:
 	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const;
+
+	//! Parent detached this object 
+	virtual void detachedFromParent();
+	//! Parent attached this object 
+	virtual void attached(SceneObjectPtr parent);
+
+	//! Compute the global pose of this object 
+	virtual void updatePose( bool updateChildren = true);
+	virtual void updatePose( const Eigen::Matrix4f &parentPose, bool updateChildren = true );
+
 
 	SceneObject(){};
 
@@ -308,6 +354,9 @@ protected:
 	///////////////////////// SETUP ////////////////////////////////////
 
 	Eigen::Matrix4f globalPose;												//< The transformation that is used for visualization
+
+	std::vector<SceneObjectPtr> children;
+	SceneObjectWeakPtr parent;
 
 	CollisionModelPtr collisionModel;
 	VisualizationNodePtr visualizationModel;								//< This is the main visualization

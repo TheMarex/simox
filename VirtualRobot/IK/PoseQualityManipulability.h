@@ -36,7 +36,7 @@ namespace VirtualRobot
 *
 * This measurement computes the Yoshikawa's manipulability index by computing the Singular value Decomposition (SVD) of the Jacobian.
 * Two modes are offered: Either all singular values are multiplied
-* or the ratio of minimum and maximum singular Value is returned (also known as (inverted) Condition number).
+* or the ratio of minimum and maximum singular value is returned (also known as (inverted) Condition number).
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT PoseQualityManipulability :  public PoseQualityMeasurement
 {

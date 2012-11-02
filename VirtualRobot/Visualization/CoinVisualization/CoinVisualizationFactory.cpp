@@ -1191,6 +1191,8 @@ namespace VirtualRobot {
         cone->height.setValue(coneHeight);
         res->addChild(cone);
 
+		res->unrefNoDelete();
+
         return res;
     }
 

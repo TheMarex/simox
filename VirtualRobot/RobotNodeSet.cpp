@@ -301,7 +301,7 @@ void RobotNodeSet::setJointValues(const std::vector<float> &jointValues)
 		robotNodes[i]->setJointValueNoUpdate(jointValues[i]);
 	}
 	if (kinematicRoot)
-		kinematicRoot->applyJointValue();
+		kinematicRoot->updatePose();
 	else
 		rob->applyJointValues();
 }
@@ -318,7 +318,7 @@ void RobotNodeSet::setJointValues(const Eigen::VectorXf &jointValues)
 		robotNodes[i]->setJointValueNoUpdate(jointValues[i]);
 	}	
 	if (kinematicRoot)
-		kinematicRoot->applyJointValue();
+		kinematicRoot->updatePose();
 	else
 		rob->applyJointValues();
 }
@@ -336,7 +336,7 @@ void RobotNodeSet::setJointValues( const RobotConfigPtr jointValues )
 			robotNodes[i]->setJointValueNoUpdate(jointValues->getConfig(robotNodes[i]->getName()));
 	}
 	if (kinematicRoot)
-		kinematicRoot->applyJointValue();
+		kinematicRoot->updatePose();
 	else
 		rob->applyJointValues();
 
@@ -363,7 +363,7 @@ bool RobotNodeSet::isKinematicChain()
 {
 	for (unsigned int i=0;i<this->robotNodes.size()-1;i++)
 	{
-		if (!this->robotNodes[i]->hasChildNode(this->robotNodes[i+1],true))
+		if (!this->robotNodes[i]->hasChild(this->robotNodes[i+1],true))
 		{
 			return false;
 		}

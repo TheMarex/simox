@@ -26,9 +26,9 @@ RobotNodeFixedFactory::~RobotNodeFixedFactory()
  *
  * \return instance of VirtualRobot::RobotNodeFixed.
  */
-RobotNodePtr RobotNodeFixedFactory::createRobotNode(RobotPtr robot, const std::string& nodeName, const std::vector<std::string>& childrenNames, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const Eigen::Matrix4f& preJointTransform, const Eigen::Vector3f& axis, const Eigen::Matrix4f& postJointTransform, const Eigen::Vector3f& translationDirection, const SceneObject::Physics &p) const
+RobotNodePtr RobotNodeFixedFactory::createRobotNode(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const Eigen::Matrix4f& preJointTransform, const Eigen::Vector3f& axis, const Eigen::Matrix4f& postJointTransform, const Eigen::Vector3f& translationDirection, const SceneObject::Physics &p) const
 {
-	RobotNodePtr robotNode(new RobotNodeFixed(robot, nodeName, childrenNames, preJointTransform, postJointTransform, visualizationModel, collisionModel, p));
+	RobotNodePtr robotNode(new RobotNodeFixed(robot, nodeName, preJointTransform, postJointTransform, visualizationModel, collisionModel, p));
 
 	return robotNode;
 }
@@ -39,9 +39,9 @@ RobotNodePtr RobotNodeFixedFactory::createRobotNode(RobotPtr robot, const std::s
  *
  * \return instance of VirtualRobot::RobotNodeFixed.
  */
-RobotNodePtr RobotNodeFixedFactory::createRobotNodeDH(RobotPtr robot, const std::string& nodeName, const std::vector<std::string>& childrenNames, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const DHParameter& dhParameters, const SceneObject::Physics &p) const
+RobotNodePtr RobotNodeFixedFactory::createRobotNodeDH(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const DHParameter& dhParameters, const SceneObject::Physics &p) const
 {
-	RobotNodePtr robotNode(new RobotNodeFixed(robot, nodeName, childrenNames,dhParameters.aMM(), dhParameters.dMM(), dhParameters.alphaRadian(), dhParameters.thetaRadian(), visualizationModel, collisionModel, p));
+	RobotNodePtr robotNode(new RobotNodeFixed(robot, nodeName,dhParameters.aMM(), dhParameters.dMM(), dhParameters.alphaRadian(), dhParameters.thetaRadian(), visualizationModel, collisionModel, p));
 
 	return robotNode;
 /*

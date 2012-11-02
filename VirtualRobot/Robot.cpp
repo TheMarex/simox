@@ -27,6 +27,17 @@ Robot::~Robot()
 
 LocalRobot::~LocalRobot()
 {
+	// clean up connections
+	std::map< std::string, RobotNodePtr > ::iterator it = robotNodeMap.begin();
+	while (it!=robotNodeMap.end())
+	{
+		std::vector<SceneObjectPtr> c = it->second->getChildren();
+		for (size_t j=0;j<c.size();j++)
+		{
+			it->second->detachChild(c[j]);
+		}
+		it++;
+	}
 	int i = (int)rootNode.use_count();
 	robotNodeSetMap.clear();
 	robotNodeMap.clear();
@@ -42,6 +53,7 @@ LocalRobot::LocalRobot(const std::string &name, const std::string &type) : Robot
 void LocalRobot::setRootNode( RobotNodePtr node )
 {
 	rootNode = node;
+	node->initialize();
 	//robotNodeMap.clear();
 	if (!node)
 	{
@@ -330,7 +342,7 @@ RobotNodePtr LocalRobot::getRootNode()
 void Robot::applyJointValues()
 {
 	WriteLock(mutex,use_mutex);
-	this->getRootNode()->applyJointValue(this->getGlobalPose());
+	this->getRootNode()->updatePose(this->getGlobalPose());
 }
 
 /**
@@ -338,7 +350,7 @@ void Robot::applyJointValues()
  */
 void Robot::applyJointValuesNoLock()
 {
-	this->getRootNode()->applyJointValue(this->getGlobalPose());
+	this->getRootNode()->updatePose(this->getGlobalPose());
 }
 
 /**
@@ -566,7 +578,6 @@ VirtualRobot::RobotPtr Robot::extractSubPart( RobotNodePtr startJoint, const std
 
 	RobotNodePtr rootNew = startJoint->clone(result, true, RobotNodePtr(), colChecker);
 	THROW_VR_EXCEPTION_IF(!rootNew, "Clone failed...");
-	rootNew->initialize(RobotNodePtr(),true);
 	result->setRootNode(rootNew);
 
 	std::vector<RobotNodePtr> rn = result->getRobotNodes();

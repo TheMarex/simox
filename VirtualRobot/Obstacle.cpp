@@ -77,6 +77,7 @@ VirtualRobot::ObstaclePtr Obstacle::createBox( float width, float height, float 
 
 	CollisionModelPtr colModel(new CollisionModel(visu,name,colChecker,id));
 	result.reset(new Obstacle(name,visu,colModel, SceneObject::Physics(), colChecker));
+	result->initialize();
 
 	return result;
 }
@@ -114,6 +115,8 @@ VirtualRobot::ObstaclePtr Obstacle::createSphere( float radius, VisualizationFac
 
 	CollisionModelPtr colModel(new CollisionModel(visu,name,colChecker,id));
 	result.reset(new Obstacle(name,visu,colModel, SceneObject::Physics(), colChecker));
+
+	result->initialize();
 
 	return result;
 }

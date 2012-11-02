@@ -87,7 +87,7 @@ public:
 	*/
 	virtual VirtualRobot::MathTools::ConvexHull6DPtr getConvexHullGWS(){return convexHullGWS;}
 
-	void calculateOWS(int samplePoints = 400);
+	void calculateOWS(int samplePoints = 300);
 	void calculateGWS();
 	bool OWSExists(){return OWSCalculated;}
 	bool GWSExists(){return GWSCalculated;}

@@ -10,6 +10,8 @@
 #include <VirtualRobot/Nodes/RobotNodeFixed.h>
 #include <VirtualRobot/Nodes/RobotNodeRevolute.h>
 
+#include <boost/pointer_cast.hpp>
+
 //#define DEBUG_FIXED_OBJECTS
 //#define DEBUG_SHOW_LINKS
 using namespace VirtualRobot;
@@ -53,7 +55,7 @@ void BulletRobot::buildBulletModels(bool enableJointMotors)
 	for (size_t i=0;i<robotNodes.size();i++)
 	{
 		RobotNodePtr rn = robotNodes[i];
-		std::vector<RobotNodePtr> children = rn->getChildren();
+		std::vector<SceneObjectPtr> children = rn->getChildren();
 		for (size_t c=0;c<children.size();c++)
 		{
 			// check what to to
@@ -62,14 +64,16 @@ void BulletRobot::buildBulletModels(bool enableJointMotors)
 			if (fixed && !(children[c]->getCollisionModel()))
 				continue; // a fixed transformation without model, skip it
 				*/
-			createLink(rn,children[c],enableJointMotors);
+			RobotNodePtr rn2 = boost::dynamic_pointer_cast<RobotNode>(children[c]);
+			if (rn2)
+				createLink(rn,rn2,enableJointMotors);
 		}
 	}
 }
 
 void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::RobotNodePtr node2, bool enableJointMotors )
 {
-	THROW_VR_EXCEPTION_IF (!(node1->hasChildNode(node2)),"node1 must be parent of node2");
+	THROW_VR_EXCEPTION_IF (!(node1->hasChild(node2)),"node1 must be parent of node2");
 
 	if (dynamicRobotNodes.find(node1) == dynamicRobotNodes.end())
 	{
@@ -195,7 +199,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 		btVector3 axis1 = BulletEngine::getVecBullet(axis_inLocal1,false);
 		btVector3 axis2 = BulletEngine::getVecBullet(axis_inLocal2,false);
 
-		boost::shared_ptr<btHingeConstraint> hinge(new btHingeConstraint(*btBody1, *btBody2, pivot1, pivot2, axis1, axis2));
+		boost::shared_ptr<btHingeConstraint> hinge(new btHingeConstraint(*btBody1, *btBody2, pivot1, pivot2, axis1, axis2,false));
 		float limMin,limMax;
 		limMin = node2->getJointLimitLo();
 		limMax = node2->getJointLimitHi();
@@ -319,7 +323,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 	// -> disable according model, so it won't be considered for collision detection during simulation
 	if (!node1->getCollisionModel())
 	{
-		RobotNodePtr parent = node1->getParent();
+		RobotNodePtr parent = boost::dynamic_pointer_cast<RobotNode>(node1->getParent());
 		while (parent)
 		{
 			if (parent->getCollisionModel())
@@ -335,7 +339,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 				// stop search
 				break;
 			}
-			parent = parent->getParent();
+			parent = boost::dynamic_pointer_cast<RobotNode>(parent->getParent());
 		}
 	}
 	links.push_back(i);
@@ -441,7 +445,7 @@ void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointValue
 		boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
 		VR_ASSERT(hinge);
 		hinge->enableAngularMotor(true,0.0f,bulletMaxMotorImulse);// is max impulse ok?! (10 seems to be ok, 1 oscillates)
-		DynamicsRobot::actuateNode(node,-jointValue); // inverted joint direction in bullet
+		DynamicsRobot::actuateNode(node,jointValue); // inverted joint direction in bullet
 	} else
 	{
 		VR_ERROR << "Only Revolute joints implemented so far..." << endl;
@@ -463,7 +467,7 @@ float BulletRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
 		VR_WARNING << "RobotNode " << rn->getName() << " is not associated with a hinge joint?!" << endl;
 		return 0.0f;
 	}
-	return -(hinge->getHingeAngle()-link.jointValueOffset);// inverted joint direction in bullet
+	return (hinge->getHingeAngle()-link.jointValueOffset);// inverted joint direction in bullet
 }
 
 float BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
@@ -481,12 +485,12 @@ float BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
 		VR_WARNING << "RobotNode " << rn->getName() << " is not associated with a hinge joint?!" << endl;
 		return 0.0f;
 	}
-	return -hinge->getMotorTargetVelosity();// inverted joint direction in bullet
+	return hinge->getMotorTargetVelosity();// inverted joint direction in bullet
 }
 
 float BulletRobot::getNodeTarget( VirtualRobot::RobotNodePtr node )
 {
-	return -DynamicsRobot::getNodeTarget(node);// inverted joint direction in bullet
+	return DynamicsRobot::getNodeTarget(node);// inverted joint direction in bullet
 }
 
 } // namespace VirtualRobot

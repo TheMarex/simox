@@ -31,7 +31,7 @@
 
 	<RobotNode name="Joint2">
 		<Joint type="revolute">
-			<Limits unit="degree" lo="0" hi="360"/>
+			<Limits unit="degree" lo="-180" hi="45"/>
             <DH a="300" d="0" theta="90" alpha="0" units="degree"/>
         </Joint>
 		<Visualization enable="true">

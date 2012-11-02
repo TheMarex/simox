@@ -138,7 +138,6 @@ void RobotIO::processLimitsNode(rapidxml::xml_node<char> *limitsXMLNode, float &
 
 RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, const std::string& robotNodeName,
                                        RobotPtr robot,
-                                       const std::vector<std::string> &childrenNames,
                                        VisualizationNodePtr visualizationNode,
                                        CollisionModelPtr collisionModel,
 									   SceneObject::Physics &physics
@@ -164,7 +163,7 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		// no <Joint> tag -> fixed joint
 		RobotNodeFactoryPtr fixedNodeFactory = RobotNodeFactory::fromName(RobotNodeFixedFactory::getName(), NULL);
 		if (fixedNodeFactory)
-			robotNode = fixedNodeFactory->createRobotNode(robot, robotNodeName, childrenNames, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, preJointTransform, axis, postJointTransform, translationDir, physics);
+			robotNode = fixedNodeFactory->createRobotNode(robot, robotNodeName, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, preJointTransform, axis, postJointTransform, translationDir, physics);
 		return robotNode;
 	}
 
@@ -366,11 +365,11 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	{
 		if (dh.isSet)
 		{
-			robotNode = robotNodeFactory->createRobotNodeDH(robot, robotNodeName, childrenNames, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, dh, physics);
+			robotNode = robotNodeFactory->createRobotNodeDH(robot, robotNodeName, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, dh, physics);
 		} else
 		{
 			// create nodes that are not defined via DH parameters
-			robotNode = robotNodeFactory->createRobotNode(robot, robotNodeName, childrenNames, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, preJointTransform, axis, postJointTransform, translationDir, physics);
+			robotNode = robotNodeFactory->createRobotNode(robot, robotNodeName, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, preJointTransform, axis, postJointTransform, translationDir, physics);
 		}
 	}
 	else
@@ -387,6 +386,7 @@ RobotNodePtr RobotIO::processRobotNode(rapidxml::xml_node<char> *robotNodeXMLNod
                                        RobotPtr robo,
                                        const std::string &basePath,
                                        int &robotNodeCounter,
+									   std::vector< std::string > &childrenNames,
                                        std::vector< ChildFromRobotDef > &childrenFromRobot,
                                        RobotDescription loadMode)
 {
@@ -412,9 +412,6 @@ RobotNodePtr RobotIO::processRobotNode(rapidxml::xml_node<char> *robotNodeXMLNod
 
 	// collision information
 	bool colProcessed = false;
-
-	// children data
-	std::vector<std::string> childrenNames;
 
 	VisualizationNodePtr visualizationNode;
 	CollisionModelPtr collisionModel;
@@ -492,7 +489,7 @@ RobotNodePtr RobotIO::processRobotNode(rapidxml::xml_node<char> *robotNodeXMLNod
 
 
 	//create joint from xml data
-	robotNode = processJointNode(jointNodeXML,robotNodeName, robo, childrenNames, visualizationNode, collisionModel, physics);
+	robotNode = processJointNode(jointNodeXML,robotNodeName, robo, visualizationNode, collisionModel, physics);
 
 	return robotNode;
 }
@@ -592,7 +589,8 @@ RobotPtr RobotIO::processRobot(rapidxml::xml_node<char>* robotXMLNode, const std
 			for(std::vector<RobotNodeSetPtr>::iterator ns = nodeSets.begin(); ns != nodeSets.end(); ns++)
 				(*ns)->clone(robo);
 
-			node->addChildNode(rootNew);
+			// already performed in root->clone
+			//node->attachChild(rootNew);
 		}
 		iter++;
 	}
@@ -685,7 +683,7 @@ void RobotIO::processRobotChildNodes(rapidxml::xml_node<char>* robotXMLNode,
                                         RobotDescription loadMode)
 {
 	std::vector<RobotNodePtr> robotNodes;
-	
+	std::map< RobotNodePtr, std::vector< std::string > > childrenMap;
 	RobotNodePtr rootNode;
 	int robotNodeCounter = 0; // used for robotnodes without names
 
@@ -699,7 +697,8 @@ void RobotIO::processRobotChildNodes(rapidxml::xml_node<char>* robotXMLNode,
 		if (nodeName == "robotnode")
 		{
 			std::vector< ChildFromRobotDef > childrenFromRobot;
-            RobotNodePtr n = processRobotNode(XMLNode, robo, basePath, robotNodeCounter, childrenFromRobot,loadMode);
+			std::vector< std::string > childrenNames;
+            RobotNodePtr n = processRobotNode(XMLNode, robo, basePath, robotNodeCounter, childrenNames, childrenFromRobot,loadMode);
 			if (!n)
 			{
 				std::string failedNodeName = processNameAttribute(XMLNode);
@@ -711,6 +710,7 @@ void RobotIO::processRobotChildNodes(rapidxml::xml_node<char>* robotXMLNode,
 				{
 					THROW_VR_EXCEPTION_IF((robotNodes[i]->getName() == n->getName()), "At least two RobotNodes with name <" << n->getName() <<"> defined in robot definition");
 				}
+				childrenMap[n] = childrenNames;
 				robotNodes.push_back(n);
 				robo->registerRobotNode(n);
 				if(n->getName() == robotRoot)
@@ -736,7 +736,7 @@ void RobotIO::processRobotChildNodes(rapidxml::xml_node<char>* robotXMLNode,
 	THROW_VR_EXCEPTION_IF(robotNodes.empty(), "No RobotNodes defined in Robot.");
 	THROW_VR_EXCEPTION_IF(!rootNode, "Could not find root node <" << robotRoot << ">");
 
-	if (!RobotFactory::initializeRobot(robo, robotNodes, rootNode))
+	if (!RobotFactory::initializeRobot(robo, robotNodes, childrenMap, rootNode))
 	{
 		THROW_VR_EXCEPTION("Error while initializing Robot" << endl);
 	}

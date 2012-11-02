@@ -11,7 +11,6 @@ namespace VirtualRobot {
 
 RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob, 
 	const std::string &name,
-	const std::vector<std::string> &childrenNames,
 	float jointLimitLo,
 	float jointLimitHi,
 	const Eigen::Matrix4f &preJointTransform,
@@ -22,7 +21,7 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	float jointValueOffset,
 	const SceneObject::Physics &p,
 	CollisionCheckerPtr colChecker
-	) : RobotNode(rob,name,childrenNames,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker)
+	) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker)
 
 {
 	initialized = false;
@@ -36,7 +35,6 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 
 RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob, 
 	const std::string &name,
-	const std::vector<std::string> &childrenNames,
 	float jointLimitLo,
 	float jointLimitHi,
 	float a, float d, float alpha, float theta,
@@ -45,7 +43,7 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	float jointValueOffset,
 	const SceneObject::Physics &p,
 	CollisionCheckerPtr colChecker
-	) : RobotNode(rob,name,childrenNames,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker)
+	) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker)
 
 {
 	initialized = false;
@@ -84,41 +82,21 @@ RobotNodePrismatic::~RobotNodePrismatic()
 }
 
 
-bool RobotNodePrismatic::initialize(RobotNodePtr parent, bool initializeChildren)
+bool RobotNodePrismatic::initialize(SceneObjectPtr parent, const std::vector<SceneObjectPtr> &children)
 {
-	return RobotNode::initialize(parent,initializeChildren);
+	return RobotNode::initialize(parent,children);
 }
 
-void RobotNodePrismatic::updateTransformationMatrices()
+void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
-	if (this->getParent())
-		globalPose = this->getParent()->getGlobalPose() * this->getPreJointTransformation();
-	else
-		globalPose = this->getPreJointTransformation();
+	//VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
 
-	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
-	globalPose *= tmpT.matrix();
-
-	globalPosePostJoint = globalPose*this->getPostJointTransformation();
-	// update collision and visualization model
-	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
-	SceneObject::setGlobalPose(globalPose);
-}
-
-void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
-{
-	VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
-
-	this->globalPose = globalPose * getPreJointTransformation();
+	this->globalPose = parentPose * getPreJointTransformation();
 
 	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
 	this->globalPose *= tmpT.matrix();
 
 	globalPosePostJoint = this->globalPose*getPostJointTransformation();
-
-	// update collision and visualization model
-	// here we do not consider the postJointTransformation, since it already defines the transformation to the next joint.
-	SceneObject::setGlobalPose(this->globalPose);
 }
 
 void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
@@ -136,20 +114,20 @@ void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 		cout << "******** End RobotNodePrismatic ********" << endl;
 	
 
-	std::vector< RobotNodePtr > children = this->getChildren();
+	std::vector< SceneObjectPtr > children = this->getChildren();
 	if (printChildren)
-		std::for_each(children.begin(), children.end(), boost::bind(&RobotNode::print, _1, true, true));
+		std::for_each(children.begin(), children.end(), boost::bind(&SceneObject::print, _1, true, true));
 }
 
-RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
+RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, /*const std::vector<std::string> newChildren,*/ const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
 {
 	RobotNodePtr result;
 	ReadLockPtr lock = getRobot()->getReadLock();
 
 	if (optionalDHParameter.isSet)
-		result.reset(new RobotNodePrismatic(newRobot,name,newChildren, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker));
+		result.reset(new RobotNodePrismatic(newRobot,name, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker));
 	else
-		result.reset(new RobotNodePrismatic(newRobot,name,newChildren,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointTranslationDirection,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics,colChecker));
+		result.reset(new RobotNodePrismatic(newRobot,name,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointTranslationDirection,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics,colChecker));
 	return result;
 }
 

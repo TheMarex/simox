@@ -28,6 +28,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 namespace VirtualRobot
 {
@@ -44,17 +45,21 @@ public:
 	static RobotPtr createRobot(const std::string &name);
 
 	/*!
-	Initializes Robot and all RobotNodes. robotNodes must contain rootNode.
+		Initializes Robot and all RobotNodes. 
+		\param robotNodes All nodes of the robot. Must contain rootNode.
+		\param childrenMap Parent-child relations are built according to this data.
+		\param rootNode The root.
 	*/
 	static bool initializeRobot(RobotPtr robot, 
 								std::vector<RobotNodePtr > &robotNodes, 
+								std::map< RobotNodePtr, std::vector<std::string> > childrenMap,
 								RobotNodePtr rootNode);
 protected:
 	// instantiation not allowed
 	RobotFactory();
 	virtual ~RobotFactory();
 
-	static bool initRobotNode(RobotNodePtr n, RobotNodePtr parent, std::vector< RobotNodePtr > &robotNodes);
+	//static bool initRobotNode(RobotNodePtr n, RobotNodePtr parent, std::vector< RobotNodePtr > &robotNodes);
 };
 
 }

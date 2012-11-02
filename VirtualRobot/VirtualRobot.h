@@ -183,7 +183,8 @@ namespace VirtualRobot
     typedef boost::shared_ptr<CollisionChecker> CollisionCheckerPtr;
     typedef boost::shared_ptr<SceneObjectSet> SceneObjectSetPtr;
     typedef boost::shared_ptr<TriMeshModel> TriMeshModelPtr;
-    typedef boost::shared_ptr<SceneObject> SceneObjectPtr;
+	typedef boost::shared_ptr<SceneObject> SceneObjectPtr;
+	typedef boost::weak_ptr<SceneObject> SceneObjectWeakPtr;
     typedef boost::shared_ptr<Obstacle> ObstaclePtr;
     typedef boost::shared_ptr<Visualization> VisualizationPtr;
     typedef boost::shared_ptr<VisualizationNode> VisualizationNodePtr;

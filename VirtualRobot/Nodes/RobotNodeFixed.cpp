@@ -12,14 +12,13 @@ namespace VirtualRobot {
 
 RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob, 
 	const std::string &name,
-	const std::vector<std::string> &childrenNames,
 	const Eigen::Matrix4f &preJointTransform,
 	const Eigen::Matrix4f &postJointTransform,
 	VisualizationNodePtr visualization, 
 	CollisionModelPtr collisionModel,
 	const SceneObject::Physics &p,
 	CollisionCheckerPtr colChecker
-	) : RobotNode(rob,name,childrenNames,0.0f,0.0f,visualization,collisionModel,0.0f,p,colChecker)
+	) : RobotNode(rob,name,0.0f,0.0f,visualization,collisionModel,0.0f,p,colChecker)
 {
 	optionalDHParameter.isSet = false;
 	this->preJointTransformation = preJointTransform;
@@ -28,13 +27,12 @@ RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob,
 
 RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob, 
 	const std::string &name,
-	const std::vector<std::string> &childrenNames,
 	float a, float d, float alpha, float theta,
 	VisualizationNodePtr visualization, 
 	CollisionModelPtr collisionModel,
 	const SceneObject::Physics &p,
 	CollisionCheckerPtr colChecker
-	) : RobotNode(rob,name,childrenNames,0.0f,1.0f,visualization,collisionModel,0.0f,p,colChecker)
+	) : RobotNode(rob,name,0.0f,1.0f,visualization,collisionModel,0.0f,p,colChecker)
 {
 	initialized = false;
 	optionalDHParameter.isSet = true;
@@ -67,35 +65,18 @@ RobotNodeFixed::~RobotNodeFixed()
 {
 }
 
-bool RobotNodeFixed::initialize(RobotNodePtr parent, bool initializeChildren)
+bool RobotNodeFixed::initialize(SceneObjectPtr parent, const std::vector<SceneObjectPtr> &children)
 {
-	return RobotNode::initialize(parent,initializeChildren);
+	return RobotNode::initialize(parent,children);
 }
 
-void RobotNodeFixed::updateTransformationMatrices()
+void RobotNodeFixed::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
-	if (this->getParent())
-		globalPose = this->getParent()->getGlobalPose() * getPreJointTransformation();
-	else
-		globalPose = getPreJointTransformation();
+	//VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
 
-	globalPosePostJoint = globalPose*getPostJointTransformation();
-
-	// update collision and visualization model
-	SceneObject::setGlobalPose(globalPose);
-}
-
-
-void RobotNodeFixed::updateTransformationMatrices(const Eigen::Matrix4f &globalPose)
-{
-	VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
-
-	this->globalPose = globalPose * getPreJointTransformation();
+	this->globalPose = parentPose * getPreJointTransformation();
 
 	globalPosePostJoint = this->globalPose*getPostJointTransformation();
-
-	// update collision and visualization model
-	SceneObject::setGlobalPose(this->globalPose);
 }
 
 void RobotNodeFixed::print( bool printChildren, bool printDecoration ) const
@@ -109,22 +90,22 @@ void RobotNodeFixed::print( bool printChildren, bool printDecoration ) const
 		cout << "******** End RobotNodeFixed ********" << endl;
 
 
-	std::vector< RobotNodePtr > children = this->getChildren();
+	std::vector< SceneObjectPtr > children = this->getChildren();
 	if (printChildren)
-		std::for_each(children.begin(), children.end(), boost::bind(&RobotNode::print, _1, true, true));
+		std::for_each(children.begin(), children.end(), boost::bind(&SceneObject::print, _1, true, true));
 }
 
 
-RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
+RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, /*const std::vector<std::string> newChildren,*/ const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
 {
 	ReadLockPtr lock = getRobot()->getReadLock();
 	
 	RobotNodePtr result;
 
 	if (optionalDHParameter.isSet)
-		result.reset(new RobotNodeFixed(newRobot,name,newChildren,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,physics,colChecker));
+		result.reset(new RobotNodeFixed(newRobot,name,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,physics,colChecker));
 	else
-		result.reset(new RobotNodeFixed(newRobot,name,newChildren,getPreJointTransformation(),getPostJointTransformation(),visualizationModel,collisionModel,physics,colChecker));
+		result.reset(new RobotNodeFixed(newRobot,name,getPreJointTransformation(),getPostJointTransformation(),visualizationModel,collisionModel,physics,colChecker));
 
 	return result;
 }

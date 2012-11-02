@@ -25,6 +25,7 @@
 
 #include "../VirtualRobotImportExport.h"
 #include "../VirtualRobotException.h"
+#include "../VirtualRobot.h"
 
 #include "../SceneObject.h"
 #include "../RobotFactory.h"
@@ -57,7 +58,7 @@ class RobotNodeActuator;
 
 
 */
-class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNode : public boost::enable_shared_from_this<RobotNode>, public SceneObject
+class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNode : /*public boost::enable_shared_from_this<RobotNode>,*/ public SceneObject
 {
 public:
 	friend class Robot;
@@ -68,12 +69,11 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	/*!
+		Constructor with settings.
 	*/
-
-
 	RobotNode(	RobotWeakPtr rob, 
 				const std::string &name,
-				const std::vector<std::string> &childrenNames,
+				//const std::vector<std::string> &childrenNames,
 				float jointLimitLo,
 				float jointLimitHi,
 				VisualizationNodePtr visualization = VisualizationNodePtr(), 
@@ -122,14 +122,14 @@ public:
 	/*!
 		The preJoint transformation.
 	*/
-	virtual  Eigen::Matrix4f getPreJointTransformation() {return preJointTransformation;}
+	virtual Eigen::Matrix4f getPreJointTransformation() {return preJointTransformation;}
 	
 	/*!
 		Initialize robot node. Here pointers to robot and children are created from names. 
 		Be sure all children are created and registered to robot before calling initialize.
 		Usually RobotFactory manages the initialization.
 	*/
-	virtual bool initialize(RobotNodePtr parent, bool initializeChildren = false);
+	virtual bool initialize(SceneObjectPtr parent = SceneObjectPtr(), const std::vector<SceneObjectPtr> &children = std::vector<SceneObjectPtr>());
 
 	/*!
 		Calling this method will cause an exception, since RobotNodes are controlled via joint values.
@@ -176,16 +176,16 @@ public:
 	*/
 	virtual void print(bool printChildren = false, bool printDecoration = true) const;
 
-	virtual void addChildNode(RobotNodePtr child);
+	//virtual void addChildNode(RobotNodePtr child);
 
 	/*
 		Returns true when child is a children of this node. If recursive is true, all children of children etc are also queried.
 	*/
-	virtual bool hasChildNode(const RobotNodePtr child, bool recursive = false) const;
+	//virtual bool hasChildNode(const RobotNodePtr child, bool recursive = false) const;
 	/*
 		Returns true when child is a children of this node. If recursive is true, all children of children etc are also queried.
 	*/
-	virtual bool hasChildNode(const std::string &child, bool recursive = false) const;
+	//virtual bool hasChildNode(const std::string &child, bool recursive = false) const;
 
 
 	float getJointLimitLo();
@@ -216,7 +216,7 @@ public:
 	virtual std::vector<RobotNodePtr> getAllParents( RobotNodeSetPtr rns );
  
 	//! Return parent node
-	virtual RobotNodePtr getParent();
+	//virtual RobotNodePtr getParent();
 
 	/*!
 		Clone this RobotNode. 
@@ -226,7 +226,7 @@ public:
 		\param colChecker Must only be set if the cloned RobotNode should be registered to a different collision checker instance.
 	*/
 	virtual RobotNodePtr clone(RobotPtr newRobot, bool cloneChildren = true, RobotNodePtr initializeWithParent = RobotNodePtr(), CollisionCheckerPtr colChecker = CollisionCheckerPtr());
-	virtual std::vector< RobotNodePtr > getChildren() const {return children;};
+	//virtual std::vector< RobotNodePtr > getChildren() const {return children;};
 	
 	inline float getJointValueOffset() const {return jointValueOffset;}
 	inline float getJointLimitHigh() const {return jointLimitHi;}
@@ -265,11 +265,10 @@ public:
 	//! Forbid cloning method from SceneObject. We need to know the new robot for cloning
 	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
 
-
 private: // Use the private setters and getters instead
-	std::vector<std::string> childrenNames;
-	std::vector< RobotNodePtr > children;
-	RobotNodeWeakPtr parent;
+	//std::vector<std::string> childrenNames;
+	//std::vector< RobotNodePtr > children;
+	//RobotNodeWeakPtr parent;
 
 
 protected:
@@ -288,20 +287,21 @@ protected:
 	/*!
 		Compute/Update the transformations of this joint and all child joints. This method is called by the robot in order to update the pose matrices.
 	*/
-	void applyJointValue();
+	void updatePose(bool updateChildren = true);
+
 	/*!
-		This method is only useful for root nodes (e.g. no parents are available). Then the pose of the robot can be set here.
-	*/
-	virtual void applyJointValue(const Eigen::Matrix4f &globalPos);
+		Update the pose of the robot
+	*/ 
+	virtual void updatePose( const Eigen::Matrix4f &parentPose, bool updateChildren = true );
 
 
 	/*!
 		Can be called by a RobotNodeActuator in order to set the pose of the visualization, which means that the preJointTransform is ignored and
-		the pos eof the visualization can be set directly.
+		the pose of the visualization can be set directly.
 		This is useful, if the node is actuated externally, i.e. via a physics engine. 
 		todo: Protect such updates by a mutex.
 		\param globalPose The new global pose. The joint value is determined from this pose (implemented in derived RobtoNodes).
-		\param updateChildren Usually it is assumed that all RobotNodes are updated this way (updateChildren=false). If not, the children poses can be updated according to this node (updateCHildren=true).
+		\param updateChildren Usually it is assumed that all RobotNodes are updated this way (updateChildren=false). If not, the children poses can be updated according to this node.
 	*/
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, bool updateChildren = false);
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, float jointValue, bool updateChildren = false);
@@ -314,8 +314,8 @@ protected:
 	//virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo);
 	//virtual void setPreJointTransformation(const Eigen::Matrix4f &trafo);
 
-	virtual std::vector<std::string> getChildrenNames() const {return childrenNames;};
-	virtual std::string getParentName() const {RobotNodePtr p = parent.lock();if (p) return p->getName(); else return std::string();};
+	//virtual std::vector<std::string> getChildrenNames() const {return childrenNames;}
+	//virtual std::string getParentName() const {RobotNodePtr p = parent.lock();if (p) return p->getName(); else return std::string();};
 
 	float jointValueOffset;
 	float jointLimitLo,jointLimitHi;
@@ -328,9 +328,9 @@ protected:
 	///////////////////////// SETUP ////////////////////////////////////
 
 	virtual void updateTransformationMatrices();
-	virtual void updateTransformationMatrices(const Eigen::Matrix4f &globalPose);
+	virtual void updateTransformationMatrices(const Eigen::Matrix4f &parentPose);
 	RobotWeakPtr robot;
-	
+
 
 	Eigen::Matrix4f globalPosePostJoint;	//< The postJoint transformation applied to transformationJoint. Defines the starting pose for all child joints.
 	float jointValue;							//< The joint value
@@ -338,7 +338,7 @@ protected:
 	/*!
 	Derived classes must implement their clone method here.
 	*/
-	virtual RobotNodePtr _clone(const RobotPtr newRobot, const std::vector<std::string> newChildren, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker) = 0;
+	virtual RobotNodePtr _clone(const RobotPtr newRobot, /*const std::vector<std::string> newChildren,*/ const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker) = 0;
 
 	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
 

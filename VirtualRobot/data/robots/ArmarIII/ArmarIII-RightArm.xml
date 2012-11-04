@@ -126,9 +126,9 @@
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/wrist2_r.iv</File>
 		</Visualization>
-		<CollisionModel>
+        <!--CollisionModel>
 			<File type="Inventor">collisionModel/wrist2_l.iv</File>
-		</CollisionModel>
+		</CollisionModel-->
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2.59945309" units="kg" />

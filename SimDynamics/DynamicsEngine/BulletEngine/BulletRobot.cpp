@@ -10,6 +10,10 @@
 #include <VirtualRobot/Nodes/RobotNodeFixed.h>
 #include <VirtualRobot/Nodes/RobotNodeRevolute.h>
 
+// either hinge or generic6DOF constraints can be used
+//#define USE_BULLET_GENERIC_6DOF_CONSTRAINT
+
+
 #include <boost/pointer_cast.hpp>
 
 //#define DEBUG_FIXED_OBJECTS
@@ -21,7 +25,7 @@ namespace SimDynamics {
 BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
 	: DynamicsRobot(rob)
 {
-	bulletMaxMotorImulse = 5.0f; 
+	bulletMaxMotorImulse = 10.0f; 
 	buildBulletModels(enableJointMotors);
 }
 	
@@ -58,7 +62,7 @@ void BulletRobot::buildBulletModels(bool enableJointMotors)
 		std::vector<SceneObjectPtr> children = rn->getChildren();
 		for (size_t c=0;c<children.size();c++)
 		{
-			// check what to to
+			// check what to do
 			/*
 			bool fixed = !(children[c]->isRotationalJoint() || children[c]->isTranslationalJoint());
 			if (fixed && !(children[c]->getCollisionModel()))
@@ -153,9 +157,11 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 	 {
 		 VR_WARNING << "translational joint nyi, creating a fixed link..." << endl;
 	 }
-	 bool createHinge = node2->isRotationalJoint();
-	 if (createHinge)
+	 bool createJoint = node2->isRotationalJoint();
+	 if (createJoint)
 	 {
+
+        // create joint
 		boost::shared_ptr<RobotNodeRevolute> rnRev2 = boost::dynamic_pointer_cast<RobotNodeRevolute>(node2);
 
 		// transform axis direction (not position!)
@@ -187,22 +193,78 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 
 		btVector3 pivot1 = BulletEngine::getVecBullet(anchor_inNode1.block(0,3,3,1));
 		btVector3 pivot2 = BulletEngine::getVecBullet(anchor_inNode2.block(0,3,3,1));
-		btTransform pivTr1;
-		pivTr1.setIdentity();
+        
+       
+		/*pivTr1.setIdentity();
 		pivTr1.setOrigin(pivot1);
 		btTransform pivTr2;
 		pivTr2.setIdentity();
 		pivTr2.setOrigin(pivot2);
 		btTransform pivotTest1 = btBody1->getWorldTransform()*pivTr1;
-		btTransform pivotTest2 = btBody2->getWorldTransform()*pivTr2;
-
-		btVector3 axis1 = BulletEngine::getVecBullet(axis_inLocal1,false);
-		btVector3 axis2 = BulletEngine::getVecBullet(axis_inLocal2,false);
-
-		boost::shared_ptr<btHingeConstraint> hinge(new btHingeConstraint(*btBody1, *btBody2, pivot1, pivot2, axis1, axis2,false));
-		float limMin,limMax;
+		btTransform pivotTest2 = btBody2->getWorldTransform()*pivTr2;*/
+	
+        float limMin,limMax;
 		limMin = node2->getJointLimitLo();
 		limMax = node2->getJointLimitHi();
+
+#ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
+
+        MathTools::Quaternion axisRotQuat1 = MathTools::getRotation(axis_inLocal1,Eigen::Vector3f::UnitX());
+        MathTools::Quaternion axisRotQuat2 = MathTools::getRotation(axis_inLocal2,Eigen::Vector3f::UnitX());
+        Eigen::Matrix4f axisRot1 = MathTools::quat2eigen4f(axisRotQuat1);
+        Eigen::Matrix4f axisRot2 = MathTools::quat2eigen4f(axisRotQuat2);
+        float ang1,ang2;
+        Eigen::Vector3f ax1,ax2;
+        // test
+        MathTools::eigen4f2axisangle(axisRot1,ax1,ang1);
+        MathTools::eigen4f2axisangle(axisRot2,ax2,ang2);
+
+        Eigen::Matrix4f anchorAxisXAligned1;// = anchor_inNode1 * axisRot1;
+        Eigen::Matrix4f anchorAxisXAligned2 = anchor_inNode2 * axisRot2;
+
+        // we have to express anchorAxisXAligned2 in node1 coord system (only rotation!)
+        Eigen::Matrix4f anchorAxisXAligned2_global = tmpGp2 * anchorAxisXAligned2;
+        Eigen::Matrix4f anchorAxisXAligned2_local1 = tmpGp1.inverse() * anchorAxisXAligned2_global;
+        anchorAxisXAligned1 = anchorAxisXAligned2_local1;
+        // re-set position
+        anchorAxisXAligned1.block(0,3,3,1) = anchor_inNode1.block(0,3,3,1);
+
+        btTransform pivTr1 = BulletEngine::getPoseBullet(anchorAxisXAligned1);
+        btTransform pivTr2 = BulletEngine::getPoseBullet(anchorAxisXAligned2);
+        boost::shared_ptr<btGeneric6DofConstraint> dof(new btGeneric6DofConstraint(*btBody1, *btBody2, pivTr1, pivTr2, true));
+        btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
+        VR_ASSERT(m);
+        m->m_targetVelocity = 0;
+        m->m_currentPosition = node2->getJointValue();
+        /*btScalar startAngle = node2->getJointValue();
+        btScalar startAngleBT = dof->getRotationalLimitMotor(2)->m_currentPosition;
+        btScalar limMinBT, limMaxBT;
+        btScalar diff = (startAngleBT + startAngle);
+        limMinBT = diff - limMax;// limMin + diff;// 
+        limMaxBT = diff - limMin;// limMax + diff;// 
+        if (fabs(startAngleBT - startAngle)>1e-6)
+        {
+            cout << "joint " << node2->getName() << ": jv diff:" << diff << endl;
+            cout << "Simox limits: " << limMin << "/" << limMax << ", bullet limits:" << limMinBT << "/" << limMaxBT << endl;
+        }*/
+        dof->setLimit(0,0,0);
+        dof->setLimit(1,0,0);
+        dof->setLimit(2,0,0);
+        dof->setLimit(3,btScalar(limMin),btScalar(limMax));
+        //dof->setLimit(3,-btScalar(limMax),-btScalar(limMin)); // inverted joint direction
+        dof->setLimit(4,0,0);
+        dof->setLimit(5,0,0);
+
+        //dof->setLimit(5,btScalar(limMin),btScalar(limMax));
+        vr2bulletOffset = 0;//diff;
+        //hinge->setLimit(btScalar(limMin),btScalar(limMax));
+        //hinge->setAngularOnly(true);
+        joint = dof;
+#else
+        btVector3 axis1 = BulletEngine::getVecBullet(axis_inLocal1,false);
+        btVector3 axis2 = BulletEngine::getVecBullet(axis_inLocal2,false);
+		boost::shared_ptr<btHingeConstraint> hinge(new btHingeConstraint(*btBody1, *btBody2, pivot1, pivot2, axis1, axis2,false));
+
 		//hinge->setParam(BT_CONSTRAINT_STOP_ERP,0.9f);
 		/*
 		hinge->setParam(BT_CONSTRAINT_CFM,0.9f);
@@ -213,9 +275,9 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 		btScalar startAngle = node2->getJointValue();
 		btScalar startAngleBT = hinge->getHingeAngle();
 		btScalar limMinBT, limMaxBT;
-		btScalar diff = (startAngleBT + startAngle);
-		limMinBT = diff - limMax;// limMin + diff;// 
-		limMaxBT = diff - limMin;// limMax + diff;// 
+		btScalar diff = 0;//(startAngleBT + startAngle);
+		limMinBT = limMin + diff;//diff - limMax;// 
+		limMaxBT = limMax + diff;//diff - limMin;// 
 		if (fabs(startAngleBT - startAngle)>1e-6)
 		{
 			cout << "joint " << node2->getName() << ": jv diff:" << diff << endl;
@@ -226,6 +288,8 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 		//hinge->setLimit(btScalar(limMin),btScalar(limMax));
 		//hinge->setAngularOnly(true);
 		joint = hinge;
+
+#endif
 	} else /*if (node2->isTranslationalJoint())
 	{
 		
@@ -286,9 +350,18 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 		//localA.setOrigin(pivot1);
 		//localB.setOrigin(pivot2);
 		boost::shared_ptr<btGeneric6DofConstraint> generic6Dof(new btGeneric6DofConstraint(*btBody1, *btBody2, localA, localB, true));
-		btVector3 limitZero(0,0,0);
+
+        generic6Dof->setOverrideNumSolverIterations(100);
+
+        //float totalMass = 1.f/btBody1->getInvMass() + 1.f/btBody2->getInvMass();
+
+        //generic6Dof->setBreakingImpulseThreshold(2*totalMass);//needed? copied from voronoi demo
+
+        for (int i=0;i<6;i++)
+            generic6Dof->setLimit(i,0,0);
+		/*btVector3 limitZero(0,0,0);
 		generic6Dof->setAngularLowerLimit(limitZero);
-		generic6Dof->setAngularUpperLimit(limitZero);
+		generic6Dof->setAngularUpperLimit(limitZero);*/
 
 		/*generic6Dof->setParam(BT_CONSTRAINT_STOP_CFM,0.01f,0);
 		generic6Dof->setParam(BT_CONSTRAINT_STOP_CFM,0.01f,1);
@@ -321,10 +394,10 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 	
 	// check if node1 owns a 3d model or a parent
 	// -> disable according model, so it won't be considered for collision detection during simulation
-	if (!node1->getCollisionModel())
-	{
-		RobotNodePtr parent = boost::dynamic_pointer_cast<RobotNode>(node1->getParent());
-		while (parent)
+	//if (!node1->getCollisionModel())
+	{	
+    RobotNodePtr parent = boost::dynamic_pointer_cast<RobotNode>(node1);
+    while (parent)
 		{
 			if (parent->getCollisionModel())
 			{
@@ -401,14 +474,34 @@ void BulletRobot::actuateJoints(float dt)
 		if (it->second.node->isRotationalJoint())
 		{
 			LinkInfo link = getLink(it->second.node);
+#ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
+            boost::shared_ptr<btGeneric6DofConstraint> dof = boost::dynamic_pointer_cast<btGeneric6DofConstraint>(link.joint);
+            VR_ASSERT(dof);
+            btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
+            VR_ASSERT(m);
+            if (it->second.enabled)
+            {
+                btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
+                //btScalar act = btScalar(it->first->getJointValue());
+                btScalar act = btScalar(getJointAngle(it->first));
+                m->m_enableMotor = true;
+                m->m_targetVelocity = (targ-act); // inverted joint dir?!
+            } else
+                m->m_enableMotor = false;
+#else
 			boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
 			VR_ASSERT(hinge);
 			if (it->second.enabled)
 			{
-				hinge->enableMotor(true);
-				hinge->setMotorTarget(it->second.jointValueTarget+link.jointValueOffset,dt);
+                btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
+                //btScalar act = btScalar(it->first->getJointValue());
+                btScalar act = btScalar(getJointAngle(it->first));
+                hinge->enableAngularMotor(true,(targ-act),10.0f);
+                //hinge->enableMotor(true);
+				//hinge->setMotorTarget(it->second.jointValueTarget+link.jointValueOffset,dt);
 			} else
 				hinge->enableMotor(false);
+#endif
 		}
 
 		it++;
@@ -442,11 +535,22 @@ void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointValue
 	if (node->isRotationalJoint())
 	{
 		LinkInfo link = getLink(node);
+#ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
+        boost::shared_ptr<btGeneric6DofConstraint> dof = boost::dynamic_pointer_cast<btGeneric6DofConstraint>(link.joint);
+        VR_ASSERT(dof);
+        btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
+        VR_ASSERT(m);
+        m->m_enableMotor = true;
+        m->m_maxMotorForce = 5;//bulletMaxMotorImulse; //?!
+        m->m_maxLimitForce = 300;
+        DynamicsRobot::actuateNode(node,jointValue);
+#else
 		boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
 		VR_ASSERT(hinge);
 		hinge->enableAngularMotor(true,0.0f,bulletMaxMotorImulse);// is max impulse ok?! (10 seems to be ok, 1 oscillates)
-		DynamicsRobot::actuateNode(node,jointValue); // inverted joint direction in bullet
-	} else
+        DynamicsRobot::actuateNode(node,jointValue); // inverted joint direction in bullet
+#endif
+    } else
 	{
 		VR_ERROR << "Only Revolute joints implemented so far..." << endl;
 	}
@@ -461,13 +565,28 @@ float BulletRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
 		return 0.0f;
 	}
 	LinkInfo link = getLink(rn);
+#ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
+    boost::shared_ptr<btGeneric6DofConstraint> dof = boost::dynamic_pointer_cast<btGeneric6DofConstraint>(link.joint);
+    VR_ASSERT(dof);
+    btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
+    VR_ASSERT(m);
+    dof->calculateTransforms();
+    float a1 = dof->getAngle(0);
+    float a2 = m->m_currentPosition;
+    if (fabs(a1-a2)>0.05f)
+    {
+        VR_INFO << "Angle diff " << a1 << ", " << a2 << endl;
+    }
+    return (a2-link.jointValueOffset);// inverted joint direction in bullet
+#else
 	boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
 	if (!hinge)
 	{
-		VR_WARNING << "RobotNode " << rn->getName() << " is not associated with a hinge joint?!" << endl;
+		//VR_WARNING << "RobotNode " << rn->getName() << " is not associated with a hinge joint?!" << endl;
 		return 0.0f;
 	}
-	return (hinge->getHingeAngle()-link.jointValueOffset);// inverted joint direction in bullet
+    return (hinge->getHingeAngle()-link.jointValueOffset);// inverted joint direction in bullet
+#endif
 }
 
 float BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
@@ -479,18 +598,42 @@ float BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
 		return 0.0f;
 	}
 	LinkInfo link = getLink(rn);
+#ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
+    boost::shared_ptr<btGeneric6DofConstraint> dof = boost::dynamic_pointer_cast<btGeneric6DofConstraint>(link.joint);
+    VR_ASSERT(dof);
+    btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
+    VR_ASSERT(m);
+    return m->m_targetVelocity;
+#else
 	boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
 	if (!hinge)
 	{
 		VR_WARNING << "RobotNode " << rn->getName() << " is not associated with a hinge joint?!" << endl;
 		return 0.0f;
 	}
-	return hinge->getMotorTargetVelosity();// inverted joint direction in bullet
+    return hinge->getMotorTargetVelosity();
+#endif
 }
 
 float BulletRobot::getNodeTarget( VirtualRobot::RobotNodePtr node )
 {
-	return DynamicsRobot::getNodeTarget(node);// inverted joint direction in bullet
+#ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
+    return DynamicsRobot::getNodeTarget(node);
+#else
+	return DynamicsRobot::getNodeTarget(node);
+#endif
+
+}
+
+Eigen::Matrix4f BulletRobot::getComGlobal( VirtualRobot::RobotNodePtr rn )
+{
+    BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(getDynamicsRobotNode(rn));
+    if (!bo)
+    {
+        VR_ERROR << "Could not cast object..." << endl;
+        return Eigen::Matrix4f::Identity();
+    }
+    return bo->getComGlobal();
 }
 
 } // namespace VirtualRobot

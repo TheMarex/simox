@@ -40,6 +40,8 @@
 #include <QtGui/QtGui>
 #include <QtCore/QtCore>
 
+#include <boost/thread/recursive_mutex.hpp>
+
 namespace SimDynamics
 {
 
@@ -59,18 +61,30 @@ public:
 	void viewAll();
 
 	/*!
-		Visualize the dynamics object.
+		Visualize dynamics object.
 	*/
 	void addVisualization(DynamicsObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
 	void addVisualization(DynamicsRobotPtr r, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
 
 	/*!
-		Remove the visualization of the dynamics object.
+		Remove visualization of dynamics object.
 	*/
 	void removeVisualization(DynamicsObjectPtr o);
 	void removeVisualization(DynamicsRobotPtr r);
 
-	//! Stop callbacks
+    //! Returns true, if physics engine is running. False, if paused.
+    bool engineRunning();
+
+    //! Pauses the physics engine.
+    void stopEngine();
+
+    //! Restarts the engine
+    void startEngine();
+
+    //! Only allowed when engine is paused.
+    virtual void stepPhysics();
+
+	//! Stop callbacks which update the dynamics engine. Shuts down automatic physics engine functionality!
 	void stopCB();
 
 	/*!
@@ -81,6 +95,8 @@ public:
 
 protected:
 
+    //checks if physics engine is enabled and performes a time step.
+    virtual void updatePhysics();
 	
 	/*!
 		This method is called periodically, triggered by a timer callback.
@@ -109,7 +125,7 @@ protected:
 	btScalar getDeltaTimeMicroseconds();
 
 	void updateMotors(float dt);
-	virtual void stepPhysics();
+	
 
 	static void timerCB(void * data, SoSensor * sensor);
 	static void selectionCB( void *userdata, SoPath *path );
@@ -128,6 +144,10 @@ protected:
 	SoSelection* sceneGraph;
 
 	int bulletMaxSubSteps; 
+
+    bool enablePhysicsUpdates;
+
+    boost::recursive_mutex engineMutex;
 };
 
 

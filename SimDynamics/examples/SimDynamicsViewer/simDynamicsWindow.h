@@ -49,22 +49,27 @@ public slots:
 	void closeEvent(QCloseEvent *event);
 
 	void resetSceneryAll();
-	void collisionModel();
+	void buildVisualization();
 	void actuation();
 
-	void loadRobot();
+    void loadButton();
 
 	void selectRobotNode(int n);
 	void jointValueChanged(int n);
-	
+    void comVisu();	
 	void updateJointInfo();
+
+    void startStopEngine();
+    void stepEngine();
 protected:
+    bool loadRobot(std::string robotFilename);
 	void setupUI();
 	void updateJoints();
 
 	void stopCB();
 
 	void updateContactVisu();
+    void updateComVisu();
 
 	SimDynamics::DynamicsWorldPtr dynamicsWorld;
 	SimDynamics::DynamicsRobotPtr dynamicsRobot;
@@ -72,19 +77,22 @@ protected:
 
 	Ui::MainWindowBulletViewer UI;
 
-	SoSeparator* sceneSep;
+    SoSeparator* sceneSep;
+    SoSeparator* comSep;
 	SoSeparator* contactsSep;
 
 	SimDynamics::BulletCoinQtViewerPtr viewer;
 	
 	VirtualRobot::RobotPtr robot;
-	std::string robotFilename;
 
 	// beside the viewer cb we need also a callback to update joint info
 	static void timerCB(void * data, SoSensor * sensor);
-	SoTimerSensor *timerSensor;
+
+    SoTimerSensor *timerSensor;
 
 	std::vector<VirtualRobot::RobotNodeRevolutePtr> robotNodes;
+
+    std::map< VirtualRobot::RobotNodePtr, SoSeparator* > comVisuMap;
 
 	bool useColModel;
 };

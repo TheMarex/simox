@@ -65,6 +65,9 @@ public:
 
 	void setLinearVelocity(const Eigen::Vector3f &vel);
 	void setAngularVelocity(const Eigen::Vector3f &vel);
+
+    //! This is the world pose which is set by bullet
+    Eigen::Matrix4f getComGlobal();
 protected:
 
 	btConvexHullShape* createConvexHullShape(VirtualRobot::TriMeshModelPtr trimesh);

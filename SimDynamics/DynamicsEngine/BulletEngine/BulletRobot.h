@@ -82,6 +82,11 @@ public:
 	virtual float getJointSpeed(VirtualRobot::RobotNodePtr rn);
 	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
 
+    /*!
+        Returns the CoM pose, which is reported by bullet
+    */
+    virtual Eigen::Matrix4f getComGlobal(VirtualRobot::RobotNodePtr rn);
+
 	// experimental...
 	virtual void ensureKinematicConstraints();
 

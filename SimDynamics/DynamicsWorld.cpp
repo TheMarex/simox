@@ -123,7 +123,7 @@ SimDynamics::DynamicsRobotPtr DynamicsWorld::CreateDynamicsRobot( VirtualRobot::
 
 std::vector<DynamicsRobotPtr> DynamicsWorld::getRobots()
 {
-	return engine->getRobots();
+    return engine->getRobots();
 }
 
 } // namespace

@@ -86,6 +86,8 @@ public:
 	virtual float getJointAngle(VirtualRobot::RobotNodePtr rn);
 	virtual float getJointSpeed(VirtualRobot::RobotNodePtr rn);
 
+    virtual Eigen::Matrix4f getComGlobal(VirtualRobot::RobotNodePtr rn);
+
 protected:
 
 	virtual void createDynamicsNode(VirtualRobot::RobotNodePtr node);

@@ -26,6 +26,7 @@
 #include "../SimDynamics.h"
 #include "DynamicsObject.h"
 #include "DynamicsRobot.h"
+#include <boost/thread/recursive_mutex.hpp>
 
 namespace SimDynamics
 {
@@ -123,6 +124,11 @@ public:
 
 	virtual std::vector<DynamicsEngine::DynamicsContactInfo> getContacts();
 
+    /*!
+        Returns the dynamics version of r.
+        An empty pointer is returned if no dynamic robot created from r has been added so far.
+    */
+    virtual DynamicsRobotPtr getRobot(VirtualRobot::RobotPtr r);
 
 protected:
 	DynamicsWorldInfo dynamicsInfo;
@@ -136,6 +142,9 @@ protected:
 
 	Eigen::Vector3f floorPos;
 	Eigen::Vector3f floorUp;
+
+    boost::recursive_mutex engineMutex;
+
 };
 
 typedef boost::shared_ptr<DynamicsEngine> DynamicsEnginePtr;

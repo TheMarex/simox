@@ -23,5 +23,10 @@ void RobotNodeActuator::updateVisualizationPose( const Eigen::Matrix4f& pose, fl
 	robotNode->updateVisualizationPose(pose, jointValue, updateChildren);
 }
 
+VirtualRobot::RobotNodePtr RobotNodeActuator::getRobotNode()
+{
+    return robotNode;
+}
+
 
 } // namespace

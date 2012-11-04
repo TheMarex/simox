@@ -5,7 +5,6 @@
 #include <VirtualRobot/Obstacle.h>
 #include <VirtualRobot/MathTools.h>
 
-
 //#define DEBUG_FIXED_OBJECTS
 
 namespace SimDynamics {
@@ -17,7 +16,7 @@ BulletEngine::BulletEngine()
 	overlappingPairCache = NULL;
 	constraintSolver = NULL;
 	dynamicsWorld = NULL;
-	bulletRestitution = btScalar(0.1f);
+	bulletRestitution = btScalar(0);
 	bulletFriction = btScalar(0.5f);
 	bulletDampingLinear = btScalar(0.05f);
 	//bulletDampingAngular = btScalar(0.85f);
@@ -34,6 +33,7 @@ BulletEngine::~BulletEngine()
 
 bool BulletEngine::init(const DynamicsWorldInfo &info)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	DynamicsEngine::init(info);
 
 	// Setup the bullet world
@@ -68,6 +68,7 @@ bool BulletEngine::init(const DynamicsWorldInfo &info)
 
 bool BulletEngine::cleanup()
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	while (robots.size()>0)
 	{
 		size_t start = robots.size();
@@ -99,6 +100,7 @@ bool BulletEngine::cleanup()
 
 bool BulletEngine::addObject( DynamicsObjectPtr o )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	BulletObjectPtr btObject = boost::dynamic_pointer_cast<BulletObject>(o);
 	if (!btObject)
 	{
@@ -137,6 +139,7 @@ bool BulletEngine::addObject( DynamicsObjectPtr o )
 
 bool BulletEngine::removeObject( DynamicsObjectPtr o )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	BulletObjectPtr btObject = boost::dynamic_pointer_cast<BulletObject>(o);
 	if (!btObject)
 	{
@@ -150,6 +153,7 @@ bool BulletEngine::removeObject( DynamicsObjectPtr o )
 
 bool BulletEngine::removeLink( BulletRobot::LinkInfo &l )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	dynamicsWorld->removeConstraint(l.joint.get());
 	this->resetCollisions(static_cast<DynamicsObject*>(l.dynNode1.get()));
 	this->resetCollisions(static_cast<DynamicsObject*>(l.dynNode2.get()));
@@ -163,6 +167,7 @@ btDynamicsWorld* BulletEngine::getBulletWorld()
 
 void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Vector3f &up )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	DynamicsEngine::createFloorPlane(pos,up);
 	float size = 100000.0f; // mm
 	float sizeSmall = 1000.0f;
@@ -193,17 +198,37 @@ void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Ve
 	addObject(groundObjectBt);
 }
 
+
+btMatrix3x3 BulletEngine::getRotMatrix(const Eigen::Matrix4f &pose)
+{
+    btMatrix3x3 rot(pose(0,0), pose(0,1), pose(0,2),
+        pose(1,0), pose(1,1), pose(1,2),
+        pose(2,0), pose(2,1), pose(2,2));
+    return rot;
+}
+
+Eigen::Matrix4f BulletEngine::getRotMatrix(const btMatrix3x3 &pose)
+{
+    Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
+
+    for (int a=0;a<3;a++)
+        for (int b=0;b<3;b++)
+            rot(a,b) = pose[a][b];
+    return rot;
+}
+
 btTransform BulletEngine::getPoseBullet( const Eigen::Matrix4f &pose, bool scaling )
 {
 	btTransform res;
 	float sc = 1.0f;
 	if (scaling && DynamicsWorld::convertMM2M)
 		sc = 0.001f; // mm -> m
-	VirtualRobot::MathTools::Quaternion q = VirtualRobot::MathTools::eigen4f2quat(pose);
 	btVector3 pos(pose(0,3)*sc,pose(1,3)*sc,pose(2,3)*sc);
-	btQuaternion rot(q.x,q.y,q.z,q.w);
-	res.setOrigin(pos);
-	res.setRotation(rot);
+    res.setOrigin(pos);
+    btMatrix3x3 rot = getRotMatrix(pose);
+    //VirtualRobot::MathTools::Quaternion q = VirtualRobot::MathTools::eigen4f2quat(pose);
+	//btQuaternion rot(q.x,q.y,q.z,q.w);
+	res.setBasis(rot);
 	return res;
 }
 
@@ -213,13 +238,14 @@ Eigen::Matrix4f BulletEngine::getPoseEigen( const btTransform &pose, bool scalin
 	if (scaling && DynamicsWorld::convertMM2M)
 		sc = 1000.0f; // m -> mm
 
-	btQuaternion q = pose.getRotation();
+	/*btQuaternion q = pose.getRotation();
 	VirtualRobot::MathTools::Quaternion qvr;
 	qvr.x = q.getX();
 	qvr.y = q.getY();
 	qvr.z = q.getZ();
 	qvr.w = q.getW();
-	Eigen::Matrix4f res = VirtualRobot::MathTools::quat2eigen4f(qvr);
+	Eigen::Matrix4f res = VirtualRobot::MathTools::quat2eigen4f(qvr);*/
+    Eigen::Matrix4f res = getRotMatrix(pose.getBasis());
 	res(0,3) = pose.getOrigin().getX()*sc;
 	res(1,3) = pose.getOrigin().getY()*sc;
 	res(2,3) = pose.getOrigin().getZ()*sc;
@@ -252,6 +278,7 @@ Eigen::Vector3f BulletEngine::getVecEigen( const btVector3 &vec, bool scaling )
 
 bool BulletEngine::addRobot( DynamicsRobotPtr r )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	BulletRobotPtr btRobot = boost::dynamic_pointer_cast<BulletRobot>(r);
 	if (!btRobot)
 	{
@@ -276,6 +303,7 @@ bool BulletEngine::addRobot( DynamicsRobotPtr r )
 
 bool BulletEngine::removeRobot( DynamicsRobotPtr r )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	BulletRobotPtr btRobot = boost::dynamic_pointer_cast<BulletRobot>(r);
 	if (!btRobot)
 	{
@@ -300,6 +328,7 @@ bool BulletEngine::removeRobot( DynamicsRobotPtr r )
 
 bool BulletEngine::addLink( BulletRobot::LinkInfo &l )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 #ifdef DEBUG_FIXED_OBJECTS
 	cout << "TEST2" << endl;
 #else
@@ -314,6 +343,7 @@ bool BulletEngine::addLink( BulletRobot::LinkInfo &l )
 
 void BulletEngine::print()
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	cout << "------------------ Bullet Engine ------------------" << endl;
 	for (size_t i=0;i<objects.size();i++)
 	{
@@ -339,14 +369,26 @@ void BulletEngine::print()
 			cout << "++++ Link " << j << ":" << links[j].node2->getName();
 			
 			cout << "     enabled:" << links[j].joint->isEnabled() << endl;
-			boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(links[j].joint);
-			if (hinge)
-			{
-				cout << "     hinge motor enabled:" << hinge->getEnableAngularMotor() << endl;
-				cout << "     hinge angle :" << hinge->getHingeAngle() << endl;
-				cout << "     hinge max motor impulse :" << hinge->getMaxMotorImpulse() << endl;
-				cout << "     hinge motor target vel :" << hinge->getMotorTargetVelosity() << endl;
-			}
+            boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(links[j].joint);
+            if (hinge)
+            {
+                cout << "     hinge motor enabled:" << hinge->getEnableAngularMotor() << endl;
+                cout << "     hinge angle :" << hinge->getHingeAngle() << endl;
+                cout << "     hinge max motor impulse :" << hinge->getMaxMotorImpulse() << endl;
+                cout << "     hinge motor target vel :" << hinge->getMotorTargetVelosity() << endl;
+            }
+            boost::shared_ptr<btGeneric6DofConstraint> dof = boost::dynamic_pointer_cast<btGeneric6DofConstraint>(links[j].joint);
+            if (dof)
+            {
+                btRotationalLimitMotor *m = dof->getRotationalLimitMotor(2);
+                VR_ASSERT(m);
+                cout << "     generic_6DOF_joint: axis 5 (z)" << endl;
+                cout << "     generic_6DOF_joint motor enabled:" << m->m_enableMotor << endl;
+                cout << "     generic_6DOF_joint angle :" << m->m_currentPosition << endl;
+                cout << "     generic_6DOF_joint max motor force :" << m->m_maxMotorForce << endl;
+                cout << "     higeneric_6DOF_jointnge motor target vel :" << m->m_targetVelocity << endl;
+            }
+
 		}
 	}
 
@@ -355,6 +397,7 @@ void BulletEngine::print()
 
 void BulletEngine::activateAllObjects()
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	for (size_t i=0;i<objects.size();i++)
 	{
 		BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(objects[i]);
@@ -368,6 +411,7 @@ void BulletEngine::activateAllObjects()
 
 std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	//Assume world->stepSimulation or world->performDiscreteCollisionDetection has been called
 
 	std::vector<DynamicsEngine::DynamicsContactInfo> result;
@@ -402,6 +446,12 @@ std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 		}
 	}
 	return result;
+}
+
+void BulletEngine::stepSimulation( float dt, int subSteps )
+{
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    dynamicsWorld->stepSimulation(dt,subSteps);
 }
 
 

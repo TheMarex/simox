@@ -118,7 +118,6 @@ protected:
 	// The engine interface
 	DynamicsEnginePtr engine;
 
-
 };
 
 }

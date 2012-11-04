@@ -16,7 +16,7 @@
 	<RobotNode name="Joint1">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="-90" hi="90"/>
-            <DH a="300" d="0" theta="0" alpha="90" units="degree"/>
+            <DH a="300" d="0" theta="0" alpha="45" units="degree"/>
         </Joint>
 		<Visualization enable="true">
 			 <File type="inventor">joint_rot_sphere.iv</File>
@@ -32,7 +32,7 @@
 	<RobotNode name="Joint2">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="-180" hi="45"/>
-            <DH a="300" d="0" theta="90" alpha="0" units="degree"/>
+            <DH a="300" d="0" theta="50" alpha="0" units="degree"/>
         </Joint>
 		<Visualization enable="true">
 			 <File type="inventor">joint_rot_sphere.iv</File>

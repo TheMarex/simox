@@ -47,7 +47,7 @@ public:
 	virtual bool highlight(VisualizationNodePtr visualizationNode, bool enable);
 
 	/*!
-	Highlight a visualization node.
+	    Highlight a visualization node.
 
 		@param which The index of the visualionNodes, passed to the constructor.
 		@param enable Do/Undo highlighting.

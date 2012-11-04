@@ -145,6 +145,14 @@ float DynamicsRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
 	return 0.0f;
 }
 
+Eigen::Matrix4f DynamicsRobot::getComGlobal( VirtualRobot::RobotNodePtr rn )
+{
+    Eigen::Matrix4f com = Eigen::Matrix4f::Identity();
+    com.block(0,3,3,1) = rn->getCoMLocal();
+    com = rn->getGlobalPoseVisualization()*com;
+    return com;
+}
+
 /*
 void DynamicsRobot::setPose( const Eigen::Matrix4f &pose )
 {

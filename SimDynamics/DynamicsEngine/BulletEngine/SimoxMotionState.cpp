@@ -1,7 +1,9 @@
 
 #include "SimoxMotionState.h"
 #include "BulletEngine.h"
+#include "../../DynamicsWorld.h"
 
+#include <boost/pointer_cast.hpp>
 
 using namespace VirtualRobot;
 
@@ -10,6 +12,7 @@ namespace SimDynamics
 
 
 SimoxMotionState::SimoxMotionState( VirtualRobot::SceneObjectPtr sceneObject)
+    :btDefaultMotionState()
 {
 	this->sceneObject = sceneObject;
 	initalGlobalPose.setIdentity();
@@ -60,6 +63,7 @@ void SimoxMotionState::setWorldTransform(const btTransform& worldPose)
 	m_graphicsWorldTrans = _transform; // this is used for debug drawing
 	_graphicsTransfrom = _transform;
 	//_graphicsTransfrom.getOrigin();// -= _comOffset.getOrigin(); // com adjusted
+
 	setGlobalPoseSimox( BulletEngine::getPoseEigen(_graphicsTransfrom) );
 }
 
@@ -86,29 +90,41 @@ void SimoxMotionState::setGlobalPoseSimox( const Eigen::Matrix4f& worldPose )
 	comLocal.setIdentity();
 	comLocal.block(0,3,3,1) = -com;
 
-	// apply com
-	Eigen::Matrix4f localPoseAdjusted =  comLocal * localPose;
+	//Eigen::Matrix4f localPoseAdjusted =  localPose * comLocal;
+	//Eigen::Matrix4f localPoseAdjusted =  comLocal * localPose;
+
 	//Eigen::Matrix4f localPoseAdjusted =  localPose;
+	//localPoseAdjusted.block(0,3,3,1) -= com;
+
+    Eigen::Matrix4f comTrafo = Eigen::Matrix4f::Identity();
+    comTrafo.block(0,3,3,1) = -com;
+	Eigen::Matrix4f localPoseAdjusted =  localPose * comTrafo;
 	//localPoseAdjusted.block(0,3,3,1) -= com;
 
 	Eigen::Matrix4f resPose = sceneObject->getGlobalPoseVisualization() * localPoseAdjusted;
 	*/
 	Eigen::Matrix4f resPose = worldPose * comLocal;
 
-	//Eigen::Matrix4f resPose = worldPose;
-	// assuming we get the com adjusted pose
-	//Eigen::Matrix4f gp = BulletEngine::getPoseEigen(worldPose);
-	// Determine pose of simox model
-	/*
-	Eigen::Matrix4f comLocal = Eigen::Matrix4f::Identity();
-	comLocal.block(0,3,3,1) = -com;
-    Eigen::Matrix4f resPose = comLocal * gp;*/
-	
 
 	if (robotNodeActuator)
 	{
-		// we assume that all models are handled by Bullet, so we do not need to update children
-		robotNodeActuator->updateVisualizationPose(resPose,false); 
+        // get joint angle
+        RobotNodePtr rn = robotNodeActuator->getRobotNode();
+        DynamicsWorldPtr w = DynamicsWorld::GetWorld();
+        DynamicsRobotPtr dr = w->getEngine()->getRobot(rn->getRobot());
+        BulletRobotPtr bdr = boost::dynamic_pointer_cast<BulletRobot>(dr);
+        if (bdr)
+        {
+            float ja = 0;
+            if (bdr->hasLink(rn))
+                ja = bdr->getJointAngle(rn);
+
+		    // we assume that all models are handled by Bullet, so we do not need to update children
+		    robotNodeActuator->updateVisualizationPose(resPose, ja, false); 
+        } else
+        {
+            VR_WARNING << "Could not determine dynamic robot?!" << endl;
+        }
 	} else
 	{
 		sceneObject->setGlobalPose(resPose);
@@ -118,7 +134,7 @@ void SimoxMotionState::setGlobalPoseSimox( const Eigen::Matrix4f& worldPose )
 void SimoxMotionState::setGlobalPose( const Eigen::Matrix4f &pose )
 {
     initalGlobalPose = pose;
-	/* conervt to local coord system, apply comoffset and convert back*/
+	/* convert to local coord system, apply comoffset and convert back*/
 	Eigen::Matrix4f poseLocal = sceneObject->getGlobalPoseVisualization().inverse() * pose;
 	poseLocal.block(0,3,3,1) += com;
 	Eigen::Matrix4f poseGlobal = sceneObject->getGlobalPoseVisualization() * poseLocal;

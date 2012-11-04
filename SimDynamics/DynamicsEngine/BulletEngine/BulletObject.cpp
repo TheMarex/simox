@@ -12,6 +12,7 @@
 #include <BulletCollision/CollisionShapes/btShapeHull.h>
 
 //#define DEBUG_FIXED_OBJECTS
+//#define USE_BULLET_GENERIC_6DOF_CONSTRAINT
 
 using namespace VirtualRobot;
 
@@ -21,6 +22,10 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 	: DynamicsObject(o, type)
 {
 	float interatiaFactor = 5.0f;
+#ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
+    interatiaFactor = 5.0f;
+#endif
+
 	btMargin=(btScalar)(0.000001);
 	com.setZero();
 	THROW_VR_EXCEPTION_IF(!o,"NULL object");
@@ -54,6 +59,10 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 	{
 		//THROW_VR_EXCEPTION ("mass == 0 -> SimulationType must not be eDynamic! ");
 		mass = btScalar(1.0f); // give object a dummy mass
+#ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
+       mass = btScalar(1.0f);
+#endif
+
 		//type = eKinematic;
 		if (colModel)
 		{
@@ -73,18 +82,24 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 		if (colModel)
 		{
 			collisionShape->calculateLocalInertia(mass,localInertia);
+//#ifndef USE_BULLET_GENERIC_6DOF_CONSTRAINT
 			// check for small values
 			if (localInertia.length()<1.0f && localInertia.length()>0)
 				localInertia /= localInertia.length(); // small inertia values result in freaking out joints ?!
+//#endif
 		} else
+#ifndef USE_BULLET_GENERIC_6DOF_CONSTRAINT
 			localInertia.setValue(btScalar(1),btScalar(1),btScalar(1)); // give Object a dummy inertia matrix
-		//localInertia.setValue(btScalar(40),btScalar(40),btScalar(40)); // give Object a dummy inertia matrix (large values needed, otherwise the objects will not stay connected on strong impulses) 
+#else
+            localInertia.setValue(btScalar(1),btScalar(1),btScalar(1)); // give Object a dummy inertia matrix
+#endif
+            //localInertia.setValue(btScalar(40),btScalar(40),btScalar(40)); // give Object a dummy inertia matrix (large values needed, otherwise the objects will not stay connected on strong impulses) 
 	}
 #endif
 	localInertia *= interatiaFactor;
 	motionState = new SimoxMotionState(o);
 	btRigidBody::btRigidBodyConstructionInfo btRBInfo(mass,motionState,collisionShape.get(),localInertia);
-	btRBInfo.m_additionalDamping = true;
+	//btRBInfo.m_additionalDamping = true;
 
 	rigidBody.reset(new btRigidBody(btRBInfo));
 	rigidBody->setUserPointer((void*)(this));
@@ -203,6 +218,13 @@ void BulletObject::setAngularVelocity( const Eigen::Vector3f &vel )
 		return;
 	btVector3 btVel = BulletEngine::getVecBullet(vel,false);
 	rigidBody->setAngularVelocity(btVel);
+}
+
+Eigen::Matrix4f BulletObject::getComGlobal()
+{
+    btTransform tr;
+    motionState->getWorldTransform(tr);
+    return BulletEngine::getPoseEigen(tr);
 }
 
 

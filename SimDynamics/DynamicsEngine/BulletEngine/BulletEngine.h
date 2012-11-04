@@ -65,6 +65,8 @@ public:
 	virtual void createFloorPlane(const Eigen::Vector3f &pos, const Eigen::Vector3f &up);
 
 
+    virtual void stepSimulation(float dt, int subSteps);
+
 	btDynamicsWorld* getBulletWorld();
 
 	/*!
@@ -87,7 +89,8 @@ public:
 	static Eigen::Matrix4f getPoseEigen( const btTransform &pose, bool scaling = true );
 	static btVector3 getVecBullet( const Eigen::Vector3f &vec, bool scaling = true );
 	static Eigen::Vector3f getVecEigen( const btVector3 &vec, bool scaling = true );
-	
+    static btMatrix3x3 getRotMatrix(const Eigen::Matrix4f &pose);
+    static Eigen::Matrix4f getRotMatrix(const btMatrix3x3 &pose);
 protected:
 
 	class CustomCollisionCallback : public btOverlapFilterCallback
@@ -116,8 +119,7 @@ protected:
 
 	virtual bool addLink(BulletRobot::LinkInfo &l);
 	virtual bool removeLink(BulletRobot::LinkInfo &l);
-
-
+    
 	btDynamicsWorld *dynamicsWorld;
 
 	btBroadphaseInterface* overlappingPairCache;

@@ -138,9 +138,9 @@
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/wrist2_l.iv</File>
 		</Visualization>
-		<CollisionModel>
+        <!--CollisionModel>
 			<File type="Inventor">collisionModel/wrist2_l.iv</File>
-		</CollisionModel>
+		</CollisionModel-->
 		
 		<ChildFromRobot>
 			<File importEEF="true">ArmarIII-LeftHand.xml</File>

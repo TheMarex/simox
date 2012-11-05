@@ -89,14 +89,9 @@ bool RobotNodePrismatic::initialize(SceneObjectPtr parent, const std::vector<Sce
 
 void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
-	//VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
-
-	this->globalPose = parentPose * getPreJointTransformation();
-
 	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
-	this->globalPose *= tmpT.matrix();
-
-	globalPosePostJoint = this->globalPose*getPostJointTransformation();
+	globalPose = parentPose * getPreJointTransformation() * tmpT.matrix();
+	globalPosePostJoint = globalPose*getPostJointTransformation();
 }
 
 void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
@@ -158,7 +153,14 @@ void RobotNodePrismatic::updateVisualizationPose( const Eigen::Matrix4f &globalP
 	RobotNode::updateVisualizationPose(globalPose,updateChildren);
 
 	// compute the jointValue from pose
-	Eigen::Matrix4f localPose = toLocalCoordinateSystem(globalPose);
+    Eigen::Matrix4f initFrame;
+    if (this->getParent())
+        initFrame = this->getParent()->getGlobalPose() * getPreJointTransformation();
+    else
+        initFrame = getPreJointTransformation();
+
+    Eigen::Matrix4f localPose = initFrame.inverse() * globalPose;
+
 	Eigen::Vector3f v = localPose.block(0,3,3,1);
 
 	// project on directionVector

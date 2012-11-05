@@ -53,7 +53,7 @@ class RobotNode;
 
 	\see RobotIO, RobotNode, RobotNodeSet, EndEffector
 */
-class VIRTUAL_ROBOT_IMPORT_EXPORT Robot : public boost::enable_shared_from_this<Robot>
+class VIRTUAL_ROBOT_IMPORT_EXPORT Robot : public SceneObject
 {
 	friend class RobotIO;
 public:
@@ -128,6 +128,9 @@ public:
 	void setUpdateVisualization (bool enable);
 	bool getUpdateVisualizationStatus();
 
+    boost::shared_ptr<Robot> shared_from_this()       { return boost::static_pointer_cast<Robot>(SceneObject::shared_from_this()); }
+    //boost::shared_ptr<Robot> shared_from_this() const { return boost::static_pointer_cast<Robot>(SceneObject::shared_from_this()); }
+
 	/*!
 		get the complete setup of all robot nodes
 	*/
@@ -198,7 +201,7 @@ public:
 	*/
 	void setGlobalPoseForRobotNode(const RobotNodePtr &node, const Eigen::Matrix4f &globalPoseNode);
 
-	virtual Eigen::Matrix4f getGlobalPose() = 0;
+	//virtual Eigen::Matrix4f getGlobalPose() = 0;
 
 	/*!
 		Return center of mass of this robot
@@ -351,7 +354,6 @@ protected:
 
 
 	std::string filename; // RobotIO stores the filename here
-	std::string name;
 	std::string type;
 
 	bool updateVisualization;
@@ -408,12 +410,13 @@ public:
 	virtual EndEffectorPtr getEndEffector(const std::string& endEffectorName);
 	virtual void getEndEffectors(std::vector<EndEffectorPtr> &storeEEF);
 
-	virtual void setGlobalPose(const Eigen::Matrix4f &globalPose, bool applyValues = true);
+    virtual void setGlobalPose(const Eigen::Matrix4f &globalPose, bool applyJointValues = true);
+    virtual void setGlobalPose(const Eigen::Matrix4f &globalPose);
 	virtual Eigen::Matrix4f getGlobalPose();
 
 
 protected:
-	Eigen::Matrix4f globalPose; //!< The pose of this robot in the world
+	//Eigen::Matrix4f globalPose; //!< The pose of this robot in the world
 	RobotNodePtr rootNode;
 
 	std::map< std::string, RobotNodePtr > robotNodeMap;

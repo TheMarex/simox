@@ -72,10 +72,7 @@ bool RobotNodeFixed::initialize(SceneObjectPtr parent, const std::vector<SceneOb
 
 void RobotNodeFixed::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
-	//VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
-
 	this->globalPose = parentPose * getPreJointTransformation();
-
 	globalPosePostJoint = this->globalPose*getPostJointTransformation();
 }
 

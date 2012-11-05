@@ -504,13 +504,6 @@ std::vector<RobotNodePtr> RobotNode::getAllParents( RobotNodeSetPtr rns )
 	return result;
 }
 
-/*
-VirtualRobot::RobotNodePtr RobotNode::getParent()
-{
-	RobotNodePtr p = parent.lock();
-	return p;
-}*/
-
 void RobotNode::setJointLimits( float lo, float hi )
 {
 	jointLimitLo = lo;
@@ -555,14 +548,16 @@ void RobotNode::updateVisualizationPose( const Eigen::Matrix4f &globalPose, floa
 void RobotNode::updateVisualizationPose( const Eigen::Matrix4f &globalPose, bool updateChildren )
 {
 	// check if we are a root node
-	if (!getParent())
+    SceneObjectPtr parent = getParent();
+    RobotPtr rob = getRobot();
+	if (!parent || parent == rob)
 	{
-		RobotPtr rob = getRobot();
 		if (rob && rob->getRootNode() == static_pointer_cast<RobotNode>(shared_from_this()))
 		{
 			Eigen::Matrix4f gpPre = getPreJointTransformation().inverse() * globalPose;
 			rob->setGlobalPose(gpPre, false);
-		}
+		} else
+            VR_WARNING << "INTERNAL ERROR: getParent==robot but getRoot!=this ?! " << endl;
 	}
 
 	this->globalPose = globalPose;

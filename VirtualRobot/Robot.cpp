@@ -9,9 +9,9 @@
 
 namespace VirtualRobot {
 
-Robot::Robot(const std::string &name, const std::string &type)  
+Robot::Robot(const std::string &name, const std::string &type)
+    :SceneObject(name)
 {
-	this->name = name;
 	this->type = type;
 	updateVisualization = true;
 	use_mutex = true;
@@ -47,11 +47,11 @@ LocalRobot::~LocalRobot()
 }
 
 LocalRobot::LocalRobot(const std::string &name, const std::string &type) : Robot (name, type){
-	globalPose = Eigen::Matrix4f::Identity();
 }; 
 
 void LocalRobot::setRootNode( RobotNodePtr node )
 {
+    attachChild(node);
 	rootNode = node;
 	node->initialize();
 	//robotNodeMap.clear();
@@ -503,12 +503,17 @@ VirtualRobot::CollisionCheckerPtr Robot::getCollisionChecker()
 	return (*robotNodes.begin())->getCollisionChecker();
 }
 
-void LocalRobot::setGlobalPose(const Eigen::Matrix4f &globalPose, bool applyValues )
+void LocalRobot::setGlobalPose(const Eigen::Matrix4f &globalPose )
 {
-	WriteLock(mutex,use_mutex);
-	this->globalPose = globalPose;
-	if (applyValues)
-		applyJointValuesNoLock();
+    setGlobalPose(globalPose,true);
+}
+
+void LocalRobot::setGlobalPose( const Eigen::Matrix4f &globalPose, bool applyJointValues /*= true*/ )
+{
+    WriteLock(mutex,use_mutex);
+    this->globalPose = globalPose;
+    if (applyJointValues)
+        applyJointValuesNoLock();
 }
 
 Eigen::Matrix4f LocalRobot::getGlobalPose()

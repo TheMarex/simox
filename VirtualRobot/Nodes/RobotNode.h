@@ -214,9 +214,6 @@ public:
 		Find all robot nodes whose movements affect this RobotNode
 	*/
 	virtual std::vector<RobotNodePtr> getAllParents( RobotNodeSetPtr rns );
- 
-	//! Return parent node
-	//virtual RobotNodePtr getParent();
 
 	/*!
 		Clone this RobotNode. 
@@ -307,15 +304,7 @@ protected:
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, float jointValue, bool updateChildren = false);
 
 	///////////////////////// SETUP ////////////////////////////////////
-	//mutable boost::recursive_mutex mutex; 
-	//bool use_mutex;
-
 	RobotNode(){};
-	//virtual void setPostJointTransformation(const Eigen::Matrix4f &trafo);
-	//virtual void setPreJointTransformation(const Eigen::Matrix4f &trafo);
-
-	//virtual std::vector<std::string> getChildrenNames() const {return childrenNames;}
-	//virtual std::string getParentName() const {RobotNodePtr p = parent.lock();if (p) return p->getName(); else return std::string();};
 
 	float jointValueOffset;
 	float jointLimitLo,jointLimitHi;

@@ -85,15 +85,10 @@ bool RobotNodeRevolute::initialize(SceneObjectPtr parent, const std::vector<Scen
 
 void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
-	//VR_ASSERT_MESSAGE(!(this->getParent()),"This method could only be called on RobotNodes without parents.");
-	this->globalPose = parentPose * getPreJointTransformation();
-
 	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
-	this->globalPose *= tmpT.matrix();
-
-	globalPosePostJoint = this->globalPose*getPostJointTransformation();
+	globalPose = parentPose * getPreJointTransformation() * tmpT.matrix();
+	globalPosePostJoint = globalPose*getPostJointTransformation();
 }
-
 
 void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 {
@@ -162,7 +157,7 @@ void RobotNodeRevolute::updateVisualizationPose( const Eigen::Matrix4f &globalPo
 	else
 		initFrame = getPreJointTransformation();
 
-	Eigen::Matrix4f localPose = initFrame.inverse() * globalPose; //toLocalCoordinateSystem(globalPose);
+	Eigen::Matrix4f localPose = initFrame.inverse() * globalPose;
 
 	Eigen::Vector3f localAxis;
 	float angle;

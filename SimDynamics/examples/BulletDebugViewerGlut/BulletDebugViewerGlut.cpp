@@ -26,8 +26,8 @@ int main(int argc,char* argv[])
 	world->addObject(dynObj);
 
 
-	std::string robFile("robots/examples/SimpleRobot/Joint6.xml");
-	//std::string robFile("robots/iCub/iCub.xml");
+	//std::string robFile("robots/examples/SimpleRobot/Joint6.xml");
+	std::string robFile("robots/iCub/iCub.xml");
 	//std::string robFile("robots/iCub/iCub_LeftLegTest.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-RightArm.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-RightHandTest.xml");
@@ -49,7 +49,7 @@ int main(int argc,char* argv[])
 		world->addRobot(dynRob);
 	}
 	BulletOpenGLViewer viewer(world);
-	viewer.enableContraintsDebugDrawing();
+	//viewer.enableContraintsDebugDrawing();
 
 #if 0
 	cout << "TEST7" << endl;

@@ -22,11 +22,10 @@
             <Mass value="3.65" units="kg" />
         </Physics>
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/shoulder_r.iv</File>
 		</Visualization>
 		<CollisionModel>
-			<File type="Inventor">collisionModel/shoulder_r.iv</File>
+			<File type="Inventor">convexModel/shoulder_r.iv</File>
 		</CollisionModel>
 		<Child name="Shoulder 2 R"/>
 	</RobotNode>
@@ -37,9 +36,11 @@
 			<Limits unit="degree" lo="-13.85" hi="94.62"/>  <!-- ?! -->
 		</Joint>
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/shoulder2_r_rot.iv</File>
 		</Visualization>
+		<CollisionModel>
+			<File type="Inventor">convexModel/shoulder2_r_rot.iv</File>
+		</CollisionModel>
 		<Child name="Upperarm R"/>
 	</RobotNode>
 	
@@ -53,11 +54,10 @@
             <Mass value="1.55685000" units="kg" />
         </Physics>
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/upperarm_r.iv</File>
 		</Visualization>
 		<CollisionModel>
-			<File type="Inventor">collisionModel/upperarm_r.iv</File>
+			<File type="Inventor">convexModel/upperarm_r.iv</File>
 		</CollisionModel>
 		<Child name="Elbow R"/>
 	</RobotNode>
@@ -71,10 +71,13 @@
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/elbow_r.iv</File>
 		</Visualization>
-		<!--Physics>
+		<CollisionModel>
+			<File type="Inventor">convexModel/elbow_r.iv</File>
+		</CollisionModel>
+		<Physics>
             <CoM location="Joint"/>
             <Mass value="1.15744000" units="kg" />
-        </Physics-->
+        </Physics>
 		<Child name="Underarm R"/>
 	</RobotNode>
 	
@@ -84,7 +87,6 @@
 			<Limits unit="degree" lo="-69.65" hi="108.25"/>
 		</Joint>
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/underarm_r.iv</File>
 		</Visualization>
 		<Physics>
@@ -92,7 +94,7 @@
             <Mass value="2.26566087" units="kg" />
         </Physics>
  		<CollisionModel>
-			<File type="Inventor">collisionModel/underarm_r.iv</File>
+			<File type="Inventor">convexModel/underarm_r.iv</File>
 		</CollisionModel>
 		<Child name="Wrist 1 R"/>
 	</RobotNode>
@@ -102,14 +104,17 @@
 			<DH a="0" d="0" theta="-90" alpha="-90" units="degree"/>
 			<Limits unit="degree" lo="-29.18" hi="29.88"/>
 		</Joint>
-
+		<Physics>
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="1.13047000" units="kg" />
+        </Physics>
    	    <Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/wrist1_r.iv</File>
 		</Visualization>
-		<!--CollisionModel>
-			<File type="Inventor">collisionModel/wrist1_l.iv</File>
-		</CollisionModel-->
+		<CollisionModel>
+			<File type="Inventor">convexModel/wrist1_l.iv</File>
+		</CollisionModel>
 		<Child name="Wrist 2 R"/>
 	</RobotNode>
 	
@@ -118,17 +123,14 @@
 			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
 			<Limits unit="degree" lo="-30.9" hi="50.87"/>
 		</Joint>
-		<!--Physics>
-            <CoM location="VisualizationBBoxCenter"/>
-            <Mass value="1.13047000" units="kg" />
-        </Physics-->
+
     	<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/wrist2_r.iv</File>
 		</Visualization>
-        <!--CollisionModel>
-			<File type="Inventor">collisionModel/wrist2_l.iv</File>
-		</CollisionModel-->
+        <CollisionModel>
+			<File type="Inventor">convexModel/wrist2_l.iv</File>
+		</CollisionModel>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2.59945309" units="kg" />

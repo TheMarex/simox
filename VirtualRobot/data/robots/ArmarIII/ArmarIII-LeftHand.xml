@@ -43,7 +43,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/palm1_l.iv</File>
+			<File type="Inventor">convexModel/palm1_l.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -71,7 +71,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/palm2_l.iv</File>
+			<File type="Inventor">convexModel/palm2_l.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -113,7 +113,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/thumb_l1.iv</File>
+			<File type="Inventor">convexModel/thumb_l1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -140,7 +140,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/thumb_l2.iv</File>
+			<File type="Inventor">convexModel/thumb_l2.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -177,7 +177,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/pinky_l1.iv</File>
+			<File type="Inventor">convexModel/pinky_l1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -205,7 +205,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/pinky_l2.iv</File>
+			<File type="Inventor">convexModel/pinky_l2.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -242,7 +242,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/ring_l1.iv</File>
+			<File type="Inventor">convexModel/ring_l1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -269,7 +269,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/ring_l2.iv</File>
+			<File type="Inventor">convexModel/ring_l2.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -306,7 +306,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/middle_l1.iv</File>
+			<File type="Inventor">convexModel/middle_l1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -333,7 +333,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/middle_l2.iv</File>
+			<File type="Inventor">convexModel/middle_l2.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -370,7 +370,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/index_l1.iv</File>
+			<File type="Inventor">convexModel/index_l1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -397,7 +397,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/index_l2.iv</File>
+			<File type="Inventor">convexModel/index_l2.iv</File>
 		</CollisionModel>
 		
 	    <Physics>

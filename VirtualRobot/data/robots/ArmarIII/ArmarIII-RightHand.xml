@@ -44,7 +44,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/palm1_r.iv</File>
+			<File type="Inventor">convexModel/palm1_r.iv</File>
 		</CollisionModel>
 	    <Physics>
 			<Mass value="800" unit="g"/>
@@ -70,7 +70,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/palm2_r.iv</File>
+			<File type="Inventor">convexModel/palm2_r.iv</File>
 		</CollisionModel>
 	    <Physics>
 			<Mass value="800" unit="g"/>
@@ -105,7 +105,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/thumb_r1.iv</File>
+			<File type="Inventor">convexModel/thumb_r1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -132,7 +132,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/thumb_r2.iv</File>
+			<File type="Inventor">convexModel/thumb_r2.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -164,7 +164,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/pinky_r1.iv</File>
+			<File type="Inventor">convexModel/pinky_r1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -191,7 +191,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/pinky_r2.iv</File>
+			<File type="Inventor">convexModel/pinky_r2.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -223,7 +223,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/ring_r1.iv</File>
+			<File type="Inventor">convexModel/ring_r1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -250,7 +250,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/ring_r2.iv</File>
+			<File type="Inventor">convexModel/ring_r2.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -282,7 +282,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/middle_r1.iv</File>
+			<File type="Inventor">convexModel/middle_r1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -309,7 +309,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/middle_r2.iv</File>
+			<File type="Inventor">convexModel/middle_r2.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -341,7 +341,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/index_r1.iv</File>
+			<File type="Inventor">convexModel/index_r1.iv</File>
 		</CollisionModel>
 		
 	    <Physics>
@@ -369,7 +369,7 @@
 		</Visualization>
 		
 		<CollisionModel>
-			<File type="Inventor">collisionModel/index_r2.iv</File>
+			<File type="Inventor">convexModel/index_r2.iv</File>
 		</CollisionModel>
 	    <Physics>
 	        

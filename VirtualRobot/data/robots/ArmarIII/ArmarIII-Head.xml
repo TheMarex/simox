@@ -3,10 +3,13 @@
 <Robot Type="ArmarIII Head" RootNode="Head Base">
     
     <RobotNode name="Head Base">
-        <Joint type="revolute">
+        <Joint type="fixed">
             <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
         </Joint>
         <Child name="Neck_1_Pitch"/>
+        <Visualization>
+            <File type="Inventor">fullmodel/head_base.iv</File>
+        </Visualization>
     </RobotNode>
 
     <RobotNode name="Neck_1_Pitch">
@@ -27,7 +30,7 @@
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
         <Visualization>
-            <File type="Inventor">fullmodel/neck_yaw_link.iv</File>
+            <File type="Inventor">fullmodel/neck_roll_link.iv</File>
         </Visualization>
         <Child name="Neck_3_Yaw"/>
     </RobotNode>    
@@ -38,7 +41,7 @@
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
         <Visualization>
-            <File type="Inventor">fullmodel/neck_roll_link.iv</File>
+            <File type="Inventor">fullmodel/neck_yaw_link.iv</File>
         </Visualization>
         <Child name="Head_Tilt"/>
     </RobotNode>

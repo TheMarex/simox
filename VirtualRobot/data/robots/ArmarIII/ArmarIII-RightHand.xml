@@ -17,10 +17,6 @@
 				</Transform>
 			</PreJointTransform>
 		</Joint>
-		
-		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
-		</Visualization>
 	</RobotNode>
 	
 	<RobotNode name="GCP R">
@@ -35,17 +31,15 @@
 	</RobotNode>
 	
 	<RobotNode name="Hand Palm 1 R">
-		<Joint type="revolute">
+		<Joint type="fixed">
 			<PreJointTransform>
 				<Transform>
 					<Translation x="0" y="0" z="36"/>
 				</Transform>
 			</PreJointTransform>
-			<Axis x="0" y="0" z="1"/>
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/palm1_r.iv</File>
 		</Visualization>
 		
@@ -68,10 +62,10 @@
 				</Transform>
 			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
+			<Limits unit="degree" lo="-90" hi="90"/>
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/palm2_r.iv</File>
 		</Visualization>
 		
@@ -89,30 +83,19 @@
 	</RobotNode>
 	
 	<RobotNode name="Thumb R">
-		<Joint type="revolute">
+		<Joint type="fixed">
 			<PreJointTransform>
 				<Transform>
 					<Translation x="-48.9" y="0" z="29.25"/>
 				</Transform>
 			</PreJointTransform>
-			<Axis x="0" y="1" z="0"/>
 		</Joint>
-		
-		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
-		</Visualization>
-		
 		<Child name="Thumb R J0"/>
 	</RobotNode>
 	
 	<RobotNode name="Thumb R J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="1" z="0"/>
 		</Joint>
 		
@@ -124,10 +107,12 @@
 		<CollisionModel>
 			<File type="Inventor">collisionModel/thumb_r1.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
 		</Physics>
+		
 		<Child name="Thumb R J1"/>
 	</RobotNode>
 	
@@ -143,13 +128,13 @@
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/thumb_r2.iv</File>
 		</Visualization>
 		
 		<CollisionModel>
 			<File type="Inventor">collisionModel/thumb_r2.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
@@ -157,18 +142,13 @@
 	</RobotNode>
 	
 	<RobotNode name="Pinky R">
-		<Joint type="revolute">
+		<Joint type="fixed">
 			<PreJointTransform>
 				<Transform>
 					<Translation x="0" y="73" z="40.4"/>
 				</Transform>
 			</PreJointTransform>
-			<Axis x="0" y="-1" z="0"/>
 		</Joint>
-		
-		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
-		</Visualization>
 		
 		<Child name="Pinky R J0"/>
 	</RobotNode>
@@ -176,22 +156,17 @@
 	<RobotNode name="Pinky R J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/pinky_r1.iv</File>
 		</Visualization>
 		
 		<CollisionModel>
 			<File type="Inventor">collisionModel/pinky_r1.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
@@ -212,13 +187,13 @@
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/pinky_r2.iv</File>
 		</Visualization>
 		
 		<CollisionModel>
 			<File type="Inventor">collisionModel/pinky_r2.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
@@ -226,18 +201,13 @@
 	</RobotNode>
 	
 	<RobotNode name="Ring R">
-		<Joint type="revolute">
+		<Joint type="fixed">
 			<PreJointTransform>
 				<Transform>
 					<Translation x="0" y="51" z="40.4"/>
 				</Transform>
 			</PreJointTransform>
-			<Axis x="0" y="-1" z="0"/>
 		</Joint>
-		
-		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
-		</Visualization>
 		
 		<Child name="Ring R J0"/>
 	</RobotNode>
@@ -245,22 +215,17 @@
 	<RobotNode name="Ring R J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/ring_r1.iv</File>
 		</Visualization>
 		
 		<CollisionModel>
 			<File type="Inventor">collisionModel/ring_r1.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
@@ -281,13 +246,13 @@
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/ring_r2.iv</File>
 		</Visualization>
 		
 		<CollisionModel>
 			<File type="Inventor">collisionModel/ring_r2.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
@@ -295,18 +260,13 @@
 	</RobotNode>
 	
 	<RobotNode name="Middle R">
-		<Joint type="revolute">
+		<Joint type="fixed">
 			<PreJointTransform>
 				<Transform>
 					<Translation x="0" y="27" z="40.4"/>
 				</Transform>
 			</PreJointTransform>
-			<Axis x="0" y="-1" z="0"/>
 		</Joint>
-		
-		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
-		</Visualization>
 		
 		<Child name="Middle R J0"/>
 	</RobotNode>
@@ -314,22 +274,17 @@
 	<RobotNode name="Middle R J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/middle_r1.iv</File>
 		</Visualization>
 		
 		<CollisionModel>
 			<File type="Inventor">collisionModel/middle_r1.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
@@ -350,13 +305,13 @@
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/middle_r2.iv</File>
 		</Visualization>
 		
 		<CollisionModel>
 			<File type="Inventor">collisionModel/middle_r2.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
@@ -364,18 +319,13 @@
 	</RobotNode>
 	
 	<RobotNode name="Index R">
-		<Joint type="revolute">
+		<Joint type="fixed">
 			<PreJointTransform>
 				<Transform>
 					<Translation x="0" y="0" z="40.2"/>
 				</Transform>
 			</PreJointTransform>
-			<Axis x="0" y="-1" z="0"/>
 		</Joint>
-		
-		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
-		</Visualization>
 		
 		<Child name="Index R J0"/>
 	</RobotNode>
@@ -383,22 +333,17 @@
 	<RobotNode name="Index R J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/index_r1.iv</File>
 		</Visualization>
 		
 		<CollisionModel>
 			<File type="Inventor">collisionModel/index_r1.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
@@ -427,6 +372,7 @@
 			<File type="Inventor">collisionModel/index_r2.iv</File>
 		</CollisionModel>
 	    <Physics>
+	        
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
 		</Physics>

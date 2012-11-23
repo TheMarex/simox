@@ -1,6 +1,10 @@
 #Inventor V2.1 ascii
 
 Separator { 
+    SoUnits
+    { 
+        units MILLIMETERS
+    }
 	Transform {
 		rotation 0 0 1 -1.57
 	}
@@ -9,6 +13,6 @@ Separator {
 	}
 
 	File { 
-		name "armar/neck/neck_yaw_link.iv"
+		name "armar/neck/neck_yaw_link_conv.wrl"
 	}
 } 

@@ -7,6 +7,7 @@
 			<CoordinateAxis  type="Inventor" enable="false" scaling="20"/>
 		</Visualization>
 		<Child name="Dummy_Platform"/>
+		<!--Child name="Platform"/-->
 	</RobotNode>
 	
 	<RobotNode name="Dummy_Platform">
@@ -57,10 +58,10 @@
 		</Visualization>
 		<Physics>
             <CoM location="Joint" x="0" y="0" z="200"/>
-            <Mass value="200" units="kg" />
+            <Mass value="100" units="kg" />
         </Physics>
 		<CollisionModel>
-			<File type="Inventor">collisionModel/platform.iv</File>
+			<File type="Inventor">convexModel/platform.iv</File>
 		</CollisionModel>
 		<Child name="Hip Pitch"/>
 	</RobotNode>
@@ -80,6 +81,12 @@
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/platform_pitch_link.iv</File>
 		</Visualization>
+		<Physics>
+            <Mass value="10" units="kg" />
+        </Physics>
+		<CollisionModel>
+			<File type="Inventor">convexModel/platform_pitch_link.iv</File>
+		</CollisionModel>
 		<Child name="Hip Roll"/>
 	</RobotNode>
 	
@@ -93,6 +100,12 @@
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/platform_roll_link.iv</File>
 		</Visualization>
+		<Physics>
+            <Mass value="10" units="kg" />
+        </Physics>
+		<CollisionModel>
+			<File type="Inventor">convexModel/platform_roll_link.iv</File>
+		</CollisionModel>
 		<Child name="Hip Yaw"/>
 	</RobotNode>
 	
@@ -110,7 +123,7 @@
 			<File type="Inventor">fullmodel/torso.iv</File>
 		</Visualization>
 		<CollisionModel>
-			<File type="Inventor">collisionModel/torso.iv</File>
+			<File type="Inventor">convexModel/torso.iv</File>
 		</CollisionModel>
 		<Child name="Center of Arms"/>
 	</RobotNode>

@@ -11,6 +11,6 @@ Separator { #Model
     }
     
     File { 
-      name "armar/torso/hd_torso2.wrl"
+      name "armar/torso/torso_conv.wrl"
     }
 } #Model

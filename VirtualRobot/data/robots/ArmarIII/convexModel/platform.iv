@@ -1,7 +1,10 @@
 #Inventor V2.1 ascii
 
 Separator { #Model
-
+    Units
+    {
+        units MILLIMETERS
+    }
  RotationXYZ {
    axis X
    angle 1.57
@@ -11,6 +14,6 @@ Separator { #Model
 	angle -1.57
  }
  File { 
-  name "armar/platform/platform.iv"
+  name "armar/platform/platform_conv.wrl"
  }
 }

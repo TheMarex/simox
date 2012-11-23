@@ -6,10 +6,21 @@
         <Joint type="fixed">
             <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
         </Joint>
-        <Child name="Neck_1_Pitch"/>
+                
         <Visualization>
             <File type="Inventor">fullmodel/head_base.iv</File>
         </Visualization>
+        
+        <Physics>
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="4" units="kg" />
+        </Physics>
+        
+        <CollisionModel>
+            <File type="Inventor">convexModel/head_base.iv</File>
+        </CollisionModel>   
+
+        <Child name="Neck_1_Pitch"/>
     </RobotNode>
 
     <RobotNode name="Neck_1_Pitch">
@@ -21,6 +32,16 @@
         <Visualization>
             <File type="Inventor">fullmodel/neck_pitch_link.iv</File>           
         </Visualization>
+        
+        <Physics>
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="4" units="kg" />
+        </Physics>
+        
+        <CollisionModel>
+            <File type="Inventor">convexModel/neck_pitch_link.iv</File>
+        </CollisionModel>
+        
         <Child name="Neck_2_Roll"/>
     </RobotNode>
         
@@ -29,9 +50,20 @@
             <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
+        
         <Visualization>
             <File type="Inventor">fullmodel/neck_roll_link.iv</File>
         </Visualization>
+                
+        <Physics>
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="2" units="kg" />
+        </Physics>
+        
+        <CollisionModel>
+            <File type="Inventor">convexModel/neck_roll_link.iv</File>
+        </CollisionModel>
+        
         <Child name="Neck_3_Yaw"/>
     </RobotNode>    
     
@@ -40,9 +72,20 @@
             <DH theta="90" d="120" a="0"  alpha="90" units="degree"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
+        
         <Visualization>
             <File type="Inventor">fullmodel/neck_yaw_link.iv</File>
         </Visualization>
+                
+        <Physics>
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="2" units="kg" />
+        </Physics>
+        
+        <CollisionModel>
+            <File type="Inventor">convexModel/neck_yaw_link.iv</File>
+        </CollisionModel>
+
         <Child name="Head_Tilt"/>
     </RobotNode>
 
@@ -51,16 +94,20 @@
             <DH theta="0" d="0" a="0"  alpha="-90" units="degree"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
+        
         <Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="6.79877000" units="kg" />
         </Physics>
+        
         <Visualization>
             <File type="Inventor">fullmodel/head.iv</File>
         </Visualization>
+        
         <CollisionModel>
-            <File type="Inventor">collisionModel/head.iv</File>
-        </CollisionModel>   
+            <File type="Inventor">convexModel/head.iv</File>
+        </CollisionModel>  
+         
         <Child name="Head Center"/>
     </RobotNode>
     

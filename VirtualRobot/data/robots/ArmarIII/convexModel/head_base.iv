@@ -14,6 +14,6 @@ Separator {
     }
     
     File { 
-      name "armar/head/head_base.wrl"
+      name "armar/head/head_base_conv.wrl"
     }
 }

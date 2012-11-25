@@ -25,14 +25,8 @@ int main(int argc,char* argv[])
 	dynObj->setPosition(Eigen::Vector3f(3000,3000,1000.0f));
 	world->addObject(dynObj);
 
-
 	//std::string robFile("robots/examples/SimpleRobot/Joint5.xml");
 	//std::string robFile("robots/iCub/iCub.xml");
-	//std::string robFile("robots/iCub/iCub_LeftLegTest.xml");
-	//std::string robFile("robots/ArmarIII/ArmarIII-RightArmTest5.xml");
-	//std::string robFile("robots/ArmarIII/ArmarIII-RightHandTest.xml");
-	//std::string robFile("robots/ArmarIII/ArmarIII-HeadTest.xml");
-	//std::string robFile("robots/ArmarIII/ArmarIII-RightArmTest2.xml");
 	std::string robFile("robots/ArmarIII/ArmarIII.xml");
 	//std::string robFile("robots/iCub/iCub_RightHand.xml");
 	//std::string robFile("robots/iCub/iCub_testFinger.xml");

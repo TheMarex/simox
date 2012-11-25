@@ -34,7 +34,7 @@
 		</Joint>
 		<Physics>
             <CoM location="Joint"/>
-            <Mass value="2.54491000" units="kg" />
+            <Mass value="2.5" units="kg" />
         </Physics>
         <Visualization enable="true">
 			<File type="Inventor">fullmodel/shoulder2_l_rot.iv</File>

@@ -35,7 +35,11 @@
 			<DH a="0" d="0" theta="105" alpha="90" units="degree"/>
 			<Limits unit="degree" lo="-13.85" hi="94.62"/>  <!-- ?! -->
 		</Joint>
-		<Visualization enable="true">
+        <Physics>
+            <CoM location="VisualizationBBoxCenter"/>
+            <Mass value="2.5" units="kg" />
+        </Physics>
+        <Visualization enable="true">
 			<File type="Inventor">fullmodel/shoulder2_r_rot.iv</File>
 		</Visualization>
 		<CollisionModel>

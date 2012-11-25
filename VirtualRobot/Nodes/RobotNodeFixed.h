@@ -53,8 +53,8 @@ public:
 		VisualizationNodePtr visualization = VisualizationNodePtr(),//!< A visualization model
 		CollisionModelPtr collisionModel = CollisionModelPtr(),		//!< A collision model
 		const SceneObject::Physics &p = SceneObject::Physics(),		//!< physics information
-		CollisionCheckerPtr colChecker = CollisionCheckerPtr()		//!< A collision checker instance (if not set, the global col checker is used)
-		);
+		CollisionCheckerPtr colChecker = CollisionCheckerPtr(),		//!< A collision checker instance (if not set, the global col checker is used)
+		RobotNodeType type = Generic);
 	/*!
 		Initialize with DH parameters.
 
@@ -73,8 +73,8 @@ public:
 		VisualizationNodePtr visualization = VisualizationNodePtr(),  //!< A visualization model
 		CollisionModelPtr collisionModel = CollisionModelPtr(),	//!< A collision model
 		const SceneObject::Physics &p = SceneObject::Physics(),	//!< physics information
-		CollisionCheckerPtr colChecker = CollisionCheckerPtr()	//!< A collision checker instance (if not set, the global col checker is used)
-		);
+		CollisionCheckerPtr colChecker = CollisionCheckerPtr(),	//!< A collision checker instance (if not set, the global col checker is used)
+		RobotNodeType type = Generic);
 
 	/*!
 	*/
@@ -88,6 +88,8 @@ public:
 	virtual void print(bool printChildren = false, bool printDecoration = true) const;
 
 protected:
+    //! Checks if nodeType constraints are fulfilled. Otherwise an exception is thrown. Called on initialization.
+    virtual void checkValidRobotNodeType();
 
 	RobotNodeFixed(){};
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &parentPose);

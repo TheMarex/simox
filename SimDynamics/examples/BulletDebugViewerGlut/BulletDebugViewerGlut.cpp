@@ -26,14 +26,14 @@ int main(int argc,char* argv[])
 	world->addObject(dynObj);
 
 
-	//std::string robFile("robots/examples/SimpleRobot/Joint6.xml");
-	std::string robFile("robots/iCub/iCub.xml");
+	//std::string robFile("robots/examples/SimpleRobot/Joint5.xml");
+	//std::string robFile("robots/iCub/iCub.xml");
 	//std::string robFile("robots/iCub/iCub_LeftLegTest.xml");
-	//std::string robFile("robots/ArmarIII/ArmarIII-RightArm.xml");
+	//std::string robFile("robots/ArmarIII/ArmarIII-RightArmTest5.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-RightHandTest.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-HeadTest.xml");
 	//std::string robFile("robots/ArmarIII/ArmarIII-RightArmTest2.xml");
-	//std::string robFile("robots/ArmarIII/ArmarIII.xml");
+	std::string robFile("robots/ArmarIII/ArmarIII.xml");
 	//std::string robFile("robots/iCub/iCub_RightHand.xml");
 	//std::string robFile("robots/iCub/iCub_testFinger.xml");
 	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robFile);

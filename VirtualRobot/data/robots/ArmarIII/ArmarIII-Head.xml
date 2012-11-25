@@ -36,6 +36,7 @@
         <Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="4" units="kg" />
+            <IgnoreCollision name="Hip Yaw"/>
         </Physics>
         
         <CollisionModel>
@@ -58,6 +59,8 @@
         <Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2" units="kg" />
+            <IgnoreCollision name="Hip Yaw"/>
+            <IgnoreCollision name="Head Base"/>
         </Physics>
         
         <CollisionModel>
@@ -98,6 +101,8 @@
         <Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="6.79877000" units="kg" />
+            <IgnoreCollision name="Neck_2_Roll"/>
+            <IgnoreCollision name="Hip Yaw"/>
         </Physics>
         
         <Visualization>

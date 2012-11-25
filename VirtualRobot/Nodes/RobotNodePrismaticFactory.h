@@ -40,8 +40,8 @@ public:
 	RobotNodePrismaticFactory();
 	virtual ~RobotNodePrismaticFactory();
 
-	virtual RobotNodePtr createRobotNode(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const Eigen::Matrix4f& preJointTransform, const Eigen::Vector3f& axis, const Eigen::Matrix4f& postJointTransform, const Eigen::Vector3f& translationDirection, const SceneObject::Physics &p = SceneObject::Physics()) const;
-	virtual RobotNodePtr createRobotNodeDH(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const DHParameter& dhParameters, const SceneObject::Physics &p = SceneObject::Physics()) const;
+	virtual RobotNodePtr createRobotNode(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const Eigen::Matrix4f& preJointTransform, const Eigen::Vector3f& axis, const Eigen::Matrix4f& postJointTransform, const Eigen::Vector3f& translationDirection, const SceneObject::Physics &p = SceneObject::Physics(), RobotNode::RobotNodeType rntype = RobotNode::Generic) const;
+	virtual RobotNodePtr createRobotNodeDH(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const DHParameter& dhParameters, const SceneObject::Physics &p = SceneObject::Physics(), RobotNode::RobotNodeType rntype = RobotNode::Generic) const;
 // AbstractFactoryMethod
 public:
 	static std::string getName();

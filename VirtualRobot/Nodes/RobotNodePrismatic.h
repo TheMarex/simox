@@ -58,8 +58,8 @@ public:
 						CollisionModelPtr collisionModel = CollisionModelPtr(),			//!< A collision model
 						float jointValueOffset = 0.0f,									//!< An offset that is internally added to the joint value
 						const SceneObject::Physics &p = SceneObject::Physics(),			//!< physics information
-						CollisionCheckerPtr colChecker = CollisionCheckerPtr()			//!< A collision checker instance (if not set, the global col checker is used)
-						);
+						CollisionCheckerPtr colChecker = CollisionCheckerPtr(),			//!< A collision checker instance (if not set, the global col checker is used)
+						RobotNodeType type = Generic);
 	RobotNodePrismatic(	RobotWeakPtr rob, 									//!< The robot
 						const std::string &name,							//!< The name
 						float jointLimitLo,									//!< lower joint limit
@@ -72,8 +72,8 @@ public:
 						CollisionModelPtr collisionModel = CollisionModelPtr(),			//!< A collision model
 						float jointValueOffset = 0.0f,									//!< An offset that is internally added to the joint value
 						const SceneObject::Physics &p = SceneObject::Physics(),			//!< physics information
-						CollisionCheckerPtr colChecker = CollisionCheckerPtr()			//!< A collision checker instance (if not set, the global col checker is used)
-						);
+						CollisionCheckerPtr colChecker = CollisionCheckerPtr(),			//!< A collision checker instance (if not set, the global col checker is used)
+						RobotNodeType type = Generic);
 	/*!
 	*/
 	virtual ~RobotNodePrismatic();
@@ -106,6 +106,9 @@ protected:
 		\param updateChildren Usually it is assumed that all RobotNodes are updated this way (updateChildren=false). If not, the children poses can be updated according to this node (updateCHildren=true).
 	*/
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, bool updateChildren = false);
+
+    //! Checks if nodeType constraints are fulfilled. Otherwise an exception is thrown. Called on initialization.
+    virtual void checkValidRobotNodeType();
 
 	RobotNodePrismatic(){};
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &parentPose);

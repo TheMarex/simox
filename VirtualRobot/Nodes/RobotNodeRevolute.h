@@ -59,8 +59,8 @@ public:
 						CollisionModelPtr collisionModel = CollisionModelPtr(),			//!< A collision model
 						float jointValueOffset = 0.0f,									//!< An offset that is internally added to the joint value
 						const SceneObject::Physics &p = SceneObject::Physics(),			//!< physics information
-						CollisionCheckerPtr colChecker = CollisionCheckerPtr()			//!< A collision checker instance (if not set, the global col checker is used)
-						);
+						CollisionCheckerPtr colChecker = CollisionCheckerPtr(),			//!< A collision checker instance (if not set, the global col checker is used)
+						RobotNodeType type = Generic);
 	RobotNodeRevolute(	RobotWeakPtr rob, 									//!< The robot
 						const std::string &name,							//!< The name
 						float jointLimitLo,									//!< lower joint limit
@@ -73,8 +73,8 @@ public:
 						CollisionModelPtr collisionModel = CollisionModelPtr(),		//!< A collision model
 						float jointValueOffset = 0.0f,								//!< An offset that is internally added to the joint value
 						const SceneObject::Physics &p = SceneObject::Physics(),		//!< physics information
-						CollisionCheckerPtr colChecker = CollisionCheckerPtr()		//!< A collision checker instance (if not set, the global col checker is used)
-						);
+						CollisionCheckerPtr colChecker = CollisionCheckerPtr(),		//!< A collision checker instance (if not set, the global col checker is used)
+						RobotNodeType type = Generic);
 	/*!
 	*/
 	virtual ~RobotNodeRevolute();
@@ -106,6 +106,8 @@ protected:
 	*/
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, bool updateChildren = false);
 
+    //! Checks if nodeType constraints are fulfilled. Otherwise an exception is thrown. Called on initialization.
+    virtual void checkValidRobotNodeType();
 
 	RobotNodeRevolute(){};
 	

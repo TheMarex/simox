@@ -276,13 +276,20 @@ bool SimDynamicsWindow::loadRobot(std::string robotFilename)
 		cout << " ERROR while creating robot" << endl;
 		return false;
 	}
-	//robot->print();
-	Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
-	gp(2,3) = 200.0f;
-	robot->setGlobalPose(gp);
-	dynamicsRobot = dynamicsWorld->CreateDynamicsRobot(robot);
-	dynamicsWorld->addRobot(dynamicsRobot);
-
+    try
+    {
+	    //robot->print();
+	    Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
+	    gp(2,3) = 200.0f;
+	    robot->setGlobalPose(gp);
+	    dynamicsRobot = dynamicsWorld->CreateDynamicsRobot(robot);
+	    dynamicsWorld->addRobot(dynamicsRobot);
+    }catch (VirtualRobotException &e)
+    {
+        cout << " ERROR while building dynamic robot" << endl;
+        cout << e.what();
+        return false;
+    }
 	updateJoints();
     return true;
 }
@@ -344,17 +351,26 @@ void SimDynamicsWindow::updateJointInfo()
         info << "jv rn:" << tmp.toStdString();
 
 		qJV += QString(" / ");
-		tmp = QString::number(dynamicsRobot->getJointAngle(rn),'f',3);
+        if (dynamicsRobot->isNodeActuated(rn))
+		    tmp = QString::number(dynamicsRobot->getJointAngle(rn),'f',3);
+        else 
+            tmp = QString("-");
         qJV += tmp;
         info << ",\tjv bul:" << tmp.toStdString();
 
 		qTarget = QString("Joint target: ");
-		tmp = QString::number(dynamicsRobot->getNodeTarget(rn),'f',3);
+        if (dynamicsRobot->isNodeActuated(rn))
+    		tmp = QString::number(dynamicsRobot->getNodeTarget(rn),'f',3);
+        else
+            tmp = QString("-");
         qTarget +=tmp;
         info << ",targ:" << tmp.toStdString();
 
 		qVel = QString("Joint velocity: ");
-		tmp = QString::number(dynamicsRobot->getJointSpeed(rn),'f',3);
+        if (dynamicsRobot->isNodeActuated(rn))
+    		tmp = QString::number(dynamicsRobot->getJointSpeed(rn),'f',3);
+        else
+            tmp = QString("-");
         qVel +=tmp;
         info << ",vel:" << tmp.toStdString();
         Eigen::Matrix4f gp = rn->getGlobalPose();
@@ -381,8 +397,10 @@ void SimDynamicsWindow::updateJointInfo()
         qVisu += QString::number(gp(1,3),'f',2);
         qVisu += QString("/");
         qVisu += QString::number(gp(2,3),'f',2);
-
-        gp = dynamicsRobot->getComGlobal(rn);
+        if (dynamicsRobot->hasDynamicsRobotNode(rn))
+            gp = dynamicsRobot->getComGlobal(rn);
+        else
+            gp = Eigen::Matrix4f::Identity();
         qCom = QString("COM (bullet):");
         qCom += QString::number(gp(0,3),'f',2);
         qCom += QString("/");
@@ -447,6 +465,7 @@ void SimDynamicsWindow::updateContactVisu()
 	std::vector<SimDynamics::DynamicsEngine::DynamicsContactInfo> c = dynamicsWorld->getEngine()->getContacts();
 	for (size_t i=0;i<c.size();i++)
 	{
+        cout << "Contact: " << c[i].objectA->getName() << " + " << c[i].objectB->getName() << endl;
 		SoSeparator *normal = new SoSeparator;
 		SoMatrixTransform *m = new SoMatrixTransform;
 		SbMatrix ma;

@@ -36,6 +36,10 @@ public:
 	DHParameter()
 	{
 		_a = _d = _alpha = _theta = 0;
+        _thetaRotation = Eigen::Matrix4f::Identity();
+        _dTranslation = Eigen::Matrix4f::Identity();
+        _aTranslation = Eigen::Matrix4f::Identity();
+        _alphaRotation = Eigen::Matrix4f::Identity();
 		isSet = false;
 	};
 
@@ -77,6 +81,14 @@ public:
 	{
 		return _alphaRotation;
 	}
+
+    //! The complete transformation
+    Eigen::Matrix4f transformation() const
+    {
+        return _thetaRotation*_dTranslation*_aTranslation*_alphaRotation;
+    }
+
+
 
 	bool isSet;
 protected:

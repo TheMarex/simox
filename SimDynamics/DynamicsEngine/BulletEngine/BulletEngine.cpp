@@ -366,7 +366,9 @@ void BulletEngine::print()
 		std::vector<BulletRobot::LinkInfo> links = br->getLinks();
 		for (size_t j=0;j<links.size();j++)
 		{
-			cout << "++++ Link " << j << ":" << links[j].node2->getName();
+            cout << "++++ Link " << j << ":" << links[j].nodeJoint->getName();
+            cout << "++++ - ColModelA " << j << ":" << links[j].nodeA->getName();
+            cout << "++++ - ColModelB " << j << ":" << links[j].nodeB->getName();
 			
 			cout << "     enabled:" << links[j].joint->isEnabled() << endl;
             boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(links[j].joint);

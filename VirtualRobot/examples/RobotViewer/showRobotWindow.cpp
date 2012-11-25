@@ -402,6 +402,11 @@ void showRobotWindow::loadRobot()
 {
 	robotSep->removeAllChildren();
 	cout << "Loading Robot from " << m_sRobotFilename << endl;
+    currentEEF.reset();
+    currentRobotNode.reset();
+    currentRobotNodes.clear();
+    currentRobotNodeSet.reset();
+    robot.reset();
 
 	try
 	{
@@ -475,6 +480,38 @@ void showRobotWindow::closeHand()
 
 void showRobotWindow::openHand()
 {
+#if 1
+    if (robot)
+    {
+        float randMult = (float)(1.0/(double)(RAND_MAX));
+        std::vector<RobotNodePtr> rn = robot->getRobotNodes();
+        std::vector<RobotNodePtr> rnJoints;
+        for (size_t j=0;j<rn.size();j++)
+        {
+            if (rn[j]->isRotationalJoint())
+                rnJoints.push_back(rn[j]);
+        }
+        int loops = 10000;
+        clock_t startT = clock();
+        for (int i=0;i<loops;i++)
+        {
+            std::vector<float> jv;
+            for (size_t j=0;j<rnJoints.size();j++)
+            {
+                float t = (float)rand() * randMult; // value from 0 to 1
+                t = rnJoints[j]->getJointLimitLo() + (rnJoints[j]->getJointLimitHi() - rnJoints[j]->getJointLimitLo())*t;
+                jv.push_back(t);
+            }
+            robot->setJointValues(rnJoints,jv);
+        }
+        clock_t endT = clock();
+
+        float diffClock = (float)(((float)(endT - startT) / (float)CLOCKS_PER_SEC) * 1000.0f);
+        cout << "RobotNodes:" << rn.size() << endl;
+        cout << "Joints:" << rnJoints.size() << endl;
+        cout << "loops:" << loops << ". time (ms):" << diffClock << ". Per loop:" << diffClock/(float)loops << endl;
+    }
+#endif
 	if (currentEEF)
 		currentEEF->openActors();
 }

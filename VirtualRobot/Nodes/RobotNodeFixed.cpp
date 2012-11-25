@@ -17,12 +17,14 @@ RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob,
 	VisualizationNodePtr visualization, 
 	CollisionModelPtr collisionModel,
 	const SceneObject::Physics &p,
-	CollisionCheckerPtr colChecker
-	) : RobotNode(rob,name,0.0f,0.0f,visualization,collisionModel,0.0f,p,colChecker)
+	CollisionCheckerPtr colChecker,
+    RobotNodeType type
+	) : RobotNode(rob,name,0.0f,0.0f,visualization,collisionModel,0.0f,p,colChecker,type)
 {
 	optionalDHParameter.isSet = false;
 	this->preJointTransformation = preJointTransform;
 	this->postJointTransformation = postJointTransform;
+    checkValidRobotNodeType();
 }
 
 RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob, 
@@ -31,8 +33,9 @@ RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob,
 	VisualizationNodePtr visualization, 
 	CollisionModelPtr collisionModel,
 	const SceneObject::Physics &p,
-	CollisionCheckerPtr colChecker
-	) : RobotNode(rob,name,0.0f,1.0f,visualization,collisionModel,0.0f,p,colChecker)
+	CollisionCheckerPtr colChecker,
+    RobotNodeType type
+	) : RobotNode(rob,name,0.0f,1.0f,visualization,collisionModel,0.0f,p,colChecker,type)
 {
 	initialized = false;
 	optionalDHParameter.isSet = true;
@@ -100,11 +103,17 @@ RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, /*const std::vector
 	RobotNodePtr result;
 
 	if (optionalDHParameter.isSet)
-		result.reset(new RobotNodeFixed(newRobot,name,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,physics,colChecker));
+		result.reset(new RobotNodeFixed(newRobot,name,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,physics,colChecker,nodeType));
 	else
-		result.reset(new RobotNodeFixed(newRobot,name,getPreJointTransformation(),getPostJointTransformation(),visualizationModel,collisionModel,physics,colChecker));
+		result.reset(new RobotNodeFixed(newRobot,name,getPreJointTransformation(),getPostJointTransformation(),visualizationModel,collisionModel,physics,colChecker,nodeType));
 
 	return result;
+}
+
+void RobotNodeFixed::checkValidRobotNodeType()
+{
+    RobotNode::checkValidRobotNodeType();
+    THROW_VR_EXCEPTION_IF (nodeType==Joint, "RobotNodeFixed not compatible with JointNode");
 }
 
 

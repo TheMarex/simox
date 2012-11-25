@@ -105,7 +105,8 @@ protected:
                                              int &robotNodeCounter,
 											 std::vector< std::string > &childrenNames,
                                              std::vector< ChildFromRobotDef > &childrenFromRobot,
-                                             RobotDescription loadMode = eFull);
+                                             RobotDescription loadMode = eFull,
+                                             RobotNode::RobotNodeType rntype = RobotNode::Generic);
 	static EndEffectorPtr processEndeffectorNode(rapidxml::xml_node<char>* endeffectorXMLNode, RobotPtr robo);
 	static EndEffectorActorPtr processEndeffectorActorNode(rapidxml::xml_node<char>* endeffectorActorXMLNode, RobotPtr robo);
 	static void processEndeffectorStaticNode(rapidxml::xml_node<char>* endeffectorStaticXMLNode, RobotPtr robo, std::vector<RobotNodePtr>& staticNodesList);
@@ -113,13 +114,13 @@ protected:
 	static void processActorNodeList(rapidxml::xml_node<char>* parentNode, RobotPtr robot, std::vector<EndEffectorActor::ActorDefinition>& actorList, bool clearList = true);
 	//static RobotNodeSetPtr processRobotNodeSet(rapidxml::xml_node<char> *setXMLNode, RobotPtr robo, const std::string &rootName, int &robotNodeSetCounter);
 	static void processChildNode(rapidxml::xml_node<char> *childXMLNode, std::vector<std::string> &childrenNames);
-	static RobotNodePtr processJointNode(rapidxml::xml_node<char> *jointXMLNode, const std::string& robotNodeName,
-		RobotPtr robot, VisualizationNodePtr visualizationNode, CollisionModelPtr collisionModel, SceneObject::Physics &physics);
+	static RobotNodePtr processJointNode(   rapidxml::xml_node<char> *jointXMLNode, const std::string& robotNodeName,
+	                                        RobotPtr robot, VisualizationNodePtr visualizationNode, CollisionModelPtr collisionModel, 
+                                            SceneObject::Physics &physics, RobotNode::RobotNodeType rntype,Eigen::Matrix4f &transformationMatrix);
 	static void processChildFromRobotNode(rapidxml::xml_node<char> *childXMLNode, const std::string &nodeName, std::vector< ChildFromRobotDef > &childrenFromRobot);
 	static void processLimitsNode(rapidxml::xml_node<char> *limitsXMLNode, float &jointLimitLo, float &jointLimitHi);
 	static std::map<std::string,int> robot_name_counter;
 	static VisualizationNodePtr checkUseAsColModel(rapidxml::xml_node<char>* visuXMLNode, const std::string &robotNodeName, const std::string &basePath);
-
 };
 
 }

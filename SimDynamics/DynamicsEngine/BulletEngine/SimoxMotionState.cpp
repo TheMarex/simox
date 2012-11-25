@@ -121,10 +121,10 @@ void SimoxMotionState::setGlobalPoseSimox( const Eigen::Matrix4f& worldPose )
 
 		    // we assume that all models are handled by Bullet, so we do not need to update children
 		    robotNodeActuator->updateVisualizationPose(resPose, ja, false); 
-        } else
+        } /*else
         {
             VR_WARNING << "Could not determine dynamic robot?!" << endl;
-        }
+        }*/
 	} else
 	{
 		sceneObject->setGlobalPose(resPose);

@@ -101,7 +101,8 @@ protected:
 	static bool hasUnitsAttribute(rapidxml::xml_node<char> *node);
 	static std::vector< Units > getUnitsAttributes(rapidxml::xml_node<char> *node);
 	static void getAllAttributes(rapidxml::xml_node<char> *node, const std::string &attrString, std::vector<std::string> &storeValues);
-	static boost::mutex mutex; 
+    static void processDHNode(rapidxml::xml_node<char> *dhXMLNode, DHParameter &dh);
+    static boost::mutex mutex; 
 };
 
 }

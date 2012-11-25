@@ -21,15 +21,16 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 									   CollisionModelPtr collisionModel,
 									   float jointValueOffset,
 									   const SceneObject::Physics &p,
-									   CollisionCheckerPtr colChecker
-									   ) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker)
-
+									   CollisionCheckerPtr colChecker,
+                                       RobotNodeType type
+									   ) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker,type)
 {
 	initialized = false;
 	optionalDHParameter.isSet = false;
 	this->preJointTransformation = preJointTransform;
 	this->jointRotationAxis = axis;
 	this->postJointTransformation = postJointTransform;
+    checkValidRobotNodeType();
 }
 
 RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob, 
@@ -41,8 +42,9 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 									   CollisionModelPtr collisionModel,
 									   float jointValueOffset,
 									   const SceneObject::Physics &p,
-									   CollisionCheckerPtr colChecker
-									   ) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker)
+									   CollisionCheckerPtr colChecker,
+                                       RobotNodeType type
+									   ) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker,type)
 
 {
 	initialized = false;
@@ -68,9 +70,10 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 	RotAlpha(2,1) = sin(alpha);
 	RotAlpha(2,2) = cos(alpha);
 
-	this->preJointTransformation = RotTheta;//Eigen::Matrix4f::Identity();	// no pre transformation->why?
+	this->preJointTransformation = RotTheta;
 	this->jointRotationAxis = Eigen::Vector3f(0,0,1);			// rotation around z axis
 	this->postJointTransformation = TransD*TransA*RotAlpha;
+    checkValidRobotNodeType();
 }
 
 
@@ -115,9 +118,9 @@ RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, /*const std::vec
 	RobotNodePtr result;
 
 	if (optionalDHParameter.isSet)
-		result.reset(new RobotNodeRevolute(newRobot,name, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker));
+		result.reset(new RobotNodeRevolute(newRobot,name, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker,nodeType));
 	else
-		result.reset(new RobotNodeRevolute(newRobot,name,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointRotationAxis,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics,colChecker));
+		result.reset(new RobotNodeRevolute(newRobot,name,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointRotationAxis,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics,colChecker,nodeType));
 	return result;
 }
 
@@ -177,6 +180,12 @@ void RobotNodeRevolute::updateVisualizationPose( const Eigen::Matrix4f &globalPo
 Eigen::Vector3f RobotNodeRevolute::getJointRotationAxisInJointCoordSystem() const
 {
 	return jointRotationAxis;
+}
+
+void RobotNodeRevolute::checkValidRobotNodeType()
+{
+    RobotNode::checkValidRobotNodeType();
+    THROW_VR_EXCEPTION_IF (nodeType==Body || nodeType==Transform, "RobotNodeRevolute must be a JointNode or a GenericNode");
 }
 
 } // namespace

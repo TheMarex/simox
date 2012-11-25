@@ -70,11 +70,17 @@ public:
 			std::cout << " ** Mass: " << massKg << " [kg]" << std::endl;
 			std::cout << " ** local CoM [mm]: " <<  localCoM(0) << localCoM(1) << localCoM(2) << std::endl;
 			std::cout << " ** inertia matrix [kg*m^2] :\n " << intertiaMatrix  << std::endl;
+            if (ignoreCollisions.size()>0)
+            {
+                std::cout << " ** Ignore Collisions with:" << std::endl;
+                for (size_t i=0;i<ignoreCollisions.size();i++)
+                    std::cout << " **** " << ignoreCollisions[i] << std::endl;
+            }
 		}
 
 		bool isSet()
 		{
-			return (massKg!=0.0f || comLocation!=eCustom || !localCoM.isZero() || !intertiaMatrix.isIdentity());
+			return (massKg!=0.0f || comLocation!=eCustom || !localCoM.isZero() || !intertiaMatrix.isIdentity() || ignoreCollisions.size()>0);
 		}
 
 		std::string getXMLString(int tabs)
@@ -95,6 +101,8 @@ public:
 			ss << ta << "\t<InertiaMatrix>\n";
 			ss << MathTools::getTransformXMLString(intertiaMatrix,tabs+2,true);
 			ss << ta << "\t</InertiaMatrix>\n";
+            for (size_t i=0;i<ignoreCollisions.size();i++)
+                ss << ta << "\t<IgnoreCollisions name='" << ignoreCollisions[i] << "'/>\n";
 			ss << ta << "</Physics>\n";
 			return ss.str();
 		}
@@ -103,6 +111,7 @@ public:
 		float massKg;				//!< The mass of this object
 		CoMLocation comLocation;	//!< Where is the CoM located
 		Eigen::Matrix3f intertiaMatrix; //! in kg*m^2
+        std::vector< std::string > ignoreCollisions; // ignore collisions with other objects (only used within collision engines)
 	};
 
 	/*!
@@ -268,6 +277,11 @@ public:
 
 	void setInertiaMatrix(const Eigen::Matrix3f &im);
 
+    /*!
+        Collisions with these models are ignored by physics engine (only considered within the SimDynamics package!).
+    */
+    std::vector<std::string> getIgnoredCollisionModels();
+
 
 	virtual void print(bool printChildren = false, bool printDecoration = true) const;
 
@@ -330,6 +344,9 @@ public:
 
 	virtual std::vector<SceneObjectPtr> getChildren() const {return children;}
 
+    //! Compute the global pose of this object 
+    virtual void updatePose( bool updateChildren = true);
+
 protected:
 	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const;
 
@@ -338,8 +355,6 @@ protected:
 	//! Parent attached this object 
 	virtual void attached(SceneObjectPtr parent);
 
-	//! Compute the global pose of this object 
-	virtual void updatePose( bool updateChildren = true);
 	virtual void updatePose( const Eigen::Matrix4f &parentPose, bool updateChildren = true );
 
 

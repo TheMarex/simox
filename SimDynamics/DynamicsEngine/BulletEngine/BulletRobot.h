@@ -47,8 +47,10 @@ public:
 
 	struct LinkInfo
 	{
-		VirtualRobot::RobotNodePtr node1; // parent
-		VirtualRobot::RobotNodePtr node2; // child
+		VirtualRobot::RobotNodePtr nodeA; // parent
+        VirtualRobot::RobotNodePtr nodeB; // child
+        VirtualRobot::RobotNodePtr nodeJoint; // joint
+        VirtualRobot::RobotNodePtr nodeJoint2; // joint2 (only used for hinge2/universal joints)
 		BulletObjectPtr dynNode1; // parent
 		BulletObjectPtr dynNode2; // child
 		std::vector< std::pair<DynamicsObjectPtr,DynamicsObjectPtr> > disabledCollisionPairs;
@@ -100,9 +102,22 @@ protected:
 
 	void buildBulletModels(bool enableJointMotors);
 
+    //void createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::RobotNodePtr joint, VirtualRobot::RobotNodePtr bodyB, Eigen::Matrix4f &trafoA2J, Eigen::Matrix4f &trafoJ2B, bool enableJointMotors = true );
+    // Possible joint types:
+    // fixed                (joint=fixed        !joint2)
+    // hinge                (joint=revolute     !joint2)
+    // universal (hinge2)   (joint=revolute     joint2=revolute) // experimental
+    void createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::RobotNodePtr joint, VirtualRobot::RobotNodePtr joint2, VirtualRobot::RobotNodePtr bodyB, bool enableJointMotors = true );
+
 	void createLink(VirtualRobot::RobotNodePtr node1,VirtualRobot::RobotNodePtr node2, bool enableJointMotors);
 
-	std::vector<LinkInfo> links;
+    // ensure that all robot nodes, which are not actuated directly, are at the correct pose
+    void setPoseNonActuatedRobotNodes();
+
+    // process all ignoreCollision tags of physics section of RobotNode. Adds according collision disabled information to physics engine.
+    void addIgnoredCollisionModels(VirtualRobot::RobotNodePtr rn);
+
+    std::vector<LinkInfo> links;
 
 	btScalar bulletMaxMotorImulse;
 

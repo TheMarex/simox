@@ -26,9 +26,9 @@ RobotNodeRevoluteFactory::~RobotNodeRevoluteFactory()
  *
  * \return instance of VirtualRobot::RobotNodeRevolute.
  */
-RobotNodePtr RobotNodeRevoluteFactory::createRobotNode(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const Eigen::Matrix4f& preJointTransform, const Eigen::Vector3f& axis, const Eigen::Matrix4f& postJointTransform, const Eigen::Vector3f& translationDirection, const SceneObject::Physics &p) const
+RobotNodePtr RobotNodeRevoluteFactory::createRobotNode(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const Eigen::Matrix4f& preJointTransform, const Eigen::Vector3f& axis, const Eigen::Matrix4f& postJointTransform, const Eigen::Vector3f& translationDirection, const SceneObject::Physics &p, RobotNode::RobotNodeType rntype) const
 {
-	RobotNodePtr robotNode(new RobotNodeRevolute(robot, nodeName, limitLow, limitHigh, preJointTransform, axis, postJointTransform, visualizationModel, collisionModel, jointValueOffset, p));
+	RobotNodePtr robotNode(new RobotNodeRevolute(robot, nodeName, limitLow, limitHigh, preJointTransform, axis, postJointTransform, visualizationModel, collisionModel, jointValueOffset, p,  CollisionCheckerPtr(), rntype));
 
 	return robotNode;
 }
@@ -39,9 +39,9 @@ RobotNodePtr RobotNodeRevoluteFactory::createRobotNode(RobotPtr robot, const std
  *
  * \return instance of VirtualRobot::RobotNodeRevolute.
  */
-RobotNodePtr RobotNodeRevoluteFactory::createRobotNodeDH(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const DHParameter& dhParameters, const SceneObject::Physics &p) const
+RobotNodePtr RobotNodeRevoluteFactory::createRobotNodeDH(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const DHParameter& dhParameters, const SceneObject::Physics &p, RobotNode::RobotNodeType rntype) const
 {
-	RobotNodePtr robotNode(new RobotNodeRevolute(robot, nodeName, limitLow, limitHigh, dhParameters.aMM(), dhParameters.dMM(), dhParameters.alphaRadian(), dhParameters.thetaRadian(), visualizationModel, collisionModel, jointValueOffset, p));
+	RobotNodePtr robotNode(new RobotNodeRevolute(robot, nodeName, limitLow, limitHigh, dhParameters.aMM(), dhParameters.dMM(), dhParameters.alphaRadian(), dhParameters.thetaRadian(), visualizationModel, collisionModel, jointValueOffset, p,  CollisionCheckerPtr(), rntype));
 
 	return robotNode;
 }

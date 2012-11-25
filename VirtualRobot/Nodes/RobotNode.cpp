@@ -30,11 +30,13 @@ RobotNode::RobotNode(	RobotWeakPtr rob,
 						CollisionModelPtr collisionModel,
 						float jointValueOffset,
 						const SceneObject::Physics &p,
-						CollisionCheckerPtr colChecker) 
+						CollisionCheckerPtr colChecker,
+                        RobotNodeType type) 
 						: SceneObject(name,visualization,collisionModel,p,colChecker)
 
 
 {
+    nodeType = type;
 	maxVelocity = 0.0f;
 	maxAcceleration = 0.0f;
 	maxTorque = 0.0f;
@@ -82,9 +84,40 @@ bool RobotNode::initialize(SceneObjectPtr parent, const std::vector<SceneObjectP
 		v->setGlobalPose(postJointTransformation);
 	}
 
+    checkValidRobotNodeType();
+
 	return SceneObject::initialize(parent,children);	
 }
 
+void RobotNode::checkValidRobotNodeType()
+{
+    switch (nodeType)
+    {
+    case Generic:
+        return;
+        break;
+
+    case Joint:
+        THROW_VR_EXCEPTION_IF(visualizationModel, "No visualization models allowed in JointNodes");
+        THROW_VR_EXCEPTION_IF(collisionModel, "No collision models allowed in JointNodes");
+        THROW_VR_EXCEPTION_IF(postJointTransformation != Eigen::Matrix4f::Identity() , "No postJoint transformations allowed in JointNodes");
+        break;
+
+    case Body:
+        THROW_VR_EXCEPTION_IF(postJointTransformation != Eigen::Matrix4f::Identity() , "No transformations allowed in BodyNodes");
+        THROW_VR_EXCEPTION_IF(preJointTransformation != Eigen::Matrix4f::Identity() , "No transformations allowed in BodyNodes");
+
+        break;
+    case Transform:
+        THROW_VR_EXCEPTION_IF(visualizationModel, "No visualization models allowed in TransformationNodes");
+        THROW_VR_EXCEPTION_IF(collisionModel, "No collision models allowed in TransformationNodes");
+        break;
+    default:
+        VR_ERROR << "RobotNodeType nyi..." << endl;
+
+    }
+
+}
 
 RobotPtr RobotNode::getRobot() const
 {
@@ -583,6 +616,11 @@ Eigen::Matrix4f RobotNode::getGlobalPose() const
 {
 	ReadLockPtr lock = getRobot()->getReadLock();
 	return globalPosePostJoint;
+}
+
+RobotNode::RobotNodeType RobotNode::getType()
+{
+    return nodeType;
 }
 
 

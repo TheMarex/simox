@@ -53,6 +53,7 @@
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="1.55685000" units="kg" />
+            <IgnoreCollision name="Shoulder 1 L"/>
         </Physics>
         <Visualization enable="true">
 			<File type="Inventor">fullmodel/upperarm_l.iv</File>
@@ -129,6 +130,7 @@
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2.59945309" units="kg" />
+            <IgnoreCollision name="Underarm L"/>
         </Physics>
         <Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>

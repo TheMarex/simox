@@ -52,6 +52,7 @@
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="1.55685000" units="kg" />
+            <IgnoreCollision name="Shoulder 1 R"/>
         </Physics>
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/upperarm_r.iv</File>
@@ -134,6 +135,7 @@
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2.59945309" units="kg" />
+            <IgnoreCollision name="Underarm R"/>
         </Physics>
 		<ChildFromRobot>
 			<File importEEF="true">ArmarIII-RightHand.xml</File>

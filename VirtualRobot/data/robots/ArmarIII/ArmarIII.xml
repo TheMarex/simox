@@ -18,9 +18,9 @@
 	</RobotNode>
 	
 	<RobotNode name="X_Platform">
-		<Joint type="prismatic">
+		<Joint type="fixed">
 			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
-			<Limits unit="mm" lo="-10000" hi="10000"/>
+            <!--Limits unit="mm" lo="-10000" hi="10000"/-->
 		</Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -29,9 +29,9 @@
 	</RobotNode>
 	
 	<RobotNode name="Y_Platform">
-		<Joint type="prismatic">
+		<Joint type="fixed">
 			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
-			<Limits unit="mm" lo="-10000" hi="10000"/>
+            <!--Limits unit="mm" lo="-10000" hi="10000"/-->
 		</Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -102,6 +102,7 @@
 		</Visualization>
 		<Physics>
             <Mass value="10" units="kg" />
+            <IgnoreCollision name="Platform"/>
         </Physics>
 		<CollisionModel>
 			<File type="Inventor">convexModel/platform_roll_link.iv</File>
@@ -117,6 +118,8 @@
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="15.415" units="kg" />
+            <IgnoreCollision name="Hip Pitch"/>
+            <IgnoreCollision name="Platform"/>
         </Physics>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>

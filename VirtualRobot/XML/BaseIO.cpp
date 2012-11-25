@@ -290,6 +290,51 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 			}
 		}
 	}
+
+    // DH
+    rapidxml::xml_node<> *dhXMLNode = trXMLNode->first_node("dh",0,false);
+    THROW_VR_EXCEPTION_IF((dhXMLNode && (rotation||translation)), "Multiple rotations/translations defined in <Transformation> tag: " << tagName << "! Ignoring DH node." << endl);
+
+    if (dhXMLNode)
+    {
+        DHParameter dh;
+        processDHNode(dhXMLNode,dh);
+        transform = dh.transformation();
+        rotation = true;
+        translation = true;
+    }
+}
+
+
+void BaseIO::processDHNode(rapidxml::xml_node<char> *dhXMLNode, DHParameter &dh)
+{
+    rapidxml::xml_attribute<> *attr;
+    std::vector< Units > unitsAttr = getUnitsAttributes(dhXMLNode);
+    Units uAngle("rad");
+    Units uLength("mm");
+    for (size_t i=0;i<unitsAttr.size();i++)
+    {
+        if (unitsAttr[i].isAngle())
+            uAngle = unitsAttr[i];
+        if (unitsAttr[i].isLength())
+            uLength = unitsAttr[i];
+    }
+
+    dh.isSet = true;
+    bool isRadian = uAngle.isRadian();
+
+    attr = dhXMLNode->first_attribute("a", 0, false);
+    if (attr)
+        dh.setAInMM(uLength.toMillimeter(convertToFloat(attr->value())));
+    attr = dhXMLNode->first_attribute("d", 0, false);
+    if (attr)
+        dh.setDInMM(uLength.toMillimeter(convertToFloat(attr->value())));
+    attr = dhXMLNode->first_attribute("alpha", 0, false);
+    if (attr)
+        dh.setAlphaRadian(convertToFloat(attr->value()), isRadian);
+    attr = dhXMLNode->first_attribute("theta", 0, false);
+    if (attr)
+        dh.setThetaRadian(convertToFloat(attr->value()), isRadian);
 }
 
 bool BaseIO::hasUnitsAttribute(rapidxml::xml_node<char> *node)
@@ -880,23 +925,15 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 		physics.intertiaMatrix *= factor;
 
 	}
-	/*rapidxml::xml_node<> *velXMLNode = physicsXMLNode->first_node("maxVelocity",0,false);
-	if (velXMLNode)
-	{
-		physics.maxVelocity = getFloatByAttributeName(velXMLNode,"value");
+	rapidxml::xml_node<> *ignoreColXMLNode = physicsXMLNode->first_node("ignorecollision",0,false);
+    while (ignoreColXMLNode)
+    {
+        rapidxml::xml_attribute<> *attr = ignoreColXMLNode->first_attribute("name", 0, false);
+        THROW_VR_EXCEPTION_IF(!attr, "Expecting 'name' attribute in <IgnoreCollision> tag..." << endl)
+        std::string s(attr->value());
+        physics.ignoreCollisions.push_back(s);
+        ignoreColXMLNode = ignoreColXMLNode->next_sibling("ignorecollision",0,false);
 	} 	
-	rapidxml::xml_node<> *accXMLNode = physicsXMLNode->first_node("maxAcceleration",0,false);
-	if (accXMLNode)
-	{
-		physics.maxAcceleration = getFloatByAttributeName(accXMLNode,"value");
-	} 
-
-	rapidxml::xml_node<> *torXMLNode = physicsXMLNode->first_node("maxTorque",0,false);
-	if (torXMLNode)
-	{
-		physics.maxTorque = getFloatByAttributeName(torXMLNode,"value");
-	} */
-
 }
 
 std::string BaseIO::processFileNode( rapidxml::xml_node<char> *fileNode, const std::string &basePath )

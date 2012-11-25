@@ -58,7 +58,7 @@ class RobotNodeActuator;
 
 
 */
-class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNode : /*public boost::enable_shared_from_this<RobotNode>,*/ public SceneObject
+class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNode : public SceneObject
 {
 public:
 	friend class Robot;
@@ -67,6 +67,14 @@ public:
 	friend class RobotFactory;
 	friend class RobotNodeActuator;
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    enum RobotNodeType
+    {
+        Generic,        //! No constraints
+        Joint,          //! Only pre-joint transformations allowed (e.g. DH-theta for revolute joints). No visualization/collision models.
+        Body,           //! No transformations allowed. Only visualization and/or collision models together with physic information.
+        Transform       //! Only transformations allowed. No joint or model tags.
+    };
 
 	/*!
 		Constructor with settings.
@@ -80,7 +88,8 @@ public:
 				CollisionModelPtr collisionModel = CollisionModelPtr(),
 				float jointValueOffset = 0.0f,
 				const SceneObject::Physics &p = SceneObject::Physics(),
-				CollisionCheckerPtr colChecker = CollisionCheckerPtr());
+				CollisionCheckerPtr colChecker = CollisionCheckerPtr(),
+                RobotNodeType type = Generic);
 
 	/*!
 	*/
@@ -176,18 +185,6 @@ public:
 	*/
 	virtual void print(bool printChildren = false, bool printDecoration = true) const;
 
-	//virtual void addChildNode(RobotNodePtr child);
-
-	/*
-		Returns true when child is a children of this node. If recursive is true, all children of children etc are also queried.
-	*/
-	//virtual bool hasChildNode(const RobotNodePtr child, bool recursive = false) const;
-	/*
-		Returns true when child is a children of this node. If recursive is true, all children of children etc are also queried.
-	*/
-	//virtual bool hasChildNode(const std::string &child, bool recursive = false) const;
-
-
 	float getJointLimitLo();
 	float getJointLimitHi();
 
@@ -259,13 +256,22 @@ public:
 	*/
 	float getMaxTorque();
 
+    RobotNodeType getType();
+
 	//! Forbid cloning method from SceneObject. We need to know the new robot for cloning
 	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
 
-private: // Use the private setters and getters instead
-	//std::vector<std::string> childrenNames;
-	//std::vector< RobotNodePtr > children;
-	//RobotNodeWeakPtr parent;
+    /*!
+        When joint was created via DH parameters, they can be accessed here.
+    */
+    const DHParameter& getOptionalDHParameters() {return optionalDHParameter;}
+
+
+    /*!
+		Compute/Update the transformations of this joint and all child joints. Therefore the parent is queried for its pose.
+        This method is called by the robot in order to update the pose matrices.
+	*/
+	virtual void updatePose(bool updateChildren = true);
 
 
 protected:
@@ -281,13 +287,14 @@ protected:
 	*/
 	virtual void setJointValueNoUpdate(float q);
 
-	/*!
-		Compute/Update the transformations of this joint and all child joints. This method is called by the robot in order to update the pose matrices.
-	*/
-	void updatePose(bool updateChildren = true);
+    
+    /*!
+        Queries parent for global pose and updates visualization accordingly
+    */
+    virtual void updateTransformationMatrices();
 
 	/*!
-		Update the pose of the robot
+		Update the pose according to parent
 	*/ 
 	virtual void updatePose( const Eigen::Matrix4f &parentPose, bool updateChildren = true );
 
@@ -303,6 +310,9 @@ protected:
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, bool updateChildren = false);
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, float jointValue, bool updateChildren = false);
 
+    //! Checks if nodeType constraints are fulfilled. Otherwise an exception is thrown. Called on initialization.
+    virtual void checkValidRobotNodeType();
+
 	///////////////////////// SETUP ////////////////////////////////////
 	RobotNode(){};
 
@@ -316,18 +326,19 @@ protected:
 	Eigen::Matrix4f postJointTransformation;
 	///////////////////////// SETUP ////////////////////////////////////
 
-	virtual void updateTransformationMatrices();
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &parentPose);
 	RobotWeakPtr robot;
 
+    RobotNodeType nodeType;
 
-	Eigen::Matrix4f globalPosePostJoint;	//< The postJoint transformation applied to transformationJoint. Defines the starting pose for all child joints.
+
+	Eigen::Matrix4f globalPosePostJoint;	    //< The postJoint transformation applied to globalPose. Defines the starting pose for all child joints.
 	float jointValue;							//< The joint value
 	
 	/*!
 	Derived classes must implement their clone method here.
 	*/
-	virtual RobotNodePtr _clone(const RobotPtr newRobot, /*const std::vector<std::string> newChildren,*/ const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker) = 0;
+	virtual RobotNodePtr _clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker) = 0;
 
 	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
 

@@ -20,17 +20,16 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	CollisionModelPtr collisionModel,
 	float jointValueOffset,
 	const SceneObject::Physics &p,
-	CollisionCheckerPtr colChecker
-	) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker)
-
+	CollisionCheckerPtr colChecker,
+    RobotNodeType type
+	) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker,type)
 {
 	initialized = false;
 	optionalDHParameter.isSet = false;
 	this->preJointTransformation = preJointTransform;
 	this->postJointTransformation = postJointTransform;
-	//this->setPreJointTransformation(preJointTransform);
 	this->jointTranslationDirection = translationDirection;
-	//this->setPostJointTransformation(postJointTransform);
+    checkValidRobotNodeType();
 }
 
 RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob, 
@@ -42,9 +41,9 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	CollisionModelPtr collisionModel,
 	float jointValueOffset,
 	const SceneObject::Physics &p,
-	CollisionCheckerPtr colChecker
-	) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker)
-
+	CollisionCheckerPtr colChecker,
+    RobotNodeType type
+	) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker,type)
 {
 	initialized = false;
 	optionalDHParameter.isSet = true;
@@ -70,11 +69,12 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	RotAlpha(2,2) = cos(alpha);
 
 	// fixed rotation around theta
-	this->preJointTransformation = RotTheta;
+	this->preJointTransformation = RotTheta*TransD;
 	// joint setup
 	jointTranslationDirection = Eigen::Vector3f(0,0,1);	// translation along the z axis
 	// compute postJointTransformation
-	this->postJointTransformation = TransD*TransA*RotAlpha;
+	this->postJointTransformation = TransA*RotAlpha;
+    checkValidRobotNodeType();
 }
 
 RobotNodePrismatic::~RobotNodePrismatic()
@@ -120,9 +120,9 @@ RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, /*const std::ve
 	ReadLockPtr lock = getRobot()->getReadLock();
 
 	if (optionalDHParameter.isSet)
-		result.reset(new RobotNodePrismatic(newRobot,name, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker));
+		result.reset(new RobotNodePrismatic(newRobot,name, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker,nodeType));
 	else
-		result.reset(new RobotNodePrismatic(newRobot,name,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointTranslationDirection,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics,colChecker));
+		result.reset(new RobotNodePrismatic(newRobot,name,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointTranslationDirection,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics,colChecker,nodeType));
 	return result;
 }
 
@@ -182,6 +182,12 @@ void RobotNodePrismatic::updateVisualizationPose( const Eigen::Matrix4f &globalP
 Eigen::Vector3f RobotNodePrismatic::getJointTranslationDirectionJointCoordSystem() const
 {
 	return jointTranslationDirection;
+}
+
+void RobotNodePrismatic::checkValidRobotNodeType()
+{
+    RobotNode::checkValidRobotNodeType();
+    THROW_VR_EXCEPTION_IF (nodeType==Body || nodeType==Transform, "RobotNodePrismatic must be a JointNode or a GenericNode");
 }
 
 

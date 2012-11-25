@@ -634,4 +634,10 @@ void SceneObject::attached( SceneObjectPtr parent )
 }
 
 
+
+std::vector<std::string> SceneObject::getIgnoredCollisionModels()
+{
+    return physics.ignoreCollisions;
+}
+
 } // namespace

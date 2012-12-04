@@ -97,6 +97,24 @@ if (SimDynamics_DYNAMICSENGINE)
         ADD_SUBDIRECTORY(DynamicsEngine/BulletEngine/tests/)
     endif()
     
+    IF (NOT DEFINED Simox_VERSION)
+		set(SimDynamics_MAJOR_VERSION 2)
+		set(SimDynamics_MINOR_VERSION 1)
+		set(SimDynamics_PATCH_VERSION 6)
+	ELSE()
+		set(SimDynamics_MAJOR_VERSION ${Simox_MAJOR_VERSION})
+		set(SimDynamics_MINOR_VERSION ${Simox_MINOR_VERSION})
+		set(SimDynamics_PATCH_VERSION ${Simox_PATCH_VERSION})
+	ENDIF()
+	set(SimDynamics_VERSION
+		${SimDynamics_MAJOR_VERSION}.${SimDynamics_MINOR_VERSION}.${SimDynamics_PATCH_VERSION})
+	set_target_properties( SimDynamics  PROPERTIES
+		VERSION ${SimDynamics_VERSION}
+		SOVERSION ${SimDynamics_MAJOR_VERSION}
+		)
+	MESSAGE(STATUS " * SimDynamics Version: ${SimDynamics_VERSION}")
+
+    
     # .DLL path
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${SimDynamics_BIN_DIR})
     # .so path

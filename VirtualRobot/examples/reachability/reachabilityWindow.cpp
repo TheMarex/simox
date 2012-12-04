@@ -26,7 +26,6 @@ using namespace VirtualRobot;
 
 float TIMER_MS = 30.0f;
 
-//#define ENDLESS
 
 reachabilityWindow::reachabilityWindow(std::string &sRobotFile, std::string &reachFile, Eigen::Vector3f &axisTCP, Qt::WFlags flags)
 :QMainWindow(NULL)
@@ -366,7 +365,7 @@ void reachabilityWindow::extendReach()
 		return;
 	}
 	int steps = UI.spinBoxExtend->value();
-#ifdef ENDLESS
+/*#ifdef ENDLESS
 	time_t time_now = time(NULL);
 	struct tm * timeinfo;
 	timeinfo = localtime (&time_now);
@@ -383,7 +382,7 @@ void reachabilityWindow::extendReach()
 		nr++;
 	}
 
-#endif
+#endif*/
 	reachSpace->addRandomTCPPoses(steps);
 	reachSpace->print();
 }

@@ -69,7 +69,7 @@ This library can be used to simulate physical interactions and dynamic systems.
 
 namespace SimDynamics
 {
-	// only valid within the GraspStudio namespace
+    // only valid within the SimDynamics namespace
 	using std::cout;
 	using std::endl;
 

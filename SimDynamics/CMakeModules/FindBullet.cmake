@@ -36,14 +36,25 @@ FIND_PATH( BULLET_INCLUDE_DIR btBulletCollisionCommon.h
         /include/bullet
     )
 IF( BULLET_INCLUDE_DIR )
-    SET( BULLET_DEMOS_INCLUDE_DIR ${BULLET_INCLUDE_DIR}/../Demos/OpenGL )
+    #SET( BULLET_DEMOS_INCLUDE_DIR ${BULLET_INCLUDE_DIR}/../Demos/OpenGL )
     FIND_PATH( BULLET_OPENGL_INCLUDE_DIR DemoApplication.h
     PATHS
         ${BULLET_INCLUDE_DIR}
         ${BULLET_INCLUDE_DIR}/..
         ${BULLET_INCLUDE_DIR}/../OpenGL
+        ${BULLET_INCLUDE_DIR}/OpenGL
         ${BULLET_INCLUDE_DIR}/../Demos/OpenGL
     )
+    FIND_PATH( BULLET_DEMOS_INCLUDE_DIR GlutDemoApplication.h
+    PATHS
+        ${BULLET_INCLUDE_DIR}
+        ${BULLET_INCLUDE_DIR}/..
+        ${BULLET_INCLUDE_DIR}/../OpenGL
+        ${BULLET_INCLUDE_DIR}/OpenGL
+        ${BULLET_INCLUDE_DIR}/../Demos/OpenGL
+    )
+    MESSAGE ("BULLET_OPENGL_INCLUDE_DIR: ${BULLET_OPENGL_INCLUDE_DIR}")
+    MESSAGE ("BULLET_DEMOS_INCLUDE_DIR: ${BULLET_DEMOS_INCLUDE_DIR}")
 ENDIF( BULLET_INCLUDE_DIR )
 
 MACRO( FIND_BULLET_LIBRARY_DIRNAME LIBNAME DIRNAME )
@@ -71,7 +82,11 @@ MACRO( FIND_BULLET_LIBRARY_DIRNAME LIBNAME DIRNAME )
             ./libs
             ./lib
             ./lib/Release # v2.76, new location for build tree libs on Windows
+        NO_DEFAULT_PATH
         )
+	# check for defualt path if BULLET_ROOT path failed
+	FIND_LIBRARY( BULLET_${LIBNAME}_LIBRARY NAMES ${LIBNAME})
+	
     FIND_LIBRARY( BULLET_${LIBNAME}_LIBRARY_debug
         NAMES
             ${LIBNAME}_d
@@ -94,9 +109,13 @@ MACRO( FIND_BULLET_LIBRARY_DIRNAME LIBNAME DIRNAME )
             ./libs
             ./lib
             ./lib/Debug # v2.76, new location for build tree libs on Windows
+        NO_DEFAULT_PATH
         )
-#    message( STATUS ${BULLET_${LIBNAME}_LIBRARY} ${BULLET_${LIBNAME}_LIBRARY_debug} )
-#    message( SEND_ERROR ${LIBNAME} )
+	# check for defualt path if BULLET_ROOT path failed
+	FIND_LIBRARY( BULLET_${LIBNAME}_LIBRARY_debug NAMES ${LIBNAME}_d ${LIBNAME}_Debug ${LIBNAME} )
+
+    #message( STATUS "${BULLET_${LIBNAME}_LIBRARY} and ${BULLET_${LIBNAME}_LIBRARY_debug}" )
+    #message( SEND_ERROR ${LIBNAME} )
     IF( BULLET_${LIBNAME}_LIBRARY )
         SET( BULLET_LIBRARIES ${BULLET_LIBRARIES}
             "optimized" ${BULLET_${LIBNAME}_LIBRARY}

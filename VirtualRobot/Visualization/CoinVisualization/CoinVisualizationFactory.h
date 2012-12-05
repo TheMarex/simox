@@ -34,6 +34,7 @@
 
 #include <Inventor/SoInput.h>
 #include <Inventor/nodes/SoMatrixTransform.h>
+#include <Inventor/nodes/SoMaterial.h>
 #include <Inventor/SoOffscreenRenderer.h>
 #include <Inventor/nodes/SoPerspectiveCamera.h>
 #include <Inventor/nodes/SoCamera.h>
@@ -96,6 +97,30 @@ public:
 	static SoSeparator* CreatePointsVisualization(const std::vector<MathTools::ContactPoint> &points, bool showNormals = false);
 	static SoSeparator* CreateArrow(const Eigen::Vector3f &n, float length = 50.0f, float width = 2.0f, const Color &color = Color::Gray());
 	static SoSeparator* CreateVertexVisualization( const Eigen::Vector3f &position, float radius, float transparency, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f );
+	
+	/*! 
+		Creates an coordinate axis aligned ellipse
+		\param x The extend in x direction must be >= 1e-6
+		\param y The extend in y direction must be >= 1e-6
+		\param z The extend in z direction must be >= 1e-6
+		\param matBody If not given a standard material is used for the ellipse body
+		\param showAxes If true, the axes are visualized
+		\param axesHeight The height of the axes (measured from the body surface)
+		\param axesWidth The width of the axes.
+		\param matAxisX If not given a standard material is used for axis X
+		\param matAxisY If not given a standard material is used for axis Y
+		\param matAxisZ If not given a standard material is used for axis Z
+		\return A separator conatining the visualization.
+	*/
+	static SoSeparator* CreateEllipse(	float x, float y, float z, 
+										SoMaterial* matBody = NULL, 
+										bool showAxes = true, 
+										float axesHeight = 4.0f, 
+										float axesWidth = 8.0f, 
+										SoMaterial* matAxisX = NULL,
+										SoMaterial* matAxisY = NULL,
+										SoMaterial* matAxisZ = NULL
+										);
 
 	static SoSeparator* CreateOOBBVisualization( const MathTools::OOBB& oobb, Color colorLine = Color::Gray(), float lineSize = 4.0f);
 	static SoSeparator* CreateSegmentVisualization( const MathTools::Segment& s, Color colorLine = Color::Gray(), float lineSize = 4.0f);

@@ -27,6 +27,8 @@
 #include <Inventor/nodes/SoMatrixTransform.h>
 #include <Inventor/nodes/SoMaterial.h>
 #include <Inventor/nodes/SoCone.h>
+#include <Inventor/nodes/SoRotationXYZ.h>
+#include <Inventor/nodes/SoScale.h>
 #include <Inventor/nodes/SoTransform.h>
 #include <Inventor/nodes/SoTranslation.h>
 #include <Inventor/nodes/SoBaseColor.h>
@@ -2105,6 +2107,123 @@ namespace VirtualRobot {
         res->unrefNoDelete();
         return res;
     }
+
+	
+SoSeparator* CoinVisualizationFactory::CreateEllipse(float x, float y, float z, SoMaterial* matBody, bool showAxes, float axesHeight, float axesWidth, SoMaterial* matX, SoMaterial* matY, SoMaterial* matZ)
+{
+	// check for min size
+	float minSize = 1e-6f;
+	if (x<minSize)
+		x=minSize;
+	if (y<minSize)
+		y=minSize;
+	if (z<minSize)
+		z=minSize;
+
+	if (!matBody)
+	{
+		matBody = new SoMaterial;
+		matBody->diffuseColor.setValue(0.3f,0.6f,0.9f);
+		matBody->ambientColor.setValue(0.3f,0.6f,0.9f);
+		matBody->transparency.setValue(0.3f);
+	}
+	if (!matX)
+	{
+		matX = new SoMaterial;
+		matX->diffuseColor.setValue(1.0f,0.2f,0.2f);
+		matX->ambientColor.setValue(1.0f,0.2f,0.2f);
+		matX->transparency.setValue(0);
+	}
+	if (!matY)
+	{
+		matY = new SoMaterial;
+		matY->diffuseColor.setValue(0.2f,0.9f,0.2f);
+		matY->ambientColor.setValue(0.2f,0.9f,0.2f);
+		matY->transparency.setValue(0);
+	}
+	if (!matZ)
+	{
+		matZ = new SoMaterial;
+		matZ->diffuseColor.setValue(0.2f,0.2f,0.9f);
+		matZ->ambientColor.setValue(0.2f,0.2f,0.9f);
+		matZ->transparency.setValue(0);
+	}
+	SoSeparator *result = new SoSeparator;
+	result->ref();
+
+	// ensure good quality
+	SoComplexity *c = new SoComplexity();
+	c->type.setValue(SoComplexity::OBJECT_SPACE);
+	c->value.setValue(1.0f);
+	result->addChild(c);
+
+
+	SoSeparator *p1 = new SoSeparator;
+	result->addChild(p1);
+
+	p1->addChild(matBody);
+	SoScale *sc1 = new SoScale;
+	sc1->scaleFactor.setValue(x,y,z);
+	p1->addChild(sc1);
+	
+	SoSphere *sp = new SoSphere();
+	sp->radius.setValue(1.0f);
+	p1->addChild(sp);
+
+	if (showAxes)
+	{
+
+		// y axis
+		SoSeparator *ax1 = new SoSeparator();
+		result->addChild(ax1);
+		ax1->addChild(c);
+		SoScale *scAx1 = new SoScale();
+		scAx1->scaleFactor.setValue(x+axesHeight,1.0f,z+axesHeight);
+		ax1->addChild(scAx1);
+		ax1->addChild(matY);
+		SoCylinder *c1 = new SoCylinder();
+		c1->radius.setValue(1.0f);
+		c1->height.setValue(axesWidth); // cone is aligned with y axis
+		ax1->addChild(c1);
+
+		// z axis
+		SoSeparator *ax2 = new SoSeparator();
+		result->addChild(ax2);
+		ax2->addChild(c);
+		SoScale *scAx2 = new SoScale();
+		scAx2->scaleFactor.setValue(x+axesHeight,y+axesHeight,1.0f);
+		ax2->addChild(scAx2);
+		ax2->addChild(matZ);
+		SoRotationXYZ *rot2 = new SoRotationXYZ();
+		rot2->axis.setValue(SoRotationXYZ::X);
+		rot2->angle.setValue(float(M_PI*0.5f));
+		ax2->addChild(rot2);
+		SoCylinder *c2 = new SoCylinder();
+		c2->radius.setValue(0.999f); // avoid artefacts at meeting points with other axes
+		c2->height.setValue(axesWidth); 
+		ax2->addChild(c2);
+
+		// x axis
+		SoSeparator *ax3 = new SoSeparator();
+		result->addChild(ax3);
+		ax3->addChild(c);
+		SoScale *scAx3 = new SoScale();
+		scAx3->scaleFactor.setValue(1.0f,y+axesHeight,z+axesHeight);
+		ax3->addChild(scAx3);
+		ax3->addChild(matX);
+		SoRotationXYZ *rot3 = new SoRotationXYZ();
+		rot3->axis.setValue(SoRotationXYZ::Z);
+		rot3->angle.setValue(float(-M_PI*0.5f));
+		ax3->addChild(rot3);
+		SoCylinder *c3 = new SoCylinder();
+		c3->radius.setValue(0.998f); // avoid artefacts at meeting points with other axes
+		c3->height.setValue(axesWidth); 
+		ax3->addChild(c3);
+	}
+
+	result->unrefNoDelete();
+	return result;
+}
 
 
 

@@ -579,6 +579,18 @@ bool SceneObject::hasChild( SceneObjectPtr child, bool recursive ) const
 	return false;
 }
 
+bool SceneObject::hasChild(const std::string &childName, bool recursive ) const
+{
+	for (size_t i=0;i<children.size();i++)
+	{
+		if (children[i]->getName() == childName)
+			return true;
+		if (recursive && children[i]->hasChild(childName,true))
+			return true;
+	}
+	return false;
+}
+
 void SceneObject::detachChild( SceneObjectPtr child )
 {
 	VR_ASSERT(child);
@@ -602,6 +614,11 @@ bool SceneObject::attachChild( SceneObjectPtr child )
 	if (child->hasParent())
 	{
 		VR_WARNING << " Trying to attach object that has already a parent: " << getName() << "->" << child->getName() << ", child's parent:" << child->getParent()->getName() << endl;
+		return false;
+	}
+	if (hasChild(child->getName()))
+	{
+		VR_ERROR << " Trying to attach object with name: " << child->getName() << " to " << getName() << ", but a child with same name is already present!" << endl;
 		return false;
 	}
 	children.push_back(child);

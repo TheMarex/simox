@@ -333,6 +333,11 @@ public:
 	virtual bool hasChild(SceneObjectPtr child, bool recursive = false) const;
 
 	/*!
+		\return true, if child is attached
+	*/
+	virtual bool hasChild(const std::string &childName, bool recursive = false) const;
+
+	/*!
 		\return true, if this object is attached to another object.
 	*/
 	virtual bool hasParent();

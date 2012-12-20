@@ -1,6 +1,9 @@
 #Inventor V2.0 ascii
 
 Separator {
+    Units {
+            units MILLIMETERS
+    }
     Translation {
         translation 0 250 0
     }

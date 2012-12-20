@@ -72,9 +72,9 @@
     </RobotNode>
     
 	<RobotNodeSet name="my kinematic chain" kinematicRoot="joint1" tcp="tcp">
-		<Node name="joint1"/>
-		<Node name="joint2"/>
-		<Node name="joint3"/>
+		<Node name="joint 1"/>
+		<Node name="joint 2"/>
+		<Node name="joint 3"/>
 	</RobotNodeSet>
 
 </Robot>

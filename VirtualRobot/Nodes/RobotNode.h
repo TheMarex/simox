@@ -62,6 +62,7 @@ class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNode : public SceneObject
 {
 public:
 	friend class Robot;
+	friend class RobotIO;
 	friend class RobotNodeSet;
 	friend class RobotConfig;
 	friend class RobotFactory;

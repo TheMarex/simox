@@ -480,7 +480,7 @@ void showRobotWindow::closeHand()
 
 void showRobotWindow::openHand()
 {
-#if 1
+#if 0
     if (robot)
     {
         float randMult = (float)(1.0/(double)(RAND_MAX));

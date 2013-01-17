@@ -356,6 +356,15 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	robotNode->setMaxVelocity(maxVelocity);
 	robotNode->setMaxAcceleration(maxAcceleration);
 	robotNode->setMaxTorque(maxTorque);
+
+	if (robotNode->isRotationalJoint() || robotNode->isTranslationalJoint()) 
+	{
+		if (robotNode->jointValue < robotNode->jointLimitLo)
+			robotNode->jointValue = robotNode->jointLimitLo;
+		else if (robotNode->jointValue > robotNode->jointLimitHi)
+			robotNode->jointValue =robotNode->jointLimitHi;
+	}
+
 	return robotNode;
 }
 

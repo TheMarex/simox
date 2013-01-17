@@ -182,6 +182,7 @@ bool EndEffectorActor::isColliding(EndEffectorPtr eef, SceneObjectSetPtr obstacl
 			
 			if( (n->colMode & checkColMode) && 
 				((*o)->getCollisionModel()) &&
+				n->robotNode->getCollisionModel() &&
 				colChecker->checkCollision(n->robotNode->getCollisionModel(), (*o)->getCollisionModel()))
 			{
 
@@ -211,7 +212,7 @@ bool EndEffectorActor::isColliding(SceneObjectSetPtr obstacles,  CollisionMode c
 {
 	for(std::vector<ActorDefinition>::iterator n = actors.begin(); n != actors.end(); n++)
 	{
-		if( (n->colMode & checkColMode) && colChecker->checkCollision(n->robotNode->getCollisionModel(), obstacles))
+		if( (n->colMode & checkColMode) && n->robotNode->getCollisionModel() && colChecker->checkCollision(n->robotNode->getCollisionModel(), obstacles))
 			return true;
 	}
 	return false;
@@ -219,12 +220,12 @@ bool EndEffectorActor::isColliding(SceneObjectSetPtr obstacles,  CollisionMode c
 
 bool EndEffectorActor::isColliding(SceneObjectPtr obstacle, CollisionMode checkColMode)
 {
-	if(!obstacle)
+	if(!obstacle || !obstacle->getCollisionModel())
 		return false;
 
 	for(std::vector<ActorDefinition>::iterator n = actors.begin(); n != actors.end(); n++)
 	{
-		if( (n->colMode & checkColMode) && colChecker->checkCollision(n->robotNode->getCollisionModel(), obstacle->getCollisionModel()))
+		if( (n->colMode & checkColMode) && n->robotNode->getCollisionModel() && colChecker->checkCollision(n->robotNode->getCollisionModel(), obstacle->getCollisionModel()))
 			return true;
 	}
 	return false;
@@ -312,6 +313,7 @@ bool EndEffectorActor::isColliding( EndEffectorPtr eef, SceneObjectPtr obstacle,
 	{
 
 		if( (n->colMode & checkColMode) && 
+			n->robotNode->getCollisionModel() &&
 			colChecker->checkCollision(n->robotNode->getCollisionModel(), obstacle->getCollisionModel()))
 		{
 			col = true;

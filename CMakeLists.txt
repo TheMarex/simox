@@ -34,7 +34,7 @@ MESSAGE (STATUS "\n ***** Simox: Generating CMake files for build and install se
 
 set(Simox_MAJOR_VERSION 2)
 set(Simox_MINOR_VERSION 1)
-set(Simox_PATCH_VERSION 6)
+set(Simox_PATCH_VERSION 7)
 set(Simox_VERSION
     ${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION})
 

@@ -96,7 +96,7 @@ bool EndEffectorActor::moveActorCheckCollision( EndEffectorPtr eef, EndEffector:
 			bool collision = false;
 			
 			// obstacles (store contacts)
-			if ((n->colMode!=eNone && obstacles && isColliding(eef,obstacles,newContacts)))
+			if ((/*n->colMode!=eNone &&*/ obstacles && isColliding(eef,obstacles,newContacts)))
 			{
 				collision = true;
 			}

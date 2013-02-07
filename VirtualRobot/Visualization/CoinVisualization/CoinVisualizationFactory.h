@@ -110,17 +110,22 @@ public:
 		\param matAxisX If not given a standard material is used for axis X
 		\param matAxisY If not given a standard material is used for axis Y
 		\param matAxisZ If not given a standard material is used for axis Z
-		\return A separator conatining the visualization.
+		\return A separator containing the visualization.
 	*/
 	static SoSeparator* CreateEllipse(	float x, float y, float z, 
-										SoMaterial* matBody = NULL, 
-										bool showAxes = true, 
-										float axesHeight = 4.0f, 
-										float axesWidth = 8.0f, 
-										SoMaterial* matAxisX = NULL,
-										SoMaterial* matAxisY = NULL,
-										SoMaterial* matAxisZ = NULL
-										);
+		SoMaterial* matBody = NULL, 
+		bool showAxes = true, 
+		float axesHeight = 4.0f, 
+		float axesWidth = 8.0f, 
+		SoMaterial* matAxisX = NULL,
+		SoMaterial* matAxisY = NULL,
+		SoMaterial* matAxisZ = NULL
+		);
+
+	static SoSeparator* Create2DMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, const VirtualRobot::ColorMap cm = VirtualRobot::ColorMap::ColorMap(VirtualRobot::ColorMap::eHot), bool drawZeroCells = false );
+	static SoSeparator* Create2DHeightMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, float heightZ, const VirtualRobot::ColorMap cm = VirtualRobot::ColorMap::ColorMap(VirtualRobot::ColorMap::eHot));
+
+
 
 	static SoSeparator* CreateOOBBVisualization( const MathTools::OOBB& oobb, Color colorLine = Color::Gray(), float lineSize = 4.0f);
 	static SoSeparator* CreateSegmentVisualization( const MathTools::Segment& s, Color colorLine = Color::Gray(), float lineSize = 4.0f);

@@ -1922,6 +1922,232 @@ namespace VirtualRobot {
 
 
 
+	SoSeparator* CoinVisualizationFactory::Create2DMap( const Eigen::MatrixXf &d, float extendCellX, float extendCellY, const VirtualRobot::ColorMap cm, bool drawZeroCells )
+	{
+		SoSeparator *res = new SoSeparator;
+		res->ref();
+		SoUnits *u = new SoUnits();
+		u->units = SoUnits::MILLIMETERS;
+		res->addChild(u);
+
+		int nX = d.rows();
+		int nY = d.cols();
+
+		VR_ASSERT(nX>0);
+		VR_ASSERT(nY>0);
+
+		SoTranslation *t = new SoTranslation();
+		t->translation.setValue(-extendCellX*nX/2,-extendCellY*nY/2,0);
+		res->addChild(t);
+
+		Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
+		float sizeX = extendCellX;
+		float sizeY = extendCellY;
+
+
+		float ro,gr,bl;
+		SoCube *cube = new SoCube();
+		cube->width = sizeX;
+		cube->depth = 1.0;
+		cube->height = sizeY;
+		
+		float maxEntry = 1.0f;
+		if (d.maxCoeff() > 1.0f)
+		{
+			VR_ERROR << "Maximal coefficient must not be >1!" << endl;
+		}
+
+		SoDrawStyle *ds = new SoDrawStyle;
+		ds->style = SoDrawStyle::LINES;
+
+		// back-face culling
+		SoShapeHints * shapeHints = new SoShapeHints;
+		//shapeHints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
+		shapeHints->vertexOrdering = SoShapeHints::UNKNOWN_ORDERING;
+		shapeHints->shapeType = SoShapeHints::SOLID;
+
+		SoBaseColor *bc = new SoBaseColor;
+		bc->rgb.setValue(0,0,0);
+
+		// keep a solid color
+		SoLightModel * lightModel = new SoLightModel;
+		lightModel->model = SoLightModel::BASE_COLOR;
+
+		SoSeparator *grid = new SoSeparator;
+		res->addChild(grid);
+		for (int x = 0; x<nX; x++)
+		{
+			float xPos = (float)x * sizeX + 0.5f*sizeX; // center of voxel
+			for (int y = 0; y<nY; y++)
+			{
+				float v = d(x,y);
+				if (drawZeroCells || v>0)
+				{
+					float yPos = (float)y * sizeY + 0.5f*sizeY; // center of voxel
+					gp(0,3) = xPos;
+					gp(1,3) = yPos;
+
+					SoSeparator *sep1 = new SoSeparator();
+					SoMatrixTransform* matTr = getMatrixTransformM(gp); // we are in mm unit environment -> no conversion to m needed
+
+					float intensity = (float)v;
+					intensity /= maxEntry;
+					if (intensity>1.0f)
+						intensity = 1.0f;
+					VirtualRobot::VisualizationFactory::Color color = cm.getColor(intensity);
+
+					SoMaterial *mat= new SoMaterial();
+
+					ro = color.r;
+					gr = color.g;
+					bl = color.b;
+
+					mat->diffuseColor.setValue(ro,gr,bl);
+					mat->ambientColor.setValue(ro,gr,bl);
+					if (drawZeroCells || intensity>0)
+					{
+
+						sep1->addChild(matTr);
+						sep1->addChild(mat);
+						sep1->addChild(cube);
+
+						SoSeparator *pSepLines = new SoSeparator;
+						sep1->addChild(pSepLines);
+
+						pSepLines->addChild(ds);
+						pSepLines->addChild(shapeHints);
+						pSepLines->addChild(lightModel);
+						pSepLines->addChild(bc);
+						pSepLines->addChild(cube);
+
+						grid->addChild(sep1);
+					}
+				}
+			}
+		}
+		//res->addChild(lines);
+		res->unrefNoDelete();
+		return res;
+	}
+	SoSeparator* CoinVisualizationFactory::Create2DHeightMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, float heightZ, const VirtualRobot::ColorMap cm)
+	{
+		SoSeparator *res = new SoSeparator;
+		res->ref();
+		SoUnits *u = new SoUnits();
+		u->units = SoUnits::MILLIMETERS;
+		res->addChild(u);
+
+		int nX = d.rows();
+		int nY = d.cols();
+
+		VR_ASSERT(nX>0);
+		VR_ASSERT(nY>0);
+
+		SoTranslation *t = new SoTranslation();
+		t->translation.setValue(-extendCellX*nX/2,-extendCellY*nY/2,0);
+		res->addChild(t);
+
+		Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
+		float sizeX = extendCellX;
+		float sizeY = extendCellY;
+
+
+		float ro,gr,bl;
+		SoCube *cube = new SoCube();
+		cube->width = sizeX;
+		cube->depth = 1.0;
+		cube->height = sizeY;
+		
+		float maxEntry = 1.0f;
+		if (d.maxCoeff() > 1.0f)
+		{
+			VR_ERROR << "Maximal coefficient must not be >1!" << endl;
+		}
+
+		SoDrawStyle *ds = new SoDrawStyle;
+		ds->style = SoDrawStyle::LINES;
+
+		// back-face culling
+		SoShapeHints * shapeHints = new SoShapeHints;
+		//shapeHints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
+		shapeHints->vertexOrdering = SoShapeHints::UNKNOWN_ORDERING;
+		shapeHints->shapeType = SoShapeHints::SOLID;
+
+		SoBaseColor *bc = new SoBaseColor;
+		bc->rgb.setValue(0,0,0);
+
+		// keep a solid color
+		SoLightModel * lightModel = new SoLightModel;
+		lightModel->model = SoLightModel::BASE_COLOR;
+
+		SoSeparator *grid = new SoSeparator;
+		res->addChild(grid);
+		for (int x = 1; x<nX; x++)
+		{
+			for (int y = 1; y<nY; y++)
+			{
+				float v1 = d(x-1,y-1);
+				float v2 = d(x,y-1);
+				float v3 = d(x-1,y);
+				float v4 = d(x,y);
+				float xPos1 = (float)(x-1) * sizeX + 0.5f*sizeX; // center of voxel
+				float xPos2 = (float)(x) * sizeX + 0.5f*sizeX; // center of voxel
+				float yPos1 = (float)(y-1) * sizeY + 0.5f*sizeY; // center of voxel
+				float yPos2 = (float)y * sizeY + 0.5f*sizeY; // center of voxel
+				float v = (v1+v2+v3+v4)/4.0f;
+				
+				float intensity1 = (float)v1 / maxEntry;
+				float height1 = intensity1*heightZ;
+				float intensity2 = (float)v2 / maxEntry;
+				float height2 = intensity2*heightZ;
+				float intensity3 = (float)v3 / maxEntry;
+				float height3 = intensity3*heightZ;
+				float intensity4 = (float)v4 / maxEntry;
+				float height4 = intensity4*heightZ;
+
+				Eigen::Vector3f p1(xPos1,yPos1,height1);
+				Eigen::Vector3f p2(xPos2,yPos1,height2);
+				Eigen::Vector3f p3(xPos1,yPos2,height3);
+				Eigen::Vector3f p4(xPos2,yPos2,height4);
+				std::vector<Eigen::Vector3f> pts;
+				pts.push_back(p1);
+				pts.push_back(p2);
+				pts.push_back(p4);
+				pts.push_back(p3);
+
+				float intensity = (float)v;
+				intensity /= maxEntry;
+				if (intensity>1.0f)
+					intensity = 1.0f;
+
+				SoSeparator* pol = CreatePolygonVisualization(pts,cm.getColor(intensity));
+				
+				//gp(0,3) = (xPos1+xPos2)/2.0f;
+				//gp(1,3) = (yPos1+yPos2)/2.0f;
+
+				SoSeparator *sep1 = new SoSeparator();
+				SoMatrixTransform* matTr = getMatrixTransformM(gp); // we are in mm unit environment -> no conversion to m needed
+				sep1->addChild(matTr);
+				sep1->addChild(pol);
+
+				/*SoSeparator *pSepLines = new SoSeparator;
+				sep1->addChild(pSepLines);
+
+				pSepLines->addChild(ds);
+				pSepLines->addChild(shapeHints);
+				pSepLines->addChild(lightModel);
+				pSepLines->addChild(bc);
+				pSepLines->addChild(cube);*/
+
+				grid->addChild(sep1);
+
+			}
+		}
+		//res->addChild(lines);
+		res->unrefNoDelete();
+		return res;
+	}
+
     SoSeparator* CoinVisualizationFactory::Colorize( SoNode *model, VisualizationFactory::Color c )
     {
         SoSeparator *result = new SoSeparator;

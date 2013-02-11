@@ -2051,8 +2051,6 @@ namespace VirtualRobot {
 		float sizeX = extendCellX;
 		float sizeY = extendCellY;
 
-
-		float ro,gr,bl;
 		SoCube *cube = new SoCube();
 		cube->width = sizeX;
 		cube->depth = 1.0;
@@ -2121,23 +2119,11 @@ namespace VirtualRobot {
 					intensity = 1.0f;
 
 				SoSeparator* pol = CreatePolygonVisualization(pts,cm.getColor(intensity));
-				
-				//gp(0,3) = (xPos1+xPos2)/2.0f;
-				//gp(1,3) = (yPos1+yPos2)/2.0f;
 
 				SoSeparator *sep1 = new SoSeparator();
 				SoMatrixTransform* matTr = getMatrixTransformM(gp); // we are in mm unit environment -> no conversion to m needed
 				sep1->addChild(matTr);
 				sep1->addChild(pol);
-
-				/*SoSeparator *pSepLines = new SoSeparator;
-				sep1->addChild(pSepLines);
-
-				pSepLines->addChild(ds);
-				pSepLines->addChild(shapeHints);
-				pSepLines->addChild(lightModel);
-				pSepLines->addChild(bc);
-				pSepLines->addChild(cube);*/
 
 				grid->addChild(sep1);
 

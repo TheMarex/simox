@@ -122,8 +122,8 @@ public:
 		SoMaterial* matAxisZ = NULL
 		);
 
-	static SoSeparator* Create2DMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, const VirtualRobot::ColorMap cm = VirtualRobot::ColorMap::ColorMap(VirtualRobot::ColorMap::eHot), bool drawZeroCells = false );
-	static SoSeparator* Create2DHeightMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, float heightZ, const VirtualRobot::ColorMap cm = VirtualRobot::ColorMap::ColorMap(VirtualRobot::ColorMap::eHot));
+	static SoSeparator* Create2DMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, const VirtualRobot::ColorMap, bool drawZeroCells = false );
+	static SoSeparator* Create2DHeightMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, float heightZ, const VirtualRobot::ColorMap cm);
 
 
 

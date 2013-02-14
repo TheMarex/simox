@@ -199,7 +199,7 @@ public:
 			for (int64_t i=1;i<nrElements;i++)
 			{
 				VoxelTreeNDElement<T,N>* e = new VoxelTreeNDElement<T,N>(p,ex,0,10,tree);
-				idElementMapping[unsigned int(i+1)] = e; // we start with 1, but root is already created!
+				idElementMapping[(unsigned int)(i+1)] = e; // we start with 1, but root is already created!
 			}
 
 			VR_ASSERT(tree->currentElementID == (unsigned int)expectedID);
@@ -209,7 +209,7 @@ public:
 
 
 			// fill element data
-			VoxelTreeNDElement<T,N>::datablock d;
+			typename VoxelTreeNDElement<T,N>::datablock d;
 			//d.maxLevels = maxLevels;
 			CompressionBZip2Ptr bzip2(new CompressionBZip2(&file));
 			int numChildren = VoxelTreeNDElement<T,N>::pow_int(2,N);
@@ -381,7 +381,7 @@ public:
 			FileIO::writeString(file,tmpString);
 
 			// element data
-			VoxelTreeNDElement<T,N>::datablock d;
+			typename VoxelTreeNDElement<T,N>::datablock d;
 			//d.maxLevels = maxLevels;
 			CompressionBZip2Ptr bzip2(new CompressionBZip2(&file));
 			int numChildren = VoxelTreeNDElement<T,N>::pow_int(2,N);

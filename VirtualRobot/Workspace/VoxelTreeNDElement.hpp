@@ -249,7 +249,7 @@ protected:
 			{
 				if (data.children[i]>0)
 				{
-					std::map< unsigned int, VoxelTreeNDElement<T,N>* >::const_iterator it = idElementMapping.find(data.children[i]);
+					typename std::map< unsigned int, VoxelTreeNDElement<T,N>* >::const_iterator it = idElementMapping.find(data.children[i]);
 					if (it == idElementMapping.end())
 					{
 						VR_ERROR << "Could not find Element with id " << data.children[i] << endl;

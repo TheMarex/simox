@@ -87,7 +87,7 @@ public:
 
 
 	static SoSeparator* CreateConvexHull2DVisualization(const MathTools::ConvexHull2DPtr ch, MathTools::Plane &p, VisualizationFactory::Color colorInner = VisualizationFactory::Color::Blue(), VisualizationFactory::Color colorLine = VisualizationFactory::Color::Black(), float lineSize = 5.0f, const Eigen::Vector3f &offset =Eigen::Vector3f::Zero() );
-	static SoSeparator* CreatePolygonVisualization(const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner = VisualizationFactory::Color::Blue(), VisualizationFactory::Color colorLine = VisualizationFactory::Color::Black(), float lineSize = 5.0f);
+	static SoSeparator* CreatePolygonVisualization(const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner = VisualizationFactory::Color::Blue(), VisualizationFactory::Color colorLine = VisualizationFactory::Color::Black(), float lineSize = 4.0f);
 	static SoSeparator* CreatePlaneVisualization(const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency, bool grid=true,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
 	static SoSeparator* CreateCoordSystemVisualization(float scaling = 1.0f, std::string *text = NULL, float axisLength = 100.0f, float axisSize = 3.0f, int nrOfBlocks = 10);
 	static SoSeparator* CreateBoundingBox(SoNode* ivModel, bool wireFrame=false);
@@ -122,10 +122,8 @@ public:
 		SoMaterial* matAxisZ = NULL
 		);
 
-	static SoSeparator* Create2DMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, const VirtualRobot::ColorMap, bool drawZeroCells = false );
-	static SoSeparator* Create2DHeightMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, float heightZ, const VirtualRobot::ColorMap cm);
-
-
+	static SoSeparator* Create2DMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, const VirtualRobot::ColorMap cm = VirtualRobot::ColorMap(VirtualRobot::ColorMap::eHot), bool drawZeroCells = false, bool drawLines = true );
+	static SoSeparator* Create2DHeightMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, float heightZ, const VirtualRobot::ColorMap cm = VirtualRobot::ColorMap(VirtualRobot::ColorMap::eHot), bool drawZeroCells = false, bool drawLines = true);
 
 	static SoSeparator* CreateOOBBVisualization( const MathTools::OOBB& oobb, Color colorLine = Color::Gray(), float lineSize = 4.0f);
 	static SoSeparator* CreateSegmentVisualization( const MathTools::Segment& s, Color colorLine = Color::Gray(), float lineSize = 4.0f);

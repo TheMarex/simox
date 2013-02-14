@@ -679,7 +679,7 @@ namespace VirtualRobot {
         return pGrid;
     }
 
-    SoSeparator* CoinVisualizationFactory::CreatePolygonVisualization( const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner /*= VisualizationFactory::Color::Blue()*/, VisualizationFactory::Color colorLine /*= VisualizationFactory::Color::Black()*/, float lineSize /*= 5.0f*/ )
+    SoSeparator* CoinVisualizationFactory::CreatePolygonVisualization( const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner /*= VisualizationFactory::Color::Blue()*/, VisualizationFactory::Color colorLine /*= VisualizationFactory::Color::Black()*/, float lineSize /*= 4.0f*/ )
     {
         SoSeparator* visu = new SoSeparator;
         if (points.size()==0)
@@ -716,23 +716,26 @@ namespace VirtualRobot {
         visu->addChild(faceSet);
 
         // create line around polygon
-        SoSeparator *lineSep = new SoSeparator;
-        visu->addChild(lineSep);
-        SoMaterial *m2 = new SoMaterial;
-        m2->diffuseColor.setValue(colorLine.r, colorLine.g, colorLine.b);
-        m2->ambientColor.setValue(colorLine.r, colorLine.g, colorLine.b);
-        m2->transparency.setValue(colorLine.transparency);
-        lineSep->addChild(m2);
-        lineSep->addChild(coordinate3b);
+        if (lineSize > 0.f)
+        {
+            SoSeparator *lineSep = new SoSeparator;
+            visu->addChild(lineSep);
+            SoMaterial *m2 = new SoMaterial;
+            m2->diffuseColor.setValue(colorLine.r, colorLine.g, colorLine.b);
+            m2->ambientColor.setValue(colorLine.r, colorLine.g, colorLine.b);
+            m2->transparency.setValue(colorLine.transparency);
+            lineSep->addChild(m2);
+            lineSep->addChild(coordinate3b);
 
-        SoDrawStyle *lineSolutionStyle = new SoDrawStyle();
-        lineSolutionStyle->lineWidth.setValue(4.0f);
-        lineSep->addChild(lineSolutionStyle);
+            SoDrawStyle *lineSolutionStyle = new SoDrawStyle();
+            lineSolutionStyle->lineWidth.setValue(lineSize);
+            lineSep->addChild(lineSolutionStyle);
 
-        SoLineSet* lineSet = new SoLineSet;
-        lineSet->numVertices.set1Value(0,points.size()+1);
-        //faceSet->startIndex.setValue(0);
-        lineSep->addChild(lineSet);
+            SoLineSet* lineSet = new SoLineSet;
+            lineSet->numVertices.set1Value(0,points.size()+1);
+            //faceSet->startIndex.setValue(0);
+            lineSep->addChild(lineSet);
+        }
 
         visu->unrefNoDelete();
         return visu;
@@ -1922,7 +1925,7 @@ namespace VirtualRobot {
 
 
 
-	SoSeparator* CoinVisualizationFactory::Create2DMap( const Eigen::MatrixXf &d, float extendCellX, float extendCellY, const VirtualRobot::ColorMap cm, bool drawZeroCells )
+	SoSeparator* CoinVisualizationFactory::Create2DMap( const Eigen::MatrixXf &d, float extendCellX, float extendCellY, const VirtualRobot::ColorMap cm, bool drawZeroCells, bool drawLines )
 	{
 		SoSeparator *res = new SoSeparator;
 		res->ref();
@@ -1974,6 +1977,7 @@ namespace VirtualRobot {
 		lightModel->model = SoLightModel::BASE_COLOR;
 
 		SoSeparator *grid = new SoSeparator;
+		res->addChild(lightModel);
 		res->addChild(grid);
 		for (int x = 0; x<nX; x++)
 		{
@@ -2011,14 +2015,16 @@ namespace VirtualRobot {
 						sep1->addChild(mat);
 						sep1->addChild(cube);
 
-						SoSeparator *pSepLines = new SoSeparator;
-						sep1->addChild(pSepLines);
+						if (drawLines)
+						{
+                            SoSeparator *pSepLines = new SoSeparator;
+                            sep1->addChild(pSepLines);
 
-						pSepLines->addChild(ds);
-						pSepLines->addChild(shapeHints);
-						pSepLines->addChild(lightModel);
-						pSepLines->addChild(bc);
-						pSepLines->addChild(cube);
+                            pSepLines->addChild(ds);
+                            pSepLines->addChild(shapeHints);
+                            pSepLines->addChild(bc);
+                            pSepLines->addChild(cube);
+						}
 
 						grid->addChild(sep1);
 					}
@@ -2029,7 +2035,8 @@ namespace VirtualRobot {
 		res->unrefNoDelete();
 		return res;
 	}
-	SoSeparator* CoinVisualizationFactory::Create2DHeightMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, float heightZ, const VirtualRobot::ColorMap cm)
+
+	SoSeparator* CoinVisualizationFactory::Create2DHeightMap(const Eigen::MatrixXf &d, float extendCellX, float extendCellY, float heightZ, const VirtualRobot::ColorMap cm, bool drawZeroCells, bool drawLines)
 	{
 		SoSeparator *res = new SoSeparator;
 		res->ref();
@@ -2051,10 +2058,10 @@ namespace VirtualRobot {
 		float sizeX = extendCellX;
 		float sizeY = extendCellY;
 
-		SoCube *cube = new SoCube();
+/*		SoCube *cube = new SoCube();
 		cube->width = sizeX;
 		cube->depth = 1.0;
-		cube->height = sizeY;
+		cube->height = sizeY;*/
 		
 		float maxEntry = 1.0f;
 		if (d.maxCoeff() > 1.0f)
@@ -2079,7 +2086,9 @@ namespace VirtualRobot {
 		lightModel->model = SoLightModel::BASE_COLOR;
 
 		SoSeparator *grid = new SoSeparator;
+		res->addChild(lightModel);
 		res->addChild(grid);
+
 		for (int x = 1; x<nX; x++)
 		{
 			for (int y = 1; y<nY; y++)
@@ -2092,7 +2101,7 @@ namespace VirtualRobot {
 				float xPos2 = (float)(x) * sizeX + 0.5f*sizeX; // center of voxel
 				float yPos1 = (float)(y-1) * sizeY + 0.5f*sizeY; // center of voxel
 				float yPos2 = (float)y * sizeY + 0.5f*sizeY; // center of voxel
-				float v = (v1+v2+v3+v4)/4.0f;
+				float v = (v1 + v2 + v3 + v4) / 4.0f;
 				
 				float intensity1 = (float)v1 / maxEntry;
 				float height1 = intensity1*heightZ;
@@ -2115,18 +2124,15 @@ namespace VirtualRobot {
 
 				float intensity = (float)v;
 				intensity /= maxEntry;
-				if (intensity>1.0f)
+				if (intensity > 1.0f)
 					intensity = 1.0f;
 
-				SoSeparator* pol = CreatePolygonVisualization(pts,cm.getColor(intensity));
-
-				SoSeparator *sep1 = new SoSeparator();
-				SoMatrixTransform* matTr = getMatrixTransformM(gp); // we are in mm unit environment -> no conversion to m needed
-				sep1->addChild(matTr);
-				sep1->addChild(pol);
-
-				grid->addChild(sep1);
-
+				if (drawZeroCells || intensity > 0.)
+				{
+                    float lineWidth = drawLines ? 4.0f : 0.f;
+                    SoSeparator* pol = CreatePolygonVisualization(pts,cm.getColor(intensity), VisualizationFactory::Color::Black(), lineWidth);
+                    grid->addChild(pol);
+				}
 			}
 		}
 		//res->addChild(lines);

@@ -88,7 +88,13 @@ public:
 			if (steps > maxSteps)
 				maxSteps = steps;
 		}
-		maxLevels = int(ceil(sqrt(double(maxSteps))));
+        // nrLeafes = 2^(depth-1)
+        // -> depth = log_2 nrLeafes + 1
+        //logn(x) = log10(x) / log10(n)
+        maxLevels = int(ceil(log10((double)maxSteps) / log10((double)2))) + 1;
+        //int tmp = int(ceil(sqrt(double(maxSteps))));
+        //cout << "MaxLevels:" << maxLevels;
+        //cout << "was (sqrt): " << tmp;
 		if (verbose)
 		{
 			VR_INFO << "Creating Voxelized tree data structure. " << endl;

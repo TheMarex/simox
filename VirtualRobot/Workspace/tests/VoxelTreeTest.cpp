@@ -80,12 +80,12 @@ BOOST_AUTO_TEST_CASE(VoxelTreeNDEntriesTest)
 	float minB[N];
 	float maxB[N];
 	float discr[N];
-	float extend = 5.0f;
+    float extend = 2.0f;
 	for (int i=0;i<N;i++)
 	{
 		minB[i] = -100.0f;
 		maxB[i] = 100.0f;
-		discr[i] = extend;
+        discr[i] = extend*(i+1); // different min extends
 	}
 	VirtualRobot::VoxelTreeND<unsigned char,N> v(minB,maxB,discr,true);
 	float pos[N];

@@ -26,6 +26,7 @@
 #include "../VirtualRobotImportExport.h"
 #include "WorkspaceData.h"
 #include "../MathTools.h"
+#include "../XML/FileIO.h"
 
 
 #include <boost/enable_shared_from_this.hpp>
@@ -342,16 +343,6 @@ protected:
 	*/
 	virtual bool customSave(std::ofstream &file){return true;}
 	virtual void customPrint(){}
-
-	//! Specific methods to read/write strings from/to workspace data files
-	bool readString(std::string &res, std::ifstream &file);
-	void writeString(std::ofstream &file, const std::string &value);
-
-	//! General methods to read/write binary data to a file
-	template<typename T> T read(std::ifstream &file);
-	template<typename T> void readArray(T *res, int num, std::ifstream &file);
-	template<typename T> void write(std::ofstream &file, T value);
-	template<typename T> void writeArray(std::ofstream &file, const T *value, int num);
 
 	//! Uncompress the data
 	void uncompressData(const unsigned char *source, int size, unsigned char *dest);

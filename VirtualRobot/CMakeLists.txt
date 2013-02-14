@@ -33,6 +33,7 @@ XML/BaseIO.cpp
 XML/RobotIO.cpp
 XML/SceneIO.cpp
 XML/ObjectIO.cpp
+XML/FileIO.cpp
 IK/IKSolver.cpp
 IK/DifferentialIK.cpp
 IK/GenericIKSolver.cpp
@@ -98,6 +99,7 @@ XML/BaseIO.h
 XML/RobotIO.h
 XML/SceneIO.h
 XML/ObjectIO.h
+XML/FileIO.h
 IK/IKSolver.h
 IK/DifferentialIK.h
 IK/GenericIKSolver.h
@@ -111,6 +113,8 @@ Workspace/Reachability.h
 Workspace/Manipulability.h
 Workspace/VoxelTree6D.hpp
 Workspace/VoxelTree6DElement.hpp
+Workspace/VoxelTreeND.hpp
+Workspace/VoxelTreeNDElement.hpp
 Workspace/WorkspaceGrid.h
 Grasping/Grasp.h
 Grasping/GraspSet.h

@@ -35,8 +35,13 @@ float PoseQualityExtendedManipulability::getPoseQuality()
 
 float PoseQualityExtendedManipulability::getPoseQuality( PoseQualityManipulability::ManipulabilityIndexType i, int considerFirstSV )
 {
+	return getPoseQuality(jacobian, rns, i, considerFirstSV);
+}
+
+float PoseQualityExtendedManipulability::getPoseQuality( DifferentialIKPtr jacobian, RobotNodeSetPtr rns, PoseQualityManipulability::ManipulabilityIndexType i, int considerFirstSV )
+{
 	extManipData d;
-	if (!getDetailedAnalysis(d,considerFirstSV))
+	if (!getDetailedAnalysis(jacobian,rns,d,considerFirstSV))
 	{
 		VR_ERROR << "ERROR" << endl;
 		return 0;
@@ -96,9 +101,8 @@ void PoseQualityExtendedManipulability::getQualityWeighting( float jv, float lim
 	}
 }
 
-void PoseQualityExtendedManipulability::getPenalizations(Eigen::VectorXf &penLo, Eigen::VectorXf &penHi)
+void PoseQualityExtendedManipulability::getPenalizations(const std::vector<RobotNodePtr> &joints, Eigen::VectorXf &penLo, Eigen::VectorXf &penHi)
 {
-	std::vector<RobotNodePtr> joints = rns->getAllRobotNodes();
 	penLo.resize(joints.size());
 	penHi.resize(joints.size());
 	for (size_t i=0;i<joints.size();i++)
@@ -117,10 +121,16 @@ void PoseQualityExtendedManipulability::getPenalizations(Eigen::VectorXf &penLo,
 	}
 }
 
-void PoseQualityExtendedManipulability::getObstaclePenalizations(const Eigen::Vector3f &obstVect, const Eigen::MatrixXf &jac, Eigen::MatrixXf &penObstLo, Eigen::MatrixXf &penObstHi)
+void PoseQualityExtendedManipulability::getObstaclePenalizations(RobotNodeSetPtr rns, const Eigen::Vector3f &obstVect, const Eigen::MatrixXf &jac, Eigen::MatrixXf &penObstLo, Eigen::MatrixXf &penObstHi)
+{
+	std::vector<RobotNodePtr> joints = rns->getAllRobotNodes();
+	return getObstaclePenalizations(joints,obstVect,jac,penObstLo,penObstHi);
+}
+
+void PoseQualityExtendedManipulability::getObstaclePenalizations(const std::vector<RobotNodePtr> &joints, const Eigen::Vector3f &obstVect, const Eigen::MatrixXf &jac, Eigen::MatrixXf &penObstLo, Eigen::MatrixXf &penObstHi)
 {
 	float scaleFactor = 0.001f;
-	std::vector<RobotNodePtr> joints = rns->getAllRobotNodes();
+
 	penObstLo.resize(jac.rows(),jac.cols());
 	penObstHi.resize(jac.rows(),jac.cols());
 	penObstLo.setZero();
@@ -266,7 +276,7 @@ Eigen::MatrixXf PoseQualityExtendedManipulability::getJacobianWeighted( const Ei
 			bool posPen = true;
 
 			// check for neg quadrant
-			if (directionVect[i]<0)
+			if (directionVect[i%6]<0)
 				posPen = !posPen;
 
 			// check for inverted movement of joint
@@ -312,17 +322,29 @@ bool PoseQualityExtendedManipulability::analyzeJacobian( const Eigen::MatrixXf &
 
 bool PoseQualityExtendedManipulability::getDetailedAnalysis( extManipData &storeData, bool dims[6], int considerFirstSV  )
 {
-	storeData.jac = jacobian->getJacobianMatrix(rns->getTCP());
+	return getDetailedAnalysis(jacobian, rns, storeData, dims, considerFirstSV);
+}
+
+bool PoseQualityExtendedManipulability::getDetailedAnalysis( DifferentialIKPtr jacobian, RobotNodeSetPtr rns, extManipData &storeData, bool dims[6], int considerFirstSV  )
+{
+	Eigen::MatrixXf j = jacobian->getJacobianMatrix(rns->getTCP());
+	std::vector<RobotNodePtr> joints = rns->getAllRobotNodes();
+	return getDetailedAnalysis(j,joints,storeData,dims,considerFirstSV);
+}
+
+bool PoseQualityExtendedManipulability::getDetailedAnalysis( const Eigen::MatrixXf &jac, const std::vector<RobotNodePtr> &joints, extManipData &storeData, bool dims[6], int considerFirstSV  )
+{
+	storeData.jac = jac;
 	storeData.nrJoints = storeData.jac.cols();
 
 	// penalize rotation
 	storeData.jac.block(3,0,3,storeData.jac.cols()) *= penalizeRotationFactor;
-
-	getPenalizations (storeData.penLo,storeData.penHi);
+	
+	getPenalizations (joints, storeData.penLo,storeData.penHi);
 	storeData.obstacles = considerObstacle;
 	if (considerObstacle)
 	{
-		getObstaclePenalizations(obstacleDir, storeData.jac, storeData.penObstLo, storeData.penObstHi);
+		getObstaclePenalizations(joints, obstacleDir, storeData.jac, storeData.penObstLo, storeData.penObstHi);
 	}
 
 	bool verbose = false;
@@ -431,7 +453,20 @@ bool PoseQualityExtendedManipulability::getDetailedAnalysis( extManipData &store
 	for (i=0;i<6;i++)
 		dims[i] = true;
 
-	return getDetailedAnalysis(storeData,dims,considerFirstSV);
+	return getDetailedAnalysis(jacobian, rns, storeData, dims, considerFirstSV);
+}
+
+bool PoseQualityExtendedManipulability::getDetailedAnalysis( DifferentialIKPtr jacobain, RobotNodeSetPtr rns, extManipData &storeData, int considerFirstSV )
+{
+	if (considerFirstSV<=0 || considerFirstSV>6)
+		considerFirstSV = 6;
+
+	bool dims[6];
+	int i = 0;
+	for (i=0;i<6;i++)
+		dims[i] = true;
+
+	return getDetailedAnalysis(jacobian, rns, storeData, dims, considerFirstSV);
 }
 
 bool PoseQualityExtendedManipulability::createCartDimPermutations( std::vector < std::vector<float> > &storePerm )
@@ -530,7 +565,8 @@ float PoseQualityExtendedManipulability::getManipulability( const Eigen::VectorX
 		else
 			quadrant.push_back(1.0f);
 
-	getPenalizations (penLo,penHi);
+	std::vector<RobotNodePtr> joints = rns->getAllRobotNodes();
+	getPenalizations (joints,penLo,penHi);
 
 	if (considerObstacle)
 	{
@@ -542,7 +578,7 @@ float PoseQualityExtendedManipulability::getManipulability( const Eigen::VectorX
 		// the orientation is skipped! (we have a position vector)
 		Eigen::Vector3f obstVecGlobal;
 		obstVecGlobal.block(0,0,3,1) = pos - zero;
-		getObstaclePenalizations(obstVecGlobal, jacGlobal, penObstLo, penObstHi);
+		getObstaclePenalizations(rns, obstVecGlobal, jacGlobal, penObstLo, penObstHi);
 		jacPen = getJacobianWeightedObstacles(jacGlobal, quadrant, penLo,penHi,penObstLo,penObstHi);
 	} else
 	{

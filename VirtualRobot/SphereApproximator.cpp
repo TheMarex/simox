@@ -10,6 +10,7 @@
 #include "SphereApproximator.h"
 #include <math.h>
 #include <iostream>
+#include "VirtualRobot/Visualization/TriMeshModel.h"
 
 using namespace std;
 
@@ -510,6 +511,28 @@ bool SphereApproximator::check_intersect_tri(const Eigen::Vector3f &pt1, const E
 		}
 	}
 	return false;
+}
+
+VirtualRobot::TriMeshModelPtr SphereApproximator::generateTriMesh( const SphereApproximation &a )
+{
+	Eigen::Vector3f v1,v2,v3;
+	MathTools::TriangleFace f;
+
+	int nVertices = (int)a.vertices.size();
+	int nFaces = (int)a.faces.size();
+	VR_ASSERT(nVertices>0);
+	int nVertexCount = 0;
+
+	TriMeshModelPtr tr(new TriMeshModel());
+	for (int i=0;i<nFaces;i++)
+	{
+		f = a.faces.at(i);
+		v1 = a.vertices.at(f.id1);
+		v2 = a.vertices.at(f.id2);
+		v3 = a.vertices.at(f.id3);
+		tr->addTriangleWithFace(v1,v3,v2);
+	}
+	return tr;
 }
 
 }

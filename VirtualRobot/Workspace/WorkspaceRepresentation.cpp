@@ -49,53 +49,6 @@ int WorkspaceRepresentation::sumAngleReachabilities(int x0, int x1, int x2) cons
 }
 
 
-bool WorkspaceRepresentation::readString(std::string &res, std::ifstream &file)
-{
-	int length = read<int>(file);
-    if(length <= 0)
-    {
-		VR_WARNING << "Bad string length: " << length << std::endl;
-        return false;
-    }
-
-    char *data = new char[length+1];
-    file.read(data, length);
-    data[length] = '\0';
-    res = data;
-    delete[] data;
-    return true;
-}
-
-void WorkspaceRepresentation::writeString(std::ofstream &file, const std::string &value)
-{
-	int len = value.length();
-	file.write((char *)&len, sizeof(int));
-	file.write(value.c_str(), len);
-}
-
-template<typename T> T WorkspaceRepresentation::read(std::ifstream &file)
-{
-	T t;
-	file.read((char *)&t, sizeof(T));
-	return t;
-}
-
-template<typename T> void WorkspaceRepresentation::readArray(T *res, int num, std::ifstream &file)
-{
-	file.read((char *)res, num * sizeof(T));
-}
-
-template<typename T> void WorkspaceRepresentation::write(std::ofstream &file, T value)
-{
-	file.write((char *)&value, sizeof(T));
-}
-
-template<typename T> void WorkspaceRepresentation::writeArray(std::ofstream &file, const T *value, int num)
-{
-	file.write((char *)value, num * sizeof(T));
-}
-
-
 void WorkspaceRepresentation::uncompressData(const unsigned char *source, int size, unsigned char *dest)
 {
 	unsigned char count;
@@ -186,7 +139,7 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		tmpStr2 += " Binary File";
 
 		// Check file type
-		readString(tmpString, file);
+		FileIO::readString(tmpString, file);
 		bool fileTypeOK = false;
 		if (tmpString == "WorkspaceRepresentation Binary File" ||
 		    tmpString == "Reachability Binary File" ||
@@ -200,7 +153,7 @@ void WorkspaceRepresentation::load(const std::string &filename)
 
 		// Check version
 		int version[2];
-		readArray<int>(version, 2, file);
+		FileIO::readArray<int>(version, 2, file);
 		// first check if the current version is used
 		if (version[0] != versionMajor || version[1] != versionMinor)
 		{
@@ -220,37 +173,37 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		//versionMajor = version[0];
 		//versionMinor = version[1];
 		// Check Robot name
-		readString(tmpString, file);
+		FileIO::readString(tmpString, file);
 		THROW_VR_EXCEPTION_IF(tmpString != robot->getType(), "Wrong Robot");
 
 		// Check Node Set
-		readString(tmpString, file);
+		FileIO::readString(tmpString, file);
 		nodeSet = robot->getRobotNodeSet(tmpString);
 		THROW_VR_EXCEPTION_IF(!nodeSet, "Node Set does not exist.");
 		if(version[0] > 1 || (version[0] == 1 && version[1] > 0) )
 		{
-			THROW_VR_EXCEPTION_IF(nodeSet->getSize() != read<int>(file), "Node Sets don't match (size differs).");
+			THROW_VR_EXCEPTION_IF(nodeSet->getSize() != FileIO::read<int>(file), "Node Sets don't match (size differs).");
 
 			// Check joint limits
 			std::vector<RobotNodePtr> nodes = nodeSet->getAllRobotNodes();
 			for(std::vector<RobotNodePtr>::iterator n = nodes.begin(); n != nodes.end(); n++)
 			{
 				float limits[2];
-				readArray<float>(limits, 2, file);
+				FileIO::readArray<float>(limits, 2, file);
 				if(fabs((*n)->getJointLimitLo() - limits[0]) > 0.01 || fabs((*n)->getJointLimitHi() - limits[1]) > 0.01)
 					VR_WARNING << "Joint limit mismatch for " << (*n)->getName() << ", min: " << (*n)->getJointLimitLo() << " / " << limits[0] << ", max: " << (*n)->getJointLimitHi() << " / " << limits[1] << std::endl;
 			}
 		}
 
 		// Check TCP
-		readString(tmpString, file);
+		FileIO::readString(tmpString, file);
 		tcpNode = robot->getRobotNode(tmpString);
 		THROW_VR_EXCEPTION_IF(!tcpNode, "Unknown TCP");
 
 		// Check Base Joint
 		if(version[0] > 1 || (version[0] == 1 &&  version[1] > 0))
 		{
-			readString(tmpString, file);
+			FileIO::readString(tmpString, file);
 			baseNode = robot->getRobotNode(tmpString);
 			THROW_VR_EXCEPTION_IF(!baseNode, "Unknown Base Joint");
 			//updateBaseTransformation();
@@ -259,34 +212,34 @@ void WorkspaceRepresentation::load(const std::string &filename)
 			//baseTransformation.setIdentity();
 
 		// Static collision model
-		readString(tmpString, file);
+		FileIO::readString(tmpString, file);
 		if(tmpString != "" && tmpString != "not set")
 			staticCollisionModel = robot->getRobotNodeSet(tmpString);
 
 		// Dynamic collision model
-		readString(tmpString, file);
+		FileIO::readString(tmpString, file);
 		if(tmpString != "" && tmpString != "not set")
 			dynamicCollisionModel = robot->getRobotNodeSet(tmpString);
 
-		buildUpLoops = read<int>(file);
-		collisionConfigs = read<int>(file);
-		discretizeStepTranslation = read<float>(file);
-		discretizeStepRotation = read<float>(file);
-		readArray<int>(numVoxels, 6, file);
-		int voxelFilledCount = read<int>(file);
-		int maxEntry = read<int>(file);
+		buildUpLoops = FileIO::read<int>(file);
+		collisionConfigs = FileIO::read<int>(file);
+		discretizeStepTranslation = FileIO::read<float>(file);
+		discretizeStepRotation = FileIO::read<float>(file);
+		FileIO::readArray<int>(numVoxels, 6, file);
+		int voxelFilledCount = FileIO::read<int>(file);
+		int maxEntry = FileIO::read<int>(file);
 
 		for(int i = 0; i < 6; i++)
 		{
-			minBounds[i] = read<float>(file);
-			maxBounds[i] = read<float>(file);
+			minBounds[i] = FileIO::read<float>(file);
+			maxBounds[i] = FileIO::read<float>(file);
 			spaceSize[i] = maxBounds[i] - minBounds[i];
 		}
 
 		for(int i = 0; i < 6; i++)
 		{
-			achievedMinValues[i] = read<float>(file);
-			achievedMaxValues[i] = read<float>(file);
+			achievedMinValues[i] = FileIO::read<float>(file);
+			achievedMaxValues[i] = FileIO::read<float>(file);
 		}
 		if ((version[0]>2) || (version[0] == 2 && version[1] >= 2))
 		{
@@ -297,7 +250,7 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		}
 
 		// Read Data
-		readString(tmpString, file);
+		FileIO::readString(tmpString, file);
 		THROW_VR_EXCEPTION_IF(tmpString != "DATA_START", "Bad file format, expecting DATA_START.");
 
 		int size = numVoxels[0]*numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5];
@@ -310,14 +263,14 @@ void WorkspaceRepresentation::load(const std::string &filename)
 			if(version[0] == 1 && version[1] <= 2)
 			{
 				// Data is uncompressed
-				readArray<unsigned char>(d, size, file);
+				FileIO::readArray<unsigned char>(d, size, file);
 			}
 			else
 			{
 				// Data is compressed
-				int compressedSize = read<int>(file);
+				int compressedSize = FileIO::read<int>(file);
 				unsigned char *compressedData = new unsigned char[compressedSize];
-				readArray<unsigned char>(compressedData, compressedSize, file);
+				FileIO::readArray<unsigned char>(compressedData, compressedSize, file);
 				if ( (version[0] > 2) ||  (version[0] == 2 && version[1] >= 1))
 					CompressionRLE::RLE_Uncompress(compressedData,d,compressedSize);
 				else
@@ -398,9 +351,9 @@ void WorkspaceRepresentation::load(const std::string &filename)
 					for (int y=0;y<numVoxels[1];y++)
 						for (int z=0;z<numVoxels[2];z++)
 						{
-							int compressedSize = read<int>(file);
+							int compressedSize = FileIO::read<int>(file);
 						
-							readArray<unsigned char>(compressedData, compressedSize, file);
+							FileIO::readArray<unsigned char>(compressedData, compressedSize, file);
 						
 							CompressionRLE::RLE_Uncompress(compressedData,uncompressedData,compressedSize);
 							data->setDataRot(uncompressedData,x,y,z);
@@ -414,7 +367,7 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		data->setVoxelFilledCount(voxelFilledCount);
 		data->setMaxEntry(maxEntry);
 
-		readString(tmpString, file);
+		FileIO::readString(tmpString, file);
 		THROW_VR_EXCEPTION_IF(tmpString != "DATA_END", "Bad file format, expecting DATA_END");
 	}
 	catch(VirtualRobotException &e)
@@ -439,70 +392,70 @@ void WorkspaceRepresentation::save(const std::string &filename)
 		// File type
 		std::string tmpStr = type;
 		tmpStr += " Binary File";
-		writeString(file, tmpStr);
+		FileIO::writeString(file, tmpStr);
 
 		// Version
-		write<int>(file, versionMajor);
-		write<int>(file, versionMinor);
+		FileIO::write<int>(file, versionMajor);
+		FileIO::write<int>(file, versionMinor);
 
 		// Robot type
-		writeString(file, robot->getType());
+		FileIO::writeString(file, robot->getType());
 
 		// Node set name
-		writeString(file, nodeSet->getName());
+		FileIO::writeString(file, nodeSet->getName());
 
 		// Joint limits
 		const std::vector<RobotNodePtr> nodes = nodeSet->getAllRobotNodes();
-		write<int>(file, nodes.size());
+		FileIO::write<int>(file, nodes.size());
 		for(std::vector<RobotNodePtr>::const_iterator n = nodes.begin(); n != nodes.end(); n++)
 		{
-			write<float>(file, (*n)->getJointLimitLo());
-			write<float>(file, (*n)->getJointLimitHi());
+			FileIO::write<float>(file, (*n)->getJointLimitLo());
+			FileIO::write<float>(file, (*n)->getJointLimitHi());
 		}
 
 		// TCP name
-		writeString(file, tcpNode->getName());
+		FileIO::writeString(file, tcpNode->getName());
 
 		// Base Joint name
-		writeString(file, baseNode->getName());
+		FileIO::writeString(file, baseNode->getName());
 
 		// Collision models
 		if(staticCollisionModel)
-			writeString(file, staticCollisionModel->getName());
+			FileIO::writeString(file, staticCollisionModel->getName());
 		else
-			writeString(file, "not set");
+			FileIO::writeString(file, "not set");
 		if(dynamicCollisionModel)
-			writeString(file, dynamicCollisionModel->getName());
+			FileIO::writeString(file, dynamicCollisionModel->getName());
 		else
-			writeString(file, "not set");
+			FileIO::writeString(file, "not set");
 
 		// Build loops
-		write<int>(file, buildUpLoops);
+		FileIO::write<int>(file, buildUpLoops);
 
 		// Collisions
-		write<int>(file, collisionConfigs);
+		FileIO::write<int>(file, collisionConfigs);
 
 		// DiscretizeStep*
-		write<float>(file, discretizeStepTranslation);
-		write<float>(file, discretizeStepRotation);
+		FileIO::write<float>(file, discretizeStepTranslation);
+		FileIO::write<float>(file, discretizeStepRotation);
 
 		// Number of voxels
-		writeArray<int>(file, numVoxels, 6);
-		write<int>(file, data->getVoxelFilledCount());
-		write<int>(file, data->getMaxEntry());
+		FileIO::writeArray<int>(file, numVoxels, 6);
+		FileIO::write<int>(file, data->getVoxelFilledCount());
+		FileIO::write<int>(file, data->getMaxEntry());
 
 		// Workspace extend
 		for(int i = 0; i < 6; i++)
 		{
-			write<float>(file, minBounds[i]);
-			write<float>(file, maxBounds[i]);
+			FileIO::write<float>(file, minBounds[i]);
+			FileIO::write<float>(file, maxBounds[i]);
 		}
 
 		// Workspace achieved values
 		for(int i = 0; i < 6; i++)
 		{
-			write<float>(file, achievedMinValues[i]);
-			write<float>(file, achievedMaxValues[i]);
+			FileIO::write<float>(file, achievedMinValues[i]);
+			FileIO::write<float>(file, achievedMaxValues[i]);
 		}
 
 		if (!customSave(file))
@@ -512,7 +465,7 @@ void WorkspaceRepresentation::save(const std::string &filename)
 
 
 		// Data
-		writeString(file, "DATA_START");
+		FileIO::writeString(file, "DATA_START");
 		int size = 0;
 		int maxCompressedSize = numVoxels[3]*numVoxels[4]*numVoxels[5]*3;
 		/*unsigned char *compressedData = new unsigned char[maxCompressedSize];
@@ -521,9 +474,9 @@ void WorkspaceRepresentation::save(const std::string &filename)
 				for (int z=0;z<numVoxels[2];z++)
 				{
 					size = CompressionRLE::RLE_Compress(data->getDataRot(x,y,z),compressedData,data->getSizeRot());
-					write<int>(file, size);
+					FileIO::write<int>(file, size);
 					if(size > 0)
-						writeArray<unsigned char>(file, compressedData, size);
+						FileIO::writeArray<unsigned char>(file, compressedData, size);
 				}
 		delete []compressedData;*/
 		CompressionBZip2Ptr bzip2(new CompressionBZip2(&file));
@@ -553,7 +506,7 @@ void WorkspaceRepresentation::save(const std::string &filename)
 		delete [] emptyData;
 
 		bzip2->close();
-		writeString(file, "DATA_END");
+		FileIO::writeString(file, "DATA_END");
 	}
 	catch(VirtualRobotException &e)
 	{

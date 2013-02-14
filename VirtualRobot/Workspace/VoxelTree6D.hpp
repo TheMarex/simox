@@ -41,7 +41,7 @@ public:
 
 	/*!
 	*/
-	VoxelTree6D(float minExtend[6], float maxExtend[6], float discretizationTransl, float discretizationRot, bool verbose = true):
+	VoxelTree6D(float minExtend[6], float maxExtend[6], float discretizationTransl, float discretizationRot, bool verbose = false):
 	  verbose(verbose)
 	{
 		memcpy (&(this->minExtend[0]),&(minExtend[0]),sizeof(float)*6);
@@ -73,7 +73,7 @@ public:
 		int steps2 = (int)(maxSize2 / discretizationRot + 0.5f);
 		if (steps2 > steps)
 			steps = steps2;
-		maxLevels = steps;
+		maxLevels = int(ceil(sqrt(double(steps))));
 		if (verbose)
 		{
 			VR_INFO << "Creating Voxelized tree data structure. " << endl;
@@ -118,11 +118,11 @@ public:
 	}
 
 protected:
+
 	float minExtend[6];
 	float maxExtend[6];
 	int maxLevels;
 	bool verbose;
-
 	VoxelTree6DElement<T> *root;
 
 };

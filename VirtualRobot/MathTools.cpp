@@ -1401,6 +1401,31 @@ Eigen::VectorXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getPermutation( const Eig
 	return result;
 }
 
+Eigen::Vector3f MathTools::toPosition( const SphericalCoord &sc )
+{
+	Eigen::Vector3f res;
+
+	res(0) = sc.r * sin(sc.theta) * cos(sc.phi);
+	res(1) = sc.r * sin(sc.theta) * sin(sc.phi);
+	res(2) = sc.r * cos(sc.theta);
+	return res;
+}
+
+VirtualRobot::MathTools::SphericalCoord MathTools::toSphericalCoords( const Eigen::Vector3f &pos )
+{
+	VirtualRobot::MathTools::SphericalCoord res;
+	res.r = pos.norm();
+	if (res.r < 1e-8)
+	{
+		res.phi = 0;
+		res.theta = 0;
+		return res;
+	}
+	res.phi = atan2(pos(1),pos(0));
+	res.theta = acos(pos(2)/res.r);
+	return res;
+}
+
 
 } // namespace
 

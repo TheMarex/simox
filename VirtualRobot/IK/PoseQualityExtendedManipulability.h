@@ -133,6 +133,13 @@ public:
 
 protected:
 
+	bool getDetailedAnalysis(DifferentialIKPtr jacobian, RobotNodeSetPtr rns, extManipData &storeData, int considerFirstSV = 0);
+	bool getDetailedAnalysis(DifferentialIKPtr jacobian, RobotNodeSetPtr rns, extManipData &storeData, bool dims[6], int considerFirstSV = 0);
+	bool getDetailedAnalysis( const Eigen::MatrixXf &jac, const std::vector<RobotNodePtr> &joints, extManipData &storeData, bool dims[6], int considerFirstSV = 0);
+
+	float getPoseQuality(DifferentialIKPtr jacobian,  RobotNodeSetPtr rns, PoseQualityManipulability::ManipulabilityIndexType i, int considerFirstSV);
+
+
 	bool createCartDimPermutations(std::vector < std::vector<float> > &storePerm);
 	
 	/*!
@@ -145,7 +152,7 @@ protected:
 	void getQualityWeighting(float jv, float limitMin, float limitMax, float &storeWeightMin, float &storeWeightMax );
 
 	//! Compute weightings w and store 1/sqrt(w)
-	void getPenalizations(Eigen::VectorXf &penLo, Eigen::VectorXf &penHi);
+	void getPenalizations(const std::vector<RobotNodePtr> &joints, Eigen::VectorXf &penLo, Eigen::VectorXf &penHi);
 
 
 	Eigen::MatrixXf getJacobianWeighted( const Eigen::MatrixXf &jac, const std::vector<float> &directionVect, const Eigen::VectorXf &penLo, const Eigen::VectorXf &penHi );
@@ -158,7 +165,8 @@ protected:
 		\param V The V matrix is stored here
 	*/
 	bool analyzeJacobian( const Eigen::MatrixXf &jac, Eigen::VectorXf &sv, Eigen::MatrixXf &singVectors, Eigen::MatrixXf &U, Eigen::MatrixXf &V, bool printInfo = false);
-	void getObstaclePenalizations(const Eigen::Vector3f &obstVect, const Eigen::MatrixXf &jac, Eigen::MatrixXf &penObstLo, Eigen::MatrixXf &penObstHi);
+	void getObstaclePenalizations(RobotNodeSetPtr rns, const Eigen::Vector3f &obstVect, const Eigen::MatrixXf &jac, Eigen::MatrixXf &penObstLo, Eigen::MatrixXf &penObstHi);
+	void getObstaclePenalizations(const std::vector<RobotNodePtr> &joints, const Eigen::Vector3f &obstVect, const Eigen::MatrixXf &jac, Eigen::MatrixXf &penObstLo, Eigen::MatrixXf &penObstHi);
 	Eigen::MatrixXf getJacobianWeightedObstacles( const Eigen::MatrixXf &jac, const std::vector<float> &directionVect, const Eigen::VectorXf &penLo, const Eigen::VectorXf &penHi, const Eigen::MatrixXf &penObstLo, const Eigen::MatrixXf &penObstHi );
 
 	std::vector< std::vector<float> > cartDimPermutations;

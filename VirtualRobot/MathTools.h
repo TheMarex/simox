@@ -77,6 +77,18 @@ namespace MathTools
 	MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT getMean(std::vector<MathTools::Quaternion> quaternions );
 
 	/************************************************************************/
+	/* SPHERICAL COORDINATES                                                */
+	/************************************************************************/
+	struct SphericalCoord
+	{
+		float r,phi,theta;
+	};
+
+	SphericalCoord VIRTUAL_ROBOT_IMPORT_EXPORT toSphericalCoords(const Eigen::Vector3f &pos);
+	Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT toPosition(const SphericalCoord &sc);
+
+
+	/************************************************************************/
 	/* CONVERTIONS                                                          */
 	/************************************************************************/
 

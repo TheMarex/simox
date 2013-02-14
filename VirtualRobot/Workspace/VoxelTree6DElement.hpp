@@ -53,7 +53,7 @@ public:
 		memcpy (&(this->extends[0]),&(extends[0]),sizeof(float)*6);
 		this->level = level;
 		this->maxLevels = maxLevels;
-		if (level>maxLevels)
+		if (level>=maxLevels)
 		{
 			VR_ERROR << "Exceeding maxLevels?!" << endl;
 		}
@@ -75,7 +75,7 @@ public:
 		if (!covers(p))
 			return false;
 
-		if (leaf || level>=maxLevels)
+		if (leaf || level>=(maxLevels-1))
 		{
 			leaf = true;
 			delete entry;

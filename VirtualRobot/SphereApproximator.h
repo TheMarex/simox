@@ -76,6 +76,8 @@ public:
 	*/
 	void generateGraph(SphereApproximation &storeResult, EPolyhedronType baseType, int levels, float radius);
 
+	TriMeshModelPtr generateTriMesh(const SphereApproximation &a);
+
 	int findVertex(const Eigen::Vector3f &position, float epsilon, std::vector<Eigen::Vector3f> &vertices);
 	float AngleVecVec(const Eigen::Vector3f &vector1, const Eigen::Vector3f &vector2);
 

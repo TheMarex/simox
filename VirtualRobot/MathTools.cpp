@@ -1426,6 +1426,15 @@ VirtualRobot::MathTools::SphericalCoord MathTools::toSphericalCoords( const Eige
 	return res;
 }
 
+int MathTools::pow_int( int a, int b )
+{
+	int powI = 1;
+	for (int j = 0; j<b; j++)
+		powI *= a;
+	return powI;
+
+}
+
 
 } // namespace
 

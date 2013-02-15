@@ -493,6 +493,8 @@ namespace MathTools
 	/* HELPERS and IO                                                       */
 	/************************************************************************/
 
+	int VIRTUAL_ROBOT_IMPORT_EXPORT pow_int(int a, int b);
+
 	/*!
 		Check if all entries of v are valid numbers (i.e. all entries of v are not NaN and not INF)
 	*/

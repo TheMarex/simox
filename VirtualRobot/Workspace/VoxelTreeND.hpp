@@ -25,6 +25,7 @@
 
 #include "../VirtualRobotImportExport.h"
 #include "../VirtualRobotException.h"
+#include "../MathTools.h"
 #include "../XML/FileIO.h"
 #include "../Compression/CompressionBZip2.h"
 #include "VoxelTreeNDElement.hpp"
@@ -92,6 +93,19 @@ public:
         // -> depth = log_2 nrLeafes + 1
         //logn(x) = log10(x) / log10(n)
         maxLevels = int(ceil(log10((double)maxSteps) / log10((double)2))) + 1;
+
+		// precompute extends for all sub elements
+		elementExtends.resize(maxLevels,N);
+		float newExtend[N];
+		memcpy(&(newExtend[0]),&(size[0]),sizeof(float)*N);
+		for (int a=0;a<maxLevels;a++)
+		{
+			for (int b=0;b<N;b++)
+			{
+				elementExtends(a,b) = newExtend[b];
+				newExtend[b] *= 0.5f;
+			}
+		}
         //int tmp = int(ceil(sqrt(double(maxSteps))));
         //cout << "MaxLevels:" << maxLevels;
         //cout << "was (sqrt): " << tmp;
@@ -103,14 +117,15 @@ public:
 			for (int i=0;i<N;i++)
 			{
 				cout << std::fixed << minExtend[i] << "," << maxExtend[i] << " -> " << size[i] << endl;
-				cout << std::fixed << "\tdiscretization:" << discretization[i] << ". Max levels:" << (int)(size[i] / discretization[i] + 0.5f) << endl;
+				cout << std::fixed << "\tdiscretization:" << discretization[i] << ". Max leafs:" << (int)(size[i] / discretization[i] + 0.5f) << endl;
 			}
 			std::cout << std::resetiosflags(std::ios::fixed);
 			std::cout.precision(pr);
 			VR_INFO << "--> Max Levels:" << maxLevels << endl;
 		}
 		THROW_VR_EXCEPTION_IF (maxLevels<=0,"Invalid parameters...");
-		root = new VoxelTreeNDElement<T,N>(minExtend,size,0,maxLevels,this);
+		num_children = VirtualRobot::MathTools::pow_int(2,N);
+		root = new VoxelTreeNDElement<T,N>(minExtend,/*size,*/0,/*maxLevels,*/this);
 
 	}
 
@@ -162,24 +177,24 @@ public:
 			THROW_VR_EXCEPTION_IF(!fileTypeOK, "Wrong file format.");
 
 			// Check version
-			int version[2];
-			FileIO::readArray<int>(version ,2 , file);
-			if (version[0] != 1 || version[1]!=0)
+			int64_t version[2];
+			FileIO::readArray<int64_t>(version ,2 , file);
+			if (version[0] != 1 || version[1]!=1)
 				THROW_VR_EXCEPTION ("File version not supported");
 
 			// check sizeof type T
-			size_t expectedSize = sizeof (T);
-			size_t storedSize = FileIO::read<size_t>(file);
+			int64_t expectedSize = int64_t(sizeof (T));
+			int64_t storedSize = FileIO::read<int64_t>(file);
 			THROW_VR_EXCEPTION_IF (storedSize != expectedSize,"Wrong type information in file...");
 
 			// check N
-			unsigned int storedN;
-			storedN = FileIO::read<unsigned int>(file);
+			int64_t storedN;
+			storedN = FileIO::read<int64_t>(file);
 			
-			THROW_VR_EXCEPTION_IF (storedN != N,"Wrong N information in file...");
+			THROW_VR_EXCEPTION_IF (storedN != int64_t(N),"Wrong N information in file...");
 
 			// get maxLevels
-			int maxLevels = FileIO::read<int>(file);
+			int maxLevels = int(FileIO::read<int64_t>(file));
 			
 			// get extends
 			float minExtend[N];
@@ -201,10 +216,10 @@ public:
 
 			// create dummy elements to be filled afterwards		
 			float p[N];
-			float ex[N];
+			//float ex[N];
 			for (int64_t i=1;i<nrElements;i++)
 			{
-				VoxelTreeNDElement<T,N>* e = new VoxelTreeNDElement<T,N>(p,ex,0,10,tree);
+				VoxelTreeNDElement<T,N>* e = new VoxelTreeNDElement<T,N>(p,/*ex,*/0,/*10,*/tree);
 				idElementMapping[(unsigned int)(i+1)] = e; // we start with 1, but root is already created!
 			}
 
@@ -218,7 +233,7 @@ public:
 			typename VoxelTreeNDElement<T,N>::datablock d;
 			//d.maxLevels = maxLevels;
 			CompressionBZip2Ptr bzip2(new CompressionBZip2(&file));
-			int numChildren = VoxelTreeNDElement<T,N>::pow_int(2,N);
+			int numChildren = VirtualRobot::MathTools::pow_int(2,N);
 			unsigned int *childIDs = new unsigned int[numChildren];
 			int n;
 			for (int64_t i=0;i<nrElements;i++)
@@ -356,19 +371,19 @@ public:
 			FileIO::writeString(file, tmpString);
 
 			// version
-			int version[2];
+			int64_t version[2];
 			version[0] = 1;
-			version[1] = 0;
-			FileIO::writeArray<int>(file,version,2);
+			version[1] = 1;
+			FileIO::writeArray<int64_t>(file,version,2);
 
 			// sizeof type T
-			FileIO::write<size_t>(file,sizeof(T));
+			FileIO::write<int64_t>(file,int64_t(sizeof(T)));
 
 			// N
-			FileIO::write<unsigned int>(file,N);
+			FileIO::write<int64_t>(file,int64_t(N));
 
 			// maxLevels
-			FileIO::write<int>(file,maxLevels);
+			FileIO::write<int64_t>(file,int64_t(maxLevels));
 
 			// extends
 			FileIO::writeArray<float>(file,minExtend,N);
@@ -390,7 +405,7 @@ public:
 			typename VoxelTreeNDElement<T,N>::datablock d;
 			//d.maxLevels = maxLevels;
 			CompressionBZip2Ptr bzip2(new CompressionBZip2(&file));
-			int numChildren = VoxelTreeNDElement<T,N>::pow_int(2,N);
+			int numChildren = VirtualRobot::MathTools::pow_int(2,N);
 			unsigned int *childIDs = new unsigned int[numChildren];
 			for (size_t i=0;i<elements.size();i++)
 			{
@@ -564,9 +579,10 @@ public:
 				return NULL; // no more elements
 
 			// go down
-			elementStack.push_back(currentElement);
-			idStack.push_back(currentElementNr);
-			currentElement = currentElement->getNextChild(0,currentElementNr);
+			//elementStack.push_back(currentElement);
+			//idStack.push_back(currentElementNr);
+			//if (!currentElement->isLeaf())
+			//	currentElement = currentElement->getNextChild(0,currentElementNr);
 			while (currentElement && !currentElement->isLeaf())
 			{
 				elementStack.push_back(currentElement);
@@ -588,6 +604,7 @@ public:
 #endif 
 			return currentElement;
 		}
+
 	protected:
 		void printStack()
 		{
@@ -608,7 +625,20 @@ public:
 	{
 		return root;
 	}
+
 protected:
+	/*!
+		Returns voxel extends of element in given level (0<=level<maxLevels) and dimension dim (0<=dim<N)
+	*/
+	float getExtends(int level, int dim)
+	{
+		THROW_VR_EXCEPTION_IF(dim>=N || dim<0,"Index out of bounds");
+		return elementExtends(level,dim);
+	}
+	int getNumChildren()
+	{
+		return num_children;
+	}
 
 	void setRoot(VoxelTreeNDElement<T,N>* e)
 	{
@@ -619,7 +649,7 @@ protected:
 		}
 		if (root)
 		{
-			root->propagateData(minExtend,size,0,maxLevels,this);
+			root->propagateData(minExtend,/*size,*/0,/*maxLevels,*/this);
 		}
 	}
 	unsigned int getNextID(){
@@ -634,6 +664,9 @@ protected:
 	int maxLevels;
 	bool verbose;
 	unsigned int currentElementID;
+	int num_children;
+
+	Eigen::MatrixXf elementExtends;
 
 	VoxelTreeNDElement<T,N> *root;
 

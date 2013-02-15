@@ -46,23 +46,21 @@ public:
 	/*!
 		Construct an element at position p with given extends.
 	*/
-	VoxelTreeNDElement(float p[N], float extends[N], int level, int maxLevels, VoxelTreeND<T,N> *master)
+	VoxelTreeNDElement(float p[N], /*float extends[N],*/ int level, /*int maxLevels,*/ VoxelTreeND<T,N> *master)
 	{
+		VR_ASSERT(master);
 		this->tree = master;
-		num_children = pow_int(2,N);
-		children = new VoxelTreeNDElement*[num_children];
-		for (int i=0;i<num_children;i++)
+		//num_children = pow_int(2,N);
+		children = new VoxelTreeNDElement*[master->getNumChildren()];
+		for (int i=0;i<master->getNumChildren();i++)
 			children[i] = NULL;
 		entry = NULL;
 		leaf = false;
 		memcpy (&(this->pos[0]),&(p[0]),sizeof(float)*N);
-		memcpy (&(this->extends[0]),&(extends[0]),sizeof(float)*N);
+		//memcpy (&(this->extends[0]),&(extends[0]),sizeof(float)*N);
 		this->level = level;
-		this->maxLevels = maxLevels;
-		if (level>=maxLevels)
-		{
-			VR_ERROR << "Exceeding maxLevels?!" << endl;
-		}
+		//this->maxLevels = maxLevels;
+		VR_ASSERT_MESSAGE (level<master->getMaxLevels(),"Exceeding maxLevels?!");
 		this->id = master->getNextID();
 	};
 
@@ -82,7 +80,7 @@ public:
 #ifdef VoxelTreeNDElement_DEBUG_OUTPUT
 		cout << "[" << level << "]";
 #endif
-		if (leaf || level>=(maxLevels-1))
+		if (leaf || level>=(tree->getMaxLevels()-1))
 		{
 			leaf = true;
 			delete entry;
@@ -167,8 +165,7 @@ public:
 
 	float getExtend(unsigned int d)
 	{
-		THROW_VR_EXCEPTION_IF(d>=N,"Index out of bounds");
-		return extends[d];
+		return tree->getExtends(level,d);
 	}
 
 	int getLevel()
@@ -180,7 +177,7 @@ public:
 	{
 		Eigen::VectorXf c(N);
 		for (int i=0;i<N;i++)
-			c(i) = pos[i] + extends[i]*0.5f;
+			c(i) = pos[i] + tree->getExtends(level,i)*0.5f;
 		return c;
 	}
 protected:
@@ -201,7 +198,7 @@ protected:
 		storeData.children.clear();
 		if (!leaf)
 		{
-			for (int i=0;i<num_children;i++)
+			for (int i=0;i<tree->getNumChildren();i++)
 			{
 				if (children[i])
 				{
@@ -232,8 +229,8 @@ protected:
 	bool read (const datablock &data, const std::map< unsigned int, VoxelTreeNDElement* > &idElementMapping )
 	{
 		deleteData();
-		children = new VoxelTreeNDElement*[num_children];
-		for (int i=0;i<num_children;i++)
+		children = new VoxelTreeNDElement*[tree->getNumChildren()];
+		for (int i=0;i<tree->getNumChildren();i++)
 			children[i] = NULL;
 		entry = NULL;
 		leaf = false;
@@ -241,7 +238,7 @@ protected:
 		//this->maxLevels = data.maxLevels;
 		this->id = data.id;
 
-		num_children = data.children.size();
+		int num_children = data.children.size();
 		leaf = num_children==0;
 		if (!leaf)
 		{
@@ -286,17 +283,17 @@ protected:
 			return children[indx];
 		}
 		float newPos[N];
-		float newExtends[N];
+		//float newExtends[N];
 		for (int i=0;i<N;i++)
 		{
 			// check left / right
-			if (p[i] > pos[i] + extends[i]*0.5f )
-				newPos[i] = pos[i] + extends[i]*0.5f;
+			if (p[i] > pos[i] + tree->getExtends(level,i)*0.5f )
+				newPos[i] = pos[i] + tree->getExtends(level,i)*0.5f;
 			else
 				newPos[i] = pos[i];
-			newExtends[i] = 0.5f * extends[i];
+			//newExtends[i] = 0.5f * extends[i];
 		}
-		children[indx] = new VoxelTreeNDElement(newPos,newExtends,level+1,maxLevels,tree);
+		children[indx] = new VoxelTreeNDElement(newPos,/*newExtends,*/level+1,/*maxLevels,*/tree);
 		return children[indx];
 	};
 
@@ -315,15 +312,15 @@ protected:
 		int res = 0;
 		for (int i=0;i<N;i++)
 		{
-			if (p[i] > pos[i] + extends[i]*0.5f )
+			if (p[i] > pos[i] + tree->getExtends(level,i)*0.5f )
 			{
 				// right side
-				res += pow_int(2,i);
+				res += VirtualRobot::MathTools::pow_int(2,i);
 				//pow(2,i) // no int version of pow
 			}
 		}
 		// test, remove this
-		if (res<0 || res>=num_children)
+		if (res<0 || res>=tree->getNumChildren())
 		{
 			VR_ERROR << "INTERNAL ERROR?!" << endl;
 			return -1;
@@ -335,18 +332,10 @@ protected:
 	{
 		for (int i=0;i<N;i++)
 		{
-			if (p[i]<pos[i] || p[i]>pos[i]+extends[i])
+			if (p[i]<pos[i] || p[i]>pos[i]+tree->getExtends(level,i))
 				return false;
 		}
 		return true;
-	};
-
-	static int pow_int(int a, int b)
-	{
-		int powI = 1;
-		for (int j = 0; j<b; j++)
-			powI *= a;
-		return powI;
 	};
 
 	void collectElements(std::vector<VoxelTreeNDElement*> &elements)
@@ -354,7 +343,7 @@ protected:
 		elements.push_back(this);
 		if (!leaf)
 		{
-			for (int i=0;i<num_children;i++)
+			for (int i=0;i<tree->getNumChildren();i++)
 			{
 				if (children[i])
 					children[i]->collectElements(elements);
@@ -362,25 +351,26 @@ protected:
 		}
 	}
 
-	void propagateData(float p[N], float extends[N], int level, int maxLevels, VoxelTreeND<T,N> *master)
+	void propagateData(float p[N], /*float extends[N],*/ int level, /*int maxLevels,*/ VoxelTreeND<T,N> *master)
 	{
+		VR_ASSERT(master);
 		this->tree = master;
 		memcpy (&(this->pos[0]),&(p[0]),sizeof(float)*N);
-		memcpy (&(this->extends[0]),&(extends[0]),sizeof(float)*N);
+		//memcpy (&(this->extends[0]),&(extends[0]),sizeof(float)*N);
 		this->level = level;
-		this->maxLevels = maxLevels;
-		if (level>=maxLevels)
+		//this->maxLevels = maxLevels;
+		if (level>=tree->getMaxLevels())
 		{
 			VR_ERROR << "Exceeding maxLevels?!" << endl;
 		}
 		if (!leaf)
 		{
-			float newExtends[N];
+			//float newExtends[N];
 			float newP[N];
-			for (int i=0;i<N;i++)
-				newExtends[i] = 0.5f * extends[i];
+			//for (int i=0;i<N;i++)
+				//newExtends[i] = 0.5f * extends[i];
 
-			for (int i=0;i<num_children;i++)
+			for (int i=0;i<tree->getNumChildren();i++)
 			{
 				if (children[i])
 				{
@@ -388,11 +378,11 @@ protected:
 					int res = i;
 					for (int j=N-1;j>=0;j--)
 					{
-						int k = pow_int(2,j);
+						int k = VirtualRobot::MathTools::pow_int(2,j);
 						if (res>=k)
 						{
 							// right
-							newP[j] = p[j] + 0.5f * extends[j];
+							newP[j] = p[j] + 0.5f * tree->getExtends(level,j);
 							res -= k;
 						} else
 						{
@@ -400,7 +390,7 @@ protected:
 							newP[j] = p[j];
 						}							
 					}
-					children[i]->propagateData(newP,newExtends,level+1,maxLevels,master);	
+					children[i]->propagateData(newP,/*newExtends,*/level+1/*,maxLevels*/,master);	
 				}
 			}
 		}
@@ -408,7 +398,7 @@ protected:
 
 	void deleteData()
 	{
-		for (int i=0;i<num_children;i++)
+		for (int i=0;i<tree->getNumChildren();i++)
 			delete children[i];
 		delete[] children;
 		delete entry;
@@ -418,7 +408,7 @@ protected:
 
 	VoxelTreeNDElement<T,N>* getNextChild(int startIndex, int &storeElementNr)
 	{
-		for (int i=startIndex;i<num_children;i++)
+		for (int i=startIndex;i<tree->getNumChildren();i++)
 		{
 			if (children[i])
 			{
@@ -433,11 +423,11 @@ protected:
 	VoxelTreeNDElement** children;
 	T* entry;
 	bool leaf;
-	float extends[N];
+	//float extends[N];
 	float pos[N]; // start == bottom left
 	int level;
-	int maxLevels;
-	int num_children;
+	//int maxLevels;
+	//int num_children;
 	unsigned int id;
 	VoxelTreeND<T,N> *tree;
 };

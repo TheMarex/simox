@@ -140,6 +140,7 @@ public:
 		return children[indx]->getEntry(p);
 	}
 
+
 	VoxelTreeNDElement* getLeaf(float pos[N])
 	{
 		if (leaf)
@@ -151,7 +152,37 @@ public:
 		}
 		return children[indx]->getLeaf(pos);
 	}
-		
+
+
+	VoxelTreeNDElement* maxLeaf(const Eigen::VectorXf &pos)
+	{
+		if (leaf)
+			return this;
+		VR_ASSERT (pos.rows()>0 && pos->rows()<=N)
+
+		std::vector<int> c = getAllChildrenIndx(pos);
+		std::vector<int>::iterator it = c.begin();
+		T* maxEntry = NULL;
+		VoxelTreeNDElement* maxElement = NULL;
+		while (it)
+		{
+			if (children[*it])
+			{
+				VoxelTreeNDElement* e=children[*it]->maxLeaf(pos);
+				if (e && e->isLeaf())
+				{
+					if (!maxEntry || *(e->entry)>*maxEntry)
+					{
+						maxEntry = e->entry;
+						maxElement = e;
+					}
+				}
+			}
+			it++;
+		}
+		return maxElement;
+	}
+
 	bool isLeaf()
 	{
 		return leaf;
@@ -181,6 +212,34 @@ public:
 		return c;
 	}
 protected:
+	std::vector<int> getAllChildrenIndx(const Eigen::VectorXf &p)
+	{
+		std::vector<int> c;
+		int depth = pos->rows();
+		int res = 0;
+		for (int i=0;i<depth;i++)
+		{
+			if (p[i] > pos[i] + tree->getExtends(level,i)*0.5f )
+			{
+				// right side
+				res += VirtualRobot::MathTools::pow_int(2,i);
+			}
+		}
+		c.push_back(res2); // all left (depth->N)
+		int res2 = res;
+		for (int i=depth;i<N;i++)
+		{
+			// all entries of c with right at current level i
+			std::vector<int> c2;
+			for (size_t j=0;j<c.size();j++)
+			{
+				int res2 = c[i] + VirtualRobot::MathTools::pow_int(2,i);
+				c2.push_back(res2);
+			}
+			c.insert(c.end(), c2.begin(), c2.end());
+		}
+		return c;
+	}
 
 	struct datablock
 	{
@@ -316,15 +375,9 @@ protected:
 			{
 				// right side
 				res += VirtualRobot::MathTools::pow_int(2,i);
-				//pow(2,i) // no int version of pow
 			}
 		}
-		// test, remove this
-		if (res<0 || res>=tree->getNumChildren())
-		{
-			VR_ERROR << "INTERNAL ERROR?!" << endl;
-			return -1;
-		}
+		VR_ASSERT(res>=0 && res<tree->getNumChildren())
 		return res;
 	};
 

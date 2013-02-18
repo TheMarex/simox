@@ -73,9 +73,9 @@ public:
 	  verbose(verbose),
 	  currentElementID(0)
 	{
-		memcpy (&(this->minExtend[0]),&(minExtend[0]),sizeof(float)*N);
-		memcpy (&(this->maxExtend[0]),&(maxExtend[0]),sizeof(float)*N);
-		memcpy (&(this->discretization[0]),&(discretization[0]),sizeof(float)*N);
+		memcpy (&this->minExtend,&minExtend,sizeof(float)*N);
+		memcpy (&this->maxExtend,&maxExtend,sizeof(float)*N);
+		memcpy (&this->discretization,&discretization,sizeof(float)*N);
 		for (int i=0;i<N;i++)
 		{
 			size[i] = maxExtend[i] - minExtend[i];
@@ -97,7 +97,7 @@ public:
 		// precompute extends for all sub elements
 		elementExtends.resize(maxLevels,N);
 		float newExtend[N];
-		memcpy(&(newExtend[0]),&(size[0]),sizeof(float)*N);
+		memcpy(&newExtend,&size,sizeof(float)*N);
 		for (int a=0;a<maxLevels;a++)
 		{
 			for (int b=0;b<N;b++)
@@ -153,10 +153,53 @@ public:
 	}
 
 	/*!
+		Returns size of voxelized data structure (in local coordinate system)
+	*/
+	void getSize(float storeSize[N])
+	{
+		memcpy(&storeSize,&size,N*sizeof(float));
+	}
+
+	/*!
+		Returns min position of voxelized data structure (in local coordinate system)
+	*/
+	void getMinExtend(float storeMin[N])
+	{
+		memcpy(&storeMin,&minExtend,N*sizeof(float));
+	}
+
+	/*!
+		Returns max position of voxelized data structure (in local coordinate system)
+	*/
+	void getMaxExtend(float storeMin[N])
+	{
+		memcpy(&storeMin,&maxExtend,N*sizeof(float));
+	}
+
+	/*!
+		Returns discretization vector.
+	*/
+	void getDiscretization(float storeDiscretization[N])
+	{
+		memcpy(&storeDiscretization,&discretization,N*sizeof(float));
+	}
+
+	/*!
+		Returns leaf at position pos. NULL if no data stored.
 	*/
 	VoxelTreeNDElement<T,N>* getLeafElement(float pos[N])
 	{
 		return root->getLeaf(pos);
+	}
+
+	/*!
+		Gets leaf element with max entry T of all sub-tree elements at position p (size of Vector p defines which level of the tree is considered). 
+		If no entry is stored below p NULL is returned
+	*/
+	VoxelTreeNDElement<T,N>* getMaxEntry(const Eigen::VectorXf &p)
+	{
+		VR_ASSERT(p.rows()>0 && p.rows()<=N)
+		return root->maxLeaf(p);
 	}
 
 	static VoxelTreeND<T,N>* load(std::ifstream &file)
@@ -203,6 +246,13 @@ public:
 			FileIO::readArray<float>(minExtend, N, file);
 			FileIO::readArray<float>(maxExtend, N, file);
 			FileIO::readArray<float>(discretization, N, file);
+
+			for (int i=0;i<N;i++)
+			{
+				size[i] = maxExtend[i] - minExtend[i];
+				THROW_VR_EXCEPTION_IF(size[i]<=0.0f,"Invalid extend parameters?!");
+				THROW_VR_EXCEPTION_IF(discretization[i]<=0.0f,"Invalid discretization parameters?!");
+			}
 
 			tree = new VoxelTreeND<T,N>(minExtend,maxExtend,discretization);
 			std::map< unsigned int, VoxelTreeNDElement<T,N>* > idElementMapping;

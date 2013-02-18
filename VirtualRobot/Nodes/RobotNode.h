@@ -275,6 +275,14 @@ public:
 	virtual void updatePose(bool updateChildren = true);
 
 
+	/*!
+		Automatically propagate the joint value to another joint.
+		\param jointName The name of the other joint. must be part of the same robot.
+		\param factor The propagated joint value is scaled according to this value.
+
+	*/
+	virtual void propagateJointValue(const std::string &jointName, float factor = 1.0f);
+
 protected:
 
 	/*!
@@ -325,6 +333,8 @@ protected:
 	float maxTorque;			//! given in Nm
 	Eigen::Matrix4f preJointTransformation;
 	Eigen::Matrix4f postJointTransformation;
+
+	std::map< std::string, float > propagatedJointValues;
 	///////////////////////// SETUP ////////////////////////////////////
 
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &parentPose);

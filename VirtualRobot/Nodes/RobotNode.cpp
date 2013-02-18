@@ -176,6 +176,25 @@ void RobotNode::updatePose(bool updateChildren)
 
 	// update collision and visualization model and children
 	SceneObject::updatePose(updateChildren);
+
+	// apply propagated joint values
+	if (propagatedJointValues.size()>0)
+	{
+		RobotPtr r = robot.lock();
+		std::map< std::string, float>::iterator it = propagatedJointValues.begin();
+		while (it!=propagatedJointValues.end())
+		{
+			RobotNodePtr rn = r->getRobotNode(it->first);
+			if (!rn)
+			{
+				VR_WARNING << "Could not propagate joint value from " << name << " to " << it->first << " because dependent joint does not exist...";
+			} else
+			{
+				rn->setJointValue(jointValue*it->second);
+			}
+			it++;
+		}
+	}
 }
 
 void RobotNode::updatePose(const Eigen::Matrix4f &globalPose, bool updateChildren)
@@ -402,6 +421,16 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 	result->setMaxVelocity(maxVelocity);
 	result->setMaxAcceleration(maxAcceleration);
 	result->setMaxTorque(maxTorque);
+
+
+	std::map< std::string, float>::iterator it = propagatedJointValues.begin();
+	while (it != propagatedJointValues.end())
+	{
+		result->propagateJointValue(it->first,it->second);
+		it++;
+	}
+
+
 	newRobot->registerRobotNode(result);
 
 	if (initializeWithParent)
@@ -621,6 +650,17 @@ Eigen::Matrix4f RobotNode::getGlobalPose() const
 RobotNode::RobotNodeType RobotNode::getType()
 {
     return nodeType;
+}
+
+void RobotNode::propagateJointValue( const std::string &jointName, float factor /*= 1.0f*/ )
+{
+	if (factor==0.0f)
+	{
+		propagatedJointValues.erase(jointName);
+	} else
+	{
+		propagatedJointValues[jointName] = factor;
+	}
 }
 
 

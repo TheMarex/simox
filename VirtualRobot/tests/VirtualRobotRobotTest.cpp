@@ -263,4 +263,56 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 	BOOST_CHECK_EQUAL(m(0,3),1000.0f);
 }
 
+
+BOOST_AUTO_TEST_CASE(testVirtualRobotDependendNodes)
+{
+	const std::string robotString =
+		"<Robot Type='MyDemoRobotType' RootNode='Joint1'>"
+		" <RobotNode name='Joint1'>"
+		" <Joint type='revolute'>"
+		"    <DH a='1' d='0' theta='0' alpha='-90' units='degree' unitsLength='m'/>"
+		"    <Limits unit='degree' lo='0' hi='180'/>"
+		"    <PropagateJointValue factor='0.5' name='Joint2'/>"
+		" </Joint>"
+		" <Child name='Joint2'/>"
+		" </RobotNode>"
+		" <RobotNode name='Joint2'>"
+		"  <Joint type='revolute'>"
+		"    <DH a='0' d='0' theta='0' alpha='0' units='degree'/>"
+		"    <Limits unit='degree' lo='0' hi='90'/>"
+		"  </Joint>"
+		" </RobotNode>"
+		"</Robot>";
+	VirtualRobot::RobotPtr rob;
+	BOOST_REQUIRE_NO_THROW(rob = VirtualRobot::RobotIO::createRobotFromString(robotString));
+	BOOST_REQUIRE(rob);
+
+	const std::string node1 = "Joint1";
+	const std::string node2 = "Joint2";
+	VirtualRobot::RobotNodePtr r1 = rob->getRobotNode(node1);
+	BOOST_REQUIRE(r1);
+	VirtualRobot::RobotNodePtr r2 = rob->getRobotNode(node2);
+	BOOST_REQUIRE(r2);
+	float j1,j2;
+	r1->setJointValue(0.2f);
+	j1 = r1->getJointValue();
+	j2 = r2->getJointValue();
+	BOOST_CHECK_EQUAL(j1,0.2f);
+	BOOST_CHECK_EQUAL(j2,0.1f);
+	r1->setJointValue(float(M_PI));
+	j1 = r1->getJointValue();
+	j2 = r2->getJointValue();
+	BOOST_CHECK_CLOSE(j1,float(M_PI),0.1f);
+	BOOST_CHECK_CLOSE(j2,float(M_PI/2.0),0.1f);
+
+	// disable propagate feature
+	r1->propagateJointValue("Joint2",0.0f);
+	r2->setJointValue(0.5f);
+	r1->setJointValue(0.2f);
+	j1 = r1->getJointValue();
+	j2 = r2->getJointValue();
+	BOOST_CHECK_CLOSE(j1,0.2f,0.1f);
+	BOOST_CHECK_CLOSE(j2,0.5f,0.1f);
+	
+}
 BOOST_AUTO_TEST_SUITE_END()

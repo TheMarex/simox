@@ -15,6 +15,7 @@
 #include "rapidxml.hpp"
 #include <boost/pointer_cast.hpp>
 #include <boost/filesystem.hpp>
+#include <vector>
 
 
 namespace VirtualRobot {
@@ -152,6 +153,9 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	Eigen::Matrix4f postJointTransform = Eigen::Matrix4f::Identity();
 	Eigen::Vector3f axis = Eigen::Vector3f::Zero();
 	Eigen::Vector3f translationDir = Eigen::Vector3f::Zero();
+
+	std::vector< std::string > propagateJVName;
+	std::vector< float > propagateJVFactor;
 
 	rapidxml::xml_attribute<> *attr;
 	float jointOffset = 0.0f;
@@ -292,7 +296,20 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 				factor *= 1000.0f;
 
 			maxTorque *= factor;
-		} 
+		} else if (nodeName == "propagatejointvalue")
+		{
+			rapidxml::xml_attribute<> *attrPropa;
+			attrPropa = node->first_attribute("name", 0, false);
+			THROW_VR_EXCEPTION_IF(!attrPropa, "Expecting 'name' attribute in <PropagateJointValue> tag..." << endl);
+
+			std::string s(attrPropa->value());
+			propagateJVName.push_back(s);
+			float f = 1.0f;
+			attrPropa = node->first_attribute("factor", 0, false);
+			if (attrPropa)
+				f = convertToFloat(attrPropa->value());
+			propagateJVFactor.push_back(f);
+		}
 		else
 		{
 			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in <Joint> tag of RobotNode <" << robotNodeName << ">." << endl);
@@ -364,6 +381,10 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		else if (robotNode->jointValue > robotNode->jointLimitHi)
 			robotNode->jointValue =robotNode->jointLimitHi;
 	}
+
+	VR_ASSERT (propagateJVName.size() == propagateJVFactor.size());
+	for (size_t i=0;i<propagateJVName.size();i++)
+		robotNode->propagateJointValue(propagateJVName[i],propagateJVFactor[i]);
 
 	return robotNode;
 }

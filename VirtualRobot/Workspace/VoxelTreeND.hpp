@@ -249,8 +249,8 @@ public:
 
 			for (int i=0;i<N;i++)
 			{
-				size[i] = maxExtend[i] - minExtend[i];
-				THROW_VR_EXCEPTION_IF(size[i]<=0.0f,"Invalid extend parameters?!");
+				float s = maxExtend[i] - minExtend[i];
+				THROW_VR_EXCEPTION_IF(s<=0.0f,"Invalid extend parameters?!");
 				THROW_VR_EXCEPTION_IF(discretization[i]<=0.0f,"Invalid discretization parameters?!");
 			}
 

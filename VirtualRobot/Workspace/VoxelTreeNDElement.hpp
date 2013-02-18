@@ -158,7 +158,7 @@ public:
 	{
 		if (leaf)
 			return this;
-		VR_ASSERT (pos.rows()>0 && pos->rows()<=N)
+		VR_ASSERT (pos.rows()>0 && pos.rows()<=N)
 
 		std::vector<int> c = getAllChildrenIndx(pos);
 		std::vector<int>::iterator it = c.begin();
@@ -225,7 +225,7 @@ protected:
 				res += VirtualRobot::MathTools::pow_int(2,i);
 			}
 		}
-		c.push_back(res2); // all left (depth->N)
+		c.push_back(res); // all left (depth->N)
 		int res2 = res;
 		for (int i=depth;i<N;i++)
 		{
@@ -377,7 +377,7 @@ protected:
 				res += VirtualRobot::MathTools::pow_int(2,i);
 			}
 		}
-		VR_ASSERT(res>=0 && res<tree->getNumChildren())
+		VR_ASSERT(res>=0 && res<tree->getNumChildren());
 		return res;
 	};
 

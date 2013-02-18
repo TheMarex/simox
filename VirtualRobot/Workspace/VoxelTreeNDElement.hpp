@@ -158,7 +158,7 @@ public:
 	{
 		if (leaf)
 			return this;
-		VR_ASSERT (pos.rows()>0 && pos.rows()<=N)
+		VR_ASSERT (pos.rows()>0 && pos.rows()<=N);
 
 		std::vector<int> c = getAllChildrenIndx(pos);
 		std::vector<int>::iterator it = c.begin();

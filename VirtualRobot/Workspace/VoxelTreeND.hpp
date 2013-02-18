@@ -198,7 +198,7 @@ public:
 	*/
 	VoxelTreeNDElement<T,N>* getMaxEntry(const Eigen::VectorXf &p)
 	{
-		VR_ASSERT(p.rows()>0 && p.rows()<=N)
+		VR_ASSERT(p.rows()>0 && p.rows()<=N);
 		return root->maxLeaf(p);
 	}
 

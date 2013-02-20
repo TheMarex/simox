@@ -11,6 +11,14 @@ IF (NOT Simox_CONFIGURED)
 	      FORCE)
 	ENDIF(NOT CMAKE_BUILD_TYPE)
 	
+	############################# VERSION #################################
+	set(Simox_MAJOR_VERSION 2)
+	set(Simox_MINOR_VERSION 1)
+	set(Simox_PATCH_VERSION 8)
+	set(Simox_VERSION
+    ${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION})
+
+	MESSAGE (STATUS " ** Simox version: ${Simox_VERSION}")
 	
 	############################# SETUP PATHS #############################
 	SET(Simox_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})

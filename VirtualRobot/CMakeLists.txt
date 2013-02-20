@@ -257,14 +257,15 @@ SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${Virt
 
 ############################################
 MESSAGE(STATUS " * Generating CMake files")
+
 IF (NOT DEFINED Simox_VERSION)
 	set(VirtualRobot_MAJOR_VERSION 2)
 	set(VirtualRobot_MINOR_VERSION 1)
-	set(VirtualRobot_PATCH_VERSION 7)
+	set(VirtualRobot_PATCH_VERSION 8)
 ELSE()
-	set(VirtualRobot_MAJOR_VERSION ${SIMOX_MAJOR_VERSION})
-	set(VirtualRobot_MINOR_VERSION ${SIMOX_MINOR_VERSION})
-	set(VirtualRobot_PATCH_VERSION ${SIMOX_PATCH_VERSION})
+	set(VirtualRobot_MAJOR_VERSION ${Simox_MAJOR_VERSION})
+	set(VirtualRobot_MINOR_VERSION ${Simox_MINOR_VERSION})
+	set(VirtualRobot_PATCH_VERSION ${Simox_PATCH_VERSION})
 ENDIF()
 set(VirtualRobot_VERSION
     ${VirtualRobot_MAJOR_VERSION}.${VirtualRobot_MINOR_VERSION}.${VirtualRobot_PATCH_VERSION})

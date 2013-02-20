@@ -330,7 +330,10 @@ protected:
 		int indx = getChildIndx(p);
 		if (indx<0)
 		{
-			VR_ERROR << "Node do not cover this pos" << endl;
+			VR_ERROR << "Node do not cover this pos:" << endl;
+			for (int i=0;i<N;i++)
+				cout << p[i] << ",";
+			cout << endl;
 			return NULL;
 		}
 #ifdef VoxelTreeNDElement_DEBUG_OUTPUT
@@ -345,7 +348,7 @@ protected:
 		//float newExtends[N];
 		for (int i=0;i<N;i++)
 		{
-			// check left / right
+            // check left / right
 			if (p[i] > pos[i] + tree->getExtends(level,i)*0.5f )
 				newPos[i] = pos[i] + tree->getExtends(level,i)*0.5f;
 			else
@@ -361,6 +364,9 @@ protected:
 		if (!covers(p))
 		{
 			VR_ERROR << "Node do not cover this pos" << endl;
+            for (int i=0;i<N;i++)
+                cout << p[i] << ",";
+            cout << endl;
 			return -1;
 		}
 		if (leaf)

@@ -43,6 +43,9 @@ GraspPlannerWindow::GraspPlannerWindow(std::string &robFile, std::string &eefNam
 {
 	VR_INFO << " start " << endl;
 
+	// init the random number generator
+	srand(time(NULL));
+
 	this->robotFile = robFile;
 	this->objectFile = objFile;
 	this->eefName = eefName;

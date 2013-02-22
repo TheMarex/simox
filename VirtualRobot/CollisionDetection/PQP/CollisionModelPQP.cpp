@@ -99,49 +99,4 @@ void CollisionModelPQP::print()
 	cout << endl;
 }
 
-/*
-int CollisionModelPQP::BuildColModel(std::map<SoNode*,int> &mIVIDMapping, std::vector<int> & vStoreIDs, SoSeparator *pAddIVModel)
-{
-	if (!m_pColCheckerPQP)
-		return 0;
-	int nodeCount = 0;
-	//int idNr = s_nID;
-	int trNr = 0;
-
-	delete m_pPqpModel;
-	m_pPqpModel = new PQP::PQP_Model();
-	m_pPqpModel->BeginModel();
-	
-	// add iv models
-
-	std::map<SoNode*,int>::iterator iter;
-	SoNode* pNode;
-	int nId;
-
-	for (iter = mIVIDMapping.begin(); iter != mIVIDMapping.end(); ++iter)
-	{
-		nodeCount++;
-		pNode = iter->first;
-		nId = iter->second;
-
-		if (pNode!=NULL)
-		{
-			int trrr = m_pColCheckerPQP->oiv2ColMod(pNode,m_pPqpModel,nId,true);
-			vStoreIDs.push_back(nId);
-			pAddIVModel->addChild(pNode);
-			if (trrr==0)
-			{
-				cout << __FUNCTION__ << " Null triangle object with ID " << nId << endl;
-			} else
-			{
-				trNr += trrr;
-			}
-		}
-	}
-
-	m_pPqpModel->EndModel();
-	return trNr;
-
-}*/
-
 } // namespace

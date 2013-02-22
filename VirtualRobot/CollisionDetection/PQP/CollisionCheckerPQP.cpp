@@ -37,31 +37,10 @@ float CollisionCheckerPQP::calculateDistance (CollisionModelPtr model1, Collisio
 	VR_ASSERT_MESSAGE(m1&&m2,"NULL data in ColChecker!");
 
 	float res = getMinDistance(m1,m2,model1->getCollisionModelImplementation()->getGlobalPose(),model2->getCollisionModelImplementation()->getGlobalPose(),P1,P2,trID1,trID2);
-	/*if (model1->hasCollisionId(*trID2) && !model1->hasCollisionId(*trID1))
-	{
-		// xchange points
-		int t = *trID1;
-		*trID1 = *trID2;
-		*trID2 = t;
-		float p[3];
-		for (int i=0;i<3;i++)
-		{
-			p[i] = P1[i];
-			P1[i] = P2[i];
-			P2[i] = p[i];
-		}
-	}*/
 
 	return res;
 }
 
-
-// #define __convEigen42Ar(sb,rot,tr) rot[0][0] = sb[0][0]; rot[1][0] = sb[0][1]; rot[2][0] = sb[0][2]; tr[0] = sb[3][0]; \
-// 	rot[0][1] = sb[1][0]; rot[1][1] = sb[1][1]; rot[2][1] = sb[1][2]; tr[1] = sb[3][1]; \
-// 	rot[0][2] = sb[2][0]; rot[1][2] = sb[2][1]; rot[2][2] = sb[2][2]; tr[2] = sb[3][2];
-// #define __convSb2Ar4(sb,mat4) mat4[0][0] = sb[0][0]; mat4[0][1] = sb[1][0]; mat4[0][2] = sb[2][0]; mat4[0][3] = sb[3][0]; \
-// 	mat4[1][0] = sb[0][1]; mat4[1][1] = sb[1][1]; mat4[1][2] = sb[2][1]; mat4[1][3] = sb[3][1]; \
-// 	mat4[2][0] = sb[0][2]; mat4[2][1] = sb[1][2]; mat4[2][2] = sb[2][2]; mat4[2][3] = sb[3][2];
 #define __convEigen2Ar(sb,rot,tr) rot[0][0] = sb(0,0); rot[0][1] = sb(0,1); rot[0][2] = sb(0,2); tr[0] = sb(0,3); \
 	rot[1][0] = sb(1,0); rot[1][1] = sb(1,1); rot[1][2] = sb(1,2); tr[1] = sb(1,3); \
 	rot[2][0] = sb(2,0); rot[2][1] = sb(2,1); rot[2][2] = sb(2,2); tr[2] = sb(2,3);
@@ -222,8 +201,10 @@ float CollisionCheckerPQP::getMinDistance(boost::shared_ptr<PQP::PQP_Model> m1, 
 	storeP2[2] = (float)result.P2()[2];
 
 	// added code to store iDs to original PQP sources, if you get an error here, disable the ID query
-	*storeID1 = result.P1_ID();
-	*storeID2 = result.P2_ID();
+	if (storeID1)
+		*storeID1 = result.P1_ID();
+	if (storeID2)
+		*storeID2 = result.P2_ID();
 	//////////////////////////////
 
 	return (float)result.Distance();

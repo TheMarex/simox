@@ -159,13 +159,14 @@ public:
 		if (leaf)
 			return this;
 		VR_ASSERT (pos.rows()>0 && pos.rows()<=N);
-
+		int numChildren = tree->getNumChildren();
 		std::vector<int> c = getAllChildrenIndx(pos);
 		std::vector<int>::iterator it = c.begin();
 		T* maxEntry = NULL;
 		VoxelTreeNDElement* maxElement = NULL;
-		while (it)
+		while (it != c.end())
 		{
+			VR_ASSERT((*it)>=0 && (*it)<numChildren);
 			if (children[*it])
 			{
 				VoxelTreeNDElement* e=children[*it]->maxLeaf(pos);
@@ -215,7 +216,7 @@ protected:
 	std::vector<int> getAllChildrenIndx(const Eigen::VectorXf &p)
 	{
 		std::vector<int> c;
-		int depth = pos->rows();
+		int depth = p.rows();
 		int res = 0;
 		for (int i=0;i<depth;i++)
 		{
@@ -229,11 +230,12 @@ protected:
 		int res2 = res;
 		for (int i=depth;i<N;i++)
 		{
+			//c2.push_back(res2);
 			// all entries of c with right at current level i
 			std::vector<int> c2;
 			for (size_t j=0;j<c.size();j++)
 			{
-				int res2 = c[i] + VirtualRobot::MathTools::pow_int(2,i);
+				int res2 = c[j] + VirtualRobot::MathTools::pow_int(2,i);
 				c2.push_back(res2);
 			}
 			c.insert(c.end(), c2.begin(), c2.end());

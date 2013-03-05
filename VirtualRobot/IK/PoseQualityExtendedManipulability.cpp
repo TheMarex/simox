@@ -38,10 +38,10 @@ float PoseQualityExtendedManipulability::getPoseQuality( PoseQualityManipulabili
 	return getPoseQuality(jacobian, rns, i, considerFirstSV);
 }
 
-float PoseQualityExtendedManipulability::getPoseQuality( DifferentialIKPtr jacobian, RobotNodeSetPtr rns, PoseQualityManipulability::ManipulabilityIndexType i, int considerFirstSV )
+float PoseQualityExtendedManipulability::getPoseQuality( DifferentialIKPtr jac, RobotNodeSetPtr rns, PoseQualityManipulability::ManipulabilityIndexType i, int considerFirstSV )
 {
 	extManipData d;
-	if (!getDetailedAnalysis(jacobian,rns,d,considerFirstSV))
+	if (!getDetailedAnalysis(jac,rns,d,considerFirstSV))
 	{
 		VR_ERROR << "ERROR" << endl;
 		return 0;
@@ -202,8 +202,8 @@ void PoseQualityExtendedManipulability::getObstaclePenalizations(const std::vect
 	{
 		//fabs(obstDirNorm(i))*distQual + (1.0f - fabs(obstDirNorm(i)))*1.0f
 		Eigen::VectorXf scPen = penObst;
-		for (int j=0;j<penObst.rows();j++)
-			scPen(j) = fabs(obstDirNorm(i))*scPen(j) + (1.0f - fabs(obstDirNorm(i)))*1.0f;
+		//for (int j=0;j<penObst.rows();j++)
+		//	scPen(j) = fabs(obstDirNorm(i))*scPen(j) + (1.0f - fabs(obstDirNorm(i)))*1.0f;
 		if (obstVect(i)>0)
 			penObstHi.block(i,0,1,penObstHi.cols()) = scPen.transpose();
 		else
@@ -325,9 +325,9 @@ bool PoseQualityExtendedManipulability::getDetailedAnalysis( extManipData &store
 	return getDetailedAnalysis(jacobian, rns, storeData, dims, considerFirstSV);
 }
 
-bool PoseQualityExtendedManipulability::getDetailedAnalysis( DifferentialIKPtr jacobian, RobotNodeSetPtr rns, extManipData &storeData, bool dims[6], int considerFirstSV  )
+bool PoseQualityExtendedManipulability::getDetailedAnalysis( DifferentialIKPtr jac, RobotNodeSetPtr rns, extManipData &storeData, bool dims[6], int considerFirstSV  )
 {
-	Eigen::MatrixXf j = jacobian->getJacobianMatrix(rns->getTCP());
+	Eigen::MatrixXf j = jac->getJacobianMatrix(rns->getTCP());
 	std::vector<RobotNodePtr> joints = rns->getAllRobotNodes();
 	return getDetailedAnalysis(j,joints,storeData,dims,considerFirstSV);
 }
@@ -347,11 +347,12 @@ bool PoseQualityExtendedManipulability::getDetailedAnalysis( const Eigen::Matrix
 		getObstaclePenalizations(joints, obstacleDir, storeData.jac, storeData.penObstLo, storeData.penObstHi);
 	}
 
-	bool verbose = false;
+	//bool verbose = false;
 	if (verbose)
 	{
 		cout << "considerFirstSV=" << considerFirstSV << endl;
-		cout << "JAC:\n" << storeData.jac << endl;
+		cout << "JAC:\n" << endl;
+		MathTools::printMat(storeData.jac);
 	}
 	for (int i=0;i<64;i++)
 	{
@@ -369,7 +370,10 @@ bool PoseQualityExtendedManipulability::getDetailedAnalysis( const Eigen::Matrix
 		}
 
 		if (verbose && i<4)
-			cout << "JAC PEN:" << i << endl << storeData.jacPen[i] << endl;
+		{
+			cout << "JAC PEN:" << i << endl;
+			MathTools::printMat(storeData.jacPen[i]);
+		}
 		analyzeJacobian(storeData.jacPen[i],storeData.sv[i],storeData.singVectors[i],storeData.U[i],storeData.V[i],(verbose && i<4)); 
 	}
 
@@ -427,7 +431,8 @@ bool PoseQualityExtendedManipulability::getDetailedAnalysis( const Eigen::Matrix
 				if (verbose)
 				{
 					cout << "## k:" << k << " -> minSV: " << minSV_loc << ", maxSV:" << maxSV_loc << endl;
-					cout << "## pen jac:\n" << storeData.jacPen[k] << endl;
+					cout << "## pen jac:\n" << endl;
+					MathTools::printMat(storeData.jacPen[k]);
 				}
 			}
 		}
@@ -456,7 +461,7 @@ bool PoseQualityExtendedManipulability::getDetailedAnalysis( extManipData &store
 	return getDetailedAnalysis(jacobian, rns, storeData, dims, considerFirstSV);
 }
 
-bool PoseQualityExtendedManipulability::getDetailedAnalysis( DifferentialIKPtr jacobain, RobotNodeSetPtr rns, extManipData &storeData, int considerFirstSV )
+bool PoseQualityExtendedManipulability::getDetailedAnalysis( DifferentialIKPtr jac, RobotNodeSetPtr rns, extManipData &storeData, int considerFirstSV )
 {
 	if (considerFirstSV<=0 || considerFirstSV>6)
 		considerFirstSV = 6;
@@ -466,7 +471,7 @@ bool PoseQualityExtendedManipulability::getDetailedAnalysis( DifferentialIKPtr j
 	for (i=0;i<6;i++)
 		dims[i] = true;
 
-	return getDetailedAnalysis(jacobian, rns, storeData, dims, considerFirstSV);
+	return getDetailedAnalysis(jac, rns, storeData, dims, considerFirstSV);
 }
 
 bool PoseQualityExtendedManipulability::createCartDimPermutations( std::vector < std::vector<float> > &storePerm )

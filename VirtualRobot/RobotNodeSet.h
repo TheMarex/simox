@@ -107,15 +107,13 @@ public:
 	/*!
 		Set joint values [rad].
 		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
-		\param rns The RobotNodeSet defines the joints
-		\param jointValues A vector with joint values, size must be equal to rns.
+		\param jointValues A vector with joint values, size must be equal to number of joints in this RobotNodeSet.
 	*/
 	void setJointValues(const std::vector<float> &jointValues);
 	/*!
 		Set joint values [rad].
 		The subpart of the robot, defined by the start joint (kinematicRoot) of rns, is updated to apply the new joint values.
-		\param rns The RobotNodeSet defines the joints
-		\param jointValues A vector with joint values, size must be equal to rns.
+		\param jointValues A vector with joint values, size must be equal to number of joints in this RobotNodeSet.
 	*/
 	void setJointValues(const Eigen::VectorXf &jointValues);
 

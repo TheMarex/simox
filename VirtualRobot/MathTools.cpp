@@ -722,6 +722,27 @@ void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const Eigen::VectorXf &v, boo
 	std::cout << std::resetiosflags(std::ios::fixed);
 	std::cout.precision(pr);
 }
+
+void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::printMat( const Eigen::MatrixXf &m, bool endline )
+{
+	std::streamsize pr = std::cout.precision(2);
+	std::cout << std::fixed;
+	for (int i=0;i<m.rows();i++)
+	{
+		for (int j=0;j<m.cols();j++)
+		{
+			cout << m(i,j);
+			if (j!=m.cols()-1)
+				cout << ",";
+		}
+		cout << endl;
+	}
+	if (endline)
+		cout << endl;
+	std::cout << std::resetiosflags(std::ios::fixed);
+	std::cout.precision(pr);
+}
+
 void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::print( const ContactPoint &p )
 {
 	std::streamsize pr = std::cout.precision(2);
@@ -1401,7 +1422,7 @@ Eigen::VectorXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getPermutation( const Eig
 	return result;
 }
 
-Eigen::Vector3f MathTools::toPosition( const SphericalCoord &sc )
+Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::toPosition( const SphericalCoord &sc )
 {
 	Eigen::Vector3f res;
 
@@ -1411,7 +1432,7 @@ Eigen::Vector3f MathTools::toPosition( const SphericalCoord &sc )
 	return res;
 }
 
-VirtualRobot::MathTools::SphericalCoord MathTools::toSphericalCoords( const Eigen::Vector3f &pos )
+VirtualRobot::MathTools::SphericalCoord VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::toSphericalCoords( const Eigen::Vector3f &pos )
 {
 	VirtualRobot::MathTools::SphericalCoord res;
 	res.r = pos.norm();
@@ -1426,13 +1447,27 @@ VirtualRobot::MathTools::SphericalCoord MathTools::toSphericalCoords( const Eige
 	return res;
 }
 
-int MathTools::pow_int( int a, int b )
+int VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::pow_int( int a, int b )
 {
 	int powI = 1;
 	for (int j = 0; j<b; j++)
 		powI *= a;
 	return powI;
 
+}
+
+Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getPseudoInverse( const Eigen::MatrixXf &m, float tol /*= 1e-5f*/ )
+{
+	Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
+	Eigen::MatrixXf U = svd.matrixU();
+	Eigen::MatrixXf V = svd.matrixV();
+	Eigen::VectorXf sv = svd.singularValues();
+	for (int i=0;i<sv.rows();i++)
+		if ( sv(i) > tol )
+			sv(i)=1.0f/sv(i);
+		else sv(i)=0;
+
+	return (V*sv.asDiagonal()*U.transpose());
 }
 
 

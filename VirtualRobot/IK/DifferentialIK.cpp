@@ -209,17 +209,8 @@ Eigen::MatrixXf DifferentialIK::computePseudoInverseJacobianMatrix(const Eigen::
     }
     case eSVD:
     {
-        float pinvtoler = 0.00001f;
-        Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
-        Eigen::MatrixXf U = svd.matrixU();
-        Eigen::MatrixXf V = svd.matrixV();
-        Eigen::VectorXf sv = svd.singularValues();
-        for (int i=0;i<sv.rows();i++)
-            if ( sv(i) > pinvtoler )
-                sv(i)=1.0f/sv(i);
-            else sv(i)=0;
-
-        pseudo = (V*sv.asDiagonal()*U.transpose());
+       float pinvtoler = 0.00001f;
+        pseudo = MathTools::getPseudoInverse(m,pinvtoler);
         break;
     }
     default:

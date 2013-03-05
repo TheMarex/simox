@@ -496,12 +496,18 @@ namespace MathTools
 	int VIRTUAL_ROBOT_IMPORT_EXPORT pow_int(int a, int b);
 
 	/*!
+		Returns the Pseudo inverse matrix.
+	*/
+	Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT getPseudoInverse(const Eigen::MatrixXf &m, float tol = 1e-5f);
+
+	/*!
 		Check if all entries of v are valid numbers (i.e. all entries of v are not NaN and not INF)
 	*/
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT isValid (const Eigen::MatrixXf &v);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print (const ContactPoint &p);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print (const std::vector<ContactPoint> &points);
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print( const Eigen::VectorXf &v, bool endline = true );
+	void VIRTUAL_ROBOT_IMPORT_EXPORT printMat( const Eigen::MatrixXf &m, bool endline = true );
 	void VIRTUAL_ROBOT_IMPORT_EXPORT print( const std::vector<float> &v, bool endline = true);
 	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix4f &m, int tabs, bool skipMatrixTag = false);
 	std::string VIRTUAL_ROBOT_IMPORT_EXPORT getTransformXMLString(const Eigen::Matrix4f &m, const std::string &tabs, bool skipMatrixTag = false);

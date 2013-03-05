@@ -221,22 +221,30 @@ boost::shared_ptr<T> Scene::getVisualization(SceneObject::VisualizationType visu
 	std::vector<VirtualRobot::ObstaclePtr> collectedObstacles = getObstacles();
 	std::vector<VirtualRobot::ManipulationObjectPtr> collectedManipulationObjects = getManipulationObjects();
 	std::vector<VirtualRobot::TrajectoryPtr> collectedTrajectories = getTrajectories();
+	std::vector<VirtualRobot::TrajectoryPtr> collectedSceneObjectSets = getSceneObjectSets();
 
 	// collect all robotnodes
 	std::vector<VirtualRobot::RobotNodePtr> collectedRobotNodes;
 	for (size_t i=0;i<collectedRobots.size();i++)
 		collectedRobots[i]->getRobotNodes(collectedRobotNodes,false);
 
-	std::vector<VisualizationNodePtr> collectedVisualizationNodes(collectedRobotNodes.size() + collectedObstacles.size() + collectedManipulationObjects.size() + collectedTrajectories.size());
+	std::vector<VisualizationNodePtr> collectedVisualizationNodes;
 	for (size_t i=0;i<collectedRobotNodes.size();i++)
-		collectedVisualizationNodes[i] = collectedRobotNodes[i]->getVisualization(visuType);
+		collectedVisualizationNodes.push_back(collectedRobotNodes[i]->getVisualization(visuType));
 	for (size_t i=0;i<collectedObstacles.size();i++)
-		collectedVisualizationNodes[i+collectedRobotNodes.size()] = collectedObstacles[i]->getVisualization(visuType);
+		collectedVisualizationNodes.push_back(collectedObstacles[i]->getVisualization(visuType);
 	for (size_t i=0;i<collectedManipulationObjects.size();i++)
-		collectedVisualizationNodes[i+collectedRobotNodes.size()+collectedObstacles.size()] = collectedManipulationObjects[i]->getVisualization(visuType);
+		collectedVisualizationNodes.push_back(collectedManipulationObjects[i]->getVisualization(visuType);
 	for (size_t i=0;i<collectedTrajectories.size();i++)
-		collectedVisualizationNodes[i+collectedRobotNodes.size()+collectedObstacles.size()+collectedManipulationObjects.size()] = collectedTrajectories[i]->getVisualization(T::getFactoryName());
-	
+		collectedVisualizationNodes.push_back(collectedTrajectories[i]->getVisualization(T::getFactoryName()));
+	for (size_t i=0;i<collectedSceneObjectSets.size();i++)
+	{
+		std::vector< SceneObjectPtr > sos = collectedSceneObjectSets[i]->getSceneObjects();
+		for (size_t j=0;j<sos.size();j++)
+		{
+			collectedVisualizationNodes.push_back(sos[j]->getVisualization(visuType));
+		}
+	}
 
 	boost::shared_ptr<T> visualization(new T(collectedVisualizationNodes));
 	return visualization;

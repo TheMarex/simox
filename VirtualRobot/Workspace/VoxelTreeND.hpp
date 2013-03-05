@@ -73,9 +73,9 @@ public:
 	  verbose(verbose),
 	  currentElementID(0)
 	{
-		memcpy (&this->minExtend,&minExtend,sizeof(float)*N);
-		memcpy (&this->maxExtend,&maxExtend,sizeof(float)*N);
-		memcpy (&this->discretization,&discretization,sizeof(float)*N);
+		memcpy (this->minExtend,minExtend,sizeof(float)*N);
+		memcpy (this->maxExtend,maxExtend,sizeof(float)*N);
+		memcpy (this->discretization,discretization,sizeof(float)*N);
 		for (int i=0;i<N;i++)
 		{
 			size[i] = maxExtend[i] - minExtend[i];
@@ -97,7 +97,7 @@ public:
 		// precompute extends for all sub elements
 		elementExtends.resize(maxLevels,N);
 		float newExtend[N];
-		memcpy(&newExtend,&size,sizeof(float)*N);
+		memcpy(newExtend,size,sizeof(float)*N);
 		for (int a=0;a<maxLevels;a++)
 		{
 			for (int b=0;b<N;b++)
@@ -157,7 +157,7 @@ public:
 	*/
 	void getSize(float storeSize[N])
 	{
-		memcpy(&storeSize,&size,N*sizeof(float));
+		memcpy(storeSize,size,N*sizeof(float));
 	}
 
 	/*!
@@ -165,7 +165,7 @@ public:
 	*/
 	void getMinExtend(float storeMin[N])
 	{
-		memcpy(&storeMin,&minExtend,N*sizeof(float));
+		memcpy(storeMin,minExtend,N*sizeof(float));
 	}
 
 	/*!
@@ -173,15 +173,26 @@ public:
 	*/
 	void getMaxExtend(float storeMin[N])
 	{
-		memcpy(&storeMin,&maxExtend,N*sizeof(float));
+		memcpy(storeMin,maxExtend,N*sizeof(float));
 	}
 
 	/*!
-		Returns discretization vector.
+		Returns discretization vector as defined on construction. (The actual discretization may differ, depending on max tree depth)
 	*/
 	void getDiscretization(float storeDiscretization[N])
 	{
-		memcpy(&storeDiscretization,&discretization,N*sizeof(float));
+		memcpy(storeDiscretization,discretization,N*sizeof(float));
+	}
+
+	/*!
+		Get real min element sizes.
+	*/
+	void getRealDiscretization(float storeDiscretization[N])
+	{
+		for (int i=0;i<N;i++)
+		{
+			storeDiscretization[i] = getExtends(maxLevels-1,i);
+		}
 	}
 
 	/*!

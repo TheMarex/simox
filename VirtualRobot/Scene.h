@@ -221,7 +221,7 @@ boost::shared_ptr<T> Scene::getVisualization(SceneObject::VisualizationType visu
 	std::vector<VirtualRobot::ObstaclePtr> collectedObstacles = getObstacles();
 	std::vector<VirtualRobot::ManipulationObjectPtr> collectedManipulationObjects = getManipulationObjects();
 	std::vector<VirtualRobot::TrajectoryPtr> collectedTrajectories = getTrajectories();
-	std::vector<VirtualRobot::TrajectoryPtr> collectedSceneObjectSets = getSceneObjectSets();
+	std::vector<VirtualRobot::SceneObjectSetPtr> collectedSceneObjectSets = getSceneObjectSets();
 
 	// collect all robotnodes
 	std::vector<VirtualRobot::RobotNodePtr> collectedRobotNodes;
@@ -232,9 +232,9 @@ boost::shared_ptr<T> Scene::getVisualization(SceneObject::VisualizationType visu
 	for (size_t i=0;i<collectedRobotNodes.size();i++)
 		collectedVisualizationNodes.push_back(collectedRobotNodes[i]->getVisualization(visuType));
 	for (size_t i=0;i<collectedObstacles.size();i++)
-		collectedVisualizationNodes.push_back(collectedObstacles[i]->getVisualization(visuType);
+		collectedVisualizationNodes.push_back(collectedObstacles[i]->getVisualization(visuType));
 	for (size_t i=0;i<collectedManipulationObjects.size();i++)
-		collectedVisualizationNodes.push_back(collectedManipulationObjects[i]->getVisualization(visuType);
+		collectedVisualizationNodes.push_back(collectedManipulationObjects[i]->getVisualization(visuType));
 	for (size_t i=0;i<collectedTrajectories.size();i++)
 		collectedVisualizationNodes.push_back(collectedTrajectories[i]->getVisualization(T::getFactoryName()));
 	for (size_t i=0;i<collectedSceneObjectSets.size();i++)

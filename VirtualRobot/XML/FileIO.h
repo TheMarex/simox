@@ -78,6 +78,15 @@ namespace FileIO
 		file.write((char *)&len, sizeof(int));
 		file.write(value.c_str(), len);
 	}
+
+	/*!
+		Read points form ascii file.
+		Each row defines one point triple.
+		\param filename The absolute filename.
+		\param separator Separator character. Standard space, but comma or semicolon could be passed here.
+		\return Vector of points.
+	*/
+	std::vector< Eigen::Vector3f > VIRTUAL_ROBOT_IMPORT_EXPORT readPts(const std::string &filename, const char separator=' ');
 }
 
 } // namespace VirtualRobot

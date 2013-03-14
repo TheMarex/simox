@@ -213,6 +213,15 @@ public:
 		return root->maxLeaf(p);
 	}
 
+	/*!
+		Gets all leaf elements of all sub-tree elements at position p (size of Vector p defines which level of the tree is considered). 
+	*/
+	std::vector< VoxelTreeNDElement<T,N>* > getAllLeafs(const Eigen::VectorXf &p)
+	{
+		VR_ASSERT(p.rows()>0 && p.rows()<=N);
+		return root->getAllLeafs(p);
+	}
+
 	static VoxelTreeND<T,N>* load(std::ifstream &file)
 	{
 		THROW_VR_EXCEPTION_IF(!file, "File could not be read.");

@@ -184,6 +184,33 @@ public:
 		return maxElement;
 	}
 
+	std::vector<VoxelTreeNDElement*> getAllLeafs(const Eigen::VectorXf &pos)
+	{
+		std::vector<VoxelTreeNDElement*> res;
+		if (leaf)
+		{
+			res.push_back(this);
+			return res;
+		}
+		VR_ASSERT (pos.rows()>0 && pos.rows()<=N);
+		int numChildren = tree->getNumChildren();
+		std::vector<int> c = getAllChildrenIndx(pos);
+		std::vector<int>::iterator it = c.begin();
+		while (it != c.end())
+		{
+			VR_ASSERT((*it)>=0 && (*it)<numChildren);
+			if (children[*it])
+			{
+				std::vector<VoxelTreeNDElement*> resSub;
+				resSub = children[*it]->getAllLeafs(pos);
+				if (!resSub.empty())
+					res.insert(res.end(), resSub.begin(), resSub.end());
+			}
+			it++;
+		}
+		return res;
+	}
+
 	bool isLeaf()
 	{
 		return leaf;

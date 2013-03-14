@@ -76,6 +76,15 @@ namespace MathTools
 	//! Computes mean orientation of quaternions
 	MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT getMean(std::vector<MathTools::Quaternion> quaternions );
 
+	/*! 
+	Apply the slerp interpolation
+	\param q1 The first quaternion
+	\param q2 The second quaternion
+	\param alpha A value between 0 and 1
+	\return The intermediate quaternion
+	*/
+	MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT slerp(const MathTools::Quaternion &q1, const MathTools::Quaternion &q2, float alpha );
+
 	/************************************************************************/
 	/* SPHERICAL COORDINATES                                                */
 	/************************************************************************/

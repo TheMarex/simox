@@ -32,50 +32,7 @@ Manipulability::Manipulability(RobotPtr robot) : WorkspaceRepresentation (robot)
 void Manipulability::addCurrentTCPPose()
 {	
 	THROW_VR_EXCEPTION_IF(!data || !nodeSet || !tcpNode, "No Manipulability data loaded");
-
-	Eigen::Matrix4f p = tcpNode->getGlobalPose();
-
-	toLocal(p);
-
-	float x[6];
-
-    matrix2Vector(p,x);
-	//MathTools::eigen4f2rpy(p,x);
-
-	// check for achieved values
-	for (int i=0;i<6;i++)
-	{
-		if (x[i] < achievedMinValues[i])
-			achievedMinValues[i] = x[i];
-		if (x[i] > achievedMaxValues[i])
-			achievedMaxValues[i] = x[i];
-	}
-
-	// get voxels
-	unsigned int v[6];
-	if (getVoxelFromPose(x,v))
-	{
-	    float m = getCurrentManipulability();
-	    float mSc = m / maxManip;
-	    if (mSc>1)
-	    {
-			if (mSc>1.05)
-				VR_WARNING << "Manipulability is larger than max value. Current Manip:" << m << ", maxManip:" << maxManip << ", percent:" << mSc << endl;
-	        mSc = 1.0f;
-	    }
-	    if (m<0)
-	        mSc = 0;
-	    unsigned char e = (unsigned char)(mSc * (float)UCHAR_MAX + 0.5f);
-
-		// add at least 1, since the pose is reachable
-		if (e==0)
-			e = 1;
-
-		if (e>data->get(v))
-			data->setDatum(v,e);
-	}
-
-	buildUpLoops++;
+	addPose(tcpNode->getGlobalPose());
 }
 
 void Manipulability::addRandomTCPPoses( unsigned int loops, bool checkForSelfCollisions )
@@ -98,6 +55,52 @@ void Manipulability::addRandomTCPPoses( unsigned int loops, bool checkForSelfCol
 	}
 	robot->setUpdateVisualization(visuSate);
 	nodeSet->setJointValues(c);
+}
+
+void Manipulability::addPose( const Eigen::Matrix4f &pose )
+{
+	Eigen::Matrix4f p = pose;
+	toLocal(p);
+
+	float x[6];
+
+	matrix2Vector(p,x);
+	//MathTools::eigen4f2rpy(p,x);
+
+	// check for achieved values
+	for (int i=0;i<6;i++)
+	{
+		if (x[i] < achievedMinValues[i])
+			achievedMinValues[i] = x[i];
+		if (x[i] > achievedMaxValues[i])
+			achievedMaxValues[i] = x[i];
+	}
+
+	// get voxels
+	unsigned int v[6];
+	if (getVoxelFromPose(x,v))
+	{
+		float m = getCurrentManipulability();
+		float mSc = m / maxManip;
+		if (mSc>1)
+		{
+			if (mSc>1.05)
+				VR_WARNING << "Manipulability is larger than max value. Current Manip:" << m << ", maxManip:" << maxManip << ", percent:" << mSc << endl;
+			mSc = 1.0f;
+		}
+		if (m<0)
+			mSc = 0;
+		unsigned char e = (unsigned char)(mSc * (float)UCHAR_MAX + 0.5f);
+
+		// add at least 1, since the pose is reachable
+		if (e==0)
+			e = 1;
+
+		if (e>data->get(v))
+			data->setDatum(v,e);
+	}
+
+	buildUpLoops++;
 }
 
 float Manipulability::getCurrentManipulability()

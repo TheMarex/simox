@@ -77,14 +77,14 @@ public:
 	    Compute the manipulability of the current pose and add entry to manipulability voxel data 
 	    (if is larger than the existing entry).
 	*/
-	void addCurrentTCPPose();
+	virtual void addCurrentTCPPose();
 
 	/*!
 		Append a number of random TCP poses to manipulability data.
 		\param loops Number of poses that should be appended
 		\param checkForSelfCollisions Build a collision-free configurations. If true, random configs are generated until one is collision-free.
 	*/
-	void addRandomTCPPoses(unsigned int loops, bool checkForSelfCollisions = true);
+	virtual void addRandomTCPPoses(unsigned int loops, bool checkForSelfCollisions = true);
 
 	/*!
 		The manipulability measure can be defined here
@@ -172,7 +172,7 @@ protected:
 
 
 	float getCurrentManipulability();
-
+	void addPose( const Eigen::Matrix4f &p );
 	PoseQualityMeasurementPtr measure;
 
 	float maxManip;

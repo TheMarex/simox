@@ -1127,17 +1127,17 @@ bool WorkspaceRepresentation::checkForParameters( RobotNodeSetPtr nodeSet, float
 	bool visuSate = robot->getUpdateVisualizationStatus();
 	robot->setUpdateVisualization(false);
 
+	// toLocal uses this->baseNode!
+	RobotNodePtr tmpBase = this->baseNode;
+	this->baseNode = baseNode;
 	for (int i=0;i<steps;i++)
 	{
 		setRobotNodesToRandomConfig(nodeSet,false);
 		Eigen::Matrix4f p = tcpNode->getGlobalPose();
 		toLocal(p);
-		//if (baseNode)
-			//p = baseNode->toLocalCoordinateSystem(p);
 
 		float x[6];
         matrix2Vector(p,x);
-        //MathTools::eigen4f2rpy(p,x);
 
 		// check for achieved values
 		for (int i=0;i<6;i++)
@@ -1162,6 +1162,8 @@ bool WorkspaceRepresentation::checkForParameters( RobotNodeSetPtr nodeSet, float
 		storeMinBounds[i] -= sizex * factor;
 		storeMaxBounds[i] += sizex * factor;
 	}
+
+	this->baseNode = tmpBase;
 	return true;
 
 }

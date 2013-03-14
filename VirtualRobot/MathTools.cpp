@@ -1231,6 +1231,21 @@ MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getMean( std::vecto
 	return res;
 }
 
+MathTools::Quaternion VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::slerp(const MathTools::Quaternion &q1, const MathTools::Quaternion &q2, float alpha )
+{
+	THROW_VR_EXCEPTION_IF(alpha<0 || alpha>1.0f,"Invalid alpha");
+	Eigen::Quaternion<float> eq1(q1.w,q1.x,q1.y,q1.z);
+	Eigen::Quaternion<float> eq2(q2.w,q2.x,q2.y,q2.z);
+	Eigen::Quaternion<float> eq = eq1.slerp(alpha,eq2);
+	MathTools::Quaternion res;
+	res.x = eq.x();
+	res.y = eq.z();
+	res.z = eq.x();
+	res.w = eq.w();
+	return res;
+}
+
+
 Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getBasisTransformation( const std::vector< Eigen::VectorXf > &basisSrc, const std::vector< Eigen::VectorXf > &basisDst )
 {
 	THROW_VR_EXCEPTION_IF(basisSrc.size()==0,"NULL size");

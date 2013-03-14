@@ -164,7 +164,7 @@ bool Manipulability::customLoad( std::ifstream &file )
 	//bool lOK = readString(res,file);
 	bool lOK = false;
 	//int length = read<int>(file);
-	lOK = customStringRead(file,res);
+	lOK = FileIO::readString(res,file);
 	if (!lOK)
 	{
 		VR_ERROR << "Could not get manip measure name from file?!" << endl;
@@ -181,8 +181,8 @@ bool Manipulability::customLoad( std::ifstream &file )
 	}
 	measureName = res;
 	//int cjl = read<int>(file);
-	int cjl;
-	file.read((char *)&cjl, sizeof(int));
+	int cjl = (int)(FileIO::read<ioIntTypeRead>(file));
+	//file.read((char *)&cjl, sizeof(int));
 	if (cjl == 0)
 		considerJL = false;
 	else
@@ -197,15 +197,16 @@ bool Manipulability::customLoad( std::ifstream &file )
 	if (versionMajor>=2 && versionMinor>=3)
 	{
 		// read self collision data
-		file.read((char *)&cjl, sizeof(int));
+		cjl = (int)(FileIO::read<ioIntTypeRead>(file));;
+		//file.read((char *)&cjl, sizeof(int));
 		if (cjl == 0)
 			considerSelfDist = false;
 		else
 			considerSelfDist = true;
 
 		std::string selfDist1,selfDist2;
-		bool sd1 = customStringRead(file,selfDist1);
-		bool sd2 = customStringRead(file,selfDist2);
+		bool sd1 = FileIO::readString(selfDist1,file);//customStringRead(file,selfDist1);
+		bool sd2 = FileIO::readString(selfDist2,file);//customStringRead(file,selfDist2);
 		if (!sd1 || !sd2)
 		{
 			VR_ERROR << "Could not get rns for self dist name from file?!" << endl;
@@ -235,24 +236,27 @@ bool Manipulability::customLoad( std::ifstream &file )
 
 bool Manipulability::customSave( std::ofstream &file )
 {
-	//writeString(file,measureName);
-	int len = measureName.length();
-	file.write((char *)&len, sizeof(int));
-	file.write(measureName.c_str(), len);
+	FileIO::writeString(file, measureName);
+	//int len = measureName.length();
+	//file.write((char *)&len, sizeof(int));
+	//file.write(measureName.c_str(), len);
 
 	int cjl = 0;
 	if (considerJL)
 		cjl = 1;
-	//write<int>(file,cjl);
-	file.write((char *)&cjl, sizeof(int));
+;
+	FileIO::write<ioIntTypeWrite>(file, (ioIntTypeWrite)(cjl));
+	//file.write((char *)&cjl, sizeof(int));
 
-	file.write((char *)&maxManip, sizeof(float));
+	FileIO::write<float>(file, maxManip);
+	//file.write((char *)&maxManip, sizeof(float));
 
 	// write self collision data
 	cjl = 0;
 	if (considerSelfDist)
 		cjl = 1;
-	file.write((char *)&cjl, sizeof(int));
+	FileIO::write<ioIntTypeWrite>(file, (ioIntTypeWrite)(cjl));
+	//file.write((char *)&cjl, sizeof(int));
 
 	std::string selfDistRNS1 = "<not set>";
 	if (selfDistStatic && considerSelfDist)
@@ -261,13 +265,15 @@ bool Manipulability::customSave( std::ofstream &file )
 	if (selfDistDynamic && considerSelfDist)
 		selfDistRNS2 = selfDistDynamic->getName();
 
-	len = selfDistRNS1.length();
-	file.write((char *)&len, sizeof(int));
-	file.write(selfDistRNS1.c_str(), len);
+	FileIO::writeString(file, selfDistRNS1);
+	//len = selfDistRNS1.length();
+	//file.write((char *)&len, sizeof(int));
+	//file.write(selfDistRNS1.c_str(), len);
 
-	len = selfDistRNS2.length();
-	file.write((char *)&len, sizeof(int));
-	file.write(selfDistRNS2.c_str(), len);
+	FileIO::writeString(file, selfDistRNS2);
+	//len = selfDistRNS2.length();
+	//file.write((char *)&len, sizeof(int));
+	//file.write(selfDistRNS2.c_str(), len);
 
 	return true;
 }

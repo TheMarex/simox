@@ -62,6 +62,8 @@ public:
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+	typedef int32_t ioIntTypeWrite;
+	typedef int32_t ioIntTypeRead;
 
     enum eOrientationType
     {

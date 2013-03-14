@@ -57,7 +57,7 @@ namespace FileIO
 
 	inline bool readString(std::string &res, std::ifstream &file)
 	{
-		int length = read<int>(file);
+		int length = read<int32_t>(file);
 		if(length <= 0)
 		{
 			VR_WARNING << "Bad string length: " << length << std::endl;
@@ -74,8 +74,8 @@ namespace FileIO
 
 	inline void writeString(std::ofstream &file, const std::string &value)
 	{
-		int len = value.length();
-		file.write((char *)&len, sizeof(int));
+		int32_t len = value.length();
+		file.write((char *)&len, sizeof(int32_t));
 		file.write(value.c_str(), len);
 	}
 

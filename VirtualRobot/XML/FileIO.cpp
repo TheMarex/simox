@@ -4,7 +4,7 @@
 
 std::vector< Eigen::Vector3f > VirtualRobot::FileIO::readPts( const std::string &filename, const char separator )
 {
-	std::ifstream file(filename);
+	std::ifstream file(filename.c_str());
 	THROW_VR_EXCEPTION_IF(!file.good(),"Could not open file" << filename);
 	char tmp;
 	float a,b,c;

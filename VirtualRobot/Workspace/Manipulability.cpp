@@ -450,10 +450,16 @@ void Manipulability::initSelfDistanceCheck( RobotNodeSetPtr staticModel, RobotNo
 }
 
 
-bool Manipulability::smooth()
+bool Manipulability::smooth(unsigned int minNeighbors)
 {
 	if (!data)
 		return false;
+
+	if (minNeighbors<=0)
+		minNeighbors = 1;
+
+	// copy data
+	WorkspaceDataPtr newData(new WorkspaceData(data));
 
 	int s = 1;
 	for (int a=s;a<(int)data->getSize(0)-s;a++)
@@ -490,19 +496,23 @@ bool Manipulability::smooth()
 												{
 													//unsigned int posTr,posRo;
 													//data->getPos(a+a2,b+b2,c+c2,d+d2,e+e2,f+f2, posTr,posRo);
-													v += (long)data->get(a+a2,b+b2,c+c2,d+d2,e+e2,f+f2);
-
-													count++;
+													long entry = (long)data->get(a+a2,b+b2,c+c2,d+d2,e+e2,f+f2);
+													if (entry>0)
+													{
+														v+=entry;
+														count++;
+													}
 												}
 											}
 										}
 									}
 								}
 							}
-							if (count>0)
+							if (count>=(int)(minNeighbors))
 							{
 								unsigned char newVal = (unsigned char) ((double)v / (double)count);
-								data->setDatum(a,b,c,d,e,f, newVal);
+								if (newVal>0)
+									newData->setDatum(a,b,c,d,e,f, newVal);
 								//data->data[posOrig] = (unsigned int) ((double)v / (double)count);
 							}
 						}
@@ -511,6 +521,7 @@ bool Manipulability::smooth()
 			}
 		}
 	}
+	data = newData;
 	return true;
 }
 

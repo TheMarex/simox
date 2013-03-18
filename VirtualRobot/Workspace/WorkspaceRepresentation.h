@@ -171,11 +171,12 @@ public:
 	virtual void binarize();
 
 	/*!
-		Checks for all voxels with entiry==0 if there are neighbors with entries>0. 
+		Checks for all voxels with entry==0 if there are neighbors with entries>0. 
 		If so the entry is set to the averaged value of the neighbors
+		\param minNeighbors The minimum number of neighbors that have to have an entry>0
 		\return The number of changed voxels.
 	*/
-	virtual int fillHoles();
+	virtual int fillHoles(unsigned int minNeighbors = 1);
 
 	/*!
 	Print status information

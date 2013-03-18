@@ -62,6 +62,63 @@ WorkspaceData::WorkspaceData(unsigned int size1, unsigned int size2, unsigned in
 	
 }
 
+WorkspaceData::WorkspaceData(WorkspaceDataPtr other)
+{
+	VR_ASSERT(other);
+	for (int i=0;i<6;i++)
+		this->sizes[i] = other->sizes[i];
+	unsigned long long sizeTr = (unsigned long long)sizes[0] * (unsigned long long)sizes[1] * (unsigned long long)sizes[2];
+	unsigned long long sizeRot = (unsigned long long)sizes[3] * (unsigned long long)sizes[4] * (unsigned long long)sizes[5];
+	sizeTr0 = sizes[1]*sizes[2];
+	sizeTr1 = sizes[2];
+	sizeRot0 = sizes[4]*sizes[5];
+	sizeRot1 = sizes[5];
+
+	if (sizeRot>UINT_MAX || sizeTr>UINT_MAX )
+	{
+		VR_ERROR << "Could not assign " << sizeRot << " bytes of memory (>UINT_MAX). Reduce size of reachability space..." << endl;
+	}
+	try
+	{
+		data = new unsigned char*[(unsigned int)sizeTr];
+		for (unsigned int x=0;x<sizes[0];x++)
+		{
+			for (unsigned int y=0;y<sizes[1];y++)
+			{
+				for (unsigned int z=0;z<sizes[2];z++)
+				{
+					int pos = x*sizeTr0+y*sizeTr1+z;
+					if (other->data[pos] != NULL)
+					{
+						data[pos] = new unsigned char[(unsigned int)sizeRot];
+						memcpy(data[pos],other->data[pos],(unsigned int)sizeRot*sizeof(unsigned char));
+					}
+					else
+					{
+						data[pos] = NULL;
+					}
+				}
+			}
+		}
+	} catch (const std::exception &e)
+	{
+		VR_ERROR << "Exception: " << e.what() << endl << "Could not assign " << sizeRot << " bytes of memory. Reduce size of reachability space..." << endl;
+		throw;
+	} catch (...)
+	{
+		VR_ERROR << "Could not assign " << sizeRot << " bytes of memory. Reduce size of reachability space..." << endl;
+		throw;
+	}
+
+
+
+	maxEntry = other->maxEntry;
+	voxelFilledCount = other->voxelFilledCount;
+	this->adjustOnOverflow = other->adjustOnOverflow;
+
+
+}
+
 WorkspaceData::~WorkspaceData()
 {
 	for (unsigned int x=0;x<sizes[0];x++)

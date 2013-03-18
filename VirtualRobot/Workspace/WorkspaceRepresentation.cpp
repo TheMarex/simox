@@ -265,7 +265,7 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		FileIO::readString(tmpString, file);
 		THROW_VR_EXCEPTION_IF(tmpString != "DATA_START", "Bad file format, expecting DATA_START.");
 
-		int size = numVoxels[0]*numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5];
+		long size = numVoxels[0]*numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5];
 		data.reset(new WorkspaceData(numVoxels[0], numVoxels[1], numVoxels[2], numVoxels[3], numVoxels[4], numVoxels[5],true));
 
 		if (version[0]<=1 || (version[0]==2 && version[1]<=3))
@@ -786,7 +786,7 @@ void WorkspaceRepresentation::print()
 			cout << tcpNode->getName() << endl;
 		else 
 			cout << "<not set>" << endl;
-        cout << "Orientation represenation: ";
+        cout << "Orientation representation: ";
         if (orientationType == EulerXYZ)
             cout << "EulerXYZ" << endl;
         else
@@ -805,7 +805,8 @@ void WorkspaceRepresentation::print()
 		cout << "Used " << buildUpLoops << " loops for building the random configs " << endl;
 		cout << "Discretization step sizes: Translation: " << discretizeStepTranslation << " - Rotation: " << discretizeStepRotation << endl;
 		cout << type << " data extends: " << numVoxels[0] << "x" << numVoxels[1] << "x" << numVoxels[2] << "x" << numVoxels[3] << "x" << numVoxels[4] << "x" << numVoxels[5] << endl;
-		cout << "Filled " << data->getVoxelFilledCount() << " of " << (numVoxels[0]*numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5]) << " voxels" << endl;
+		long long nv = numVoxels[0]*numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5];
+		cout << "Filled " << data->getVoxelFilledCount() << " of " << nv << " voxels" << endl;
 		cout << "Collisions: " << collisionConfigs << endl;
 		cout << "Maximum entry in a voxel: " << (int)data->getMaxEntry() << endl;
 		cout << type << " workspace extend (as defined on construction):" << endl;
@@ -1001,10 +1002,16 @@ Eigen::Matrix4f WorkspaceRepresentation::sampleCoveredPose()
 	return m;
 }
 
-int WorkspaceRepresentation::fillHoles()
+int WorkspaceRepresentation::fillHoles(unsigned int minNeighbors)
 {
+	// copy data
+	WorkspaceDataPtr newData(new WorkspaceData(data));
+
 	unsigned int x[6];
 	int res = 0;
+
+	if (minNeighbors==0)
+		minNeighbors = 1;
 	for (x[0]=1; x[0]<(unsigned int)numVoxels[0]-1; x[0]++)
 		for (x[1]=1; x[1]<(unsigned int)numVoxels[1]-1; x[1]++)
 			for (x[2]=1; x[2]<(unsigned int)numVoxels[2]-1; x[2]++)
@@ -1032,16 +1039,17 @@ int WorkspaceRepresentation::fillHoles()
 									}
 									x[i]--;
 								}
-								if (count>1)
+								if (count>=(int)minNeighbors)
 								{
 									res++;
 									sum /= count;
-									data->setDatum(x,(unsigned char)sum);
+									newData->setDatum(x,(unsigned char)sum);
 								}
 								
 
 							}
 						}
+	data = newData;
 	return res;
 }
 

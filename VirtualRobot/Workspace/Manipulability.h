@@ -148,7 +148,7 @@ public:
 	/*!
 		smooth the data
 	*/
-	bool smooth();
+	bool smooth(unsigned int minNeighbors = 1);
 
 	
 	/*!

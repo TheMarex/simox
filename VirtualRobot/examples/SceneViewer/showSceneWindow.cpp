@@ -61,7 +61,7 @@ void showSceneWindow::setupUI()
 	viewer->setAntialiasing(true, 4);
 
 	viewer->setGLRenderAction(new SoLineHighlightRenderAction);
-	viewer->setTransparencyType(SoGLRenderAction::BLEND);
+	viewer->setTransparencyType(SoGLRenderAction::SORTED_OBJECT_BLEND);
 	viewer->setFeedbackVisibility(true);
 	viewer->setSceneGraph(sceneSep);
 	viewer->viewAll();
@@ -257,7 +257,8 @@ void showSceneWindow::selectRobot(int nr)
 	currentRobot.reset();
 	if (nr<0 || nr>=UI.comboBoxRobot->count() || !scene)
 		return;
-	currentRobot = scene->getRobot(UI.comboBoxRobot->currentText().toStdString());
+	std::string robName = UI.comboBoxRobot->currentText().toAscii();
+	currentRobot = scene->getRobot(robName);
 	if (!currentRobot)
 		return;
 	std::vector<VirtualRobot::RobotConfigPtr> roc = scene->getRobotConfigs(currentRobot);
@@ -296,7 +297,8 @@ void showSceneWindow::selectRobotConfig(int nr)
 {
 	if (nr<0 || nr>=UI.comboBoxRobotConfig->count() || !scene || !currentRobot)
 		return;
-	VirtualRobot::RobotConfigPtr rc = scene->getRobotConfig(currentRobot->getName(), UI.comboBoxRobotConfig->currentText().toStdString());
+	std::string s = UI.comboBoxRobotConfig->currentText().toAscii();
+	VirtualRobot::RobotConfigPtr rc = scene->getRobotConfig(currentRobot->getName(), s);
 	if (!rc)
 		return;
 	currentRobot->setJointValues(rc);
@@ -312,8 +314,8 @@ void showSceneWindow::selectTrajectory(int nr)
 		return;
 	}
 	UI.horizontalSlider->setEnabled(true);
-	
-	currentTrajectory = scene->getTrajectory(UI.comboBoxTrajectory->currentText().toStdString());
+	std::string s = UI.comboBoxTrajectory->currentText().toAscii();
+	currentTrajectory = scene->getTrajectory(s);
 	sliderMoved(0);
 }
 
@@ -324,7 +326,8 @@ void showSceneWindow::selectEEF(int nr)
 		currentEEF.reset();
 		return;
 	}
-	currentEEF = currentRobot->getEndEffector(UI.comboBoxEEF->currentText().toStdString());
+	std::string eefStr = UI.comboBoxEEF->currentText().toAscii();
+	currentEEF = currentRobot->getEndEffector(eefStr);
 }
 
 void showSceneWindow::selectObject(int nr)
@@ -383,9 +386,14 @@ void showSceneWindow::closeHand()
 	if (UI.comboBoxObject->currentIndex()>=0)
 	{
 		if (UI.comboBoxObject->currentIndex()<(int)scene->getManipulationObjects().size())
-			so = scene->getManipulationObject(UI.comboBoxObject->currentText().toStdString());
-		else
-			so = scene->getObstacle(UI.comboBoxObject->currentText().toStdString());
+		{
+			std::string s = UI.comboBoxObject->currentText().toAscii();
+			so = scene->getManipulationObject(s);
+		} else
+		{
+			std::string s = UI.comboBoxObject->currentText().toAscii();
+			so = scene->getObstacle(s);
+		}
 	}
 	currentEEF->closeActors(so);
 }

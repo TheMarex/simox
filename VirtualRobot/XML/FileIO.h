@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <fstream>
+#include <stdint.h>
 
 namespace VirtualRobot
 {

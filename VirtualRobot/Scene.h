@@ -184,7 +184,8 @@ public:
 		 if (visualization)
 		     visualisationNode = visualization->getCoinVisualization();
 	*/
-	template <typename T> boost::shared_ptr<T> getVisualization(SceneObject::VisualizationType visuType = SceneObject::Full);
+	template <typename T> boost::shared_ptr<T> getVisualization(SceneObject::VisualizationType visuType = SceneObject::Full, bool addRobots = true, bool addObstacles = true, bool addManipulationObjects = true, bool addTrajectories = true, bool addSceneObjectSets = true);
+
 
 
 	/*!
@@ -213,36 +214,51 @@ protected:
  * A compile time error is thrown if a different class type is used as template argument.
  */
 template <typename T>
-boost::shared_ptr<T> Scene::getVisualization(SceneObject::VisualizationType visuType)
+boost::shared_ptr<T> Scene::getVisualization(SceneObject::VisualizationType visuType, bool addRobots, bool addObstacles, bool addManipulationObjects, bool addTrajectories, bool addSceneObjectSets)
 {
 	const bool IS_SUBCLASS_OF_VISUALIZATION = ::boost::is_base_of<Visualization, T>::value;
 	BOOST_MPL_ASSERT_MSG(IS_SUBCLASS_OF_VISUALIZATION, TEMPLATE_PARAMETER_FOR_VirtualRobot_getVisualization_MUST_BT_A_SUBCLASS_OF_VirtualRobot__Visualization, (T));
-	std::vector<VirtualRobot::RobotPtr> collectedRobots = getRobots();
-	std::vector<VirtualRobot::ObstaclePtr> collectedObstacles = getObstacles();
-	std::vector<VirtualRobot::ManipulationObjectPtr> collectedManipulationObjects = getManipulationObjects();
-	std::vector<VirtualRobot::TrajectoryPtr> collectedTrajectories = getTrajectories();
-	std::vector<VirtualRobot::SceneObjectSetPtr> collectedSceneObjectSets = getSceneObjectSets();
-
-	// collect all robotnodes
-	std::vector<VirtualRobot::RobotNodePtr> collectedRobotNodes;
-	for (size_t i=0;i<collectedRobots.size();i++)
-		collectedRobots[i]->getRobotNodes(collectedRobotNodes,false);
-
 	std::vector<VisualizationNodePtr> collectedVisualizationNodes;
-	for (size_t i=0;i<collectedRobotNodes.size();i++)
-		collectedVisualizationNodes.push_back(collectedRobotNodes[i]->getVisualization(visuType));
-	for (size_t i=0;i<collectedObstacles.size();i++)
-		collectedVisualizationNodes.push_back(collectedObstacles[i]->getVisualization(visuType));
-	for (size_t i=0;i<collectedManipulationObjects.size();i++)
-		collectedVisualizationNodes.push_back(collectedManipulationObjects[i]->getVisualization(visuType));
-	for (size_t i=0;i<collectedTrajectories.size();i++)
-		collectedVisualizationNodes.push_back(collectedTrajectories[i]->getVisualization(T::getFactoryName()));
-	for (size_t i=0;i<collectedSceneObjectSets.size();i++)
+
+	if (addRobots)
 	{
-		std::vector< SceneObjectPtr > sos = collectedSceneObjectSets[i]->getSceneObjects();
-		for (size_t j=0;j<sos.size();j++)
+		std::vector<VirtualRobot::RobotPtr> collectedRobots = getRobots();
+		// collect all robotnodes
+		std::vector<VirtualRobot::RobotNodePtr> collectedRobotNodes;
+		for (size_t i=0;i<collectedRobots.size();i++)
+			collectedRobots[i]->getRobotNodes(collectedRobotNodes,false);
+
+		for	(size_t i=0;i<collectedRobotNodes.size();i++)
+			collectedVisualizationNodes.push_back(collectedRobotNodes[i]->getVisualization(visuType));
+	}
+	if (addObstacles)
+	{
+		std::vector<VirtualRobot::ObstaclePtr> collectedObstacles = getObstacles();
+		for (size_t i=0;i<collectedObstacles.size();i++)
+			collectedVisualizationNodes.push_back(collectedObstacles[i]->getVisualization(visuType));
+	}
+	if (addManipulationObjects)
+	{
+		std::vector<VirtualRobot::ManipulationObjectPtr> collectedManipulationObjects = getManipulationObjects();
+		for (size_t i=0;i<collectedManipulationObjects.size();i++)
+			collectedVisualizationNodes.push_back(collectedManipulationObjects[i]->getVisualization(visuType));
+	}
+	if (addTrajectories)
+	{
+		std::vector<VirtualRobot::TrajectoryPtr> collectedTrajectories = getTrajectories();
+		for (size_t i=0;i<collectedTrajectories.size();i++)
+			collectedVisualizationNodes.push_back(collectedTrajectories[i]->getVisualization(T::getFactoryName()));
+	}
+	if (addSceneObjectSets)
+	{
+		std::vector<VirtualRobot::SceneObjectSetPtr> collectedSceneObjectSets = getSceneObjectSets();
+		for (size_t i=0;i<collectedSceneObjectSets.size();i++)
 		{
-			collectedVisualizationNodes.push_back(sos[j]->getVisualization(visuType));
+			std::vector< SceneObjectPtr > sos = collectedSceneObjectSets[i]->getSceneObjects();
+			for (size_t j=0;j<sos.size();j++)
+			{
+				collectedVisualizationNodes.push_back(sos[j]->getVisualization(visuType));
+			}
 		}
 	}
 

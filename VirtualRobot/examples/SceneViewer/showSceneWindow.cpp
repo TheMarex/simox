@@ -257,7 +257,7 @@ void showSceneWindow::selectRobot(int nr)
 	currentRobot.reset();
 	if (nr<0 || nr>=UI.comboBoxRobot->count() || !scene)
 		return;
-	std::string robName = UI.comboBoxRobot->currentText().toAscii();
+	std::string robName(UI.comboBoxRobot->currentText().toAscii());
 	currentRobot = scene->getRobot(robName);
 	if (!currentRobot)
 		return;
@@ -297,7 +297,7 @@ void showSceneWindow::selectRobotConfig(int nr)
 {
 	if (nr<0 || nr>=UI.comboBoxRobotConfig->count() || !scene || !currentRobot)
 		return;
-	std::string s = UI.comboBoxRobotConfig->currentText().toAscii();
+	std::string s(UI.comboBoxRobotConfig->currentText().toAscii());
 	VirtualRobot::RobotConfigPtr rc = scene->getRobotConfig(currentRobot->getName(), s);
 	if (!rc)
 		return;
@@ -314,7 +314,7 @@ void showSceneWindow::selectTrajectory(int nr)
 		return;
 	}
 	UI.horizontalSlider->setEnabled(true);
-	std::string s = UI.comboBoxTrajectory->currentText().toAscii();
+	std::string s(UI.comboBoxTrajectory->currentText().toAscii());
 	currentTrajectory = scene->getTrajectory(s);
 	sliderMoved(0);
 }
@@ -326,7 +326,7 @@ void showSceneWindow::selectEEF(int nr)
 		currentEEF.reset();
 		return;
 	}
-	std::string eefStr = UI.comboBoxEEF->currentText().toAscii();
+	std::string eefStr(UI.comboBoxEEF->currentText().toAscii());
 	currentEEF = currentRobot->getEndEffector(eefStr);
 }
 
@@ -387,11 +387,11 @@ void showSceneWindow::closeHand()
 	{
 		if (UI.comboBoxObject->currentIndex()<(int)scene->getManipulationObjects().size())
 		{
-			std::string s = UI.comboBoxObject->currentText().toAscii();
+			std::string s(UI.comboBoxObject->currentText().toAscii());
 			so = scene->getManipulationObject(s);
 		} else
 		{
-			std::string s = UI.comboBoxObject->currentText().toAscii();
+			std::string s(UI.comboBoxObject->currentText().toAscii());
 			so = scene->getObstacle(s);
 		}
 	}

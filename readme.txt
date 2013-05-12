@@ -18,8 +18,8 @@ tions of sampling-based motion planning approaches (e.g. Rapidly-exploring Rando
 and interfaces that allow to conveniently implement own planners. Since Saba was designed
 for planning in high-dimensional configuration spaces, complex planning problems for robots
 with a high number of degrees of freedom (DoF) can be solved efficiently.
-Grasp Studio offers possibilities to compute the grasp quality for generic end-effector defini-
-tions, e.g. a humanoid hand. The implemented 6D wrench-space computations can be used
+Grasp Studio offers possibilities to compute the grasp quality for generic end-effector 
+definitions, e.g. a humanoid hand. The implemented 6D wrench-space computations can be used
 to easily (and quickly) determine the quality of an applied grasp to an object. Furthermore,
 the implemented planners are able to generate grasp maps for given objects automatically.
 Since complex frameworks have to incorporate with several libraries in order to provide full
@@ -34,11 +34,11 @@ support.
 
 License
 -------
-GNU GPL 2 (see license.txt)
+GNU LGPL 2 (see license.txt)
 
 Copyright
 ---------
- 2012 Nikolaus Vahrenkamp
+ 2013 Nikolaus Vahrenkamp
 
 Contact
 -------

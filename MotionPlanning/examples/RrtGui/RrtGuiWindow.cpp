@@ -228,6 +228,7 @@ void RrtGuiWindow::loadSceneWindow()
 
 void RrtGuiWindow::loadScene()
 {
+	this->rns.reset();
 	robot.reset();
 	scene = SceneIO::loadScene(sceneFile);
 	if (!scene)
@@ -468,8 +469,8 @@ void RrtGuiWindow::buildRRTVisu()
 		w->addCSpacePath(solution);
 	if (UI.checkBoxShowSolutionOpti->isChecked() && solutionOptimized)
 		w->addCSpacePath(solutionOptimized,Saba::CoinRrtWorkspaceVisualization::eGreen);
-	w->addConfiguration(startConfig,Saba::CoinRrtWorkspaceVisualization::eGreen,3.0f);
-	w->addConfiguration(goalConfig,Saba::CoinRrtWorkspaceVisualization::eRed,3.0f);
+	//w->addConfiguration(startConfig,Saba::CoinRrtWorkspaceVisualization::eGreen,3.0f);
+	//w->addConfiguration(goalConfig,Saba::CoinRrtWorkspaceVisualization::eRed,3.0f);
 	SoSeparator *sol = w->getCoinVisualization();
 	rrtSep->addChild(sol);
 }

@@ -61,6 +61,7 @@ public slots:
 	void openHand();
 	void selectEEF(int nr);
 	void selectRobot();
+	void displayPhysics();
 
 
 	SoQtExaminerViewer* getExaminerViewer(){return viewer;};
@@ -91,6 +92,7 @@ protected:
 
 	bool useColModel;
 	bool structureEnabled;
+	bool physicsEnabled;
 
     boost::shared_ptr<VirtualRobot::CoinVisualization> visualization;
 };

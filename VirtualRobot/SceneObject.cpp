@@ -9,6 +9,7 @@
 #include "Robot.h"
 #include <cmath>
 #include <algorithm>
+#include <Eigen/Dense>
 
 namespace VirtualRobot {
 
@@ -196,6 +197,104 @@ void SceneObject::showCoordinateSystem( bool enable, float scaling, std::string 
 		VisualizationNodePtr visualizationNode = visualizationFactory->createCoordSystem(scaling,&coordName);
 		visualizationModel->attachVisualization("CoordinateSystem",visualizationNode);
 	}
+}
+
+void SceneObject::showPhysicsInformation( bool enableCoM, bool enableInertial, VisualizationNodePtr comModel)
+{
+	if (!enableCoM && !enableInertial && !visualizationModel)
+		return; // nothing to do
+
+	if (!visualizationModel)
+		return;
+
+	if (physics.massKg<=0)
+	{	
+		// no valid physics information
+		// check for valid model
+		TriMeshModelPtr tm = visualizationModel->getTriMeshModel();
+		if (!tm || tm->vertices.size()<2)
+			return;
+	}
+
+	if (visualizationModel->hasAttachedVisualization("__CoMLocation"))
+	{
+		visualizationModel->detachVisualization("__CoMLocation");
+	}
+	if (visualizationModel->hasAttachedVisualization("__InertiaMatrix"))
+	{
+		visualizationModel->detachVisualization("__InertiaMatrix");
+	}
+	if (enableCoM)
+	{
+		VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
+		if (!visualizationFactory)
+		{
+			VR_ERROR << " Could not determine a valid VisualizationFactory!!" << endl;
+			return;
+		}
+		// create visu
+		if (!comModel)
+		{
+			VisualizationNodePtr comModel1 = visualizationFactory->createSphere(7.05f,1.0f,0.2f,0.2f);
+			VisualizationNodePtr comModel2 = visualizationFactory->createBox(10.0f,10.0f,10.0f,0.2f,0.2f,1.0f);
+			std::vector<VisualizationNodePtr> v;
+			v.push_back(comModel1);
+			v.push_back(comModel2);
+			comModel = visualizationFactory->createUnitedVisualization(v);
+		}
+		VisualizationNodePtr comModelClone = comModel->clone();
+		Eigen::Vector3f l = getCoMLocal() * 0.001f;
+		cout << "COM:" << l << endl;
+		Eigen::Matrix4f m = Eigen::Matrix4f::Identity();
+		m.block(0,3,3,1) = l;
+		visualizationFactory->applyDisplacement(comModelClone, m);
+
+		visualizationModel->attachVisualization("__CoMLocation",comModelClone);
+	}
+	/*if (enableInertial)
+	{
+		VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
+		if (!visualizationFactory)
+		{
+			VR_ERROR << " Could not determine a valid VisualizationFactory!!" << endl;
+			return;
+		}
+		// create inertia visu
+
+		Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> eigensolver(physics.intertiaMatrix);
+		if (eigensolver.info() == Eigen::Success) 
+		{
+			cout << "The eigenvalues of A are:\n" << eigensolver.eigenvalues() << endl;
+			cout << "Here's a matrix whose columns are eigenvectors of A \n"
+				<< "corresponding to these eigenvalues:\n"
+				<< eigensolver.eigenvectors() << endl;
+			Eigen::Vector3f v1 = eigensolver.eigenvectors().block(0,0,1,3);
+			Eigen::Vector3f v2 = eigensolver.eigenvectors().block(0,1,1,3);
+			Eigen::Vector3f v3 = eigensolver.eigenvectors().block(0,2,1,3);
+		} else
+		{
+			VR_INFO << " Could not determine eigenvectors of inertia matrix" << endl;
+		}
+
+		VisualizationNodePtr inertiaVisu = visualizationFactory->CreateEllipse
+		if (!comModel)
+		{
+			VisualizationNodePtr comModel1 = visualizationFactory->createSphere(7.05f,1.0f,0.2f,0.2f);
+			VisualizationNodePtr comModel2 = visualizationFactory->createBox(10.0f,10.0f,10.0f,0.2f,0.2f,1.0f);
+			std::vector<VisualizationNodePtr> v;
+			v.push_back(comModel1);
+			v.push_back(comModel2);
+			comModel = visualizationFactory->createUnitedVisualization(v);
+		}
+		VisualizationNodePtr comModelClone = comModel->clone();
+		Eigen::Vector3f l = getCoMLocal() * 0.001f;
+		cout << "COM:" << l << endl;
+		Eigen::Matrix4f m = Eigen::Matrix4f::Identity();
+		m.block(0,3,3,1) = l;
+		visualizationFactory->applyDisplacement(comModelClone, m);
+
+		visualizationModel->attachVisualization("__InertiaMatrix",inertiaVisu);
+	}*/
 }
 
 bool SceneObject::showCoordinateSystemState()

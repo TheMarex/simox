@@ -20,6 +20,7 @@ VisualizationNode::VisualizationNode()
 		updateVisualization = true;
 		showVisualization = true;
 		showAttachedVisualizations = true;
+		globalPose.setIdentity();
 }
 	
 VisualizationNode::~VisualizationNode()

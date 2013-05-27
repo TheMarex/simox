@@ -41,6 +41,7 @@ class TriMeshModel;
 
 class VIRTUAL_ROBOT_IMPORT_EXPORT CoinVisualizationNode : virtual public VisualizationNode
 {
+	friend CoinVisualizationFactory;
 public:
 	CoinVisualizationNode(SoNode* visualizationNode);
 	~CoinVisualizationNode();
@@ -80,8 +81,15 @@ public:
 
 	virtual std::string getType(){return CoinVisualizationFactory::getName();}
 
+
 protected:
 	void createTriMeshModel();
+
+	/*!
+		Replace current visualization of this node. 
+		Be careful: any former grabbed trimeshmodels do no longer represent the new datastructure!
+	*/
+	void setVisualization(SoNode* newVisu);
 
 	SoNode* visualization;
 	SoSeparator* visualizationAtGlobalPose;

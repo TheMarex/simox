@@ -459,6 +459,19 @@ void Robot::showStructure( bool enable, const std::string &type )
 
 }
 
+void Robot::showPhysicsInformation( bool enableCoM, bool enableInertial, VisualizationNodePtr comModel )
+{
+	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();
+	std::vector<RobotNodePtr>::const_iterator iterator = robotNodes.begin();
+
+	while(robotNodes.end() != iterator)
+	{
+		(*iterator)->showPhysicsInformation(enableCoM,enableInertial,comModel);
+		++iterator;
+	}
+
+}
+
 void Robot::showCoordinateSystems( bool enable, const std::string &type )
 {
 	std::vector<RobotNodePtr> robotNodes = this->getRobotNodes();

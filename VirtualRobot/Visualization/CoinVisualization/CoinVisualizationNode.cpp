@@ -44,6 +44,7 @@ CoinVisualizationNode::CoinVisualizationNode(SoNode* visualizationNode) :
 
 	visualization->ref();
 	visualizationAtGlobalPose->addChild(visualization);
+
 }
 
 
@@ -206,10 +207,14 @@ void CoinVisualizationNode::print()
 	{
 		Eigen::Vector3f mi;
 		Eigen::Vector3f ma;
-		triMeshModel->getSize(mi,ma);
-		cout << triMeshModel->faces.size() << " triangles" << endl;// Extend: " << ma[0]-mi[0] << ", " << ma[1] - mi[1] << ", " << ma[2] - mi[2] << endl;
-		cout << "    Min point: (" << mi[0] << "," << mi[1] << "," << mi[2] << ")" << endl;
-		cout << "    Max point: (" << ma[0] << "," << ma[1] << "," << ma[2] << ")" << endl;
+		if (triMeshModel->faces.size()>0)
+		{
+			cout << triMeshModel->faces.size() << " triangles" << endl;// Extend: " << ma[0]-mi[0] << ", " << ma[1] - mi[1] << ", " << ma[2] - mi[2] << endl;
+			triMeshModel->getSize(mi,ma);
+			cout << "    Min point: (" << mi[0] << "," << mi[1] << "," << mi[2] << ")" << endl;
+			cout << "    Max point: (" << ma[0] << "," << ma[1] << "," << ma[2] << ")" << endl;
+		} else
+			cout << "No model" << endl;
 
 	} else
 		cout << "No model" << endl;
@@ -291,6 +296,29 @@ void CoinVisualizationNode::setupVisualization( bool showVisualization, bool sho
 		visualizationAtGlobalPose->addChild(visualization);
 	if (!showVisualization && visualizationAtGlobalPose->findChild(visualization)>=0)
 		visualizationAtGlobalPose->removeChild(visualization);
+}
+
+void CoinVisualizationNode::setVisualization( SoNode* newVisu )
+{
+	if (!newVisu)
+		return;
+
+	if (visualizationAtGlobalPose)
+	{
+		int indx = visualizationAtGlobalPose->findChild(visualization);
+
+		if (indx>=0)
+			visualizationAtGlobalPose->removeChild(indx);
+
+	}
+	visualization->unref();
+
+	visualization = newVisu;
+
+	visualization->ref();
+
+	if (visualizationAtGlobalPose)
+		visualizationAtGlobalPose->addChild(visualization);
 }
 
 

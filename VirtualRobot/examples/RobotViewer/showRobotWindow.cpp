@@ -114,6 +114,7 @@ void showRobotWindow::setupUI()
 	connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openHand()));
 	connect(UI.comboBoxEndEffector, SIGNAL(activated(int)), this, SLOT(selectEEF(int)));
 
+	connect(UI.checkBoxPhysics, SIGNAL(clicked()), this, SLOT(displayPhysics()));
 
 	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(collisionModel()));
 	connect(UI.checkBoxStructure, SIGNAL(clicked()), this, SLOT(robotStructure()));
@@ -234,6 +235,18 @@ void showRobotWindow::collisionModel()
 }
 
 
+void showRobotWindow::displayPhysics()
+{
+	if (!robot)
+		return;
+
+	physicsEnabled = UI.checkBoxPhysics->checkState() == Qt::Checked;
+	robot->showPhysicsInformation(physicsEnabled,physicsEnabled);
+
+	// rebuild visualization
+	collisionModel();
+
+}
 void showRobotWindow::showRobot()
 {
 	//m_pGraspScenery->showRobot(m_pShowRobot->state() == QCheckBox::On);
@@ -299,13 +312,13 @@ void showRobotWindow::selectRNS(int nr)
 			return;
 		currentRobotNodeSet = robotNodeSets[nr];
 		currentRobotNodes = currentRobotNodeSet->getAllRobotNodes();
-		cout << "HIGHLIGHTING rns " << currentRobotNodeSet->getName() << endl;
+		/*cout << "HIGHLIGHTING rns " << currentRobotNodeSet->getName() << endl;
 		if (visualization)
 		{
 			
 			robot->highlight(visualization,false);
 			currentRobotNodeSet->highlight(visualization,true);
-		}
+		}*/
  
 	}
 	updateJointBox();
@@ -315,11 +328,14 @@ void showRobotWindow::selectRNS(int nr)
 
 void showRobotWindow::selectJoint(int nr)
 {
+	if (currentRobotNode)
+		currentRobotNode->showBoundingBox(false);
 	currentRobotNode.reset();
 	cout << "Selecting Joint nr " << nr << endl;
 	if (nr<0 || nr>=(int)currentRobotNodes.size())
 		return;
 	currentRobotNode = currentRobotNodes[nr];
+	currentRobotNode->showBoundingBox(true,true);
 	currentRobotNode->print();
 	float mi = currentRobotNode->getJointLimitLo();
 	float ma = currentRobotNode->getJointLimitHi();
@@ -344,13 +360,13 @@ void showRobotWindow::selectJoint(int nr)
 	else
 		UI.checkBoxShowCoordSystem->setCheckState(Qt::Unchecked);
 
-    /*cout << "HIGHLIGHTING node " << currentRobotNodes[nr]->getName() << endl;
+    cout << "HIGHLIGHTING node " << currentRobotNodes[nr]->getName() << endl;
 
     if (visualization)
     {
         robot->highlight(visualization,false);
         currentRobotNode->highlight(visualization,true);
-    }*/
+    }
 	displayTriangles();
 }
 
@@ -447,6 +463,7 @@ void showRobotWindow::loadRobot()
 	// build visualization
 	collisionModel();
 	robotStructure();
+	displayPhysics();
 	viewer->viewAll();
 }
 

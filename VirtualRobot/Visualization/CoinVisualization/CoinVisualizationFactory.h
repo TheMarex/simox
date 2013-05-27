@@ -75,6 +75,11 @@ public:
 	virtual VisualizationNodePtr createTrajectory(TrajectoryPtr t, Color colorNode = Color::Blue(), Color colorLine = Color::Gray(), float nodeSize = 15.0f, float lineSize = 4.0f);
 
 	/*!
+		Move local visualization by homogeneous matrix m.
+	*/
+	virtual void applyDisplacement(VisualizationNodePtr o, Eigen::Matrix4f &m);
+
+	/*!
 		Create an empty VisualizationNode.
 	*/
 	virtual VisualizationNodePtr createVisualization();

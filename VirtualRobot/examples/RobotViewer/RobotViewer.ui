@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1079</width>
-    <height>815</height>
+    <width>1103</width>
+    <height>840</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,6 +23,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
+      <zorder>groupBox</zorder>
      </widget>
     </item>
     <item row="0" column="1">
@@ -55,7 +56,7 @@
          <x>0</x>
          <y>470</y>
          <width>201</width>
-         <height>171</height>
+         <height>201</height>
         </rect>
        </property>
        <property name="title">
@@ -124,6 +125,19 @@
         </property>
         <property name="text">
          <string>Full model options</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBoxPhysics">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>170</y>
+          <width>131</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Physics Data</string>
         </property>
        </widget>
       </widget>
@@ -354,9 +368,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>649</y>
+         <y>680</y>
          <width>201</width>
-         <height>101</height>
+         <height>91</height>
         </rect>
        </property>
        <property name="title">
@@ -411,7 +425,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1079</width>
+     <width>1103</width>
      <height>21</height>
     </rect>
    </property>

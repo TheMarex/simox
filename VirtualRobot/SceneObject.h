@@ -191,6 +191,14 @@ public:
 	virtual void showCoordinateSystem( bool enable, float scaling = 1.0f, std::string *text = NULL);
 
 	/*!
+		Display some physics debugging information.
+		\p enableCoM If true, the center of mass is shown (if given). If a comModel is given it is used for visualization, otherwise a standrad marker is shown.
+		\p enableInertial If true, a visualization of the inertial matrix is shown (if given).
+		\p comModel If set, this visualization is used to display the CoM location. If not set, a standard marker is used.
+	*/
+	virtual void showPhysicsInformation( bool enableCoM, bool enableInertial, VisualizationNodePtr comModel = VisualizationNodePtr());
+
+	/*!
 		Returns true when the coordinate system is currently shown.
 	*/
 	virtual bool showCoordinateSystemState();

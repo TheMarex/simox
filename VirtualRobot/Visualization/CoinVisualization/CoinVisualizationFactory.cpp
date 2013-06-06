@@ -499,39 +499,89 @@ namespace VirtualRobot {
         return result;
     }
 
-    SoSeparator* CoinVisualizationFactory::CreateText(const std::string &s)
+	VisualizationNodePtr CoinVisualizationFactory::createText(const std::string &text, bool billboard, float scaling, Color c, float offsetX, float offsetY, float offsetZ)
+	{
+		SoSeparator* res = new SoSeparator();
+		res->ref();
+		SoUnits *u = new SoUnits();
+		u->units = SoUnits::MILLIMETERS;
+		res->addChild(u);
+		SoScale *sc = new SoScale();
+		sc->scaleFactor.setValue(scaling,scaling,scaling);
+		res->addChild(sc);
+		SoMaterial *m = new SoMaterial();
+		res->addChild(m);
+		m->diffuseColor.setValue(c.r,c.g,c.b);
+		m->transparency.setValue(c.transparency);
+
+		if (billboard)
+			res->addChild(CreateBillboardText(text,offsetX*1000.0f,offsetY*1000.0f,offsetZ*1000.0f));
+		else
+			res->addChild(CreateText(text,offsetX*1000.0f,offsetY*1000.0f,offsetZ*1000.0f));
+
+		VisualizationNodePtr visualizationNode(new CoinVisualizationNode(res));
+		res->unref();
+		return visualizationNode;
+	}
+
+
+	VisualizationNodePtr CoinVisualizationFactory::createEllipse(float x, float y, float z, bool showAxes, float axesHeight, float axesWidth)
+	{
+		SoSeparator* res = new SoSeparator();
+		res->ref();
+		SoUnits *u = new SoUnits();
+		u->units = SoUnits::MILLIMETERS;
+		res->addChild(u);
+		res->addChild(CreateEllipse(x,y,z,NULL,showAxes,axesHeight,axesWidth));
+		VisualizationNodePtr visualizationNode(new CoinVisualizationNode(res));
+		res->unref();
+		return visualizationNode;
+	}
+
+    SoSeparator* CoinVisualizationFactory::CreateText(const std::string &s, float offsetX, float offsetY, float offsetZ)
     {
         SoSeparator *textSep = new SoSeparator();
+		textSep->ref();
+
         SoTranslation *moveT = new SoTranslation();
-        moveT->translation.setValue(0.0020f,0.0020f,0.0f);
-        textSep->addChild(moveT);
-        SoAsciiText *textNode = new SoAsciiText();
+		textSep->addChild(moveT);
+        moveT->translation.setValue(offsetX*0.001f,offsetY*0.001f,offsetZ*0.001f);
+
+		SoAsciiText *textNode = new SoAsciiText();
+		textSep->addChild(textNode);
         /*std::string text2(*text);
         text2.replace( ' ', "_" );*/
         SbString text2(s.c_str());
         text2.apply( &IVToolsHelper_ReplaceSpaceWithUnderscore );
         textNode->string.set(text2.getString());
-        textSep->addChild(textNode);
+        
+		textSep->unrefNoDelete();
         return textSep;
     }
 
-    SoSeparator* CoinVisualizationFactory::CreateBillboardText(const std::string &s)
+    SoSeparator* CoinVisualizationFactory::CreateBillboardText(const std::string &s, float offsetX, float offsetY, float offsetZ)
     {
         SoSeparator *textSep = new SoSeparator();
+		textSep->ref();
+
+        SoTranslation *moveT = new SoTranslation();
+		textSep->addChild(moveT);
+        moveT->translation.setValue(offsetX*0.001f,offsetY*0.001f,offsetZ*0.001f);
+
         SoVRMLBillboard *bb = new SoVRMLBillboard();
         textSep->addChild(bb);
-        SoTranslation *moveT = new SoTranslation();
-        moveT->translation.setValue(0.0020f,0.0020f,0.0f);
-        textSep->addChild(moveT);
         SoAsciiText *textNode = new SoAsciiText();
+		bb->addChild(textNode);
         /*std::string text2(*text);
         text2.replace( ' ', "_" );*/
         SbString text2(s.c_str());
         text2.apply( &IVToolsHelper_ReplaceSpaceWithUnderscore );
         textNode->string.set(text2.getString());
-        bb->addChild(textNode);
-        return textSep;
+
+		textSep->unrefNoDelete();
+		return textSep;
     }
+
     SoSeparator* CoinVisualizationFactory::CreateVertexVisualization( const Eigen::Vector3f &position, float radius, float transparency, float colorR /*= 0.5f*/, float colorG /*= 0.5f*/, float colorB /*= 0.5f*/ )
     {
         SoSeparator *res = new SoSeparator;

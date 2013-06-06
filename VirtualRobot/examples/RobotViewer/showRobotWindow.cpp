@@ -440,6 +440,12 @@ void showRobotWindow::loadRobot()
 		cout << " ERROR while creating robot" << endl;
 		return;
 	}
+	UI.checkBoxColModel->setChecked(false);
+	UI.checkBoxFullModel->setChecked(true);
+	UI.checkBoxPhysics->setChecked(false);
+	UI.checkBoxRobotCoordSystems->setChecked(false);
+	UI.checkBoxShowCoordSystem->setChecked(false);
+	UI.checkBoxStructure->setChecked(false);
 
 	// get nodes
 	robot->getRobotNodes(allRobotNodes);

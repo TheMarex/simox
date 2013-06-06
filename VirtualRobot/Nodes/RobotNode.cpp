@@ -511,10 +511,19 @@ void RobotNode::showStructure( bool enable, const std::string &visualizationType
 
 	if (!ensureVisualization(visualizationType))
 		return;
-	std::string attachName1("RobotNodeStructurePre");
+	std::stringstream ss;
+	ss << getName() << "_RobotNodeStructurePre";
+	std::string attachName1 = ss.str();
 	std::string attachName2("RobotNodeStructureJoint");
 	std::string attachName3("RobotNodeStructurePost");
-	visualizationModel->detachVisualization(attachName1);
+	SceneObjectPtr par = getParent();
+	RobotNodePtr parRN = dynamic_pointer_cast<RobotNode>(par);
+
+	// need to add "pre" visualization to parent node!
+	if (parRN && parRN->getVisualization())
+		parRN->getVisualization()->detachVisualization(attachName1);
+	else
+		visualizationModel->detachVisualization(attachName1);
 	visualizationModel->detachVisualization(attachName2);
 	visualizationModel->detachVisualization(attachName3);
 	if (enable)
@@ -535,9 +544,19 @@ void RobotNode::showStructure( bool enable, const std::string &visualizationType
 
 		if (!preJointTransformation.isIdentity())
 		{
-			VisualizationNodePtr visualizationNode1 = visualizationFactory->createLine(preJointTransformation.inverse(),i);
-			if (visualizationNode1)
-				visualizationModel->attachVisualization(attachName1,visualizationNode1);
+			VisualizationNodePtr visualizationNode1;
+			if (parRN && parRN->getVisualization())
+			{
+				// add to parent node (pre joint trafo moves with parent!)
+				visualizationNode1 = visualizationFactory->createLine(parRN->postJointTransformation, parRN->postJointTransformation*preJointTransformation);
+				if (visualizationNode1)
+					parRN->getVisualization()->attachVisualization(attachName1,visualizationNode1);
+			} else
+			{
+				visualizationNode1 = visualizationFactory->createLine(preJointTransformation.inverse(),i);
+				if (visualizationNode1)
+					visualizationModel->attachVisualization(attachName1,visualizationNode1);
+			}
 		}
 		VisualizationNodePtr visualizationNode2 = visualizationFactory->createSphere(5.0f);
 		if (visualizationNode2)

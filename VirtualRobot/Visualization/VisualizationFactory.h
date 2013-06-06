@@ -75,7 +75,18 @@ public:
 	virtual VisualizationNodePtr createPlane(const MathTools::Plane &plane, float extend, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return createPlane(plane.p, plane.n,extend,transparency,colorR,colorG,colorB);}
 	virtual VisualizationNodePtr createArrow(const Eigen::Vector3f &n, float length = 50.0f, float width = 2.0f, const Color &color = Color::Gray()){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createTrajectory(TrajectoryPtr t, Color colorNode = Color::Blue(), Color colorLine = Color::Gray(), float nodeSize = 15.0f, float lineSize = 4.0f){return VisualizationNodePtr();}
-
+	virtual VisualizationNodePtr createText(const std::string &text, bool billboard = false, float scaling = 1.0f, Color c = Color::Black(), float offsetX = 20.0f, float offsetY = 20.0f, float offsetZ = 0.0f){return VisualizationNodePtr();}
+	/*! 
+		Creates an coordinate axis aligned ellipse
+		\param x The extend in x direction must be >= 1e-6
+		\param y The extend in y direction must be >= 1e-6
+		\param z The extend in z direction must be >= 1e-6
+		\param showAxes If true, the axes are visualized
+		\param axesHeight The height of the axes (measured from the body surface)
+		\param axesWidth The width of the axes.
+		\return A VisualizationNode containing the visualization.
+	*/
+	virtual VisualizationNodePtr createEllipse(float x, float y, float z, bool showAxes = true, float axesHeight = 4.0f, float axesWidth = 8.0f){return VisualizationNodePtr();}
 	/*!
 		Move local visualization by homogeneous matrix m.
 	*/

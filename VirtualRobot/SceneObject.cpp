@@ -224,14 +224,10 @@ void SceneObject::showPhysicsInformation( bool enableCoM, bool enableInertial, V
 	{
 		visualizationModel->detachVisualization("__InertiaMatrix");
 	}
-	if (enableCoM)
+	VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
+
+	if (enableCoM && visualizationFactory)
 	{
-		VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
-		if (!visualizationFactory)
-		{
-			VR_ERROR << " Could not determine a valid VisualizationFactory!!" << endl;
-			return;
-		}
 		// create visu
 		if (!comModel)
 		{
@@ -240,6 +236,18 @@ void SceneObject::showPhysicsInformation( bool enableCoM, bool enableInertial, V
 			std::vector<VisualizationNodePtr> v;
 			v.push_back(comModel1);
 			v.push_back(comModel2);
+			comModel = visualizationFactory->createUnitedVisualization(v);
+		}
+
+		if (comModel)
+		{
+			std::stringstream ss;
+			ss << "COM:" << getName();
+			std::string t = ss.str();
+			VisualizationNodePtr vText = visualizationFactory->createText(t,true,1.0f,VisualizationFactory::Color::Blue(),0,10.0f,0);
+			std::vector<VisualizationNodePtr> v;
+			v.push_back(comModel);
+			v.push_back(vText);
 			comModel = visualizationFactory->createUnitedVisualization(v);
 		}
 		VisualizationNodePtr comModelClone = comModel->clone();
@@ -251,7 +259,7 @@ void SceneObject::showPhysicsInformation( bool enableCoM, bool enableInertial, V
 
 		visualizationModel->attachVisualization("__CoMLocation",comModelClone);
 	}
-	/*if (enableInertial)
+	if (enableInertial && visualizationFactory)
 	{
 		VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
 		if (!visualizationFactory)
@@ -260,41 +268,43 @@ void SceneObject::showPhysicsInformation( bool enableCoM, bool enableInertial, V
 			return;
 		}
 		// create inertia visu
-
+		cout << "INERTIA MATRIX:" << endl << physics.intertiaMatrix << endl;
 		Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> eigensolver(physics.intertiaMatrix);
 		if (eigensolver.info() == Eigen::Success) 
 		{
-			cout << "The eigenvalues of A are:\n" << eigensolver.eigenvalues() << endl;
+			/*cout << "The eigenvalues of A are:\n" << eigensolver.eigenvalues() << endl;
 			cout << "Here's a matrix whose columns are eigenvectors of A \n"
 				<< "corresponding to these eigenvalues:\n"
-				<< eigensolver.eigenvectors() << endl;
-			Eigen::Vector3f v1 = eigensolver.eigenvectors().block(0,0,1,3);
-			Eigen::Vector3f v2 = eigensolver.eigenvectors().block(0,1,1,3);
-			Eigen::Vector3f v3 = eigensolver.eigenvectors().block(0,2,1,3);
+				<< eigensolver.eigenvectors() << endl;*/
+			Eigen::Vector3f v1 = eigensolver.eigenvectors().block(0,0,3,1);
+			Eigen::Vector3f v2 = eigensolver.eigenvectors().block(0,1,3,1);
+			Eigen::Vector3f v3 = eigensolver.eigenvectors().block(0,2,3,1);
+			/*cout << "v1:" << v1 << endl;
+			cout << "v2:" << v2 << endl;
+			cout << "v3:" << v3 << endl;*/
+
+			float xl = (float)(eigensolver.eigenvalues().rows()>0?eigensolver.eigenvalues()(0):1e-6);
+			float yl = (float)(eigensolver.eigenvalues().rows()>1?eigensolver.eigenvalues()(1):1e-6);
+			float zl = (float)(eigensolver.eigenvalues().rows()>2?eigensolver.eigenvalues()(2):1e-6);
+			float le = sqrtf(xl*xl + yl*yl + zl*zl);
+			float maxSize = le>1e-8?50.0f/le:5000.0f;
+
+			VisualizationNodePtr inertiaVisu = visualizationFactory->createEllipse(xl*maxSize,yl*maxSize,zl*maxSize,true);
+
+			Eigen::Vector3f l = getCoMLocal() * 0.001f;
+			//cout << "COM:" << l << endl;
+			Eigen::Matrix4f m = Eigen::Matrix4f::Identity();
+			m.block(0,3,3,1) = l;
+			m.block(0,0,3,3) = eigensolver.eigenvectors().block(0,0,3,3); // rotate according to EV
+			visualizationFactory->applyDisplacement(inertiaVisu, m);
+
+			visualizationModel->attachVisualization("__InertiaMatrix",inertiaVisu);
+
 		} else
 		{
 			VR_INFO << " Could not determine eigenvectors of inertia matrix" << endl;
 		}
-
-		VisualizationNodePtr inertiaVisu = visualizationFactory->CreateEllipse
-		if (!comModel)
-		{
-			VisualizationNodePtr comModel1 = visualizationFactory->createSphere(7.05f,1.0f,0.2f,0.2f);
-			VisualizationNodePtr comModel2 = visualizationFactory->createBox(10.0f,10.0f,10.0f,0.2f,0.2f,1.0f);
-			std::vector<VisualizationNodePtr> v;
-			v.push_back(comModel1);
-			v.push_back(comModel2);
-			comModel = visualizationFactory->createUnitedVisualization(v);
-		}
-		VisualizationNodePtr comModelClone = comModel->clone();
-		Eigen::Vector3f l = getCoMLocal() * 0.001f;
-		cout << "COM:" << l << endl;
-		Eigen::Matrix4f m = Eigen::Matrix4f::Identity();
-		m.block(0,3,3,1) = l;
-		visualizationFactory->applyDisplacement(comModelClone, m);
-
-		visualizationModel->attachVisualization("__InertiaMatrix",inertiaVisu);
-	}*/
+	}
 }
 
 bool SceneObject::showCoordinateSystemState()

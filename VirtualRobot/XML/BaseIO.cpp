@@ -900,7 +900,7 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 		}
 		
 	} 
-	rapidxml::xml_node<> *inMatXMLNode = physicsXMLNode->first_node("intertiamatrix",0,false);
+	rapidxml::xml_node<> *inMatXMLNode = physicsXMLNode->first_node("inertiamatrix",0,false);
 	if (inMatXMLNode)
 	{
 		physics.intertiaMatrix = process3x3Matrix(inMatXMLNode);

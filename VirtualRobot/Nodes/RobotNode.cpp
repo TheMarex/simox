@@ -269,12 +269,9 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 	for (unsigned int i = 0; i < this->getChildren().size(); i++)
 		cout << this->getChildren()[i]->getName() << ", ";
 	cout << endl;
-	cout << "* Mass: ";
-	if (physics.massKg<=0)
-		cout << "<not set>" << endl;
-	else 
-		cout << physics.massKg << " kg" << endl;
-	cout << "* CoM:" << physics.localCoM(0) << ", " << physics.localCoM(1) << ", " << physics.localCoM(2) << endl;
+
+	physics.print();
+
 	cout << "* Limits: Lo:" << jointLimitLo << ", Hi:" << jointLimitHi << endl;
 	std::cout << "* max velocity " << maxVelocity  << " [m/s]" << std::endl;
 	std::cout << "* max acceleration " << maxAcceleration  << " [m/s^2]" << std::endl;
@@ -308,7 +305,7 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 		sos << "* preJointTransformation:" << endl << preJointTransformation << endl;
 		sos << "* postJointTransformation:" << endl << postJointTransformation << endl;
 		sos << "* globalPose:" << endl << getGlobalPose() << endl;
-		cout << sos.str() << endl;
+		cout << sos.str();
 	} // scope1
 
 	if (printDecoration)

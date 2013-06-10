@@ -29,6 +29,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <string>
+#include <iomanip>
 #include <vector>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/mpl/assert.hpp>
@@ -65,11 +66,29 @@ public:
 			massKg = 0.0f;
 			comLocation = eVisuBBoxCenter;
 		}
-		void print()
+		void print() const
 		{
-			std::cout << " ** Mass: " << massKg << " [kg]" << std::endl;
+			std::cout << " ** Mass: ";
+			if (massKg<=0)
+				std::cout << "<not set>" << std::endl;
+			else 
+				std::cout << massKg << " [kg]" << std::endl;
+			cout << " ** local CoM [mm] ";
+			if (comLocation == SceneObject::Physics::eVisuBBoxCenter)
+				std::cout << "(center of visualisation's bounding box):";
+			else
+				std::cout << ":";
+			std::cout << localCoM(0) << ", " << localCoM(1) << ", " << localCoM(2) << std::endl;
+			{ // scope
+				std::ostringstream sos;
+				sos << std::setiosflags(std::ios::fixed);
+				sos << " ** inertial matrix [kg*m^2]:" << std::endl << intertiaMatrix << std::endl;
+				std::cout << sos.str();
+			} // scope
+
+			/*std::cout << " ** Mass: " << massKg << " [kg]" << std::endl;
 			std::cout << " ** local CoM [mm]: " <<  localCoM(0) << localCoM(1) << localCoM(2) << std::endl;
-			std::cout << " ** inertia matrix [kg*m^2] :\n " << intertiaMatrix  << std::endl;
+			std::cout << " ** inertia matrix [kg*m^2] :\n " << intertiaMatrix  << std::endl;*/
             if (ignoreCollisions.size()>0)
             {
                 std::cout << " ** Ignore Collisions with:" << std::endl;

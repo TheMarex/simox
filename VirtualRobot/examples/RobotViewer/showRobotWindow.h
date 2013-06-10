@@ -92,7 +92,8 @@ protected:
 
 	bool useColModel;
 	bool structureEnabled;
-	bool physicsEnabled;
+	bool physicsCoMEnabled;
+	bool physicsInertiaEnabled;
 
     boost::shared_ptr<VirtualRobot::CoinVisualization> visualization;
 };

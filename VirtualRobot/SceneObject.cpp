@@ -251,24 +251,27 @@ void SceneObject::showPhysicsInformation( bool enableCoM, bool enableInertial, V
 			comModel = visualizationFactory->createUnitedVisualization(v);
 		}
 		VisualizationNodePtr comModelClone = comModel->clone();
-		Eigen::Vector3f l = getCoMLocal() * 0.001f;
-		cout << "COM:" << l << endl;
+		Eigen::Vector3f l = getCoMLocal();
+		//cout << "COM:" << l << endl;
 		Eigen::Matrix4f m = Eigen::Matrix4f::Identity();
 		m.block(0,3,3,1) = l;
+
+		// now we have transformation in RobotNode (end) coordsystem
+		// we need to transform to RobotNode's visualization system
+		
+		m = getGlobalPoseVisualization().inverse() * getGlobalPose() * m;
+
+		// convert mm to m
+		m.block(0,3,3,1) *= 0.001f;
+
 		visualizationFactory->applyDisplacement(comModelClone, m);
 
 		visualizationModel->attachVisualization("__CoMLocation",comModelClone);
 	}
 	if (enableInertial && visualizationFactory)
 	{
-		VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
-		if (!visualizationFactory)
-		{
-			VR_ERROR << " Could not determine a valid VisualizationFactory!!" << endl;
-			return;
-		}
 		// create inertia visu
-		cout << "INERTIA MATRIX:" << endl << physics.intertiaMatrix << endl;
+		//cout << "INERTIA MATRIX:" << endl << physics.intertiaMatrix << endl;
 		Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> eigensolver(physics.intertiaMatrix);
 		if (eigensolver.info() == Eigen::Success) 
 		{
@@ -286,16 +289,66 @@ void SceneObject::showPhysicsInformation( bool enableCoM, bool enableInertial, V
 			float xl = (float)(eigensolver.eigenvalues().rows()>0?eigensolver.eigenvalues()(0):1e-6);
 			float yl = (float)(eigensolver.eigenvalues().rows()>1?eigensolver.eigenvalues()(1):1e-6);
 			float zl = (float)(eigensolver.eigenvalues().rows()>2?eigensolver.eigenvalues()(2):1e-6);
+			if (fabs(xl)<1e-6)
+				xl = 1e-6f;
+			if (fabs(yl)<1e-6)
+				yl = 1e-6f;
+			if (fabs(zl)<1e-6)
+				zl = 1e-6f;
+			xl = 1.0f / sqrtf(xl);
+			yl = 1.0f / sqrtf(yl);
+			zl = 1.0f / sqrtf(zl);
 			float le = sqrtf(xl*xl + yl*yl + zl*zl);
-			float maxSize = le>1e-8?50.0f/le:5000.0f;
+			float scaleFactor = 5.0f;
+			float axesSize = 4.0f *le*scaleFactor/20.0f;
+			if (axesSize>4.0f)
+				axesSize = 4.0f;
+			if (axesSize<0.4f)
+				axesSize = 0.4f;
 
-			VisualizationNodePtr inertiaVisu = visualizationFactory->createEllipse(xl*maxSize,yl*maxSize,zl*maxSize,true);
+			xl *= scaleFactor;
+			yl *= scaleFactor;
+			zl *= scaleFactor;
 
-			Eigen::Vector3f l = getCoMLocal() * 0.001f;
+			float minSize = 10.0f;
+			float maxSize = 50.0f;
+			float maxAx = xl;
+			if (yl>xl && yl>zl)
+				maxAx = yl;
+			if (zl>xl && zl>xl)
+				maxAx = zl;
+
+			if (maxAx<minSize)
+			{
+				if (maxAx<1e-6f)
+					maxAx = 1e-6f;
+				xl = xl / maxAx * minSize;
+				yl = yl / maxAx * minSize;
+				zl = zl / maxAx * minSize;
+			}
+
+			if (maxAx>maxSize)
+			{
+				xl = xl / maxAx * maxSize;
+				yl = yl / maxAx * maxSize;
+				zl = zl / maxAx * maxSize;
+			}
+
+			VisualizationNodePtr inertiaVisu = visualizationFactory->createEllipse(xl,yl,zl,true,axesSize,axesSize*2.0f);
+
+			Eigen::Vector3f l = getCoMLocal();
 			//cout << "COM:" << l << endl;
 			Eigen::Matrix4f m = Eigen::Matrix4f::Identity();
 			m.block(0,3,3,1) = l;
 			m.block(0,0,3,3) = eigensolver.eigenvectors().block(0,0,3,3); // rotate according to EV
+
+			// now we have transformation in RobotNode (end) coordsystem
+			// we need to transform to RobotNode's visualization system
+			m = getGlobalPoseVisualization().inverse() * getGlobalPose() * m;
+			
+			// convert mm to m
+			m.block(0,3,3,1) *= 0.001f;
+
 			visualizationFactory->applyDisplacement(inertiaVisu, m);
 
 			visualizationModel->attachVisualization("__InertiaMatrix",inertiaVisu);
@@ -490,8 +543,6 @@ bool SceneObject::initializePhysics()
 				tm->getSize( minS,maxS );
 				physics.localCoM = minS + (maxS - minS) * 0.5f;	
 
-
-
 				// trimeshmodel is without any pose transformations, so apply visu global pose
 				Eigen::Matrix4f visuComGlobal;
 				visuComGlobal.setIdentity();
@@ -503,7 +554,55 @@ bool SceneObject::initializePhysics()
 				physics.localCoM = comLocal.block(0,3,3,1);
 			}
 		}
+	}
+	// check for inertia matrix determination
+	if (physics.intertiaMatrix.isZero())
+	{
+		if (physics.massKg<=0)
+		{
+			// standard box
+			physics.intertiaMatrix.setIdentity();
+		} else
+		{
+			TriMeshModelPtr tm;
+			// since globalPose and visualization's global pose may differ, we transform com to local coord system (globalpose)
+			Eigen::Matrix4f posVisu;
+			if (collisionModel)
+			{
+				tm = collisionModel->getTriMeshModel();
+				posVisu = collisionModel->getGlobalPose();
+			} else
+			{
+				tm = visualizationModel->getTriMeshModel();
+				posVisu = visualizationModel->getGlobalPose();
+			} 
+			
+			if (!tm)
+			{
+				// standard box
+				physics.intertiaMatrix.setIdentity();
+			} else
+			{
+				Eigen::Vector3f minS,maxS;
+				tm->getSize( minS,maxS );
+				MathTools::OOBB bbox(minS,maxS,posVisu);
 
+				Eigen::Matrix4f coordCOM = getGlobalPose();
+				coordCOM.block(0,3,3,1) = physics.localCoM;
+				// get bbox in local coord system
+				bbox.changeCoordSystem(coordCOM);
+				Eigen::Vector3f l = bbox.maxBB - bbox.minBB;
+				l *= 0.001f; // mm -> m
+
+				physics.intertiaMatrix.setZero();
+				physics.intertiaMatrix(0,0) = (l(1)*l(1) + l(2)*l(2))/12.0f;
+				physics.intertiaMatrix(1,1) = (l(0)*l(0) + l(2)*l(2))/12.0f;
+				physics.intertiaMatrix(2,2) = (l(0)*l(0) + l(1)*l(1))/12.0f;
+
+				float mass = physics.massKg;
+				physics.intertiaMatrix *= mass;
+			}
+		}
 	}
 	return true;
 }
@@ -515,12 +614,9 @@ void SceneObject::print( bool printChildren, bool printDecoration /*= true*/ ) c
 
 	cout << " * Name: " << name << endl;
 	cout << " * GlobalPose: " << endl << globalPose << endl;
-	cout << " * Mass: ";
-	if (physics.massKg<=0)
-		cout << "<not set>" << endl;
-	else 
-		cout << physics.massKg << " kg" << endl;
-	cout << " * CoM:" << physics.localCoM(0) << ", " << physics.localCoM(1) << ", " << physics.localCoM(2) << endl;
+	
+	physics.print();
+	
 	cout << " * Visualization:" << endl;
 	if (visualizationModel)
 		visualizationModel->print();

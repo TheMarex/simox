@@ -114,7 +114,8 @@ void showRobotWindow::setupUI()
 	connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openHand()));
 	connect(UI.comboBoxEndEffector, SIGNAL(activated(int)), this, SLOT(selectEEF(int)));
 
-	connect(UI.checkBoxPhysics, SIGNAL(clicked()), this, SLOT(displayPhysics()));
+	connect(UI.checkBoxPhysicsCoM, SIGNAL(clicked()), this, SLOT(displayPhysics()));
+	connect(UI.checkBoxPhysicsInertia, SIGNAL(clicked()), this, SLOT(displayPhysics()));
 
 	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(collisionModel()));
 	connect(UI.checkBoxStructure, SIGNAL(clicked()), this, SLOT(robotStructure()));
@@ -240,8 +241,9 @@ void showRobotWindow::displayPhysics()
 	if (!robot)
 		return;
 
-	physicsEnabled = UI.checkBoxPhysics->checkState() == Qt::Checked;
-	robot->showPhysicsInformation(physicsEnabled,physicsEnabled);
+	physicsCoMEnabled = UI.checkBoxPhysicsCoM->checkState() == Qt::Checked;
+	physicsInertiaEnabled = UI.checkBoxPhysicsInertia->checkState() == Qt::Checked;
+	robot->showPhysicsInformation(physicsCoMEnabled,physicsInertiaEnabled);
 
 	// rebuild visualization
 	collisionModel();
@@ -410,8 +412,12 @@ void showRobotWindow::showCoordSystem()
 void showRobotWindow::selectRobot()
 {
 	QString fi = QFileDialog::getOpenFileName(this, tr("Open Robot File"), QString(), tr("XML Files (*.xml)"));
-	m_sRobotFilename = std::string(fi.toAscii());
-	loadRobot();
+	std::string s = m_sRobotFilename = std::string(fi.toAscii());
+	if (!s.empty())
+	{
+		m_sRobotFilename = s;
+		loadRobot();
+	}
 }
 
 void showRobotWindow::loadRobot()
@@ -442,7 +448,8 @@ void showRobotWindow::loadRobot()
 	}
 	UI.checkBoxColModel->setChecked(false);
 	UI.checkBoxFullModel->setChecked(true);
-	UI.checkBoxPhysics->setChecked(false);
+	UI.checkBoxPhysicsCoM->setChecked(false);
+	UI.checkBoxPhysicsInertia->setChecked(false);
 	UI.checkBoxRobotCoordSystems->setChecked(false);
 	UI.checkBoxShowCoordSystem->setChecked(false);
 	UI.checkBoxStructure->setChecked(false);

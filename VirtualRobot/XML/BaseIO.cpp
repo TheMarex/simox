@@ -924,6 +924,9 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 
 		physics.intertiaMatrix *= factor;
 
+	} else
+	{
+		physics.intertiaMatrix.setZero(); // this will trigger an automatically determination of the inertia matrix during initialization
 	}
 	rapidxml::xml_node<> *ignoreColXMLNode = physicsXMLNode->first_node("ignorecollision",0,false);
     while (ignoreColXMLNode)

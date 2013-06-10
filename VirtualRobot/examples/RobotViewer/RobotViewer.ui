@@ -23,7 +23,6 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <zorder>groupBox</zorder>
      </widget>
     </item>
     <item row="0" column="1">
@@ -127,17 +126,30 @@
          <string>Full model options</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBoxPhysics">
+       <widget class="QCheckBox" name="checkBoxPhysicsCoM">
         <property name="geometry">
          <rect>
-          <x>10</x>
+          <x>30</x>
           <y>170</y>
-          <width>131</width>
+          <width>71</width>
           <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>Physics Data</string>
+         <string>CoM</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBoxPhysicsInertia">
+        <property name="geometry">
+         <rect>
+          <x>110</x>
+          <y>170</y>
+          <width>81</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Inertia</string>
         </property>
        </widget>
       </widget>

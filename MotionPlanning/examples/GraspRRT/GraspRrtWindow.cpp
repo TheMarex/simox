@@ -199,7 +199,7 @@ void GraspRrtWindow::buildVisu()
 
 			Eigen::Matrix4f m = grasps[i]->getTcpPoseGlobal(targetObject->getGlobalPose());
 			SoSeparator *sep1 = new SoSeparator();
-			SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransformMM(m);
+			SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransformScaleMM2M(m);
 			sep1->addChild(mt);
 			sep1->addChild(eefVisu);
 			graspsSep->addChild(sep1);

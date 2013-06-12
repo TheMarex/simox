@@ -387,7 +387,7 @@ void GraspQualityWindow::showGWS()
 	ows1Sep->removeAllChildren();
 	ows2Sep->removeAllChildren();
 	Eigen::Matrix4f m = object->getGlobalPose();
-	SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransformMM(m);
+	SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransformScaleMM2M(m);
 
 #if 0
 	// test

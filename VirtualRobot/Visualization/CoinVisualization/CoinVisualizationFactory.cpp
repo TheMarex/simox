@@ -1062,7 +1062,7 @@ namespace VirtualRobot {
         res->addChild(sepGrasp);
 
         // transform
-        SoMatrixTransform *mT = getMatrixTransformMM(mat);
+        SoMatrixTransform *mT = getMatrixTransformScaleMM2M(mat);
         sepGrasp->addChild(mT);
 
         // eef Visu
@@ -1255,7 +1255,7 @@ namespace VirtualRobot {
     {
         SoSeparator *res = new SoSeparator;
         SoNode *res1 = CoinVisualizationFactory::getCoinVisualization(model,showNormals);
-        SoMatrixTransform *mt = getMatrixTransformMM(pose);
+        SoMatrixTransform *mt = getMatrixTransformScaleMM2M(pose);
         res->addChild(mt);
         res->addChild(res1);
 
@@ -1263,7 +1263,7 @@ namespace VirtualRobot {
         return node;
     }
 
-    SoMatrixTransform* CoinVisualizationFactory::getMatrixTransformM( Eigen::Matrix4f &m )
+    SoMatrixTransform* CoinVisualizationFactory::getMatrixTransform( Eigen::Matrix4f &m )
     {
         SoMatrixTransform *mt = new SoMatrixTransform;
         SbMatrix m_(reinterpret_cast<SbMat*>(m.data()));
@@ -1271,7 +1271,7 @@ namespace VirtualRobot {
         return mt;
     }
 
-    SoMatrixTransform* CoinVisualizationFactory::getMatrixTransformMM( Eigen::Matrix4f &m )
+    SoMatrixTransform* CoinVisualizationFactory::getMatrixTransformScaleMM2M( Eigen::Matrix4f &m )
     {
         SoMatrixTransform *mt = new SoMatrixTransform;
         SbMatrix m_(reinterpret_cast<SbMat*>(m.data()));
@@ -1411,7 +1411,7 @@ namespace VirtualRobot {
                 if (transformToGlobalPose)
                     reachSpace->toGlobal(pose);
 
-                SoMatrixTransform *mt = getMatrixTransformMM(pose);
+                SoMatrixTransform *mt = getMatrixTransformScaleMM2M(pose);
                 sep->addChild(mt);
                 sep->addChild(arrow);
                 res->addChild(sep);
@@ -1514,7 +1514,7 @@ namespace VirtualRobot {
                         col->diffuseColor.setValue(color.r,color.g,color.b);
                         col->transparency.setValue(color.transparency);
                         sep->addChild(col);
-                        SoMatrixTransform *mt = getMatrixTransformMM(m);
+                        SoMatrixTransform *mt = getMatrixTransformScaleMM2M(m);
                         sep->addChild(mt);
                         sep->addChild(arrow);
                         res->addChild(sep);
@@ -1811,7 +1811,7 @@ namespace VirtualRobot {
                     gp(1,3) = yPos;
 
                     SoSeparator *sep1 = new SoSeparator();
-                    SoMatrixTransform* matTr = getMatrixTransformM(gp); // we are already in mm, no conversion to m needed
+                    SoMatrixTransform* matTr = getMatrixTransform(gp); // we are already in mm, no conversion to m needed
 
                     float intensity = (float)v;
                     intensity /= maxEntry;
@@ -1931,7 +1931,7 @@ namespace VirtualRobot {
                     gp(1,3) = yPos;
 
                     SoSeparator *sep1 = new SoSeparator();
-                    SoMatrixTransform* matTr = getMatrixTransformM(gp); // we are in mm unit environment -> no conversion to m needed
+                    SoMatrixTransform* matTr = getMatrixTransform(gp); // we are in mm unit environment -> no conversion to m needed
 
                     float intensity = (float)v;
                     intensity /= maxEntry;
@@ -2042,7 +2042,7 @@ namespace VirtualRobot {
 					gp(1,3) = yPos;
 
 					SoSeparator *sep1 = new SoSeparator();
-					SoMatrixTransform* matTr = getMatrixTransformM(gp); // we are in mm unit environment -> no conversion to m needed
+					SoMatrixTransform* matTr = getMatrixTransform(gp); // we are in mm unit environment -> no conversion to m needed
 
 					float intensity = (float)v;
 					intensity /= maxEntry;
@@ -2512,7 +2512,7 @@ void CoinVisualizationFactory::applyDisplacement( VisualizationNodePtr o, Eigen:
 		{
 			SoSeparator *s = new SoSeparator;
 			s->ref();
-			SoMatrixTransform *ma = getMatrixTransformM(m);
+			SoMatrixTransform *ma = getMatrixTransform(m);
 			s->addChild(ma);
 			s->addChild(n->copy(FALSE));
 

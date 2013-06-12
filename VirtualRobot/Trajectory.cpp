@@ -224,7 +224,7 @@ void Trajectory::interpolate( float t, Eigen::VectorXf &storePathPos, int *store
 	{
 		storePathPos = getPoint(getNrOfPoints()-1);
 		if (storeIndex!=NULL)
-			*storeIndex = (int)path.size();
+			*storeIndex = (int)path.size()-1;
 		return;
 	}
 
@@ -277,7 +277,7 @@ float Trajectory::getLength() const
 	float pathLength = 0.0f;
 	Eigen::VectorXf c1,c2;
 	float l;
-	for (int i=0;i<(int)getNrOfPoints()-2;i++)
+	for (int i=0;i<(int)getNrOfPoints()-1;i++)
 	{
 		c1 = path[i];
 		c2 = path[i+1];

@@ -226,7 +226,7 @@ void GraspPlannerWindow::buildVisu()
 			Eigen::Matrix4f ma;
 			ma.setIdentity();
 			ma.block(0,3,3,1) = contacts[i].contactPointFingerGlobal;
-			SoMatrixTransform *m = CoinVisualizationFactory::getMatrixTransformMM(ma);
+			SoMatrixTransform *m = CoinVisualizationFactory::getMatrixTransformScaleMM2M(ma);
 			s->addChild(m);
 			s->addChild(CoinVisualizationFactory::CreateArrow(contacts[i].approachDirectionGlobal,10.0f,1.0f));
 			frictionConeSep->addChild(s);
@@ -323,7 +323,7 @@ void GraspPlannerWindow::plan()
 	{
 		Eigen::Matrix4f m = grasps->getGrasp(i)->getTcpPoseGlobal(object->getGlobalPose());
 		SoSeparator *sep1 = new SoSeparator();
-		SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransformMM(m);
+		SoMatrixTransform *mt = CoinVisualizationFactory::getMatrixTransformScaleMM2M(m);
 		sep1->addChild(mt);
 		sep1->addChild(eefVisu);
 		graspsSep->addChild(sep1);

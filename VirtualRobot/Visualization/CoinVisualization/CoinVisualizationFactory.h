@@ -227,14 +227,14 @@ public:
         Create a SoMatrixTransform from the given pose
         \param m The pose with translation given in meter.
     */
-	static SoMatrixTransform* getMatrixTransformM(Eigen::Matrix4f &m);
+	static SoMatrixTransform* getMatrixTransform(Eigen::Matrix4f &m);
 
     /*!
         Create a SoMatrixTransform from the given pose
         Converts the pose from MM to M (scales by 0.001)
         \param m The pose with translation given in millimeter.
     */
-    static SoMatrixTransform* getMatrixTransformMM(Eigen::Matrix4f &m);
+    static SoMatrixTransform* getMatrixTransformScaleMM2M(Eigen::Matrix4f &m);
 	static SoNode* createCoinLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width, float colorR, float colorG, float colorB);
 
 	/*! 

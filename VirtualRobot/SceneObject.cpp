@@ -581,6 +581,8 @@ bool SceneObject::initializePhysics()
 			{
 				// standard box
 				physics.intertiaMatrix.setIdentity();
+				physics.intertiaMatrix *= 0.01f; // 10 cm bbox
+				physics.intertiaMatrix *= physics.massKg;
 			} else
 			{
 				Eigen::Vector3f minS,maxS;

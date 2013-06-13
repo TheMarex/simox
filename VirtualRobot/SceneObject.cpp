@@ -571,7 +571,7 @@ bool SceneObject::initializePhysics()
 			{
 				tm = collisionModel->getTriMeshModel();
 				posVisu = collisionModel->getGlobalPose();
-			} else
+			} else if (visualizationModel)
 			{
 				tm = visualizationModel->getTriMeshModel();
 				posVisu = visualizationModel->getGlobalPose();

@@ -506,6 +506,7 @@ void reachabilityWindow::loadReachFile(std::string filename)
 			if (robotNodeSets[i] == reachSpace->getNodeSet())
 			{
 				cout << "Found RNS.." << endl;
+				UI.comboBoxRNS->setCurrentIndex(i);
 				selectRNS(i);
 			}
 		}

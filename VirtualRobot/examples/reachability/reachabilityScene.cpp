@@ -22,8 +22,7 @@
 // after every 1 mio-th update a snapshot is saved.
 //#define ENDLESS
 
-//#define ICUB
-//#define AXIS_X
+#define ICUB
 
 // --robot robots/iCub/iCub_LeftHand_Extended.xml
 

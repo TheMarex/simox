@@ -28,7 +28,7 @@ WorkspaceRepresentation::WorkspaceRepresentation(RobotPtr robot)
 	type = "WorkspaceRepresentation";
 	versionMajor = 2;
 	versionMinor = 6;
-    orientationType = EulerXYZ;
+    orientationType = RPY;
 	reset();
 }
 

@@ -258,7 +258,7 @@ void ReachabilityMapWindow::buildGraspVisu()
 	if (UI.radioButtonOneGrasp->isChecked())
 	{
 		QString qs(UI.comboBoxGrasp->currentText());
-		std::string s = qs.toAscii();
+		std::string s(qs.toAscii());
 		GraspPtr g = gs->getGrasp(s);
 		if (!g)
 		{

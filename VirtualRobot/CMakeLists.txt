@@ -261,7 +261,7 @@ MESSAGE(STATUS " * Generating CMake files")
 IF (NOT DEFINED Simox_VERSION)
 	set(VirtualRobot_MAJOR_VERSION 2)
 	set(VirtualRobot_MINOR_VERSION 1)
-	set(VirtualRobot_PATCH_VERSION 9)
+	set(VirtualRobot_PATCH_VERSION 10)
 ELSE()
 	set(VirtualRobot_MAJOR_VERSION ${Simox_MAJOR_VERSION})
 	set(VirtualRobot_MINOR_VERSION ${Simox_MINOR_VERSION})
@@ -374,7 +374,9 @@ INSTALL(TARGETS VirtualRobot
 
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION ${VirtualRobot_INSTALL_HEADER_DIR}
 	COMPONENT Headers
-        FILES_MATCHING PATTERN "*.h"
+        FILES_MATCHING 
+        PATTERN "*.h"
+        PATTERN "*.hpp"
         PATTERN ".svn" EXCLUDE
         PATTERN "CMakeModules" EXCLUDE
         PATTERN "tests" EXCLUDE

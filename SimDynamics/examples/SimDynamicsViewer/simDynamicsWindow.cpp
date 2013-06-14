@@ -188,7 +188,7 @@ void SimDynamicsWindow::comVisu()
             SoSeparator* sep = new SoSeparator;
             comSep->addChild(sep);
             Eigen::Matrix4f cp = dynamicsRobot->getComGlobal(n[i]);
-            sep->addChild(CoinVisualizationFactory::getMatrixTransform(cp));
+            sep->addChild(CoinVisualizationFactory::getMatrixTransformScaleMM2M(cp));
             sep->addChild(CoinVisualizationFactory::CreateCoordSystemVisualization(5.0f));
             comVisuMap[n[i]] = sep;
         }
@@ -321,7 +321,8 @@ void SimDynamicsWindow::selectRobotNode( int n )
 
 void SimDynamicsWindow::updateJointInfo()
 {
-    std::stringstream info;
+	//std::stringstream info;
+	std::string info;
 	int n = UI.comboBoxRobotNode->currentIndex();
 	QString qMin("0");
 	QString qMax("0");
@@ -348,7 +349,8 @@ void SimDynamicsWindow::updateJointInfo()
 		qJV = QString("Joint value: ");
 		tmp = QString::number(rn->getJointValue(),'f',3);
         qJV += tmp;
-        info << "jv rn:" << tmp.toStdString();
+        info += "jv rn:";
+		info += tmp.toAscii();
 
 		qJV += QString(" / ");
         if (dynamicsRobot->isNodeActuated(rn))
@@ -356,7 +358,8 @@ void SimDynamicsWindow::updateJointInfo()
         else 
             tmp = QString("-");
         qJV += tmp;
-        info << ",\tjv bul:" << tmp.toStdString();
+        info += ",\tjv bul:";
+		info += tmp.toAscii();
 
 		qTarget = QString("Joint target: ");
         if (dynamicsRobot->isNodeActuated(rn))
@@ -364,7 +367,8 @@ void SimDynamicsWindow::updateJointInfo()
         else
             tmp = QString("-");
         qTarget +=tmp;
-        info << ",targ:" << tmp.toStdString();
+        info += ",targ:";
+		info += tmp.toAscii();
 
 		qVel = QString("Joint velocity: ");
         if (dynamicsRobot->isNodeActuated(rn))
@@ -372,23 +376,27 @@ void SimDynamicsWindow::updateJointInfo()
         else
             tmp = QString("-");
         qVel +=tmp;
-        info << ",vel:" << tmp.toStdString();
+        info += ",vel:";
+		info += tmp.toAscii();
         Eigen::Matrix4f gp = rn->getGlobalPose();
 
         qGP = QString("GlobalPose (simox):");
         tmp = QString::number(gp(0,3),'f',2);
         qGP += tmp;
-        info << ",gp:" << tmp.toStdString();
+        info += ",gp:";
+		info += tmp.toAscii();
 
         qGP += QString("/");
         tmp = QString::number(gp(1,3),'f',2);
         qGP += tmp;
-        info << "/" << tmp.toStdString();
+        info += "/";
+		info += tmp.toAscii();
 
         qGP += QString("/");
         tmp = QString::number(gp(2,3),'f',2);
         qGP += tmp;
-        info << "/" << tmp.toStdString();
+        info += "/";
+		info += tmp.toAscii();
 
         gp = rn->getGlobalPoseVisualization();
         qVisu = QString("VISU (simox):");
@@ -420,7 +428,7 @@ void SimDynamicsWindow::updateJointInfo()
 
     // print some joint info
     if (viewer->engineRunning())
-        cout << info.str() << endl;
+        cout << info << endl;
 }
 
 void SimDynamicsWindow::jointValueChanged( int n )
@@ -513,7 +521,7 @@ void SimDynamicsWindow::loadButton()
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Select Robot File"), "",
         tr("Simox Robot File (*.xml)"));
-    std::string f = fileName.toStdString();
+    std::string f = fileName.toAscii();
     if (RuntimeEnvironment::getDataFileAbsolute(f))
     {
         if (dynamicsRobot)

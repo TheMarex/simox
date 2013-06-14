@@ -188,7 +188,7 @@ void SimDynamicsWindow::comVisu()
             SoSeparator* sep = new SoSeparator;
             comSep->addChild(sep);
             Eigen::Matrix4f cp = dynamicsRobot->getComGlobal(n[i]);
-            sep->addChild(CoinVisualizationFactory::getMatrixTransformM(cp));
+            sep->addChild(CoinVisualizationFactory::getMatrixTransform(cp));
             sep->addChild(CoinVisualizationFactory::CreateCoordSystemVisualization(5.0f));
             comVisuMap[n[i]] = sep;
         }

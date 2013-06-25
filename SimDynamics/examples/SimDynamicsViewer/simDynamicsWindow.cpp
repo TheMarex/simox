@@ -351,7 +351,8 @@ void SimDynamicsWindow::updateJointInfo()
 		tmp = QString::number(rn->getJointValue(),'f',3);
         qJV += tmp;
         info += "jv rn:";
-		info += tmp.toAscii();
+        std::string a1 = (const char*)tmp.toAscii();
+        info += a1;
 
 		qJV += QString(" / ");
         if (dynamicsRobot->isNodeActuated(rn))
@@ -360,7 +361,8 @@ void SimDynamicsWindow::updateJointInfo()
             tmp = QString("-");
         qJV += tmp;
         info += ",\tjv bul:";
-		info += tmp.toAscii();
+        a1 = (const char*)tmp.toAscii();
+        info += a1;
 
 		qTarget = QString("Joint target: ");
         if (dynamicsRobot->isNodeActuated(rn))
@@ -368,8 +370,9 @@ void SimDynamicsWindow::updateJointInfo()
         else
             tmp = QString("-");
         qTarget +=tmp;
-        info += ",targ:";
-		info += tmp.toAscii();
+        info += std::string(",targ:");
+        a1 = (const char*)tmp.toAscii();
+        info += a1;
 
 		qVel = QString("Joint velocity: ");
         if (dynamicsRobot->isNodeActuated(rn))
@@ -378,26 +381,27 @@ void SimDynamicsWindow::updateJointInfo()
             tmp = QString("-");
         qVel +=tmp;
         info += ",vel:";
-		info += tmp.toAscii();
+        a1 = (const char*)tmp.toAscii();
+        info += a1;
         Eigen::Matrix4f gp = rn->getGlobalPose();
 
         qGP = QString("GlobalPose (simox):");
         tmp = QString::number(gp(0,3),'f',2);
         qGP += tmp;
         info += ",gp:";
-		info += tmp.toAscii();
+        info += (const char*)tmp.toAscii();
 
         qGP += QString("/");
         tmp = QString::number(gp(1,3),'f',2);
         qGP += tmp;
         info += "/";
-		info += tmp.toAscii();
+        info += (const char*)tmp.toAscii();
 
         qGP += QString("/");
         tmp = QString::number(gp(2,3),'f',2);
         qGP += tmp;
         info += "/";
-		info += tmp.toAscii();
+        info += (const char*)tmp.toAscii();
 
         gp = rn->getGlobalPoseVisualization();
         qVisu = QString("VISU (simox):");
@@ -522,7 +526,7 @@ void SimDynamicsWindow::loadButton()
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Select Robot File"), "",
         tr("Simox Robot File (*.xml)"));
-    std::string f = fileName.toAscii();
+    std::string f = (const char*)fileName.toAscii();
     if (RuntimeEnvironment::getDataFileAbsolute(f))
     {
         if (dynamicsRobot)

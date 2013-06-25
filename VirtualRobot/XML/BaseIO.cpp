@@ -961,14 +961,18 @@ std::string BaseIO::processFileNode( rapidxml::xml_node<char> *fileNode, const s
 		
 		// check file absolute
 		boost::filesystem::path fn(fileName);
-		if (boost::filesystem::exists(fn))
-			return fileName;
+        try {
+            if (boost::filesystem::exists(fn))
+                return fileName;
+        } catch (...){}
 		// check file relative
 		std::string absFileName = fileName;
 		makeAbsolutePath(basePath,absFileName);
 		fn = absFileName;
+        try {
 		if (boost::filesystem::exists(fn))
 			return absFileName;
+        } catch (...){}
 		// check file in data paths
 		absFileName = fileName;
 		if (RuntimeEnvironment::getDataFileAbsolute(absFileName))
@@ -1198,8 +1202,10 @@ TrajectoryPtr BaseIO::processTrajectory(rapidxml::xml_node<char> *trajectoryXMLN
 
 bool BaseIO::writeXMLFile(const std::string &filename, const std::string &content, bool overwrite)
 {
+    try {
 	if (!overwrite && boost::filesystem::exists(filename))
 		return false;
+    } catch (...){}
 
 	// save file
 	std::ofstream out(filename.c_str(),std::ios::out|std::ios::trunc);

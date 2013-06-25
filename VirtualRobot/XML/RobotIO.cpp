@@ -583,8 +583,12 @@ RobotPtr RobotIO::processRobot(rapidxml::xml_node<char>* robotXMLNode, const std
 
 			boost::filesystem::path filenameNewComplete = boost::filesystem::operator/(filenameBasePath,filenameNew);
 			VR_INFO << "Searching robot: " << filenameNewComplete.string() << endl;
-
-			THROW_VR_EXCEPTION_IF(!boost::filesystem::exists(filenameNewComplete), "File <" << filenameNewComplete.string() << "> does not exist." << endl);
+            try {
+                THROW_VR_EXCEPTION_IF(!boost::filesystem::exists(filenameNewComplete), "File <" << filenameNewComplete.string() << "> does not exist." << endl);
+            } catch (...)
+            {
+                THROW_VR_EXCEPTION("Error while processing file <" << filenameNewComplete.string() << ">." << endl);
+            }
             RobotPtr r = loadRobot(filenameNewComplete.string(),loadMode);
 			THROW_VR_EXCEPTION_IF(!r, "Could not add child-from-robot due to failed loading of robot from file" << childrenFromRobot[i].filename);
 			RobotNodePtr root = r->getRootNode();

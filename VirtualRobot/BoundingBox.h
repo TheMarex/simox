@@ -37,9 +37,9 @@ namespace VirtualRobot {
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT BoundingBox
 {
-	friend class ClollisionChecker;
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+	friend class CollisionChecker;
 
 	BoundingBox();
 	BoundingBox(const std::vector< Eigen::Vector3f > &p);

@@ -25,29 +25,58 @@
 
 #include "VirtualRobotImportExport.h"
 #include "MathTools.h"
+#include "CollisionDetection/CollisionChecker.h"
 
 #include <Eigen/Core>
 #include <vector>
 
 namespace VirtualRobot {
 
+/*!
+	An axis oriented bounding box
+*/
 class VIRTUAL_ROBOT_IMPORT_EXPORT BoundingBox
 {
+	friend class ClollisionChecker;
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	BoundingBox();
 	BoundingBox(const std::vector< Eigen::Vector3f > &p);
 
+	/*!
+		Returns true, if plane "hits" this bounding box.
+	*/
 	bool planeGoesThrough(const VirtualRobot::MathTools::Plane &p);
 
+	/*!
+		Returns 8 points that define the bounding box
+	*/
 	std::vector <Eigen::Vector3f> getPoints();
 
+	//! Print some info
 	void print();
 
+	/*!
+		Consider these points for min/max calculation
+	*/
 	void addPoints( const std::vector < Eigen::Vector3f > &p );
+
+	/*!
+		Consider this point for min/max calculation
+	*/
 	void addPoint (const Eigen::Vector3f &p);
 
+	//! The axis oriented minimum value
+	Eigen::Vector3f getMin() const;
+
+	//! The axis oriented maximum value
+	Eigen::Vector3f getMax() const;
+
+	//! set min/max to zero.
+	void clear();
+
+protected:
 	Eigen::Vector3f min;
 	Eigen::Vector3f max;
 };

@@ -74,16 +74,18 @@ void DynamicsRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointVal
 	VR_ASSERT(node);
 	VR_ASSERT(robot->hasRobotNode(node));
 
-	if (!hasDynamicsRobotNode(node))
-		createDynamicsNode(node);
+	// if node is a joint without model, there is no dyn node!
+	//DynamicsObjectPtr dnyRN;
+	//if (hasDynamicsRobotNode(node))
+	//	dnyRN = getDynamicsRobotNode(node);
+	//	createDynamicsNode(node);
 
-	DynamicsObjectPtr dnyRN = getDynamicsRobotNode(node);
 
 	robotNodeActuationTarget target;
 	target.enabled = true;
 	target.node = node;
 	target.jointValueTarget = jointValue;
-	target.dynNode = dnyRN;
+	//target.dynNode = dnyRN;
 
 	actuationTargets[node] = target;
 }

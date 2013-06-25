@@ -4,6 +4,8 @@
 #include "VirtualRobot/Workspace/Reachability.h"
 #include "VirtualRobot/ManipulationObject.h"
 #include "VirtualRobot/XML/ObjectIO.h"
+#include "VirtualRobot/Grasping/GraspSet.h"
+#include "VirtualRobot/Visualization/CoinVisualization/CoinVisualizationFactory.h"
 
  #include <QFileDialog>
 #include <Eigen/Geometry>
@@ -78,6 +80,7 @@ void showSceneWindow::setupUI()
 	connect(UI.pushButtonEEFClose, SIGNAL(clicked()), this, SLOT(closeHand()));
 	connect(UI.pushButtonEEFOpen, SIGNAL(clicked()), this, SLOT(openHand()));
 	connect(UI.comboBoxEEF, SIGNAL(activated(int)), this, SLOT(selectEEF(int)));
+	connect(UI.comboBoxGrasp, SIGNAL(activated(int)), this, SLOT(selectGrasp(int)));
 
 	/*
 	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(collisionModel()));
@@ -139,6 +142,27 @@ void showSceneWindow::buildVisu()
 	if (visualisationNode)
 		sceneVisuSep->addChild(visualisationNode);
 
+	updateGraspVisu();
+
+
+}
+
+void showSceneWindow::updateGraspVisu()
+{
+	// build grasp visu
+	graspVisu->removeAllChildren();
+	if (UI.comboBoxGrasp->currentIndex()>0 && currentObject && currentEEF && currentGrasp)
+	{
+		//SoSeparator* visu = CoinVisualizationFactory::CreateGraspVisualization(currentGrasp, currentEEF,currentObject->getGlobalPose());
+		SoMatrixTransform* mt = CoinVisualizationFactory::getMatrixTransformScaleMM2M(currentGrasp->getTcpPoseGlobal(currentObject->getGlobalPose()));
+		graspVisu->addChild(mt);
+
+		std::string t = currentGrasp->getName();
+		SoSeparator* visu = CoinVisualizationFactory::CreateCoordSystemVisualization(1.0f,&t);
+		
+		if (visu)
+			graspVisu->addChild(visu);
+	}
 }
 
 int showSceneWindow::main()
@@ -328,12 +352,35 @@ void showSceneWindow::selectEEF(int nr)
 	}
 	std::string eefStr(UI.comboBoxEEF->currentText().toAscii());
 	currentEEF = currentRobot->getEndEffector(eefStr);
+	updateGrasps();
 }
 
 void showSceneWindow::selectObject(int nr)
 {
-	if (nr<0 || nr>=UI.comboBoxObject->count())
+	if (!scene || nr<0 || nr>=UI.comboBoxObject->count())
 		return;
+	std::string ob = UI.comboBoxObject->currentText().toAscii();
+	currentObject.reset();
+	if (scene->hasManipulationObject(ob))
+	{
+		VirtualRobot::ManipulationObjectPtr mo = scene->getManipulationObject(ob);
+		currentObject = boost::dynamic_pointer_cast<SceneObject>(mo);
+	}
+	updateGrasps();
+}
+
+void showSceneWindow::selectGrasp(int nr)
+{
+	currentGrasp.reset();
+	if (nr<=0 || nr>=UI.comboBoxGrasp->count() || !currentGraspSet)
+	{
+		return;
+	}
+	std::string grStr(UI.comboBoxGrasp->currentText().toAscii());
+	if (currentGraspSet->hasGrasp(grStr))
+		currentGrasp = currentGraspSet->getGrasp(grStr);
+
+	updateGraspVisu();
 }
 
 void showSceneWindow::updateGui()
@@ -375,6 +422,28 @@ void showSceneWindow::updateGui()
 		UI.comboBoxRobot->setCurrentIndex(0);
 		selectObject(0);
 	}
+}
+
+void showSceneWindow::updateGrasps()
+{
+	currentGraspSet.reset();
+	UI.comboBoxGrasp->clear();
+	QString t("-");
+	UI.comboBoxGrasp->addItem(t);
+	VirtualRobot::ManipulationObjectPtr mo = boost::dynamic_pointer_cast<ManipulationObject>(currentObject);
+
+	if (mo && currentEEF)
+	{
+		currentGraspSet = mo->getGraspSet(currentEEF);
+		if (currentGraspSet)
+			for (unsigned int i=0;i<currentGraspSet->getSize();i++)
+			{
+				t = currentGraspSet->getGrasp(i)->getName().c_str();
+				UI.comboBoxGrasp->addItem(t);
+			}
+	}
+	UI.comboBoxGrasp->setCurrentIndex(0);
+	selectGrasp(0);
 }
 
 void showSceneWindow::closeHand()

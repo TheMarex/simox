@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>790</width>
-    <height>659</height>
+    <width>792</width>
+    <height>657</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -199,10 +199,10 @@
       <widget class="QGroupBox" name="groupBox_3">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>10</x>
          <y>470</y>
          <width>181</width>
-         <height>61</height>
+         <height>101</height>
         </rect>
        </property>
        <property name="title">
@@ -218,6 +218,29 @@
          </rect>
         </property>
        </widget>
+       <widget class="QComboBox" name="comboBoxGrasp">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>70</y>
+          <width>131</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>50</y>
+          <width>91</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Grasp</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -228,7 +251,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>790</width>
+     <width>792</width>
      <height>21</height>
     </rect>
    </property>

@@ -1013,12 +1013,14 @@ namespace VirtualRobot {
         res->addChild(ds);
 
         SoTranslation *tr = new SoTranslation();
-        float x1 = std::min(bbox.min(0), bbox.max(0));
-        float x2 = std::max(bbox.min(0), bbox.max(0));
-        float y1 = std::min(bbox.min(1), bbox.max(1));
-        float y2 = std::max(bbox.min(1), bbox.max(1));
-        float z1 = std::min(bbox.min(2), bbox.max(2));
-        float z2 = std::max(bbox.min(2), bbox.max(2));
+		Eigen::Vector3f mi = bbox.getMin();
+		Eigen::Vector3f ma = bbox.getMax();
+        float x1 = std::min(mi(0), ma(0));
+        float x2 = std::max(mi(0), ma(0));
+        float y1 = std::min(mi(1), ma(1));
+        float y2 = std::max(mi(1), ma(1));
+        float z1 = std::min(mi(2), ma(2));
+        float z2 = std::max(mi(2), ma(2));
         float x = x1 + (x2 - x1) *0.5f;
         float y = y1 + (y2 - y1) *0.5f;
         float z = z1 + (z2 - z1) *0.5f;

@@ -13,6 +13,31 @@ using namespace SimDynamics;
 
 int main(int argc,char* argv[])
 {
+	VirtualRobot::RuntimeEnvironment::considerKey("robot");
+	VirtualRobot::RuntimeEnvironment::processCommandLine(argc,argv);
+	VirtualRobot::RuntimeEnvironment::print();
+
+	cout << " --- START --- " << endl;
+
+
+	//std::string robFile("robots/examples/SimpleRobot/Joint5.xml");
+	//std::string robFile("robots/iCub/iCub.xml");
+	std::string robFile("robots/ArmarIII/ArmarIII.xml");
+	//std::string robFile("robots/iCub/iCub_RightHand.xml");
+	//std::string robFile("robots/iCub/iCub_testFinger.xml");
+
+	if (VirtualRobot::RuntimeEnvironment::hasValue("robot"))
+	{
+		std::string robFile2 = VirtualRobot::RuntimeEnvironment::getValue("robot");
+		if (VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robFile2))
+		{
+			robFile = robFile2;
+		}
+	}
+	cout << "Using robot at " << robFile << endl;
+
+
+
 	SimDynamics::DynamicsWorldPtr world = SimDynamics::DynamicsWorld::Init();
 	SIMDYNAMICS_ASSERT(world);
 
@@ -25,18 +50,14 @@ int main(int argc,char* argv[])
 	dynObj->setPosition(Eigen::Vector3f(3000,3000,1000.0f));
 	world->addObject(dynObj);
 
-	//std::string robFile("robots/examples/SimpleRobot/Joint5.xml");
-	//std::string robFile("robots/iCub/iCub.xml");
-	std::string robFile("robots/ArmarIII/ArmarIII.xml");
-	//std::string robFile("robots/iCub/iCub_RightHand.xml");
-	//std::string robFile("robots/iCub/iCub_testFinger.xml");
+
 	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robFile);
 	VirtualRobot::RobotPtr robot = VirtualRobot::RobotIO::loadRobot(robFile);
 	if (robot)
 	{
 		Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
 		//gp(2,3) = 35.0f;
-		gp(2,3) = 400.0f;
+		gp(2,3) = 800.0f;
 		robot->setGlobalPose(gp);
 		DynamicsRobotPtr dynRob = world->CreateDynamicsRobot(robot);
 		dynRob->disableActuation();

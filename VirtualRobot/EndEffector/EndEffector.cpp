@@ -419,11 +419,11 @@ float EndEffector::getApproximatedLength()
 		if (statics[j]->getCollisionModel())
 		{
 			BoundingBox bb = statics[j]->getCollisionModel()->getBoundingBox();
-			bb_all.addPoint(bb.min);
-			bb_all.addPoint(bb.max);
+			bb_all.addPoint(bb.getMin());
+			bb_all.addPoint(bb.getMax());
 		}
 	}
-	Eigen::Vector3f d = bb_all.max - bb_all.min;
+	Eigen::Vector3f d = bb_all.getMax() - bb_all.getMin();
 	float maxStatic = d.norm();
 
 	return maxStatic + maxActor;

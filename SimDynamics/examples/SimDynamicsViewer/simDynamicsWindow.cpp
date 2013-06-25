@@ -278,9 +278,10 @@ bool SimDynamicsWindow::loadRobot(std::string robotFilename)
 	}
     try
     {
+		//VirtualRobot::BoundingBox bbox = robot->getBoundingBox();
 	    //robot->print();
 	    Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
-	    gp(2,3) = 200.0f;
+	    gp(2,3) = 800.0f;
 	    robot->setGlobalPose(gp);
 	    dynamicsRobot = dynamicsWorld->CreateDynamicsRobot(robot);
 	    dynamicsWorld->addRobot(dynamicsRobot);

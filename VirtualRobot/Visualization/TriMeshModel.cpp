@@ -97,11 +97,7 @@ void TriMeshModel::addFace(const MathTools::TriangleFace& face)
 void TriMeshModel::addVertex(const Eigen::Vector3f& vertex)
 {
 	vertices.push_back(vertex);
-	for (int i=0;i<3;i++)
-	{
-		if (vertex(i) < boundingBox.min(i)) boundingBox.min(i) = vertex(i);
-		if (vertex(i) > boundingBox.max(i)) boundingBox.max(i) = vertex(i);
-	}
+	boundingBox.addPoint(vertex);
 }
 
 
@@ -113,8 +109,7 @@ void TriMeshModel::clear()
 {
 	vertices.clear();
 	faces.clear();
-	boundingBox.min.setZero();
-	boundingBox.max.setZero();
+	boundingBox.clear();
 }
 
 

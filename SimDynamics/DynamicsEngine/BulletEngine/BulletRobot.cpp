@@ -905,8 +905,10 @@ void BulletRobot::actuateJoints(float dt)
 
 	while (it!=actuationTargets.end())
 	{
-		BulletObjectPtr drn = boost::dynamic_pointer_cast<BulletObject>(it->second.dynNode);
-		VR_ASSERT(drn);
+		//BulletObjectPtr drn;
+		//if (it->second.dynNode)
+		//	drn = boost::dynamic_pointer_cast<BulletObject>(it->second.dynNode);
+		//VR_ASSERT(drn);
 		if (it->second.node->isRotationalJoint())
 		{
 			LinkInfo link = getLink(it->second.node);

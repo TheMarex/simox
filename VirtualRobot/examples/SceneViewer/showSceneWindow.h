@@ -49,6 +49,7 @@ public slots:
 
 	void selectRobot(int nr);
 	void selectObject(int nr);
+	void selectGrasp(int nr);
 	void selectEEF(int nr);
 	void selectRobotConfig(int nr);
 	void selectTrajectory(int nr);
@@ -62,6 +63,8 @@ public slots:
 protected:
 
 	void updateGui();
+	void updateGrasps();
+	void updateGraspVisu();
 	void setupUI();
 	QString formatString(const char *s, float f);
 	void buildVisu();
@@ -72,6 +75,9 @@ protected:
 	SoSeparator *sceneSep;
 	SoSeparator *sceneVisuSep;
 	SoSeparator *graspVisu;
+	VirtualRobot::GraspPtr currentGrasp;
+	VirtualRobot::GraspSetPtr currentGraspSet;
+	VirtualRobot::SceneObjectPtr currentObject;
 	VirtualRobot::RobotPtr currentRobot;
 	VirtualRobot::TrajectoryPtr currentTrajectory;
 	VirtualRobot::EndEffectorPtr currentEEF;

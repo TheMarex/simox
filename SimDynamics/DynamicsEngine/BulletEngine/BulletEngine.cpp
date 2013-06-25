@@ -169,8 +169,8 @@ void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Ve
 {
     boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	DynamicsEngine::createFloorPlane(pos,up);
-	float size = 100000.0f; // mm
-	float sizeSmall = 1000.0f;
+	float size = 50000.0f; // mm
+	float sizeSmall = 500.0f;
 	float w = size;
 	float h = size;
 	float d = sizeSmall;
@@ -185,7 +185,10 @@ void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Ve
 		h = sizeSmall;
 		d = size;
 	}
-	groundObject = VirtualRobot::Obstacle::createBox(w,h,d);
+	
+	groundObject = VirtualRobot::Obstacle::createBox(w,h,d,VirtualRobot::VisualizationFactory::Color::Gray());
+	std::string name("Floor");
+	groundObject->setName(name);
 	Eigen::Matrix4f gp;
 	gp.setIdentity();
 	gp(2,3) = -sizeSmall*0.5f;

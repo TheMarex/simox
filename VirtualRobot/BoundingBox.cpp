@@ -85,5 +85,22 @@ void BoundingBox::addPoint( const Eigen::Vector3f &p )
 	}
 }
 
+Eigen::Vector3f BoundingBox::getMax() const
+{
+	return max;
+}
+
+Eigen::Vector3f BoundingBox::getMin() const
+{
+	return min;
+}
+
+
+void BoundingBox::clear()
+{
+	min.setZero();
+	max.setZero();
+}
+
 
 }

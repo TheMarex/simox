@@ -96,7 +96,7 @@ protected:
 	{
 		float jointValueTarget;
 		VirtualRobot::RobotNodePtr node;
-		DynamicsObjectPtr dynNode;
+		//DynamicsObjectPtr dynNode; // if node is a joint without model, there is no dyn node!
 		bool enabled;
 	};
 

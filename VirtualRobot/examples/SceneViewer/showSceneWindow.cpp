@@ -154,7 +154,8 @@ void showSceneWindow::updateGraspVisu()
 	if (UI.comboBoxGrasp->currentIndex()>0 && currentObject && currentEEF && currentGrasp)
 	{
 		//SoSeparator* visu = CoinVisualizationFactory::CreateGraspVisualization(currentGrasp, currentEEF,currentObject->getGlobalPose());
-		SoMatrixTransform* mt = CoinVisualizationFactory::getMatrixTransformScaleMM2M(currentGrasp->getTcpPoseGlobal(currentObject->getGlobalPose()));
+		Eigen::Matrix4f gp = currentGrasp->getTcpPoseGlobal(currentObject->getGlobalPose());
+		SoMatrixTransform* mt = CoinVisualizationFactory::getMatrixTransformScaleMM2M(gp);
 		graspVisu->addChild(mt);
 
 		std::string t = currentGrasp->getName();
@@ -359,7 +360,7 @@ void showSceneWindow::selectObject(int nr)
 {
 	if (!scene || nr<0 || nr>=UI.comboBoxObject->count())
 		return;
-	std::string ob = UI.comboBoxObject->currentText().toAscii();
+	std::string ob(UI.comboBoxObject->currentText().toAscii());
 	currentObject.reset();
 	if (scene->hasManipulationObject(ob))
 	{

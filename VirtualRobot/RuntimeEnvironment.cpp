@@ -106,7 +106,7 @@ namespace VirtualRobot
 				return true;
 			}
 		}
-		catch (const boost::filesystem::filesystem_error& /*ex*/)
+        catch (...)//const boost::filesystem::filesystem_error& /*ex*/)
 		{
 			//cout << ex.what() << '\n';
 			// silently skip this error (e.g. device not ready, permission denied etc)
@@ -129,12 +129,12 @@ namespace VirtualRobot
 					return true;
 				}
 			}
-			catch (const boost::filesystem::filesystem_error& /*ex*/)
+            catch (...)//const boost::filesystem::filesystem_error& ex)
 			{
-				//cout << ex.what() << '\n';
+                //cout << "EX:" << ex.what() << '\n';
 				// silently skip this error (e.g. device not ready, permission denied etc)
 			}
-		}
+        }
 		
 		return false;
 	}
@@ -228,18 +228,24 @@ namespace VirtualRobot
 
 	bool RuntimeEnvironment::addDataPath( const std::string &path, bool quiet )
 	{
-		boost::filesystem::path p(path);
-		if (!boost::filesystem::is_directory(p) && !boost::filesystem::is_symlink(p))
-		{
-			if (!quiet)
-			{
-				VR_ERROR << "Trying to add non-existing data path: " << p.string() << endl;
-			}
-			return false;
-		} else
-			dataPaths.push_back(path);
-		return true;
-	}
+        try
+        {
+            boost::filesystem::path p(path);
+            if (boost::filesystem::is_directory(p) || boost::filesystem::is_symlink(p))
+            {
+                dataPaths.push_back(path);
+                return true;
+            }
+        } catch (...)
+        {
+        }
+
+        if (!quiet)
+        {
+            VR_ERROR << "Trying to add non-existing data path: " << path << endl;
+        }
+        return false;
+    }
 
 	void RuntimeEnvironment::print()
 	{

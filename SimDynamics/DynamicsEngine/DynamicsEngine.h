@@ -30,6 +30,25 @@
 
 namespace SimDynamics
 {
+	/*!
+		Standard configuration for dynamics engines
+	*/
+	class DynamicsEngineConfig 
+	{
+	public:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			DynamicsEngineConfig()
+		{
+			gravity << 0, 0, -9.81f;
+		}
+
+		virtual ~DynamicsEngineConfig(){}
+
+		Eigen::Vector3f gravity;
+	};
+
+
+	typedef boost::shared_ptr<DynamicsEngineConfig> DynamicsEngineConfigPtr;
 
 /*!
 	An interface class to encapsulates all calls to the underlying physics engine. 
@@ -40,17 +59,6 @@ class SIMDYNAMICS_IMPORT_EXPORT DynamicsEngine
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-	struct DynamicsWorldInfo 
-	{
-		DynamicsWorldInfo()
-		{
-			gravity << 0, 0, -9.81f;
-		}
-
-		Eigen::Vector3f gravity;
-	};
-
-
 	/*!
 	Constructor
 	*/
@@ -60,7 +68,10 @@ public:
 	*/
 	virtual ~DynamicsEngine();
 
-	virtual bool init(const DynamicsWorldInfo &info);
+	/*!
+		Initialize the engine with this configuration
+	*/
+	virtual bool init(DynamicsEngineConfigPtr config);
 
 	Eigen::Vector3f getGravity();
 
@@ -131,7 +142,7 @@ public:
     virtual DynamicsRobotPtr getRobot(VirtualRobot::RobotPtr r);
 
 protected:
-	DynamicsWorldInfo dynamicsInfo;
+	DynamicsEngineConfigPtr dynamicsConfig;
 
 	std::vector<DynamicsObjectPtr> objects;
 	std::vector<DynamicsRobotPtr> robots;

@@ -33,7 +33,8 @@
 namespace VirtualRobot {
 
 /*!
-	An axis oriented bounding box
+	An axis oriented bounding box.
+	Todo: Some parts of this class are similar to MathTools::OOBB.
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT BoundingBox
 {
@@ -49,10 +50,11 @@ public:
 	*/
 	bool planeGoesThrough(const VirtualRobot::MathTools::Plane &p);
 
+
 	/*!
 		Returns 8 points that define the bounding box
 	*/
-	std::vector <Eigen::Vector3f> getPoints();
+	std::vector <Eigen::Vector3f> getPoints() const;
 
 	//! Print some info
 	void print();
@@ -60,7 +62,12 @@ public:
 	/*!
 		Consider these points for min/max calculation
 	*/
-	void addPoints( const std::vector < Eigen::Vector3f > &p );
+	void addPoints(const std::vector < Eigen::Vector3f > &p);
+
+	/*!
+		Consider these points for min/max calculation
+	*/
+	void addPoints(const BoundingBox &bbox);
 
 	/*!
 		Consider this point for min/max calculation
@@ -75,6 +82,11 @@ public:
 
 	//! set min/max to zero.
 	void clear();
+
+	/*!
+		Applies transformation to this bbox. Reorders min and max values according to pose.
+	*/
+	void transform(Eigen::Matrix4f &pose);
 
 protected:
 	Eigen::Vector3f min;

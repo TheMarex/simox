@@ -127,6 +127,11 @@ public:
 	*/
 	static VisualizationNodePtr CreateUnitedVisualization(const std::vector<VisualizationNodePtr> &visualizations);
 
+	/*!
+		Returns (current) bounding box in global coordinate system.
+	*/
+	BoundingBox getBoundingBox();
+
 protected:
 	bool boundingBox; //!< Indicates, if the bounding box model was used
 	std::string filename; //!< if the visualization was build from a file, the filename is stored here

@@ -793,6 +793,23 @@ void Robot::setJointValues( const std::vector<RobotNodePtr> rn, const std::vecto
 	applyJointValuesNoLock();
 }
 
+VirtualRobot::BoundingBox Robot::getBoundingBox(bool collisionModel)
+{
+	VirtualRobot::BoundingBox bbox;
+	std::vector<RobotNodePtr> rn = getRobotNodes();
+	for (size_t i=0;i<rn.size();i++)
+	{
+		if (collisionModel && rn[i]->getCollisionModel())
+		{
+			bbox.addPoints(rn[i]->getCollisionModel()->getBoundingBox());
+		} else if (!collisionModel && rn[i]->getVisualization())
+		{
+			bbox.addPoints(rn[i]->getVisualization()->getBoundingBox());
+		}
+	}
+	return bbox;
+}
+
 
 } // namespace VirtualRobot
 

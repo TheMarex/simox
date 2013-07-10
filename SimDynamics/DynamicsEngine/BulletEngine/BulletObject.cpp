@@ -21,7 +21,7 @@ namespace SimDynamics {
 BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 	: DynamicsObject(o, type)
 {
-	float interatiaFactor = 5.0f;
+	float interatiaFactor = 1.0f;
 #ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
     interatiaFactor = 5.0f;
 #endif
@@ -84,8 +84,8 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 			collisionShape->calculateLocalInertia(mass,localInertia);
 //#ifndef USE_BULLET_GENERIC_6DOF_CONSTRAINT
 			// check for small values
-			if (localInertia.length()<1.0f && localInertia.length()>0)
-				localInertia /= localInertia.length(); // small inertia values result in freaking out joints ?!
+			//if (localInertia.length()<1.0f && localInertia.length()>0)
+			//	localInertia /= localInertia.length(); // small inertia values result in freaking out joints ?!
 //#endif
 		} else
 #ifndef USE_BULLET_GENERIC_6DOF_CONSTRAINT

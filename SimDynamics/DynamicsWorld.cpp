@@ -40,7 +40,7 @@ DynamicsEnginePtr DynamicsWorld::getEngine()
 	return engine;
 }
 
-DynamicsWorldPtr DynamicsWorld::Init()
+DynamicsWorldPtr DynamicsWorld::Init(DynamicsEngineConfigPtr config)
 {
 	static Cleanup _Cleanup;
 
@@ -50,7 +50,10 @@ DynamicsWorldPtr DynamicsWorld::Init()
 
 		if (!world)
 		{
-			world.reset(new DynamicsWorld());
+			world.reset(new DynamicsWorld(config));
+		} else
+		{
+			VR_WARNING << "Dynamics world is already initialized..." << endl;
 		}
 	}
 	return world;
@@ -64,11 +67,11 @@ void DynamicsWorld::Close()
 }
 
 
-DynamicsWorld::DynamicsWorld()
+DynamicsWorld::DynamicsWorld(DynamicsEngineConfigPtr config)
 {
 	DynamicsEngineFactoryPtr factory = DynamicsEngineFactory::first(NULL);
 	THROW_VR_EXCEPTION_IF(!factory, "No Physics Engine Found. Re-Compile with engine support...");
-	engine = factory->createEngine();
+	engine = factory->createEngine(config);
 	THROW_VR_EXCEPTION_IF(!engine, "Could not create Physics Engine.");
 }        
 

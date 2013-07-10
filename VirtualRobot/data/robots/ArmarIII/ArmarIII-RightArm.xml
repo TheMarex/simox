@@ -2,7 +2,7 @@
 
 <Robot Type="ArmarIII RightArm" RootNode="Right Arm Base">	
 
-<RobotNode name="Right Arm Base">
+    <RobotNode name="Right Arm Base">
 		<Joint type="fixed">
 			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
 		</Joint>
@@ -89,18 +89,19 @@
 	<RobotNode name="Underarm R">
 		<Joint type="revolute">
 			<DH a="0" d="-240" theta="90" alpha="-90" units="degree"/>
+			
 			<Limits unit="degree" lo="-69.65" hi="108.25"/>
 		</Joint>
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/underarm_r.iv</File>
 		</Visualization>
+ 		<CollisionModel>
+			<File type="Inventor">convexModel/underarm_r.iv</File>
+		</CollisionModel>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2.26566087" units="kg" />
         </Physics>
- 		<CollisionModel>
-			<File type="Inventor">convexModel/underarm_r.iv</File>
-		</CollisionModel>
 		<Child name="Wrist 1 R"/>
 	</RobotNode>
 	
@@ -111,14 +112,14 @@
 		</Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
-            <Mass value="1.13047000" units="kg" />
+            <Mass value="1.29945309" units="kg" /><!--1.13047000-->
         </Physics>
    	    <Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/wrist1_r.iv</File>
 		</Visualization>
 		<CollisionModel>
-			<File type="Inventor">convexModel/wrist1_l.iv</File>
+			<File type="Inventor">convexModel/wrist1_r.iv</File><!--convexModel/wrist1_l.iv-->
 		</CollisionModel>
 		<Child name="Wrist 2 R"/>
 	</RobotNode>
@@ -134,13 +135,15 @@
 			<File type="Inventor">fullmodel/wrist2_r.iv</File>
 		</Visualization>
         <CollisionModel>
-			<File type="Inventor">convexModel/wrist2_l.iv</File>
+			<File type="Inventor">convexModel/wrist2_r.iv</File><!--convexModel/wrist2_l.iv-->
 		</CollisionModel>
+		
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2.59945309" units="kg" />
             <IgnoreCollision name="Underarm R"/>
         </Physics>
+        
 		<ChildFromRobot>
 			<File importEEF="true">ArmarIII-RightHand.xml</File>
 		</ChildFromRobot>

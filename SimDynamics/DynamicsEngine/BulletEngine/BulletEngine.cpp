@@ -16,14 +16,6 @@ BulletEngine::BulletEngine()
 	overlappingPairCache = NULL;
 	constraintSolver = NULL;
 	dynamicsWorld = NULL;
-	bulletRestitution = btScalar(0);
-	bulletFriction = btScalar(0.5f);
-	bulletDampingLinear = btScalar(0.05f);
-	//bulletDampingAngular = btScalar(0.85f);
-	bulletDampingAngular = btScalar(0.1f);
-
-	bulletSolverIterations = 100;
-	bulletSolverGlobalContactForceMixing = 0;
 }
 
 BulletEngine::~BulletEngine()
@@ -31,10 +23,27 @@ BulletEngine::~BulletEngine()
 	cleanup();
 }
 
-bool BulletEngine::init(const DynamicsWorldInfo &info)
+bool BulletEngine::init( DynamicsEngineConfigPtr config )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-	DynamicsEngine::init(info);
+	// first check if config is of type BulletEngineConfig
+	BulletEngineConfigPtr test = boost::dynamic_pointer_cast<BulletEngineConfig>(config);
+	if (!config || !test)
+	{
+		BulletEngineConfigPtr c(new BulletEngineConfig());
+		if (config)
+			c->gravity = config->gravity;
+		return init(c);
+	} else
+	{
+		return init(test);
+	}
+}
+
+bool BulletEngine::init( BulletEngineConfigPtr config )
+{
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	DynamicsEngine::init(config);
+	bulletConfig = config;
 
 	// Setup the bullet world
 	collision_config = new btDefaultCollisionConfiguration();
@@ -53,14 +62,27 @@ bool BulletEngine::init(const DynamicsWorldInfo &info)
 
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,overlappingPairCache,constraintSolver,collision_config);
 
-	dynamicsWorld->setGravity(btVector3(btScalar(info.gravity[0]),btScalar(info.gravity[1]),btScalar(info.gravity[2])));
+	dynamicsWorld->setGravity(btVector3(btScalar(config->gravity[0]),btScalar(config->gravity[1]),btScalar(config->gravity[2])));
 
 	collisionFilterCallback = new BulletEngine::CustomCollisionCallback(this);
 	dynamicsWorld->getPairCache()->setOverlapFilterCallback(collisionFilterCallback);
 
 	btContactSolverInfo& solverInfo = dynamicsWorld->getSolverInfo();
-	solverInfo.m_numIterations = bulletSolverIterations;
-	solverInfo.m_globalCfm = bulletSolverGlobalContactForceMixing;
+	solverInfo.m_numIterations = config->bulletSolverIterations;
+	solverInfo.m_globalCfm = config->bulletSolverGlobalContactForceMixing;
+	solverInfo.m_erp = config->bulletSolverGlobalErrorReductionParameter;
+	//solverInfo.m_solverMode |= SOLVER_USE_2_FRICTION_DIRECTIONS;
+
+	/*
+	By default, Bullet solves positional constraints and velocity constraints coupled together. 
+	This works well in many cases, but the error reduction of position coupled to velocity introduces extra energy (noticeable as 'bounce'). 
+	Instead of coupled positional and velocity constraint solving, the two can be solved separately using the 'split impulse' option. 
+	This means that recovering from deep penetrations doesn't add any velocity. You can enable the option using:
+	*/
+	//solverInfo.m_splitImpulse = 1; //enable split impulse feature
+	//optionally set the m_splitImpulsePenetrationThreshold (only used when m_splitImpulse  is enabled)
+	//only enable split impulse position correction when the penetration is deeper than this m_splitImpulsePenetrationThreshold, otherwise use the regular velocity/position constraint coupling (Baumgarte).
+	//solverInfo.m_splitImpulsePenetrationThreshold = btScalar(-0.02);
 
 	return true;
 }
@@ -121,11 +143,11 @@ bool BulletEngine::addObject( DynamicsObjectPtr o )
 		break;
 	}
 	btObject->getRigidBody()->setCollisionFlags(btColFlag);
-	btObject->getRigidBody()->setRestitution(bulletRestitution);
-	btObject->getRigidBody()->setFriction(bulletFriction);
-	btObject->getRigidBody()->setDamping(bulletDampingLinear,bulletDampingAngular);
-	btObject->getRigidBody()->setDeactivationTime(5.0f);
-	btObject->getRigidBody()->setSleepingThresholds(0.05f, 0.05f);
+	btObject->getRigidBody()->setRestitution(bulletConfig->bulletObjectRestitution);
+	btObject->getRigidBody()->setFriction(bulletConfig->bulletObjectFriction);
+	btObject->getRigidBody()->setDamping(bulletConfig->bulletObjectDampingLinear,bulletConfig->bulletObjectDampingAngular);
+	btObject->getRigidBody()->setDeactivationTime(bulletConfig->bulletObjectDeactivation);//5.0f);
+	btObject->getRigidBody()->setSleepingThresholds(bulletConfig->bulletObjectSleepingThresholdLinear,bulletConfig->bulletObjectSleepingThresholdAngular);//0.05f, 0.05f);
 
 	//btScalar defaultContactProcessingThreshold = BT_LARGE_FLOAT;
 	//btObject->getRigidBody()->setContactProcessingThreshold(defaultContactProcessingThreshold);

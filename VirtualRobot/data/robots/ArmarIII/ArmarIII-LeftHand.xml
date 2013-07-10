@@ -93,18 +93,12 @@
 				</Transform>
 			</PreJointTransform>
 		</Joint>
-		
 		<Child name="Thumb L J0"/>
 	</RobotNode>
 	
 	<RobotNode name="Thumb L J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="1" z="0"/>
 		</Joint>
 		
@@ -164,11 +158,6 @@
 	<RobotNode name="Pinky L J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
@@ -200,7 +189,6 @@
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/pinky_l2.iv</File>
 		</Visualization>
 		
@@ -229,11 +217,6 @@
 	<RobotNode name="Ring L J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
@@ -293,11 +276,6 @@
 	<RobotNode name="Middle L J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
@@ -357,11 +335,6 @@
 	<RobotNode name="Index L J0">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		

@@ -959,7 +959,7 @@ void BulletRobot::actuateJoints(float dt)
                     btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
                     //btScalar act = btScalar(it->first->getJointValue());
                     btScalar act = btScalar(getJointAngle(it->first));
-                    hinge->enableAngularMotor(true,(targ-act),10.0f);
+                    hinge->enableAngularMotor(true,(targ-act),bulletMaxMotorImulse);
                     //hinge->enableMotor(true);
 				    //hinge->setMotorTarget(it->second.jointValueTarget+link.jointValueOffset,dt);
 			    } else

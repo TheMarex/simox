@@ -36,11 +36,11 @@ boost::shared_ptr<DynamicsEngineFactory> BulletEngineFactory::createInstance(voi
     return bulletFactory;
 }
 
-DynamicsEnginePtr BulletEngineFactory::createEngine()
+DynamicsEnginePtr BulletEngineFactory::createEngine(DynamicsEngineConfigPtr config)
 {
 	BulletEnginePtr bulletEngine(new BulletEngine());
-	DynamicsEngine::DynamicsWorldInfo i; // standard gravity
-	bulletEngine->init(i);
+	//DynamicsEngine::DynamicsWorldInfo i; // standard gravity
+	bulletEngine->init(config);
 	return bulletEngine;
 }
 

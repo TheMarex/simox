@@ -39,7 +39,7 @@ BoundingBox::BoundingBox(const std::vector< Eigen::Vector3f > &p)
 	}
 }
 
-std::vector <Eigen::Vector3f> BoundingBox::getPoints()
+std::vector <Eigen::Vector3f> BoundingBox::getPoints() const
 {
 	std::vector < Eigen::Vector3f > points;
 
@@ -68,10 +68,16 @@ void BoundingBox::print()
 
 void BoundingBox::addPoints( const std::vector < Eigen::Vector3f > &p )
 {
-	for (size_t i=1;i<p.size();i++)
+	for (size_t i=0;i<p.size();i++)
 	{
 		addPoint(p[i]);
 	}
+}
+
+void BoundingBox::addPoints( const BoundingBox &bbox)
+{
+	std::vector <Eigen::Vector3f> p = bbox.getPoints();
+	addPoints(p);
 }
 
 void BoundingBox::addPoint( const Eigen::Vector3f &p )
@@ -100,6 +106,42 @@ void BoundingBox::clear()
 {
 	min.setZero();
 	max.setZero();
+}
+
+void BoundingBox::transform( Eigen::Matrix4f &pose )
+{
+	Eigen::Vector3f result[8];
+	std::vector<Eigen::Vector3f> result3;
+	result[0] << min(0),min(1),min(2);
+	result[1] << max(0),min(1),min(2);
+	result[2] << min(0),max(1),min(2);
+	result[3] << max(0),max(1),min(2);
+	result[4] << min(0),min(1),max(2);
+	result[5] << max(0),min(1),max(2);
+	result[6] << min(0),max(1),max(2);
+	result[7] << max(0),max(1),max(2);
+	Eigen::Matrix4f m;
+	for (int i=0;i<8;i++)
+	{
+		m.setIdentity();
+		m.block(0,3,3,1) = result[i];
+		m = pose*m;
+		result3.push_back(m.block(0,3,3,1));
+	}
+
+	// now find min max values
+	min << FLT_MAX,FLT_MAX,FLT_MAX;
+	max << -FLT_MAX,-FLT_MAX,-FLT_MAX;
+	for (int i=0;i<8;i++)
+	{
+		for (int j=0;j<3;j++)
+		{
+			if (result3[i](j) < min(j))
+				min(j) = result3[i](j);
+			if (result3[i](j) > max(j))
+				max(j) = result3[i](j);
+		}
+	}
 }
 
 

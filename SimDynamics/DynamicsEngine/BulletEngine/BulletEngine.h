@@ -32,6 +32,42 @@
 namespace SimDynamics
 {
 
+	class BulletEngineConfig : public DynamicsEngineConfig 
+	{
+	public:
+		BulletEngineConfig() : DynamicsEngineConfig()
+		{
+			bulletObjectRestitution = btScalar(0.2);
+			bulletObjectFriction = btScalar(0.5f);
+			bulletObjectDampingLinear = btScalar(0.05f);
+			//bulletObjectDampingAngular = btScalar(0.85f);
+			bulletObjectDampingAngular = btScalar(0.1f);
+			bulletObjectDeactivation = btScalar(5.0);//1.0);
+			bulletObjectSleepingThresholdLinear = btScalar(0.05f);//1.5);
+			bulletObjectSleepingThresholdAngular = btScalar(0.05f);//2.5);
+
+			bulletSolverIterations = 100;
+			bulletSolverGlobalContactForceMixing = 0;
+			bulletSolverGlobalErrorReductionParameter = btScalar(0.5);//0.1);
+		}
+
+		virtual ~BulletEngineConfig(){}
+
+		// global setup values
+		btScalar bulletObjectRestitution;
+		btScalar bulletObjectFriction;
+		btScalar bulletObjectDampingLinear;
+		btScalar bulletObjectDampingAngular;
+		btScalar bulletObjectSleepingThresholdLinear;
+		btScalar bulletObjectSleepingThresholdAngular;
+		btScalar bulletObjectDeactivation;
+		int bulletSolverIterations;
+		btScalar bulletSolverGlobalContactForceMixing; // allow to violate constraints (eg joint limits). A value>0 may increase stablity. (standard:0)
+		btScalar bulletSolverGlobalErrorReductionParameter; // How hard should the solver try to correct misaligned joints/constraints/links. (standard 0.2)
+	};
+
+	typedef boost::shared_ptr<BulletEngineConfig> BulletEngineConfigPtr;
+
 /*!
 	This class encapsulates all calls to the bullet physics engine. 
 	Usually there is no need to instantiate this object by your own, it is automatically created when calling DynamicsWorld::Init().
@@ -40,6 +76,8 @@ class SIMDYNAMICS_IMPORT_EXPORT BulletEngine : public DynamicsEngine, public boo
 {
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+	friend class BulletObject;
 
 	/*!
 	Constructor
@@ -56,7 +94,13 @@ public:
 	virtual bool addRobot(DynamicsRobotPtr r);
 	virtual bool removeRobot(DynamicsRobotPtr r);
 
-	virtual bool init(const DynamicsWorldInfo &info);
+	/*!
+		Initialize the engine with this configuration.
+		\param config Either a standard init (could be NULL), or if config is of type BulletEngineConfig, Bullet specific parameters will be considered.
+	*/
+	virtual bool init(DynamicsEngineConfigPtr config);
+	virtual bool init(BulletEngineConfigPtr config);
+
 	virtual bool cleanup();
 
 	/*!
@@ -127,17 +171,11 @@ protected:
 	btCollisionDispatcher* dispatcher;
 	btDefaultCollisionConfiguration * collision_config;
 
-	// global setup values
-	btScalar bulletRestitution;
-	btScalar bulletFriction;
-	btScalar bulletDampingLinear;
-	btScalar bulletDampingAngular;
-	int bulletSolverIterations;
-	btScalar bulletSolverGlobalContactForceMixing;
-
 	btOverlapFilterCallback * collisionFilterCallback;
 
 	VirtualRobot::ObstaclePtr groundObject;
+
+	BulletEngineConfigPtr bulletConfig;
 };
 
 typedef boost::shared_ptr<BulletEngine> BulletEnginePtr;

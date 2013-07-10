@@ -42,7 +42,7 @@ public:
 	BulletEngineFactory();
 	virtual ~BulletEngineFactory();
 
-	virtual DynamicsEnginePtr createEngine();
+	virtual DynamicsEnginePtr createEngine(DynamicsEngineConfigPtr config = DynamicsEngineConfigPtr());
 
 	virtual DynamicsObjectPtr createObject(VirtualRobot::SceneObjectPtr o, DynamicsObject::SimulationType simType = DynamicsObject::eDynamic);
 	virtual DynamicsRobotPtr createRobot(VirtualRobot::RobotPtr robot);

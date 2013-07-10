@@ -41,7 +41,7 @@ public:
 		Initialize the dynamics world singleton.
 		If already created the instance is returned.
 	*/
-	static DynamicsWorldPtr Init();
+	static DynamicsWorldPtr Init(DynamicsEngineConfigPtr config = DynamicsEngineConfigPtr());
 	static DynamicsWorldPtr GetWorld();
 	
 	/*!
@@ -102,7 +102,7 @@ public:
 
 protected:
 	// create world with static Init method.
-	DynamicsWorld();
+	DynamicsWorld(DynamicsEngineConfigPtr config = DynamicsEngineConfigPtr());
 
 	// see http://en.wikipedia.org/wiki/Singleton_pattern for details about correct implementations of singletons in C++
 	friend class Cleanup;

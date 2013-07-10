@@ -348,6 +348,13 @@ public:
 	*/
 	void setJointValues(TrajectoryPtr trajectory, float t);
 
+	/*!
+		The (current) bounding box in global coordinate system.
+		\param collisionModel Either the collision or the visualization model is considered.
+		\return The bounding box.
+	*/
+	BoundingBox getBoundingBox(bool collisionModel = true);
+
 protected:
 	Robot();
 	/*!

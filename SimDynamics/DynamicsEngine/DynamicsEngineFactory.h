@@ -46,7 +46,7 @@ public:
 	virtual ~DynamicsEngineFactory() {;}
 
 	//! Derived classes must return the correct engine implementation.
-	virtual DynamicsEnginePtr createEngine(){return DynamicsEnginePtr();}
+	virtual DynamicsEnginePtr createEngine(DynamicsEngineConfigPtr config = DynamicsEngineConfigPtr()){return DynamicsEnginePtr();}
 
 	virtual DynamicsObjectPtr createObject(VirtualRobot::SceneObjectPtr o, DynamicsObject::SimulationType simType = DynamicsObject::eDynamic)
 	{

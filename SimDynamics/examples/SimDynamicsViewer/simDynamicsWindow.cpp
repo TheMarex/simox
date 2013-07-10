@@ -4,6 +4,7 @@
 #include "VirtualRobot/Workspace/Reachability.h"
 #include <VirtualRobot/RuntimeEnvironment.h>
 #include <VirtualRobot/Nodes/RobotNodeRevolute.h>
+#include <SimDynamics/DynamicsEngine/BulletEngine/BulletEngine.h>
 
 #include <QFileDialog>
 #include <Eigen/Geometry>
@@ -22,6 +23,7 @@
 #include <sstream>
 using namespace std;
 using namespace VirtualRobot;
+using namespace SimDynamics;
 
 SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags flags)
 :QMainWindow(NULL)
@@ -45,8 +47,9 @@ SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags fla
 	// optional visualizations (not considered by dynamics)
 	SoSeparator *cc = CoinVisualizationFactory::CreateCoordSystemVisualization(10.0f);
 	sceneSep->addChild(cc);
-
-	dynamicsWorld = SimDynamics::DynamicsWorld::Init();
+	BulletEngineConfigPtr config(new BulletEngineConfig());
+	config->bulletSolverIterations = 200;
+	dynamicsWorld = SimDynamics::DynamicsWorld::Init(config);
 	SIMDYNAMICS_ASSERT(dynamicsWorld);
 
 	dynamicsWorld->createFloorPlane();
@@ -278,10 +281,13 @@ bool SimDynamicsWindow::loadRobot(std::string robotFilename)
 	}
     try
     {
-		//VirtualRobot::BoundingBox bbox = robot->getBoundingBox();
+		VirtualRobot::BoundingBox bbox = robot->getBoundingBox();
+		
+		
 	    //robot->print();
 	    Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
-	    gp(2,3) = 800.0f;
+		//gp(2,3) = 5.0f;
+		gp(2,3) = -bbox.getMin()(2) + 4.0f;
 	    robot->setGlobalPose(gp);
 	    dynamicsRobot = dynamicsWorld->CreateDynamicsRobot(robot);
 	    dynamicsWorld->addRobot(dynamicsRobot);

@@ -2,7 +2,6 @@
 
 <Robot Type="ArmarIII RightHand" RootNode="Hand R Base">
 
-
     <RobotNode name="Hand R Base">
 		<Child name="TCP R"/>
 		<Child name="GCP R"/>
@@ -46,10 +45,12 @@
 		<CollisionModel>
 			<File type="Inventor">convexModel/palm1_r.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="800" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
-		</Physics>		
+		</Physics>	
+			
 		<Child name="Hand Palm 2 R"/>
 		<Child name="Thumb R"/>
 	</RobotNode>
@@ -72,10 +73,12 @@
 		<CollisionModel>
 			<File type="Inventor">convexModel/palm2_r.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
 			<Mass value="800" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
 		</Physics>		
+		
 		<Child name="Pinky R"/>
 		<Child name="Ring R"/>
 		<Child name="Middle R"/>
@@ -100,7 +103,6 @@
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/thumb_r1.iv</File>
 		</Visualization>
 		
@@ -364,15 +366,14 @@
 		</Joint>
 		
 		<Visualization enable="true">
-			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/index_r2.iv</File>
 		</Visualization>
 		
 		<CollisionModel>
 			<File type="Inventor">convexModel/index_r2.iv</File>
 		</CollisionModel>
+		
 	    <Physics>
-	        
 			<Mass value="500" unit="g"/>
 			<CoM location="VisualizationBBoxCenter"/>
 		</Physics>

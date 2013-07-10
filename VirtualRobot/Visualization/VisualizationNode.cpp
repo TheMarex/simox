@@ -174,4 +174,15 @@ VirtualRobot::VisualizationNodePtr VisualizationNode::CreateUnitedVisualization(
 	return f->createUnitedVisualization(visualizations);
 }
 
+VirtualRobot::BoundingBox VisualizationNode::getBoundingBox()
+{
+	VirtualRobot::BoundingBox bbox;
+	TriMeshModelPtr tm = getTriMeshModel();
+	if (!tm)
+		return bbox;
+	bbox = tm->boundingBox;
+	bbox.transform(globalPose);
+	return bbox;
+}
+
 } // namespace VirtualRobot

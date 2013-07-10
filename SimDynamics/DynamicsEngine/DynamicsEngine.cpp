@@ -19,12 +19,15 @@ DynamicsEngine::~DynamicsEngine()
 Eigen::Vector3f DynamicsEngine::getGravity()
 {
     boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-	return dynamicsInfo.gravity;
+	return dynamicsConfig->gravity;
 }
 
-bool DynamicsEngine::init( const DynamicsWorldInfo &info )
+bool DynamicsEngine::init( DynamicsEngineConfigPtr config )
 {
-	dynamicsInfo = info;
+	if (config)
+		dynamicsConfig = config;
+	else
+		dynamicsConfig.reset(new DynamicsEngineConfig());
 	return true;
 }
 

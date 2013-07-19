@@ -153,6 +153,12 @@ namespace MathTools
 	/************************************************************************/
 	struct Plane
 	{
+		Plane()
+		{
+			p = Eigen::Vector3f::Zero();
+			n = Eigen::Vector3f::UnitZ();
+		}
+
 		Plane(const Eigen::Vector3f &point, const Eigen::Vector3f &normal)
 		{
 			p = point;

@@ -187,9 +187,14 @@ public:
 	Eigen::Matrix4f sampleCoveredPose();
 	    
 	/*!
-		Returns true, if the corresponding voxel entry is nun zero.
+		Returns true, if the corresponding voxel entry is not zero.
 	*/
 	bool isCovered(const Eigen::Matrix4f &globalPose);
+
+	/*!
+		Returns true, if voxel entry is not zero.
+	*/
+	bool isCovered(unsigned int v[6]);
 
 	virtual int getNumVoxels(int dim) const;
 	virtual float getMinBound(int dim) const;

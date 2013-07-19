@@ -981,7 +981,7 @@ Eigen::Matrix4f WorkspaceRepresentation::sampleCoveredPose()
 		{
 			nV[j] = rand() % numVoxels[j];
 		}
-		if (data->get(nV)>0)
+		if (isCovered(nV))
 		{
 			// create pose
 
@@ -1026,13 +1026,13 @@ int WorkspaceRepresentation::fillHoles(unsigned int minNeighbors)
 								for (int i=0;i<6;i++)
 								{
 									x[i]--;
-									if (data->get(x)>0)
+									if (isCovered(x))
 									{
 										sum += data->get(x);
 										count++;
 									}
 									x[i]++;x[i]++;
-									if (data->get(x)>0)
+									if (isCovered(x))
 									{
 										sum += data->get(x);
 										count++;
@@ -1103,6 +1103,12 @@ int WorkspaceRepresentation::getMaxSummedAngleReachablity()
 bool WorkspaceRepresentation::isCovered( const Eigen::Matrix4f &globalPose )
 {
 	return (getEntry(globalPose) > 0);
+}
+
+
+bool WorkspaceRepresentation::isCovered( unsigned int v[6] )
+{
+	return (data->get(v) > 0);
 }
 
 

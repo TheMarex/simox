@@ -73,6 +73,34 @@ namespace FileIO
 		return true;
 	}
 
+	inline bool readMatrix4f(Eigen::Matrix4f &res, std::ifstream &file)
+	{
+		float m[16];
+		try {
+			readArray<float>(m,16,file);
+		}
+		catch ( ... )
+		{
+			VR_WARNING << "Error while reading matrix from file" << std::endl;
+			return false;
+		}
+		res << m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15];
+		return true;
+	}
+
+	inline void writeMatrix4f(std::ofstream &file, const Eigen::Matrix4f &m)
+	{
+		float t[16];
+		int k = 0;
+		for (int i=0;i<4;i++)
+			for (int j=0;j<4;j++)
+			{
+				t[k] = m(i,j);
+				k++;
+			}
+		writeArray<float>(file,t,16);
+	}
+
 	inline void writeString(std::ofstream &file, const std::string &value)
 	{
 		int32_t len = value.length();

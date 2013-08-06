@@ -121,6 +121,7 @@ protected:
     std::vector<LinkInfo> links;
 
 	btScalar bulletMaxMotorImulse;
+    btScalar bulletMotorVelFactor;
 
 };
 

@@ -27,6 +27,7 @@ BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
 	: DynamicsRobot(rob)
 {
 	bulletMaxMotorImulse = 10.0f; 
+    bulletMotorVelFactor = 10.0f;
 	buildBulletModels(enableJointMotors);
 }
 	
@@ -962,7 +963,7 @@ void BulletRobot::actuateJoints(float dt)
                         //btScalar act = btScalar(it->first->getJointValue());
                         btScalar act = btScalar(getJointAngle(it->first));
                         m->m_enableMotor = true;
-                        m->m_targetVelocity = (targ-act);
+                        m->m_targetVelocity = (targ-act)*bulletMotorVelFactor;
                     }
                     break;
 
@@ -985,14 +986,14 @@ void BulletRobot::actuateJoints(float dt)
                         btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
                         //btScalar act = btScalar(it->first->getJointValue());
                         btScalar act = btScalar(getJointAngle(it->first));
-                        hinge->enableAngularMotor(true,(targ-act),10.0f);
+                        hinge->enableAngularMotor(true,(targ-act)*bulletMotorVelFactor,bulletMaxMotorImulse);
                         //hinge->enableMotor(true);
                         //hinge->setMotorTarget(it->second.jointValueTarget+link.jointValueOffset,dt);
                     }
                     break;
                     case eVelocity:
                     {
-                        hinge->enableAngularMotor(true,it->second.jointVelocityTarget,10.0f);
+                        hinge->enableAngularMotor(true,it->second.jointVelocityTarget,bulletMaxMotorImulse);
                     }
                     break;
                     default:
@@ -1072,7 +1073,7 @@ void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointValue
             m->m_maxLimitForce = 300;
         } else
         {
-		    hinge->enableAngularMotor(true,0.0f,bulletMaxMotorImulse);// is max impulse ok?! (10 seems to be ok, 1 oscillates)
+            //hinge->enableAngularMotor(true,0.0f,bulletMaxMotorImulse);// is max impulse ok?! (10 seems to be ok, 1 oscillates)
         }
         DynamicsRobot::actuateNode(node,jointValue);
 #endif

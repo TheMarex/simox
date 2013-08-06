@@ -444,6 +444,21 @@ void SimDynamicsWindow::updateJointInfo()
 
 void SimDynamicsWindow::jointValueChanged( int n )
 {
+/*
+#if 1
+    // test: move robot
+    float pos1= float(n+100)/201.0f;
+    RobotNodePtr rn1 = robot->getRobotNode("Platform");
+    DynamicsObjectPtr drn1 = dynamicsRobot->getDynamicsRobotNode(rn1);
+    BulletObjectPtr brn1 = boost::dynamic_pointer_cast<BulletObject>(drn1);
+    if (brn1)
+    {
+        Eigen::Vector3f vel;
+        vel << pos1*10.0f,0,0;
+        brn1->setLinearVelocity(vel);
+    }
+#endif
+*/
 	int j = UI.comboBoxRobotNode->currentIndex();
 	RobotNodeRevolutePtr rn;
 	if (j>=0 && j<(int)robotNodes.size())
@@ -458,7 +473,6 @@ void SimDynamicsWindow::jointValueChanged( int n )
     float l = rn->getJointLimitHi()-rn->getJointLimitLo();
     pos = float(n+100)/201.0f * l +  rn->getJointLimitLo();
 	dynamicsRobot->actuateNode(rn,pos);
-
 }
 
 void SimDynamicsWindow::stopCB()

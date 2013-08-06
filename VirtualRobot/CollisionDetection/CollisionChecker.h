@@ -71,8 +71,14 @@ public:
 		Test if the two models are colliding.
 		Returns true on collision.
 	*/
-	virtual bool checkCollision (SceneObjectSetPtr model1, SceneObjectSetPtr model2);
-	/*! 
+    virtual bool checkCollision (SceneObjectSetPtr model1, SceneObjectSetPtr model2);
+
+    /*!
+        Test if the two models are colliding.
+        Returns true on collision.
+    */
+    virtual bool checkCollision (std::vector<CollisionModelPtr> &model1, CollisionModelPtr model2);
+    /*!
 		Test if the two models are colliding.
 		Returns true on collision.
 	*/

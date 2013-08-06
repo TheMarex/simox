@@ -77,10 +77,16 @@ public:
 	*/
 	static ObstaclePtr createSphere(float radius, VisualizationFactory::Color color = VisualizationFactory::Color::Red(), std::string visualizationType = "", CollisionCheckerPtr colChecker = CollisionCheckerPtr());
 	std::string getXMLString(const std::string &basePath, int tabs=0);
+	
+	void setFilename(const std::string &filename);
+	std::string getFilename();
+	
 protected:
 
 	virtual Obstacle* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const;
 
+	std::string filename;
+	
 	// a counter for internal ids
 	static int idCounter;
 	// my id

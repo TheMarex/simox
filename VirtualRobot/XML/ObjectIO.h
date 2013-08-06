@@ -45,6 +45,21 @@ class VIRTUAL_ROBOT_IMPORT_EXPORT ObjectIO : public BaseIO
 public:
 
 	/*!
+        Load Obstacle from file.
+		@param xmlFile The file
+        @return Returns an empty pointer, when file access failed.
+	*/
+    static ObstaclePtr loadObstacle(const std::string &xmlFile);
+    
+ 	/*!
+        Load Obstacle from a file stream.
+		@param xmlFile The file stream
+		@param basePath If file tags are given, the base path for searching the object files can be specified.
+        @return Returns an empty pointer, when file access failed.
+	*/
+	static ObstaclePtr loadObstacle(const std::ifstream &xmlFile, const std::string &basePath = "");
+
+	/*!
         Load ManipulationObject from file.
 		@param xmlFile The file
         @return Returns an empty pointer, when file access failed.
@@ -73,6 +88,13 @@ public:
         @param basePath If file tags are given, the base path for searching the object files can be specified.
     */
     static ManipulationObjectPtr createManipulationObjectFromString(const std::string &xmlString, const std::string &basePath = "");
+	
+	/*!
+        Creates Obstacle from string.
+		@param xmlString The input string.
+        @param basePath If file tags are given, the base path for searching the object files can be specified.
+    */
+    static ObstaclePtr createObstacleFromString(const std::string &xmlString, const std::string &basePath = "");
 
 protected:
 

@@ -21,6 +21,37 @@ ObjectIO::~ObjectIO()
 {
 }
 
+VirtualRobot::ObstaclePtr ObjectIO::loadObstacle( const std::string &xmlFile )
+{
+	// load file
+	std::ifstream in(xmlFile.c_str());
+
+	THROW_VR_EXCEPTION_IF (!in.is_open(),"Could not open XML file:" << xmlFile);
+	
+	boost::filesystem::path filenameBaseComplete(xmlFile);
+	boost::filesystem::path filenameBasePath = filenameBaseComplete.branch_path();
+	std::string basePath = filenameBasePath.string();
+	VirtualRobot::ObstaclePtr res = loadObstacle(in,basePath);
+	THROW_VR_EXCEPTION_IF (!res,"Error while parsing file " << xmlFile);
+	res->setFilename(xmlFile);
+	return res;
+}
+
+VirtualRobot::ObstaclePtr ObjectIO::loadObstacle( const std::ifstream &xmlFile, const std::string &basePath /*= ""*/ )
+{
+	// load file
+	THROW_VR_EXCEPTION_IF (!xmlFile.is_open(),"Could not open XML file");
+
+	std::stringstream buffer;
+	buffer << xmlFile.rdbuf();
+	std::string objectXML(buffer.str());
+
+	VirtualRobot::ObstaclePtr res = createObstacleFromString(objectXML, basePath);
+	THROW_VR_EXCEPTION_IF (!res,"Error while parsing file.");
+	return res;
+}
+
+
 VirtualRobot::ManipulationObjectPtr ObjectIO::loadManipulationObject( const std::string &xmlFile )
 {
 	// load file
@@ -343,6 +374,58 @@ VirtualRobot::ManipulationObjectPtr ObjectIO::createManipulationObjectFromString
 		delete[] y;
 		THROW_VR_EXCEPTION("Error while parsing xml definition" << endl);
 		return ManipulationObjectPtr();
+	}
+
+	delete[] y;
+	return obj;
+}
+
+
+VirtualRobot::ObstaclePtr ObjectIO::createObstacleFromString( const std::string &xmlString, const std::string &basePath /*= ""*/ )
+{
+	// copy string content to char array
+	char* y = new char[xmlString.size() + 1];
+	strncpy(y, xmlString.c_str(), xmlString.size() + 1);
+
+	VirtualRobot::ObstaclePtr obj;
+
+	try
+	{
+		rapidxml::xml_document<char> doc;    // character type defaults to char
+		doc.parse<0>(y);    // 0 means default parse flags
+		rapidxml::xml_node<char>* objectXMLNode = doc.first_node("Obstacle");
+
+		obj = processObstacle(objectXMLNode,basePath);
+		
+		
+
+	}
+	catch (rapidxml::parse_error& e)
+	{
+		delete[] y;
+		THROW_VR_EXCEPTION("Could not parse data in xml definition" << endl
+			<< "Error message:" << e.what() << endl
+			<< "Position: " << endl << e.where<char>() << endl);
+		return ObstaclePtr();
+	}
+	catch (VirtualRobot::VirtualRobotException&)
+	{
+		// rethrow the current exception
+		delete[] y;
+		throw;
+	}
+	catch (std::exception& e)
+	{
+		delete[] y;
+		THROW_VR_EXCEPTION("Error while parsing xml definition" << endl
+			<< "Error code:" << e.what() << endl);
+		return ObstaclePtr();
+	}
+	catch (...)
+	{
+		delete[] y;
+		THROW_VR_EXCEPTION("Error while parsing xml definition" << endl);
+		return ObstaclePtr();
 	}
 
 	delete[] y;

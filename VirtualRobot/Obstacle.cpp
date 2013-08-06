@@ -172,6 +172,17 @@ std::string Obstacle::getXMLString(const std::string &basePath, int tabs)
 	return ss.str();
 }
 
+
+std::string Obstacle::getFilename()
+{
+	return filename;
+}
+
+void Obstacle::setFilename(const std::string &filename)
+{
+	this->filename = filename;
+}
+
 } //  namespace
 
 

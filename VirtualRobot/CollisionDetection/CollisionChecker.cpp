@@ -207,6 +207,25 @@ float CollisionChecker::calculateDistance (CollisionModelPtr model1, CollisionMo
 
 
 
+bool CollisionChecker::checkCollision (std::vector<CollisionModelPtr> &model1, CollisionModelPtr model2)
+{
+    VR_ASSERT(model2);
+    VR_ASSERT(isInitialized());
+    if (model1.size()==0)
+    {
+        VR_WARNING << "no internal data..." << endl;
+        return false;
+    }
+    std::vector< CollisionModelPtr >::iterator it1 = model1.begin();
+    while (it1!=model1.end())
+    {
+        if (checkCollision(*it1,model2))
+            return true;
+        it1++;
+    }
+    return false;
+}
+
 bool CollisionChecker::checkCollision (SceneObjectSetPtr model1, SceneObjectSetPtr model2)
 {
 	VR_ASSERT(model1 && model2);

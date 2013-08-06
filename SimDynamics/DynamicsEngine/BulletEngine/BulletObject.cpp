@@ -107,6 +107,8 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 	rigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 	cout << "TEST3" << endl;
 #endif
+
+    setPoseIntern(o->getGlobalPose());
 }
 	
 BulletObject::~BulletObject()
@@ -177,17 +179,20 @@ void BulletObject::setPosition( const Eigen::Vector3f &posMM )
 	setPose(pose);
 }
 
+void BulletObject::setPoseIntern( const Eigen::Matrix4f &pose )
+{
+    // notify motionState
+    motionState->setGlobalPose(pose);
+
+    // notify bullet object
+    btTransform btT = BulletEngine::getPoseBullet(pose);
+    rigidBody->setWorldTransform(btT);
+}
+
 void BulletObject::setPose( const Eigen::Matrix4f &pose )
 {
-	DynamicsObject::setPose(pose);
-
-	// notify motionState
-	motionState->setGlobalPose(pose);
-
-	// notify bullet object
-	btTransform btT = BulletEngine::getPoseBullet(pose);
-	rigidBody->setWorldTransform(btT);
-
+    DynamicsObject::setPose(pose);
+    setPoseIntern(pose);
 }
 
 Eigen::Vector3f BulletObject::getLinearVelocity()

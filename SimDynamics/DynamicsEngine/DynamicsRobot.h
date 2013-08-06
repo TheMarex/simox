@@ -56,15 +56,24 @@ public:
 	*/
 	DynamicsObjectPtr getDynamicsRobotNode(VirtualRobot::RobotNodePtr node);
 
+    enum JointActuation
+    {
+        eDisabled,
+        ePosition,
+        eVelocity
+    };
 
 	/*!
 		Enable joint actuation for given node.
 	*/
-	virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue);
-	virtual void disableNodeActuation(VirtualRobot::RobotNodePtr node);
+    virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue);
+    virtual void actuateNodeVel(VirtualRobot::RobotNodePtr node, float jointVelocity);
+    virtual void actuateNode(std::string &node, float jointValue);
+    virtual void actuateNodeVel(std::string &node, float jointVelocity);
+    virtual void disableNodeActuation(VirtualRobot::RobotNodePtr node);
 	virtual bool isNodeActuated(VirtualRobot::RobotNodePtr node);
 	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
-	virtual void enableActuation();
+    virtual void enableActuation(JointActuation mode);
 	virtual void disableActuation();
 
 	/*!
@@ -88,16 +97,22 @@ public:
 
     virtual Eigen::Matrix4f getComGlobal(VirtualRobot::RobotNodePtr rn);
 
+    virtual void setGlobalPose(Eigen::Matrix4f &gp);
+
+
+
 protected:
 
 	virtual void createDynamicsNode(VirtualRobot::RobotNodePtr node);
 
+
 	struct robotNodeActuationTarget
 	{
-		float jointValueTarget;
-		VirtualRobot::RobotNodePtr node;
+        float jointValueTarget;
+        float jointVelocityTarget;
+        VirtualRobot::RobotNodePtr node;
 		//DynamicsObjectPtr dynNode; // if node is a joint without model, there is no dyn node!
-		bool enabled;
+        JointActuation actuation;
 	};
 
 	std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget> actuationTargets;

@@ -70,6 +70,8 @@ public:
     Eigen::Matrix4f getComGlobal();
 protected:
 
+    void setPoseIntern(const Eigen::Matrix4f &pose);
+
 	btConvexHullShape* createConvexHullShape(VirtualRobot::TriMeshModelPtr trimesh);
 
 	boost::shared_ptr<btRigidBody> rigidBody;

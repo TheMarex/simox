@@ -56,6 +56,9 @@ IF (NOT SimDynamics_CONFIGURED)
    	        #MESSAGE (STATUS "BULLET_LIBRARIES: ${BULLET_LIBRARIES}")
    	        #MESSAGE (STATUS "BULLET_OPENGL_INCLUDE_DIR: ${BULLET_OPENGL_INCLUDE_DIR}")
    	        #MESSAGE (STATUS "BULLET_OpenGLSupport_LIBRARY_debug: ${BULLET_OpenGLSupport_LIBRARY_debug}")
+   	        SET(SIMDYNAMICS_INCLUDE_DIRS "${BULLET_INCLUDE_DIR}" "${BULLET_INCLUDE_DIR}/bullet" "${BULLET_DEMOS_INCLUDE_DIR}" "${BULLET_OPENGL_INCLUDE_DIR}" PARENT_SCOPE)
+           	
+           	
            	INCLUDE_DIRECTORIES( 
                 ${BULLET_INCLUDE_DIR}
                 ${BULLET_INCLUDE_DIR}/bullet
@@ -66,6 +69,7 @@ IF (NOT SimDynamics_CONFIGURED)
             OPTION(SimDynamics_USE_BULLET_USE_GLUT "Use Glut"	ON)
             IF( SimDynamics_USE_BULLET_DOUBLE_PRECISION )
                 ADD_DEFINITIONS( -DBT_USE_DOUBLE_PRECISION)
+                SET(SIMDYNAMICS_COMPILE_FLAGS "${SIMDYNAMICS_COMPILE_FLAGS}" "-DBT_USE_DOUBLE_PRECISION" PARENT_SCOPE)
             ENDIF( SimDynamics_USE_BULLET_DOUBLE_PRECISION )
             SET (SimDynamics_PHYSICS_LIBRARIES "${BULLET_LIBRARIES}")
             SET (SimDynamics_DYNAMICSENGINE TRUE)
@@ -83,7 +87,7 @@ IF (NOT SimDynamics_CONFIGURED)
 	            IF (GLUT_FOUND)
 	                MESSAGE("GLUT FOUND")
 	                MESSAGE(${GLUT_glut_LIBRARY})
-	                SET(SimDynamics_PHYSICS_LIBRARIES ${SimDynamics_PHYSICS_LIBRARIES} ${GLUT_glut_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+	                SET(SimDynamics_PHYSICS_LIBRARIES ${SimDynamics_PHYSICS_LIBRARIES} ${GLUT_glut_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})        
 	            ELSE (GLUT_FOUND)
     	            SET( GLUT_glut_LIBRARY "" CACHE PATH "Glut library." )
                     #IF (MSVC)
@@ -99,14 +103,16 @@ IF (NOT SimDynamics_CONFIGURED)
 
             	IF (WIN32)
             	    INCLUDE_DIRECTORIES(${GLUT_INCLUDE_DIR})
+            	    SET(SIMDYNAMICS_INCLUDE_DIRS "${SIMDYNAMICS_INCLUDE_DIRS}" "${GLUT_INCLUDE_DIR}" PARENT_SCOPE)
             	ELSE (WIN32)
             	    # This is the lines for linux.  This should always work if everything is installed and working fine.
             	    INCLUDE_DIRECTORIES(/usr/include /usr/local/include ${GLUT_INCLUDE_DIR}) 
+            	    SET(SIMDYNAMICS_INCLUDE_DIRS "${SIMDYNAMICS_INCLUDE_DIRS}" "/usr/include" "/usr/local/include" "${GLUT_INCLUDE_DIR}")
             	ENDIF (WIN32)
 
             ENDIF(SimDynamics_USE_BULLET_USE_GLUT)
-            
-            if (SimDynamics_USE_BULLET_USE_GLUT AND GLUT_glut_LIBRARY AND DEFINED BULLET_OpenGLSupport_LIBRARY)
+            MESSAGE ("BULLET_OpenGLSupport_LIBRARY: ${BULLET_OpenGLSupport_LIBRARY}")
+            if (SimDynamics_USE_BULLET_USE_GLUT AND GLUT_glut_LIBRARY AND BULLET_OpenGLSupport_LIBRARY)
                 MESSAGE ("Enabling OpenGL / Glut support")
                 SET (SimDynamics_BULLET_OpenGL TRUE)
             else()
@@ -123,7 +129,9 @@ IF (NOT SimDynamics_CONFIGURED)
    	endif()
    	
 
-    
+    MESSAGE ("**SIMDYNAMICS_INCLUDE_DIRS: ${SIMDYNAMICS_INCLUDE_DIRS}")
+   	MESSAGE ("**SimDynamics_PHYSICS_LIBRARIES: ${SimDynamics_PHYSICS_LIBRARIES}")
+
     #######################################################################
     # Setup for testing
     #######################################################################

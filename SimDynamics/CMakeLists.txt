@@ -76,8 +76,8 @@ if (SimDynamics_DYNAMICSENGINE)
     endif ()
     
     # this var is considered for generating Simox_INCLUDE_DIRS_
-    SET(SimDynamics_INCLUDE_DIRS "${SimDynamics_SimoxDir}" "${SimDynamics_DIR}")
-    
+    SET(SimDynamics_INCLUDE_DIRS "${SimDynamics_SimoxDir}" "${SimDynamics_DIR}" PARENT_SCOPE)
+    SET(SimDynamics_EXTERNAL_LIBRARIES "${SimDynamics_PHYSICS_LIBRARIES}" PARENT_SCOPE)
     INCLUDE_DIRECTORIES(${SimDynamics_SimoxDir})
     INCLUDE_DIRECTORIES(${SimDynamics_DIR})
     
@@ -128,7 +128,9 @@ if (SimDynamics_DYNAMICSENGINE)
       )
     
     INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION ${SimDynamics_INSTALL_HEADER_DIR}
-            FILES_MATCHING PATTERN "*.h"
+            FILES_MATCHING 
+            PATTERN "*.h"
+            PATTERN "*.hpp"
             PATTERN ".svn" EXCLUDE
             PATTERN "CMakeModules" EXCLUDE
             PATTERN "tests" EXCLUDE

@@ -67,6 +67,12 @@ DynamicsObjectPtr DynamicsRobot::getDynamicsRobotNode( VirtualRobot::RobotNodePt
 	return dynamicRobotNodes[node];
 }
 
+void DynamicsRobot::actuateNode( std::string &node, float jointValue )
+{
+    VR_ASSERT(robot);
+    VR_ASSERT(robot->hasRobotNode(node));
+    actuateNode(robot->getRobotNode(node),jointValue);
+}
 
 void DynamicsRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointValue )
 {
@@ -81,13 +87,42 @@ void DynamicsRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointVal
 	//	createDynamicsNode(node);
 
 
-	robotNodeActuationTarget target;
-	target.enabled = true;
-	target.node = node;
-	target.jointValueTarget = jointValue;
-	//target.dynNode = dnyRN;
+    robotNodeActuationTarget target;
+    target.actuation = ePosition;
+    target.node = node;
+    target.jointValueTarget = jointValue;
+    target.jointVelocityTarget = 0.0f;
+    //target.dynNode = dnyRN;
 
-	actuationTargets[node] = target;
+    actuationTargets[node] = target;
+}
+
+void DynamicsRobot::actuateNodeVel( std::string &node, float jointVelocity )
+{
+    VR_ASSERT(robot);
+    VR_ASSERT(robot->hasRobotNode(node));
+    actuateNodeVel(robot->getRobotNode(node),jointVelocity);
+}
+
+void DynamicsRobot::actuateNodeVel( VirtualRobot::RobotNodePtr node, float jointVelocity )
+{
+    VR_ASSERT(robot);
+    VR_ASSERT(node);
+    VR_ASSERT(robot->hasRobotNode(node));
+
+    //if (!hasDynamicsRobotNode(node))
+    //    createDynamicsNode(node);
+
+    //DynamicsObjectPtr dnyRN = getDynamicsRobotNode(node);
+
+    robotNodeActuationTarget target;
+    target.actuation = eVelocity;
+    target.node = node;
+    target.jointValueTarget = 0.0f;
+    target.jointVelocityTarget = jointVelocity;
+    //target.dynNode = dnyRN;
+
+    actuationTargets[node] = target;
 }
 
 void DynamicsRobot::disableNodeActuation( VirtualRobot::RobotNodePtr node )
@@ -97,12 +132,12 @@ void DynamicsRobot::disableNodeActuation( VirtualRobot::RobotNodePtr node )
 		actuationTargets.erase(node);
 	}
 }
-void DynamicsRobot::enableActuation()
+void DynamicsRobot::enableActuation(JointActuation mode)
 {
 	std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget>::iterator it = actuationTargets.begin();
 	while (it!=actuationTargets.end())
 	{
-		it->second.enabled = true;
+        it->second.actuation = mode;
 		it++;
 	}
 }
@@ -111,7 +146,7 @@ void DynamicsRobot::disableActuation()
 	std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget>::iterator it = actuationTargets.begin();
 	while (it!=actuationTargets.end())
 	{
-		it->second.enabled = false;
+        it->second.actuation = eDisabled;
 		it++;
 	}
 }
@@ -125,15 +160,15 @@ bool DynamicsRobot::isNodeActuated( VirtualRobot::RobotNodePtr node )
 	VR_ASSERT(node);
 	if (actuationTargets.find(node) == actuationTargets.end())
 		return false;
-	return actuationTargets[node].enabled;
+    return actuationTargets[node].actuation!=eDisabled;
 }
 
 float DynamicsRobot::getNodeTarget( VirtualRobot::RobotNodePtr node )
 {
-	VR_ASSERT(node);
-	if (actuationTargets.find(node) == actuationTargets.end())
-		return 0.0f;
-	return actuationTargets[node].jointValueTarget;
+    VR_ASSERT(node);
+    if (actuationTargets.find(node) == actuationTargets.end())
+        return 0.0f;
+    return actuationTargets[node].jointValueTarget;
 
 }
 
@@ -153,6 +188,21 @@ Eigen::Matrix4f DynamicsRobot::getComGlobal( VirtualRobot::RobotNodePtr rn )
     com.block(0,3,3,1) = rn->getCoMLocal();
     com = rn->getGlobalPoseVisualization()*com;
     return com;
+}
+
+void DynamicsRobot::setGlobalPose(Eigen::Matrix4f &gp)
+{
+    Eigen::Matrix4f currentPose = robot->getGlobalPose();
+    Eigen::Matrix4f delta = gp * currentPose.inverse();
+
+    robot->setGlobalPose(gp);
+    std::map<VirtualRobot::RobotNodePtr, DynamicsObjectPtr>::iterator it = dynamicRobotNodes.begin();
+    while (it != dynamicRobotNodes.end())
+    {
+        Eigen::Matrix4f newPose = it->second->getSceneObject()->getGlobalPose() * delta;
+        it->second->setPose(newPose);
+        it++;
+    }
 }
 
 /*

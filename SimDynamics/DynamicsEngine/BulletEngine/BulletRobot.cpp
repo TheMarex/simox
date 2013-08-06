@@ -454,11 +454,12 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::Ro
             btScalar diff = joint->getJointValueOffset();//startAngleBT + startAngle);
             limMinBT = limMin + diff;//diff - limMax;// 
             limMaxBT = limMax + diff;//diff - limMin;// 
-            if (fabs(startAngleBT - startAngle)>1e-6)
+            // what does it mean if there are different startAngles?!
+            /*if (fabs(startAngleBT - startAngle)>1e-6)
             {
 	            cout << "joint " << joint->getName() << ": jv diff:" << diff << endl;
 	            cout << "Simox limits: " << limMin << "/" << limMax << ", bullet limits:" << limMinBT << "/" << limMaxBT << endl;
-            }
+            }*/
             hinge->setLimit(btScalar(limMinBT),btScalar(limMaxBT));
              vr2bulletOffset = diff;
             //hinge->setLimit(btScalar(limMin),btScalar(limMax));
@@ -917,15 +918,25 @@ void BulletRobot::actuateJoints(float dt)
             VR_ASSERT(dof);
             btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
             VR_ASSERT(m);
-            if (it->second.enabled)
+            switch (it->second.actuation)
             {
-                btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
-                //btScalar act = btScalar(it->first->getJointValue());
-                btScalar act = btScalar(getJointAngle(it->first));
-                m->m_enableMotor = true;
-                m->m_targetVelocity = (targ-act); // inverted joint dir?!
-            } else
-                m->m_enableMotor = false;
+                case ePosition:
+                {
+                    btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
+                    //btScalar act = btScalar(it->first->getJointValue());
+                    btScalar act = btScalar(getJointAngle(it->first));
+                    m->m_enableMotor = true;
+                    m->m_targetVelocity = (targ-act); // inverted joint dir?!
+                }
+                    break;
+                case eVelocity:
+                {
+                    m->m_enableMotor = true;
+                    m->m_targetVelocity = it->second.jointVelocityTarget;
+                }
+                default:
+                    m->m_enableMotor = false;
+            }
 #else
 			boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
             if (!hinge)
@@ -943,27 +954,50 @@ void BulletRobot::actuateJoints(float dt)
                     m = hinge2->getRotationalLimitMotor(2); // third motor
                 }
                 VR_ASSERT(m);
-                if (it->second.enabled)
+                switch (it->second.actuation)
                 {
-                    btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
-                    //btScalar act = btScalar(it->first->getJointValue());
-                    btScalar act = btScalar(getJointAngle(it->first));
-                    m->m_enableMotor = true;
-                    m->m_targetVelocity = (targ-act); // inverted joint dir?!
-                } else
+                    case ePosition:
+                    {
+                        btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
+                        //btScalar act = btScalar(it->first->getJointValue());
+                        btScalar act = btScalar(getJointAngle(it->first));
+                        m->m_enableMotor = true;
+                        m->m_targetVelocity = (targ-act);
+                    }
+                    break;
+
+                    case eVelocity:
+                    {
+                        m->m_enableMotor = true;
+                        m->m_targetVelocity = it->second.jointVelocityTarget;
+                    }
+                    break;
+
+                default:
                     m->m_enableMotor = false;
+                }
             } else
             {
-			    if (it->second.enabled)
-			    {
-                    btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
-                    //btScalar act = btScalar(it->first->getJointValue());
-                    btScalar act = btScalar(getJointAngle(it->first));
-                    hinge->enableAngularMotor(true,(targ-act),bulletMaxMotorImulse);
-                    //hinge->enableMotor(true);
-				    //hinge->setMotorTarget(it->second.jointValueTarget+link.jointValueOffset,dt);
-			    } else
-				    hinge->enableMotor(false);
+                switch (it->second.actuation)
+                {
+                    case ePosition:
+                    {
+                        btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
+                        //btScalar act = btScalar(it->first->getJointValue());
+                        btScalar act = btScalar(getJointAngle(it->first));
+                        hinge->enableAngularMotor(true,(targ-act),10.0f);
+                        //hinge->enableMotor(true);
+                        //hinge->setMotorTarget(it->second.jointValueTarget+link.jointValueOffset,dt);
+                    }
+                    break;
+                    case eVelocity:
+                    {
+                        hinge->enableAngularMotor(true,it->second.jointVelocityTarget,10.0f);
+                    }
+                    break;
+                    default:
+                        hinge->enableMotor(false);
+                }
             }
 #endif
 		}
@@ -1040,12 +1074,65 @@ void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointValue
         {
 		    hinge->enableAngularMotor(true,0.0f,bulletMaxMotorImulse);// is max impulse ok?! (10 seems to be ok, 1 oscillates)
         }
-        DynamicsRobot::actuateNode(node,jointValue); // inverted joint direction in bullet
+        DynamicsRobot::actuateNode(node,jointValue);
 #endif
     } else
 	{
 		VR_ERROR << "Only Revolute joints implemented so far..." << endl;
-	}
+    }
+}
+
+void BulletRobot::actuateNodeVel(RobotNodePtr node, float jointVelocity)
+{
+    VR_ASSERT(node);
+
+    if (node->isRotationalJoint())
+    {
+        if (!hasLink(node))
+        {
+            VR_ERROR << "No link for node " << node->getName() << endl;
+            return;
+        }
+        LinkInfo link = getLink(node);
+#ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
+        boost::shared_ptr<btGeneric6DofConstraint> dof = boost::dynamic_pointer_cast<btGeneric6DofConstraint>(link.joint);
+        VR_ASSERT(dof);
+        btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
+        VR_ASSERT(m);
+        m->m_enableMotor = true;
+        m->m_maxMotorForce = 5;//bulletMaxMotorImulse; //?!
+        m->m_maxLimitForce = 300;
+        DynamicsRobot::actuateNodeVel(node,jointVelocity);
+#else
+        boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
+        if (!hinge)
+        {
+            // hinge2 / universal joint
+            boost::shared_ptr<btUniversalConstraint> hinge2 = boost::dynamic_pointer_cast<btUniversalConstraint>(link.joint);
+            VR_ASSERT(hinge2);
+            btRotationalLimitMotor *m;
+            if (node==link.nodeJoint)
+            {
+                 m = hinge2->getRotationalLimitMotor(1); // second motor
+            } else
+            {
+                VR_ASSERT(node==link.nodeJoint2);
+                m = hinge2->getRotationalLimitMotor(2); // third motor
+            }
+            VR_ASSERT(m);
+            m->m_enableMotor = true;
+            m->m_maxMotorForce = 5;//bulletMaxMotorImulse; //?!
+            m->m_maxLimitForce = 300;
+        } else
+        {
+            //hinge->enableAngularMotor(true,jointVelocity,bulletMaxMotorImulse);// is max impulse ok?! (10 seems to be ok, 1 oscillates)
+        }
+        DynamicsRobot::actuateNodeVel(node,jointVelocity); // inverted joint direction in bullet
+#endif
+    } else
+    {
+        VR_ERROR << "Only Revolute joints implemented so far..." << endl;
+    }
 }
 
 float BulletRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )

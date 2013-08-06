@@ -72,7 +72,8 @@ public:
 	
 	std::vector<LinkInfo> getLinks();
 
-	virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue);
+    virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue);
+    virtual void actuateNodeVel(VirtualRobot::RobotNodePtr node, float jointVelocity);
 
 	/*!
 		Usually this method is called by the framework in every tick to perform joint actuation.

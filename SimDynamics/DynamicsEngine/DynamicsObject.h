@@ -24,6 +24,7 @@
 #define _SimDynamics_DynamicsObject_h_
 
 #include "../SimDynamics.h"
+#include <VirtualRobot/SceneObject.h>
 
 namespace SimDynamics
 {
@@ -32,16 +33,16 @@ class SIMDYNAMICS_IMPORT_EXPORT DynamicsObject
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-	enum SimulationType 
+    /*enum SimulationType
 	{
 		eStatic,		// cannot move, but collide
 		eKinematic,		// can be moved, but no dynamics
 		eDynamic		// full dynamic simulation
-	};
+    };*/
 	/*!
 		Constructor
 	*/
-	DynamicsObject(VirtualRobot::SceneObjectPtr o, SimulationType type = eDynamic);
+    DynamicsObject(VirtualRobot::SceneObjectPtr o);//, SimulationType type = eDynamic);
 
 	/*!
 	*/
@@ -49,7 +50,7 @@ public:
 
 	std::string getName() const;
 
-	SimulationType getSimType() const;
+    VirtualRobot::SceneObject::Physics::SimulationType getSimType() const;
 
 	/*!
 		Set world position [MM].
@@ -69,7 +70,7 @@ public:
 protected:
 
 	VirtualRobot::SceneObjectPtr sceneObject;
-	SimulationType simulationType;
+    //SimulationType simulationType;
 };
 
 typedef boost::shared_ptr<DynamicsObject> DynamicsObjectPtr;

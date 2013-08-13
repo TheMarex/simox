@@ -4,11 +4,10 @@
 
 namespace SimDynamics {
 
-DynamicsObject::DynamicsObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
+DynamicsObject::DynamicsObject(VirtualRobot::SceneObjectPtr o)
 {
 	THROW_VR_EXCEPTION_IF(!o,"NULL object");
 	sceneObject = o;
-	simulationType = type;
 }
 	
 DynamicsObject::~DynamicsObject()
@@ -20,14 +19,14 @@ std::string DynamicsObject::getName() const
 	return sceneObject->getName();
 }
 
-DynamicsObject::SimulationType DynamicsObject::getSimType() const
+VirtualRobot::SceneObject::Physics::SimulationType DynamicsObject::getSimType() const
 {
-	return simulationType;
+    return sceneObject->getSimulationType();
 }
 
 void DynamicsObject::setPose( const Eigen::Matrix4f &pose )
 {
-	if (simulationType==eStatic)
+    if (sceneObject->getSimulationType()==VirtualRobot::SceneObject::Physics::eStatic)
 	{
 		VR_ERROR << "Could not move static object, aborting..." << endl;
 		return;

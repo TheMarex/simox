@@ -5,7 +5,7 @@
 #include <VirtualRobot/RuntimeEnvironment.h>
 #include <VirtualRobot/Nodes/RobotNodeRevolute.h>
 #include <SimDynamics/DynamicsEngine/BulletEngine/BulletEngine.h>
-
+#include <VirtualRobot/XML/ObjectIO.h>
 #include <QFileDialog>
 #include <Eigen/Geometry>
 
@@ -60,6 +60,15 @@ SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags fla
 	dynamicsObject = dynamicsWorld->CreateDynamicsObject(o);
 	dynamicsObject->setPosition(Eigen::Vector3f(3000,3000,10000.0f));
 	dynamicsWorld->addObject(dynamicsObject);
+
+#if 1
+    std::string f = "/home/niko/coding/armarx/SimulationX/data/environment/KIT_Robot_Kitchen.xml";
+    ManipulationObjectPtr mo = ObjectIO::loadManipulationObject(f);
+    mo->setSimulationType(VirtualRobot::SceneObject::Physics::eStatic);
+    dynamicsObject2 = dynamicsWorld->CreateDynamicsObject(mo);
+    //dynObj->setPosition(Eigen::Vector3f(3000,3000,1000.0f));
+    dynamicsWorld->addObject(dynamicsObject2);
+#endif
 
 	setupUI();
 	loadRobot(robotFilename);
@@ -172,7 +181,9 @@ void SimDynamicsWindow::buildVisualization()
 	useColModel = UI.checkBoxColModel->checkState() == Qt::Checked;
 	SceneObject::VisualizationType colModel = useColModel?SceneObject::Collision:SceneObject::Full;
 	viewer->addVisualization(dynamicsRobot,colModel);
-	viewer->addVisualization(dynamicsObject,colModel);
+    viewer->addVisualization(dynamicsObject,colModel);
+    if (dynamicsObject2)
+        viewer->addVisualization(dynamicsObject2,colModel);
 }
 
 
@@ -337,6 +348,7 @@ void SimDynamicsWindow::updateJointInfo()
 	QString qJV("Joint value: 0");
 	QString qTarget("Joint target: 0");
     QString qVel("Joint velocity: 0");
+    QString qVelTarget("Joint velocity target: 0");
     QString qGP("GlobalPose (simox): 0/0/0");
     QString qVisu("VISU (simox): 0/0/0");
     QString qCom("COM (bullet): 0/0/0");
@@ -389,6 +401,17 @@ void SimDynamicsWindow::updateJointInfo()
         info += ",vel:";
         a1 = (const char*)tmp.toAscii();
         info += a1;
+
+        qVelTarget = QString("Joint velocity target: ");
+        if (dynamicsRobot->isNodeActuated(rn))
+            tmp = QString::number(dynamicsRobot->getJointTargetSpeed(rn),'f',3);
+        else
+            tmp = QString("-");
+        qVelTarget +=tmp;
+        info += ",velTarget:";
+        a1 = (const char*)tmp.toAscii();
+        info += a1;
+
         Eigen::Matrix4f gp = rn->getGlobalPose();
 
         qGP = QString("GlobalPose (simox):");
@@ -432,7 +455,8 @@ void SimDynamicsWindow::updateJointInfo()
 	UI.label_RNName->setText(qName);
 	UI.label_RNValue->setText(qJV);
 	UI.label_RNTarget->setText(qTarget);
-	UI.label_RNVelocity->setText(qVel);
+    UI.label_RNVelocity->setText(qVel);
+    UI.label_RNVelocityTarget->setText(qVelTarget);
     UI.label_RNPosGP->setText(qGP);
     UI.label_RNPosVisu->setText(qVisu);
     UI.label_RNPosCom->setText(qCom);

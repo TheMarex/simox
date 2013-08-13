@@ -66,7 +66,7 @@
          <rect>
           <x>10</x>
           <y>60</y>
-          <width>161</width>
+          <width>211</width>
           <height>16</height>
          </rect>
         </property>
@@ -79,7 +79,7 @@
          <rect>
           <x>10</x>
           <y>80</y>
-          <width>161</width>
+          <width>221</width>
           <height>16</height>
          </rect>
         </property>
@@ -92,7 +92,7 @@
          <rect>
           <x>10</x>
           <y>40</y>
-          <width>161</width>
+          <width>221</width>
           <height>16</height>
          </rect>
         </property>
@@ -105,7 +105,7 @@
          <rect>
           <x>10</x>
           <y>20</y>
-          <width>161</width>
+          <width>221</width>
           <height>16</height>
          </rect>
         </property>
@@ -117,7 +117,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>120</y>
+          <y>140</y>
           <width>261</width>
           <height>16</height>
          </rect>
@@ -130,7 +130,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>140</y>
+          <y>160</y>
           <width>261</width>
           <height>16</height>
          </rect>
@@ -143,13 +143,26 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>120</y>
           <width>261</width>
           <height>16</height>
          </rect>
         </property>
         <property name="text">
          <string>GlobalPose (simox):</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_RNVelocityTarget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>241</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Joint velocity target: 0</string>
         </property>
        </widget>
       </widget>
@@ -360,7 +373,7 @@
      <x>0</x>
      <y>0</y>
      <width>854</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

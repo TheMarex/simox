@@ -8,6 +8,8 @@ DynamicsEngine::DynamicsEngine()
 {
 	floorPos.setZero();
 	floorUp.setZero();
+    floorDepthMM = 500.0f;
+    floorExtendMM = 50000.0f;
 }
 	
 DynamicsEngine::~DynamicsEngine()
@@ -143,7 +145,15 @@ bool DynamicsEngine::checkCollisionEnabled( DynamicsObject* o1 )
 {
     boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	std::vector<DynamicsObject*>::iterator i1 = find(collisionToAllDisabled.begin(),collisionToAllDisabled.end(),o1);
-	return (i1 == collisionToAllDisabled.end());
+    return (i1 == collisionToAllDisabled.end());
+}
+
+void DynamicsEngine::getFloorInfo(Eigen::Vector3f &floorPos, Eigen::Vector3f &floorUp, float &floorExtendMM, float &floorDepthMM)
+{
+    floorPos = this->floorPos;
+    floorUp = this->floorUp;
+    floorExtendMM = this->floorExtendMM;
+    floorDepthMM = this->floorDepthMM;
 }
 
 bool DynamicsEngine::checkCollisionEnabled( DynamicsObject* o1, DynamicsObject* o2 )

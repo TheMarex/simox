@@ -89,14 +89,14 @@ bool DynamicsWorld::removeObject( DynamicsObjectPtr o )
 	return engine->removeObject(o);
 }
 
-DynamicsObjectPtr DynamicsWorld::CreateDynamicsObject( VirtualRobot::SceneObjectPtr o, DynamicsObject::SimulationType simType )
+DynamicsObjectPtr DynamicsWorld::CreateDynamicsObject( VirtualRobot::SceneObjectPtr o )
 {
 	SIMDYNAMICS_ASSERT(o);
 
 	DynamicsEngineFactoryPtr factory = DynamicsEngineFactory::first(NULL);
 	SIMDYNAMICS_ASSERT(factory);
 
-	return factory->createObject(o,simType);
+    return factory->createObject(o);
 }
 
 void DynamicsWorld::createFloorPlane( const Eigen::Vector3f &pos /*= Eigen::Vector3f(0,0,0)*/, const Eigen::Vector3f &up /*= Eigen::Vector3f(0,0,1.0f)*/ )

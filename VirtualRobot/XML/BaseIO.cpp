@@ -937,6 +937,21 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
         physics.ignoreCollisions.push_back(s);
         ignoreColXMLNode = ignoreColXMLNode->next_sibling("ignorecollision",0,false);
 	} 	
+    rapidxml::xml_node<> *simulationtype = physicsXMLNode->first_node("simulationtype",0,false);
+    if (simulationtype)
+    {
+        rapidxml::xml_attribute<> *attr = simulationtype->first_attribute("value", 0, false);
+        THROW_VR_EXCEPTION_IF(!attr, "Expecting 'value' attribute in <SimulationType> tag..." << endl)
+        std::string s(attr->value());
+        getLowerCase(s);
+        if (s=="dynamic" || s=="dynamics")
+            physics.simType = VirtualRobot::SceneObject::Physics::eDynamic;
+        else if (s=="static")
+            physics.simType = VirtualRobot::SceneObject::Physics::eStatic;
+        else if (s=="kinematic")
+            physics.simType = VirtualRobot::SceneObject::Physics::eKinematic;
+        // otherwise eUnknown remains
+    }
 }
 
 std::string BaseIO::processFileNode( rapidxml::xml_node<char> *fileNode, const std::string &basePath )

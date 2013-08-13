@@ -108,14 +108,28 @@ void BulletCoinQtViewer::initSceneGraph( QFrame* embedViewer, SoNode* scene )
 	viewer->setAntialiasing(true, 4);
 
 	viewer->setGLRenderAction(new SoBoxHighlightRenderAction);
-	viewer->setTransparencyType(SoGLRenderAction::BLEND);
+    viewer->setTransparencyType(SoGLRenderAction::SORTED_OBJECT_BLEND);
 	viewer->setFeedbackVisibility(true);
 	if (bulletEngine->getFloor())
 	{
+        // standard box visu:
+        /*
 		SceneObjectPtr so = bulletEngine->getFloor()->getSceneObject();
 		SoNode * n = CoinVisualizationFactory::getCoinVisualization(so,SceneObject::Full);
+        */
+
+        // better grid visu
+        Eigen::Vector3f floorPos;
+        Eigen::Vector3f floorUp;
+        float floorExtendMM;
+        float floorDepthMM;
+        bulletEngine->getFloorInfo(floorPos,floorUp,floorExtendMM,floorDepthMM);
+        SoNode * n = (SoNode*)CoinVisualizationFactory::CreatePlaneVisualization(floorPos,floorUp,floorExtendMM,0.0f);
 		if (n)
+        {
 			floor->addChild(n);
+            addedVisualizations[bulletEngine->getFloor()] = n;
+        }
 		//addVisualization(bulletEngine->getFloor());
 	}
 	if (scene)

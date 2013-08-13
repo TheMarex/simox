@@ -44,9 +44,9 @@ DynamicsEnginePtr BulletEngineFactory::createEngine(DynamicsEngineConfigPtr conf
 	return bulletEngine;
 }
 
-DynamicsObjectPtr BulletEngineFactory::createObject( VirtualRobot::SceneObjectPtr o, DynamicsObject::SimulationType simType /*= DynamicsObject::eDynamic*/ )
+DynamicsObjectPtr BulletEngineFactory::createObject( VirtualRobot::SceneObjectPtr o )
 {
-	return BulletObjectPtr(new BulletObject(o,simType));
+    return BulletObjectPtr(new BulletObject(o));
 }
 
 SimDynamics::DynamicsRobotPtr BulletEngineFactory::createRobot( VirtualRobot::RobotPtr robot )

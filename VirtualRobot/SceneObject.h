@@ -58,6 +58,13 @@ public:
 			eCustom,			//!< Not related to 3d model, the position is set by hand
 			eVisuBBoxCenter		//!< The CoM position is automatically computed from the bounding box of the collision model
 		};
+        enum SimulationType
+        {
+            eStatic,		// cannot move, but collide
+            eKinematic,		// can be moved, but no dynamics
+            eDynamic,		// full dynamic simulation
+            eUnknown        // not specified
+        };
 		Physics()
 		{
 
@@ -65,11 +72,33 @@ public:
 			intertiaMatrix.setIdentity();
 			massKg = 0.0f;
 			comLocation = eVisuBBoxCenter;
+            simType = eUnknown;
 		}
+        std::string getString(SimulationType s) const
+        {
+            std::string r;
+            switch (s)
+            {
+            case eStatic:
+                r = "Static";
+                break;
+            case eKinematic:
+                r = "Kinematic";
+                break;
+            case eDynamic:
+                r = "Dynamic";
+                break;
+            default:
+                r = "Unknown";
+            }
+            return r;
+        }
+
 		void print() const
 		{
-			std::cout << " ** Mass: ";
-			if (massKg<=0)
+            std::cout << " ** Simulation Type: " << getString(simType) << endl;
+            std::cout << " ** Mass: ";
+            if (massKg<=0)
 				std::cout << "<not set>" << std::endl;
 			else 
 				std::cout << massKg << " [kg]" << std::endl;
@@ -109,8 +138,10 @@ public:
 			for (int i=0;i<tabs;i++)
 				ta += "\t";
 			ss << ta << "<Physics>\n";
-			ss << ta << "\t<Mass unit='kg' value='" << massKg << "'/>\n";
-			ss << ta << "\t<CoM location=";
+            if (simType!=eUnknown)
+                ss << ta << "\t<SimulationType value='" << getString(simType) << "'/>\n";
+            ss << ta << "\t<Mass unit='kg' value='" << massKg << "'/>\n";
+            ss << ta << "\t<CoM location=";
 			if (comLocation==eVisuBBoxCenter)
 				ss << "'VisualizationBBoxCenter'/>\n";
 			else
@@ -130,6 +161,7 @@ public:
 		float massKg;				//!< The mass of this object
 		CoMLocation comLocation;	//!< Where is the CoM located
 		Eigen::Matrix3f intertiaMatrix; //! in kg*m^2
+        SimulationType simType;
         std::vector< std::string > ignoreCollisions; // ignore collisions with other objects (only used within collision engines)
 	};
 
@@ -293,9 +325,15 @@ public:
 	/*!
 		Mass in Kg
 	*/
-	float getMass();
+    float getMass() const;
 
 	void setMass(float m);
+
+    /*!
+        The simulation type is of interest in SimDynamics.
+    */
+    Physics::SimulationType getSimulationType() const;
+    void setSimulationType(Physics::SimulationType s);
 
 	/*
 		Inertia matrix in kg*m^2.
@@ -390,7 +428,7 @@ protected:
 	virtual void updatePose( const Eigen::Matrix4f &parentPose, bool updateChildren = true );
 
 
-	SceneObject(){};
+    SceneObject(){}
 
 	//! basic data, used by Obstacle and ManipulationObject
 	std::string getSceneObjectXMLString(const std::string &basePath, int tabs);

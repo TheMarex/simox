@@ -38,7 +38,7 @@ public:
 	/*!
 		Constructor
 	*/
-	BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type = eDynamic);
+    BulletObject(VirtualRobot::SceneObjectPtr o);
 
 	/*!
 	*/

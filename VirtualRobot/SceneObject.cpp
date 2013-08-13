@@ -506,7 +506,7 @@ Eigen::Vector3f SceneObject::getCoMGlobal()
 	return toGlobalCoordinateSystemVec(result);
 }
 
-float SceneObject::getMass()
+float SceneObject::getMass() const
 {
 	return physics.massKg;
 }
@@ -765,7 +765,17 @@ std::string SceneObject::getSceneObjectXMLString(const std::string &basePath, in
 
 void SceneObject::setMass( float m )
 {
-	physics.massKg = m;
+    physics.massKg = m;
+}
+
+SceneObject::Physics::SimulationType SceneObject::getSimulationType() const
+{
+    return physics.simType;
+}
+
+void SceneObject::setSimulationType(SceneObject::Physics::SimulationType s)
+{
+    physics.simType = s;
 }
 
 void SceneObject::setInertiaMatrix( const Eigen::Matrix3f &im )

@@ -124,6 +124,11 @@ public:
 
 	DynamicsObjectPtr getFloor(){return floor;}
 
+    /*!
+       Stores current floor description to floorPos and floorUp.
+    */
+    void getFloorInfo(Eigen::Vector3f &floorPos, Eigen::Vector3f &floorUp, float &floorExtendMM, float &floorDepthMM);
+
 	struct DynamicsContactInfo 
 	{
 		DynamicsObject* objectA;
@@ -153,6 +158,9 @@ protected:
 
 	Eigen::Vector3f floorPos;
 	Eigen::Vector3f floorUp;
+
+    float floorExtendMM;
+    float floorDepthMM;
 
     boost::recursive_mutex engineMutex;
 

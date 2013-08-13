@@ -18,8 +18,8 @@ using namespace VirtualRobot;
 
 namespace SimDynamics {
 
-BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
-	: DynamicsObject(o, type)
+BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
+    : DynamicsObject(o)
 {
 	float interatiaFactor = 1.0f;
 #ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
@@ -55,7 +55,7 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 
 	btScalar mass = o->getMass();
 	btVector3 localInertia;
-	if (mass<=0 && type==eDynamic)
+    if (mass<=0 && (o->getSimulationType()==VirtualRobot::SceneObject::Physics::eDynamic || o->getSimulationType()==VirtualRobot::SceneObject::Physics::eUnknown))
 	{
 		//THROW_VR_EXCEPTION ("mass == 0 -> SimulationType must not be eDynamic! ");
 		mass = btScalar(1.0f); // give object a dummy mass
@@ -74,7 +74,7 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 	mass = 0;
 	localInertia.setValue(0.0f, 0.0f, 0.0f);
 #else
-	if (type != eDynamic) {
+    if (o->getSimulationType()!=VirtualRobot::SceneObject::Physics::eDynamic && o->getSimulationType()!=VirtualRobot::SceneObject::Physics::eUnknown) {
 		mass = 0;
 		localInertia.setValue(0.0f, 0.0f, 0.0f);
 	} else
@@ -108,7 +108,7 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o, SimulationType type)
 	cout << "TEST3" << endl;
 #endif
 
-    setPoseIntern(o->getGlobalPose());
+    setPoseIntern(o->getGlobalPoseVisualization());
 }
 	
 BulletObject::~BulletObject()
@@ -127,8 +127,8 @@ btConvexHullShape* BulletObject::createConvexHullShape(VirtualRobot::TriMeshMode
 
 	Eigen::Matrix4f comLoc;
 	comLoc.setIdentity();
-	comLoc.block(0,3,3,1) = sceneObject->getCoMGlobal();
-	comLoc = (sceneObject->getGlobalPoseVisualization().inverse()*comLoc);
+    comLoc.block(0,3,3,1) = sceneObject->getCoMGlobal();
+    comLoc = (sceneObject->getGlobalPoseVisualization().inverse()*comLoc);
 	com = comLoc.block(0,3,3,1);
 	
 	float sc = 1.0f;
@@ -183,10 +183,6 @@ void BulletObject::setPoseIntern( const Eigen::Matrix4f &pose )
 {
     // notify motionState
     motionState->setGlobalPose(pose);
-
-    // notify bullet object
-    btTransform btT = BulletEngine::getPoseBullet(pose);
-    rigidBody->setWorldTransform(btT);
 }
 
 void BulletObject::setPose( const Eigen::Matrix4f &pose )
@@ -206,7 +202,7 @@ Eigen::Vector3f BulletObject::getAngularVelocity()
 {
 	if (!rigidBody)
 		return Eigen::Vector3f::Zero();
-	return (BulletEngine::getVecEigen(rigidBody->getAngularVelocity()));
+    return (BulletEngine::getVecEigen(rigidBody->getAngularVelocity(),false));
 }
 
 void BulletObject::setLinearVelocity( const Eigen::Vector3f &vel )

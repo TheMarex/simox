@@ -23,6 +23,7 @@
 #ifndef _SimDynamics_BulletEngine_h_
 #define _SimDynamics_BulletEngine_h_
 
+#include <VirtualRobot/SceneObject.h>
 #include "../DynamicsEngine.h"
 #include "BulletRobot.h"
 

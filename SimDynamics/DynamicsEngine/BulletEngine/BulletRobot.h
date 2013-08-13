@@ -82,8 +82,9 @@ public:
 	virtual void actuateJoints(float dt);
 
 	virtual float getJointAngle(VirtualRobot::RobotNodePtr rn);
-	virtual float getJointSpeed(VirtualRobot::RobotNodePtr rn);
-	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
+    virtual float getJointSpeed(VirtualRobot::RobotNodePtr rn);
+    virtual float getJointTargetSpeed(VirtualRobot::RobotNodePtr rn);
+    virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
 
     /*!
         Returns the CoM pose, which is reported by bullet

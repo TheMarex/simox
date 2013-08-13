@@ -5,6 +5,7 @@
 
 #include <VirtualRobot/Obstacle.h>
 #include <VirtualRobot/XML/RobotIO.h>
+#include <VirtualRobot/XML/ObjectIO.h>
 #include <VirtualRobot/RuntimeEnvironment.h>
 
 using namespace std;
@@ -22,8 +23,9 @@ int main(int argc,char* argv[])
 
 	//std::string robFile("robots/examples/SimpleRobot/Joint5.xml");
 	//std::string robFile("robots/iCub/iCub.xml");
-	std::string robFile("robots/ArmarIII/ArmarIII.xml");
-	//std::string robFile("robots/iCub/iCub_RightHand.xml");
+    std::string robFile("robots/ArmarIII/ArmarIII.xml");
+    //std::string robFile("robots/ArmarIII/ArmarIII-RightArm.xml");
+    //std::string robFile("robots/iCub/iCub_RightHand.xml");
 	//std::string robFile("robots/iCub/iCub_testFinger.xml");
 
 	if (VirtualRobot::RuntimeEnvironment::hasValue("robot"))
@@ -50,6 +52,13 @@ int main(int argc,char* argv[])
 	dynObj->setPosition(Eigen::Vector3f(3000,3000,1000.0f));
 	world->addObject(dynObj);
 
+#if 0
+    std::string f = "/home/niko/coding/armarx/SimulationX/data/environment/KIT_Robot_Kitchen.xml";
+    ManipulationObjectPtr mo = ObjectIO::loadManipulationObject(f);
+    SimDynamics::DynamicsObjectPtr dynObj2 = world->CreateDynamicsObject(mo,DynamicsObject::eKinematic);
+    //dynObj->setPosition(Eigen::Vector3f(3000,3000,1000.0f));
+    world->addObject(dynObj2);
+#endif
 
 	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(robFile);
 	VirtualRobot::RobotPtr robot = VirtualRobot::RobotIO::loadRobot(robFile);

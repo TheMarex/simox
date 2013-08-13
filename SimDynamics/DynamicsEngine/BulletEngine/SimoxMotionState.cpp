@@ -121,6 +121,13 @@ void SimoxMotionState::setGlobalPoseSimox( const Eigen::Matrix4f& worldPose )
 
 		    // we assume that all models are handled by Bullet, so we do not need to update children
 		    robotNodeActuator->updateVisualizationPose(resPose, ja, false); 
+#if 0
+            if (rn->getName() == "Shoulder 1 L")
+            {
+                cout << "Shoulder 1 L:" << ja << ", speed:" << bdr->getJointSpeed(rn) << endl;
+            }
+
+#endif
         } /*else
         {
             VR_WARNING << "Could not determine dynamic robot?!" << endl;

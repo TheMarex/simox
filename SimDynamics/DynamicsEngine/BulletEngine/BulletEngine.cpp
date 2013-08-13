@@ -130,18 +130,24 @@ bool BulletEngine::addObject( DynamicsObjectPtr o )
 		return false;
 	}
 	int btColFlag;
-	switch (o->getSimType())
+    switch (o->getSimType())
 	{
-	case DynamicsObject::eStatic:
+    case VirtualRobot::SceneObject::Physics::eStatic:
 		btColFlag = btCollisionObject::CF_STATIC_OBJECT;
-		break;
-	case DynamicsObject::eKinematic:
+        break;
+    case VirtualRobot::SceneObject::Physics::eKinematic:
 		btColFlag = btCollisionObject::CF_KINEMATIC_OBJECT;
 		break;
-	case DynamicsObject::eDynamic:
-		btColFlag = 0;
+    case VirtualRobot::SceneObject::Physics::eDynamic:
+    case VirtualRobot::SceneObject::Physics::eUnknown:
+        btColFlag = 0;
 		break;
-	}
+    default:
+        // Dynamic Object
+        btColFlag = 0;
+        break;
+
+    }
 	btObject->getRigidBody()->setCollisionFlags(btColFlag);
 	btObject->getRigidBody()->setRestitution(bulletConfig->bulletObjectRestitution);
 	btObject->getRigidBody()->setFriction(bulletConfig->bulletObjectFriction);
@@ -191,8 +197,8 @@ void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Ve
 {
     boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	DynamicsEngine::createFloorPlane(pos,up);
-	float size = 50000.0f; // mm
-	float sizeSmall = 500.0f;
+    float size = floorExtendMM;//50000.0f; // mm
+    float sizeSmall = floorDepthMM; 500.0f;
 	float w = size;
 	float h = size;
 	float d = sizeSmall;
@@ -215,7 +221,11 @@ void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Ve
 	gp.setIdentity();
 	gp(2,3) = -sizeSmall*0.5f;
 	groundObject->setGlobalPose(gp);
-	BulletObjectPtr groundObjectBt(new BulletObject(groundObject,DynamicsObject::eStatic));
+
+    groundObject->getVisualization();
+    groundObject->setSimulationType(VirtualRobot::SceneObject::Physics::eStatic);
+
+    BulletObjectPtr groundObjectBt(new BulletObject(groundObject));
 	
 
 	floor = groundObjectBt;

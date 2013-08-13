@@ -632,7 +632,7 @@ namespace VirtualRobot {
         return node;
     }
 
-    SoSeparator* CoinVisualizationFactory::CreatePlaneVisualization( const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency, bool grid, float colorR /*= 0.5f*/, float colorG /*= 0.5f*/, float colorB /*= 0.5f*/ )
+    SoSeparator* CoinVisualizationFactory::CreatePlaneVisualization( const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency, bool grid, float colorR /*= 0.5f*/, float colorG /*= 0.5f*/, float colorB /*= 0.5f*/, std::string textureFile )
     {
         SoSeparator *res = new SoSeparator();
         res->ref();
@@ -658,16 +658,22 @@ namespace VirtualRobot {
         if (grid)
         {
             SoSeparator *res2;
-            if (transparency==0)
+            if (!textureFile.empty() && RuntimeEnvironment::getDataFileAbsolute(textureFile))
             {
-                std::string filename("images/FloorWhite.png");
-                RuntimeEnvironment::getDataFileAbsolute(filename);
-                res2 = CreateGrid(extend,extend,extend/500.0f,extend/500.0f,true,filename.c_str(),transparency);
+                res2 = CreateGrid(extend,extend,extend/500.0f,extend/500.0f,true,textureFile.c_str(),transparency);
             } else
             {
-                std::string filename("images/Floor.png");
-                RuntimeEnvironment::getDataFileAbsolute(filename);
-                res2 = CreateGrid(extend,extend,extend/500.0f,extend/500.0f,true,filename.c_str(),transparency);
+                if (transparency==0)
+                {
+                    std::string filename("images/FloorWhite.png");
+                    RuntimeEnvironment::getDataFileAbsolute(filename);
+                    res2 = CreateGrid(extend,extend,extend/500.0f,extend/500.0f,true,filename.c_str(),transparency);
+                } else
+                {
+                    std::string filename("images/Floor.png");
+                    RuntimeEnvironment::getDataFileAbsolute(filename);
+                    res2 = CreateGrid(extend,extend,extend/500.0f,extend/500.0f,true,filename.c_str(),transparency);
+                }
             }
             res->addChild(res2);
         } else

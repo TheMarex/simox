@@ -278,9 +278,32 @@ ObstaclePtr ObjectIO::processObstacle(rapidxml::xml_node<char>* objectXMLNode, c
 	bool physicsDefined = false;
 	Eigen::Matrix4f globalPose = Eigen::Matrix4f::Identity();
 
-	// get name
-	std::string objName = processNameAttribute(objectXMLNode);
-	THROW_VR_EXCEPTION_IF (objName.empty(),"Obstacle definition expects attribute 'name'");
+    // get name
+    std::string objName = processNameAttribute(objectXMLNode);
+
+    // first check if there is an xml file to load
+    rapidxml::xml_node<>* xmlFileNode = objectXMLNode->first_node("file",0,false);
+    if (xmlFileNode)
+    {
+        std::string xmlFile = processFileNode(xmlFileNode,basePath);
+        ObstaclePtr result = loadObstacle(xmlFile);
+        if (!result)
+            return result;
+        if (!objName.empty())
+            result->setName(objName);
+        // update global pose
+        rapidxml::xml_node<>* poseNode = objectXMLNode->first_node("globalpose",0,false);
+        if (poseNode)
+        {
+            processTransformNode(poseNode, objName, globalPose);
+            result->setGlobalPose(globalPose);
+        }
+
+        return result;
+    }
+
+    THROW_VR_EXCEPTION_IF (objName.empty(),"Obstacle definition expects attribute 'name'");
+
 
 	rapidxml::xml_node<>* node = objectXMLNode->first_node();
 	while (node)

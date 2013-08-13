@@ -56,9 +56,11 @@ public:
 	virtual ~DynamicsWorld();
 
 	/*!
-		Build a dynmic version of your VirtualRobot::SceneObject. This can be an Obstacle or a ManipulationObject.
+        Build a dynamic version of your VirtualRobot::SceneObject. This can be an Obstacle or a ManipulationObject.
+        Internally the value of o->getSimulationtype() is queried in order to specify which type of simulation should be performed.
+        If the simualtion type is not specified a full dynamic object is created (as with eDynamic).
 	*/
-	static DynamicsObjectPtr CreateDynamicsObject(VirtualRobot::SceneObjectPtr o, DynamicsObject::SimulationType simType = DynamicsObject::eDynamic);
+    static DynamicsObjectPtr CreateDynamicsObject(VirtualRobot::SceneObjectPtr o);
 
 	/*!
 		Build a dynamic version of your VirtualRobot::Robot.

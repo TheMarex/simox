@@ -179,7 +179,12 @@ float DynamicsRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
 
 float DynamicsRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
 {
-	return 0.0f;
+    return 0.0f;
+}
+
+float DynamicsRobot::getJointTargetSpeed( VirtualRobot::RobotNodePtr rn )
+{
+    return 0.0f;
 }
 
 Eigen::Matrix4f DynamicsRobot::getComGlobal( VirtualRobot::RobotNodePtr rn )

@@ -103,7 +103,8 @@ protected:
 		It can be overwritten in order to perform custom updates.
 		It is safe to access the scene graph.
 	*/
-	virtual void customUpdate(){};
+    virtual void customUpdate(){}
+
 	/*!
 		This method is called when a node has been selected by the user.
 		It can be overwritten to implement custom reactions.
@@ -113,11 +114,12 @@ protected:
 	virtual void customSelection(SoPath *path)
 	{
 		std::cout << "Selecting node " <<  path->getTail()->getTypeId().getName().getString() << endl;
-	};
+    }
+
 	virtual void customDeselection(SoPath *path)
 	{
 		std::cout << "Deselecting node " <<  path->getTail()->getTypeId().getName().getString() << endl;
-	};
+    }
 
 	//! Redraw
 	virtual void scheduleRedraw();

@@ -104,7 +104,7 @@ public:
 
 	static SoSeparator* CreateConvexHull2DVisualization(const MathTools::ConvexHull2DPtr ch, MathTools::Plane &p, VisualizationFactory::Color colorInner = VisualizationFactory::Color::Blue(), VisualizationFactory::Color colorLine = VisualizationFactory::Color::Black(), float lineSize = 5.0f, const Eigen::Vector3f &offset =Eigen::Vector3f::Zero() );
 	static SoSeparator* CreatePolygonVisualization(const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner = VisualizationFactory::Color::Blue(), VisualizationFactory::Color colorLine = VisualizationFactory::Color::Black(), float lineSize = 4.0f);
-	static SoSeparator* CreatePlaneVisualization(const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency, bool grid=true,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
+    static SoSeparator* CreatePlaneVisualization(const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency, bool grid=true,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f, std::string textureFile = std::string());
 	static SoSeparator* CreateCoordSystemVisualization(float scaling = 1.0f, std::string *text = NULL, float axisLength = 100.0f, float axisSize = 3.0f, int nrOfBlocks = 10);
 	static SoSeparator* CreateBoundingBox(SoNode* ivModel, bool wireFrame=false);
 	static SoSeparator* CreateGrid(float width,float depth,float widthMosaic,float depthMosaic,bool InvertNormal,const char* pFileName,float Transparency);

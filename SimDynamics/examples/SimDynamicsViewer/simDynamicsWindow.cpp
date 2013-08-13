@@ -61,7 +61,7 @@ SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags fla
 	dynamicsObject->setPosition(Eigen::Vector3f(3000,3000,10000.0f));
 	dynamicsWorld->addObject(dynamicsObject);
 
-#if 1
+#if 0
     std::string f = "/home/niko/coding/armarx/SimulationX/data/environment/KIT_Robot_Kitchen.xml";
     ManipulationObjectPtr mo = ObjectIO::loadManipulationObject(f);
     mo->setSimulationType(VirtualRobot::SceneObject::Physics::eStatic);

@@ -269,7 +269,9 @@ Eigen::VectorXf DifferentialIK::getDeltaToGoal(RobotNodePtr tcp)
 		tcp = getDefaultTCP();
 	VR_ASSERT(tcp);
 	IKSolver::CartesianSelection mode = this->modes[tcp];
-	return getDelta(tcp->getGlobalPose(),this->targets[tcp],this->modes[tcp]);
+	Eigen::Matrix4f current = tcp->getGlobalPose();
+	Eigen::Matrix4f goal = this->targets[tcp];
+	return getDelta(current,goal,this->modes[tcp]);
 }
 
 

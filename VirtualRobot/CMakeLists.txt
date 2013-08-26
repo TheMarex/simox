@@ -38,6 +38,7 @@ IK/IKSolver.cpp
 IK/DifferentialIK.cpp
 IK/GenericIKSolver.cpp
 IK/CoMIK.cpp
+IK/JacobiProvider.cpp
 IK/PoseQualityMeasurement.cpp
 IK/PoseQualityManipulability.cpp
 IK/PoseQualityExtendedManipulability.cpp
@@ -104,6 +105,7 @@ IK/IKSolver.h
 IK/DifferentialIK.h
 IK/GenericIKSolver.h
 IK/CoMIK.h
+IK/JacobiProvider.h
 IK/PoseQualityMeasurement.h
 IK/PoseQualityManipulability.h
 IK/PoseQualityExtendedManipulability.h

@@ -27,6 +27,7 @@
 
 #include "../Nodes/RobotNode.h"
 #include "../RobotNodeSet.h"
+#include "JacobiProvider.h"
 #include "DifferentialIK.h"
 
 #include <boost/shared_ptr.hpp>
@@ -34,16 +35,20 @@
 namespace VirtualRobot
 {
 class VIRTUAL_ROBOT_IMPORT_EXPORT CoMIK :
+		public JacobiProvider,
 		public boost::enable_shared_from_this<CoMIK>
 {
 public:
-	CoMIK(RobotNodeSetPtr rns, RobotNodePtr coordSystem = RobotNodePtr());
+	/*!
+		Initialize with a rns that contains joints and one that contains the bodies.
+	*/
+	CoMIK(RobotNodeSetPtr rnsJoints, RobotNodeSetPtr rnsBodies, RobotNodePtr coordSystem = RobotNodePtr());
 
 	void setGoal(const Eigen::Vector2f &goal, float tolerance=5.0f);
 
 	Eigen::MatrixXf getJacobianOfCoM(RobotNodePtr node);
-	Eigen::MatrixXf getJacobianMatrix();
-	Eigen::MatrixXf getPseudoInverseJacobianMatrix();
+	virtual Eigen::MatrixXf getJacobianMatrix();
+	virtual Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp); // ignored for CoM IK but needed for interface
 
 	Eigen::VectorXf computeStep(float stepSize );
 	bool computeSteps(float stepSize, float minumChange, int maxNStep);
@@ -55,16 +60,20 @@ public:
 	bool solveIK(float stepSize = 0.2f, float minChange = 0.0f, int maxSteps = 50);
 
 private:
-	RobotNodeSetPtr m_RobotNodeSet;
-	RobotNodePtr m_CoordSystem;
+	RobotNodePtr coordSystem;
+	RobotNodeSetPtr rnsBodies;
 
-	std::vector< RobotNodePtr > nodes;
-	std::map< VirtualRobot::RobotNodePtr, std::vector<VirtualRobot::RobotNodePtr> > parents;
+	std::vector< RobotNodePtr > bodyNodes;
+	std::map< VirtualRobot::RobotNodePtr, std::vector<VirtualRobot::RobotNodePtr> > bodyNodeParents;
 
-	float m_Tolerance;
-	bool m_CheckImprovement;
-	Eigen::Vector2f m_Target;
+	float tolerance;
+	bool checkImprovement;
+	Eigen::Vector2f target;
 };
+
+
+typedef boost::shared_ptr<CoMIK> CoMIKPtr;
+
 }
 
 

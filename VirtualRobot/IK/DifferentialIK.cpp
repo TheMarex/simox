@@ -21,8 +21,8 @@ using namespace Eigen;
 namespace VirtualRobot
 {
 
-DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem, InverseJacobiMethod invJacMethod) :
-    rns(_rns), coordSystem(_coordSystem),nRows(0), inverseMethod(invJacMethod)
+DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem, JacobiProvider::InverseJacobiMethod invJacMethod) :
+    JacobiProvider(_rns,invJacMethod), coordSystem(_coordSystem), nRows(0)
 {
 	if (!rns)
 		THROW_VR_EXCEPTION("Null data");
@@ -58,6 +58,21 @@ void DifferentialIK::setGoal(const Eigen::Matrix4f &goal, RobotNodePtr tcp, IKSo
 	
 	this->setNRows();
 }	
+
+MatrixXf DifferentialIK::getJacobianMatrix()
+{
+	return getJacobianMatrix(RobotNodePtr());
+}
+
+MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp)
+{
+	return getJacobianMatrix(tcp,IKSolver::All);
+}
+
+MatrixXf DifferentialIK::getJacobianMatrix(IKSolver::CartesianSelection mode)
+{
+	return getJacobianMatrix(RobotNodePtr(),mode);
+}
 
 MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode)
 {
@@ -194,36 +209,14 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 	return result;
 };
 
-Eigen::MatrixXf DifferentialIK::computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m)
-{
-#ifdef CHECK_PERFORMANCE
-        clock_t startT = clock();
-#endif
-    MatrixXf pseudo;
-    switch (inverseMethod)
-    {
-    case eTranspose:
-    {
-        pseudo = m.transpose() * (m*m.transpose()).inverse();
-        break;
-    }
-    case eSVD:
-    {
-       float pinvtoler = 0.00001f;
-        pseudo = MathTools::getPseudoInverse(m,pinvtoler);
-        break;
-    }
-    default:
-        THROW_VR_EXCEPTION("Inverse Jacobi Method nyi...");
-    }
-#ifdef CHECK_PERFORMANCE
-        clock_t endT = clock();
-        float diffClock = (float)(((float)(endT - startT) / (float)CLOCKS_PER_SEC) * 1000.0f);
-        //if (diffClock>10.0f)
-            cout << "Inverse Jacobi time:" << diffClock << endl;
-#endif
 
-    return pseudo;
+Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix()
+{
+	return getPseudoInverseJacobianMatrix(RobotNodePtr());
+}
+Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(IKSolver::CartesianSelection mode)
+{
+	return getPseudoInverseJacobianMatrix(RobotNodePtr(),mode);
 }
 
 Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode)
@@ -270,6 +263,45 @@ RobotNodePtr DifferentialIK::getDefaultTCP()
 	return rns->getTCP();
 }
 
+Eigen::VectorXf DifferentialIK::getDeltaToGoal(RobotNodePtr tcp)
+{	
+	if (!tcp)
+		tcp = getDefaultTCP();
+	VR_ASSERT(tcp);
+	IKSolver::CartesianSelection mode = this->modes[tcp];
+	return getDelta(tcp->getGlobalPose(),this->targets[tcp],this->modes[tcp]);
+}
+
+
+Eigen::VectorXf DifferentialIK::getDelta(Eigen::Matrix4f &current, Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode)
+{
+	Eigen::VectorXf result(6);
+	result.setZero();
+ 
+	Vector3f position = goal.block(0,3,3,1) - current.block(0,3,3,1);
+	if (mode & IKSolver::X) 
+	{
+		result(0) = position(0); 
+	}
+	if (mode & IKSolver::Y) 
+	{
+		result(1) = position(1); 
+	}
+	if (mode & IKSolver::Z) 
+	{
+		result(2) = position(2); 
+	}
+	if (mode & IKSolver::Orientation)
+	{
+		Matrix4f orientation = goal * current.inverse();
+		AngleAxis<float> aa(orientation.block<3,3>(0,0));
+		// TODO: make sure that angle is >0!?
+		result.tail(3) = aa.axis()*aa.angle();	
+	}
+
+	return result;
+}
+
 VectorXf DifferentialIK::computeStep(float stepSize )
 {
 
@@ -285,10 +317,11 @@ VectorXf DifferentialIK::computeStep(float stepSize )
 		RobotNodePtr tcp = tcp_set[i];
 		if (this->targets.find(tcp)!=this->targets.end())
 		{
+			Eigen::VectorXf delta = getDeltaToGoal(tcp);
 			IKSolver::CartesianSelection mode = this->modes[tcp];
 			MatrixXf partJacobian = this->getJacobianMatrix(tcp,mode);
 			Jacobian.block(index,0,partJacobian.rows(),nDoF) = partJacobian;
-			Vector3f position = this->targets[tcp].block(0,3,3,1) - tcp->getGlobalPose().block(0,3,3,1);
+			Vector3f position = delta.head(3);
 			position *=stepSize;
 			if (mode & IKSolver::X) 
 			{
@@ -307,10 +340,7 @@ VectorXf DifferentialIK::computeStep(float stepSize )
 			}
 			if (mode & IKSolver::Orientation)
 			{
-				Matrix4f orientation = this->targets[tcp] * tcp->getGlobalPose().inverse();
-				AngleAxis<float> aa(orientation.block<3,3>(0,0));
-				// TODO: make sure that angle is >0!?
-				error.segment(index,3) = aa.axis()*aa.angle()*stepSize;	
+				error.segment(index,3) = delta.tail(3)*stepSize;
 				index+=3;
 			}
 

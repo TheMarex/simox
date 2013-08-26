@@ -310,7 +310,7 @@ Eigen::Vector3f MathTools::projectPointToPlane( const Eigen::Vector3f &point, co
 MathTools::ConvexHull2DPtr MathTools::createConvexHull2D( std::vector< Eigen::Vector2f > points )
 {
 	std::vector< Eigen::Vector2f > P = sortPoints(points);
-	int n = (int)points.size();
+	int n = (int)P.size();
 	THROW_VR_EXCEPTION_IF(n<3,"Could not generate convex hull with " << n << " points...");
 	std::vector< Eigen::Vector2f > H;
 	H.resize(n);
@@ -455,7 +455,18 @@ std::vector< Eigen::Vector2f > MathTools::sortPoints( const std::vector< Eigen::
 	while (tmp.size()>0)
 	{
 		Eigen::Vector2f p = getAndRemoveSmallestPoint(tmp);
-		res.push_back(p);
+		// check for double entries
+		bool doubled = false;
+		for (size_t j=0;j<res.size();j++)
+		{
+			if ((res[j]-p).squaredNorm()<1e-8)
+			{
+				doubled = true;
+				break;
+			}
+		}
+		if (!doubled)
+			res.push_back(p);
 	}
 	return res;
 }
@@ -1484,6 +1495,34 @@ Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getPseudoInverse( const E
 
 	return (V*sv.asDiagonal()*U.transpose());
 }
+
+Eigen::Vector2f VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getConvexHullCenter(ConvexHull2DPtr ch)
+{
+	Eigen::Vector2f c;
+	c << 0,0;
+	if (!ch || ch->vertices.size()==0)
+	{
+		VR_WARNING << "Null data..." << endl;
+		return c;
+	}
+	Eigen::Vector2f minPos = ch->vertices[0];
+	Eigen::Vector2f maxPos = ch->vertices[0];
+	for (size_t i=1;i<ch->vertices.size();i++)
+	{
+		if (minPos[0] > ch->vertices[i][0])
+			minPos[0] = ch->vertices[i][0];
+		if (minPos[1] > ch->vertices[i][1])
+			minPos[1] = ch->vertices[i][1];
+		if (maxPos[0] < ch->vertices[i][0])
+			maxPos[0] = ch->vertices[i][0];
+		if (maxPos[1] < ch->vertices[i][1])
+			maxPos[1] = ch->vertices[i][1];
+	}
+
+	c = (minPos + maxPos) * 0.5f;
+	return c;
+}
+
 
 
 } // namespace

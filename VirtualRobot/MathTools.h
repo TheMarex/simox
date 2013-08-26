@@ -498,6 +498,7 @@ namespace MathTools
 	Eigen::Vector2f getAndRemoveSmallestPoint(std::vector< Eigen::Vector2f > &points);
 
 	ConvexHull2DPtr VIRTUAL_ROBOT_IMPORT_EXPORT createConvexHull2D(std::vector< Eigen::Vector2f > points);
+	Eigen::Vector2f VIRTUAL_ROBOT_IMPORT_EXPORT getConvexHullCenter(ConvexHull2DPtr ch);
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT isInside(const Eigen::Vector2f &p, ConvexHull2DPtr hull);
 	
 	/*!

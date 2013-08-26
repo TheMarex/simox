@@ -506,7 +506,7 @@ void stabilityWindow::performCoMIK()
 	if(!currentRobotNodeSet)
 		return;
 
-	CoMIK comIK(currentRobotNodeSet);
+	CoMIK comIK(currentRobotNodeSet,currentRobotNodeSet);
 	comIK.setGoal(m_CoMTarget);
 	if(!comIK.solveIK(0.3f,0,20))
 		std::cout << "IK solver did not succeed" << std::endl;

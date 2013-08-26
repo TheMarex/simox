@@ -28,6 +28,7 @@
 
 #include "../Nodes/RobotNode.h"
 #include "../RobotNodeSet.h"
+#include "JacobiProvider.h"
 #include "IKSolver.h"
 
 #include <string>
@@ -104,27 +105,16 @@ namespace VirtualRobot
 	@endcode
 */
 
-class VIRTUAL_ROBOT_IMPORT_EXPORT DifferentialIK : public boost::enable_shared_from_this<DifferentialIK>
+class VIRTUAL_ROBOT_IMPORT_EXPORT DifferentialIK : public JacobiProvider, public boost::enable_shared_from_this<DifferentialIK>
 {
 public:
-
-    /*!
-      @brief Several methods are offered for inverting the Jacobi (i.e. building the Pseudoinvese)
-    */
-    enum InverseJacobiMethod
-    {
-        eSVD,       //<! Performing SVD and setting very small eigen values to zero results in a quite stabel invertation of the Jacobi. (default)
-        eTranspose  //<! The Jacobi Transpose method is faster than SVD and works well for redundant kinematic chains.
-    };
-
-
 
 	/*!
 		@brief Initialize a Jacobian object.
 		\param rns The robotNodes (i.e., joints) for which the Jacobians should be calculated.
 		\param coordSystem The coordinate system in which the Jacobians are defined. By default the global coordinate system is used.
 	*/
-    DifferentialIK(RobotNodeSetPtr rns, RobotNodePtr coordSystem = RobotNodePtr(), InverseJacobiMethod invJacMethod = eSVD);
+    DifferentialIK(RobotNodeSetPtr rns, RobotNodePtr coordSystem = RobotNodePtr(), JacobiProvider::InverseJacobiMethod invJacMethod = eSVD);
 	
 
 	/*!	@brief Sets the target position for (one of) the tcp(s).  
@@ -182,16 +172,20 @@ public:
 		All this is done within computeSteps(). For more information regarding the differential inverse kinematics, 
 		see <a href="http://graphics.ucsd.edu/courses/cse169_w05/CSE169_13.ppt">this lecture</a>.
 	*/
-	Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp = RobotNodePtr(), IKSolver::CartesianSelection mode=IKSolver::All);
-	
+	Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode);
+	Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp);
+	Eigen::MatrixXf getJacobianMatrix(IKSolver::CartesianSelection mode);
+	virtual Eigen::MatrixXf getJacobianMatrix();
 
 	/*! @brief Returns the pseudo inverse of the Jacobian matrix for a given tcp of the robot.
 	 * @see getJacobianMatrix
 	 * @details The pseudo inverse \f$J^{+}\f$ can be calculated from the Jacobian matrix \f$ J \f$ using the following formula:
      * \f[ J^t \cdot \left( J \cdot J^t \right)^{-1}.\f]. Update: In order to improve stability, we are now using singular value decomposition (SVD).
 	 */
-	Eigen::MatrixXf getPseudoInverseJacobianMatrix(RobotNodePtr tcp= RobotNodePtr(), IKSolver::CartesianSelection mode=IKSolver::All);
-    Eigen::MatrixXf computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m);
+	Eigen::MatrixXf getPseudoInverseJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode=IKSolver::All);
+	virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix();
+	Eigen::MatrixXf getPseudoInverseJacobianMatrix(IKSolver::CartesianSelection mode);
+    //Eigen::MatrixXf computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m);
 
 
 	/*!	@brief Compute a single IK step. 
@@ -249,12 +243,17 @@ public:
 		Returns distance to goal. If multiple goals/TCPs are defined the mean distance is returned.
 	*/
 	float getMeanErrorPosition();
+
+	/*!
+		Returns 6D workspace delta that is used for Jacobi calculation.
+	*/
+	Eigen::VectorXf getDeltaToGoal(RobotNodePtr tcp = RobotNodePtr());
+	Eigen::VectorXf getDelta(Eigen::Matrix4f &current, Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode = IKSolver::All);
 	
 protected:
 	
 	void setNRows();
 	bool checkTolerances();
-	RobotNodeSetPtr rns; 
 	std::vector<RobotNodePtr> tcp_set;
 	RobotNodePtr coordSystem;
 
@@ -273,7 +272,6 @@ protected:
 	std::vector <RobotNodePtr> nodes;
 	std::map< RobotNodePtr, std::vector<RobotNodePtr> > parents;
 
-    InverseJacobiMethod inverseMethod;
 	bool verbose;
 
 };

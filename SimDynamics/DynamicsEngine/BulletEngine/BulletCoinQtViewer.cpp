@@ -18,7 +18,7 @@ namespace SimDynamics
 
 BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 {
-	bulletMaxSubSteps = 10;
+	bulletMaxSubSteps = 50;
     enablePhysicsUpdates = true;
 
 	const float TIMER_MS = 30.0f;

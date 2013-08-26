@@ -181,12 +181,17 @@ public:
 	void setMaxEntry(unsigned char m){maxEntry = m;}
 
 	unsigned int getSize(int dim){return sizes[dim];}
+
+	//! Min valid value is 1 by default. In cases some values are needed to indicate special flags (e.g. stability) the minimum valid number can be set here
+	void setMinValidValue(unsigned char v);
 protected:
 	unsigned int sizes[6];
 	unsigned int sizeTr0,sizeTr1;
 	unsigned int sizeRot0,sizeRot1;
 
 	unsigned char** data;
+
+	unsigned char minValidValue;
 
 	unsigned char maxEntry;
 	unsigned int voxelFilledCount;

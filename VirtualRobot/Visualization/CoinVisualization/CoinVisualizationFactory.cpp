@@ -800,6 +800,10 @@ namespace VirtualRobot {
 
     SoSeparator* CoinVisualizationFactory::CreateConvexHull2DVisualization( const MathTools::ConvexHull2DPtr ch, MathTools::Plane &p, VisualizationFactory::Color colorInner /*= VisualizationFactory::Color::Blue()*/, VisualizationFactory::Color colorLine /*= VisualizationFactory::Color::Black()*/, float lineSize /*= 5.0f*/, const Eigen::Vector3f &offset /*=Eigen::Vector3f::Zero() */ )
     {
+		if (!ch)
+		{
+			return new SoSeparator;
+		}
         std::vector<Eigen::Vector3f> cvHull3d;
         for (size_t u=0;u<ch->vertices.size();u++)
         {
@@ -808,7 +812,7 @@ namespace VirtualRobot {
             cvHull3d.push_back(pt3d);
         }
 
-        return CoinVisualizationFactory::CreatePolygonVisualization(cvHull3d);
+        return CoinVisualizationFactory::CreatePolygonVisualization(cvHull3d,colorInner,colorLine,lineSize);
     }
 
     SoNode * CoinVisualizationFactory::getCoinVisualization( RobotPtr robot, SceneObject::VisualizationType visuType )

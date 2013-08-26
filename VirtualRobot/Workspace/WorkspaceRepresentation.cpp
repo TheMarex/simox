@@ -28,7 +28,7 @@ WorkspaceRepresentation::WorkspaceRepresentation(RobotPtr robot)
 	type = "WorkspaceRepresentation";
 	versionMajor = 2;
 	versionMinor = 6;
-    orientationType = RPY;
+    orientationType = EulerXYZ;
 	reset();
 }
 
@@ -708,6 +708,12 @@ bool WorkspaceRepresentation::getVoxelFromPose( const Eigen::Matrix4f &globalPos
 bool WorkspaceRepresentation::setRobotNodesToRandomConfig( VirtualRobot::RobotNodeSetPtr nodeSet, bool checkForSelfCollisions /*= true*/ )
 {
 	static const float randMult = (float)(1.0/(double)(RAND_MAX));
+
+	if (!nodeSet)
+		nodeSet = this->nodeSet;
+	if (!nodeSet)
+		return false;
+
 	float rndValue;
 	float minJ, maxJ;
 	Eigen::VectorXf v(nodeSet->getSize());

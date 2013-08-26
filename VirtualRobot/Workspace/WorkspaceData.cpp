@@ -38,8 +38,6 @@ WorkspaceData::WorkspaceData(unsigned int size1, unsigned int size2, unsigned in
 				for (unsigned int z=0;z<size3;z++)
 				{
 					data[x*sizeTr0+y*sizeTr1+z] = NULL;
-					//data[x*sizeTr0+y*sizeTr1+z] = new unsigned char[(unsigned int)sizeRot];
-					//memset(data[x*sizeTr0+y*sizeTr1+z],0,(unsigned int)sizeRot*sizeof(unsigned char));
 				}
 			}
 		}
@@ -52,14 +50,11 @@ WorkspaceData::WorkspaceData(unsigned int size1, unsigned int size2, unsigned in
 		VR_ERROR << "Could not assign " << sizeRot << " bytes of memory. Reduce size of reachability space..." << endl;
 		throw;
 	}
-		
 
-    
+	minValidValue = 1;
 	maxEntry = 0;
 	voxelFilledCount = 0;
 	this->adjustOnOverflow = adjustOnOverflow;
-
-	
 }
 
 WorkspaceData::WorkspaceData(WorkspaceDataPtr other)
@@ -110,13 +105,10 @@ WorkspaceData::WorkspaceData(WorkspaceDataPtr other)
 		throw;
 	}
 
-
-
+	minValidValue = other->minValidValue;
 	maxEntry = other->maxEntry;
 	voxelFilledCount = other->voxelFilledCount;
 	this->adjustOnOverflow = other->adjustOnOverflow;
-
-
 }
 
 WorkspaceData::~WorkspaceData()
@@ -192,15 +184,15 @@ void WorkspaceData::binarize()
 						{
 							getPos(a,b,c,d,e,f, posTr, posRot);
 							if (data[posTr])
-								if (data[posTr][posRot]>1)
-									data[posTr][posRot] = 1;
+								if (data[posTr][posRot]>minValidValue)
+									data[posTr][posRot] = minValidValue;
 						}
 					}
 				}
 			}
 		}
 	}
-	maxEntry = 1;
+	maxEntry = minValidValue;
 }
 
 void WorkspaceData::bisectData()
@@ -215,11 +207,19 @@ void WorkspaceData::bisectData()
 						{
 							getPos(x0,x1,x2,x3,x4,x5, posTr, posRot);
 							if (data[posTr])
-								if (data[posTr][posRot]>1)
+								if (data[posTr][posRot]>minValidValue)
+								{
 									data[posTr][posRot] /= 2;
+									if (data[posTr][posRot]<minValidValue)
+										data[posTr][posRot] = minValidValue;
+								}
 						}
-	if (maxEntry>1)
+	if (maxEntry>minValidValue)
+	{
 	    maxEntry = maxEntry / 2;
+		if (maxEntry<minValidValue)
+			maxEntry = minValidValue;
+	}
 }
 
 void WorkspaceData::setDatumCheckNeighbors( unsigned int x[6], unsigned char value, unsigned int neighborVoxels )
@@ -266,8 +266,6 @@ void WorkspaceData::clear()
 					delete [] data[x*sizeTr0+y*sizeTr1+z];
 					data[x*sizeTr0+y*sizeTr1+z] = NULL;
 				}
-				//if (data[x*sizeTr0+y*sizeTr1+z])
-					//memset(data[x*sizeTr0+y*sizeTr1+z],0,getSizeRot()*sizeof(unsigned char));
 			}
 		}
 	}
@@ -282,6 +280,9 @@ bool WorkspaceData::hasEntry( unsigned int x, unsigned int y, unsigned int z )
 	return (data[x*sizeTr0+y*sizeTr1+z]!=NULL);
 }
 
-
+void WorkspaceData::setMinValidValue( unsigned char v )
+{
+	minValidValue = v;
+}
 
 } // namespace VirtualRobot

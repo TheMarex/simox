@@ -153,7 +153,7 @@ ManipulationObject* ManipulationObject::_clone( const std::string &name, Collisi
 
 	return result;
 }
-
+/*
 void ManipulationObject::setFilename( const std::string &filename )
 {
 	this->filename = filename;
@@ -163,7 +163,7 @@ std::string ManipulationObject::getFilename()
 {
 	return filename;
 }
-
+*/
 
 
 } //  namespace

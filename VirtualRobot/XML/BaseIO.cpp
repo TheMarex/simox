@@ -609,6 +609,23 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
 	if (filename.empty())
 		return;
 
+    boost::filesystem::path diffpath;
+    boost::filesystem::path tmppath = filename;
+    while(tmppath != basePath)
+    {
+        diffpath = tmppath.filename() / diffpath;
+        tmppath = tmppath.parent_path();
+        if (tmppath.empty())
+        {
+            // no relative path found, take complete path
+            diffpath = filename;
+            break;
+        }
+    }
+
+    filename = diffpath.string();
+
+/*
 	bool found = true;
 	boost::filesystem::path diffpath;
 	boost::filesystem::path tmppath = filename;
@@ -637,7 +654,7 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
 	}
 
 	filename = res;
-
+*/
 }
 
 

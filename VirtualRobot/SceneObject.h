@@ -147,10 +147,10 @@ public:
 			else
 			{
 				ss << "'Custom' x='" << localCoM(0) << "' y='" << localCoM(1) << "' z='" << localCoM(2) << "'/>\n";
-			}
-			ss << ta << "\t<InertiaMatrix>\n";
-			ss << MathTools::getTransformXMLString(intertiaMatrix,tabs+2,true);
-			ss << ta << "\t</InertiaMatrix>\n";
+            }
+            ss << ta << "\t<InertiaMatrix>\n";
+            ss << MathTools::getTransformXMLString(intertiaMatrix,tabs+2,true);
+            ss << ta << "\t</InertiaMatrix>\n";
             for (size_t i=0;i<ignoreCollisions.size();i++)
                 ss << ta << "\t<IgnoreCollisions name='" << ignoreCollisions[i] << "'/>\n";
 			ss << ta << "</Physics>\n";

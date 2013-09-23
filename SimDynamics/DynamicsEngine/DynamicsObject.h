@@ -67,6 +67,19 @@ public:
 	virtual Eigen::Vector3f getLinearVelocity();
 	virtual Eigen::Vector3f getAngularVelocity();
 
+    /*!
+     * \brief applyForce Applies an external force on this object. The force is applied at the CoM position.
+     * \param force The force to apply (value with respect to one second). The force will be deleted after one simulation step.
+     */
+    virtual void applyForce(const Eigen::Vector3f &force);
+
+    /*!
+     * \brief applyTorque Applies an external torque on this object. The torque is applied at the CoM position.
+     * \param torque The torque to apply (value with respect to one second). The torque will be deleted after one simulation step.
+     */
+    virtual void applyTorque(const Eigen::Vector3f &torque);
+
+
 protected:
 
 	VirtualRobot::SceneObjectPtr sceneObject;

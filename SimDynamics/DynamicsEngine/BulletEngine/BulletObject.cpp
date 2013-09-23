@@ -228,5 +228,21 @@ Eigen::Matrix4f BulletObject::getComGlobal()
     return BulletEngine::getPoseEigen(tr);
 }
 
+void BulletObject::applyForce(const Eigen::Vector3f &force)
+{
+    if (!rigidBody)
+        return;
+    btVector3 btVel = BulletEngine::getVecBullet(force,false);
+    rigidBody->applyCentralForce(btVel);
+}
+
+void BulletObject::applyTorque(const Eigen::Vector3f &torque)
+{
+    if (!rigidBody)
+        return;
+    btVector3 btVel = BulletEngine::getVecBullet(torque,false);
+    rigidBody->applyTorque(btVel);
+}
+
 
 } // namespace VirtualRobot

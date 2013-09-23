@@ -53,7 +53,17 @@ Eigen::Vector3f DynamicsObject::getLinearVelocity()
 
 Eigen::Vector3f DynamicsObject::getAngularVelocity()
 {
-	return Eigen::Vector3f::Zero();
+    return Eigen::Vector3f::Zero();
+}
+
+void DynamicsObject::applyForce(const Eigen::Vector3f &force)
+{
+
+}
+
+void DynamicsObject::applyTorque(const Eigen::Vector3f &torque)
+{
+
 }
 
 

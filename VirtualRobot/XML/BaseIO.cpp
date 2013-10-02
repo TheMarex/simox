@@ -239,7 +239,10 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 		r = getFloatByAttributeName(rpyXMLNode, "roll");
 		p = getFloatByAttributeName(rpyXMLNode, "pitch");
 		y = getFloatByAttributeName(rpyXMLNode, "yaw");
-
+		if (!hasUnitsAttribute(rpyXMLNode))
+		{
+			VR_ERROR << "No units attribute at <" << tagName << ">" << endl;
+		}
 		Units u = getUnitsAttribute(rpyXMLNode,Units::eAngle);
 		if (u.isDegree())
 		{
@@ -281,7 +284,7 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 
 		if (hasUnitsAttribute(translationXMLNode))
 		{
-			Units u = getUnitsAttribute(rpyXMLNode,Units::eLength);
+			Units u = getUnitsAttribute(translationXMLNode,Units::eLength);
 			if (u.isMeter())
 			{
 				transform(0,3) *= 1000.0f;
@@ -869,6 +872,10 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 	if (massXMLNode)
 	{
 		physics.massKg = getFloatByAttributeName(massXMLNode,"value");
+		if (!hasUnitsAttribute(massXMLNode))
+		{
+			VR_ERROR << "No units attribute at <" << nodeName << ">" << endl;
+		}
 		Units unit = getUnitsAttribute(massXMLNode,Units::eWeight);
 		if (unit.isGram())
 			physics.massKg *= 0.001f;
@@ -911,7 +918,7 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 			{
 				Units unitCom = getUnitsAttribute(comXMLNode,Units::eLength);
 				if (unitCom.isMeter())
-					physics.localCoM *= 0.001f;
+					physics.localCoM *= 1000.0f;
 
 			}
 		}
@@ -1031,6 +1038,10 @@ bool BaseIO::processConfigurationNode(rapidxml::xml_node<char>* configXMLNode, s
 			c.name = processNameAttribute(node,true);
 			THROW_VR_EXCEPTION_IF(c.name.empty(), "Expecting a name in configuration tag '" << storeConfigName << "'.");
 			c.value = getFloatByAttributeName(node,"value");
+			if (!hasUnitsAttribute(node))
+			{
+				VR_ERROR << "No units attribute at <" << storeConfigName << ">" << endl;
+			}
 			if (getUnitsAttribute(node,Units::eAngle).isDegree())
 			{
 				c.value = c.value/180.0f * (float)M_PI;

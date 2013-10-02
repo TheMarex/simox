@@ -399,7 +399,7 @@ boost::shared_ptr<T> Robot::getVisualization(SceneObject::VisualizationType visu
 	return visualization;
 }
 
-class LocalRobot : public Robot {
+class VIRTUAL_ROBOT_IMPORT_EXPORT LocalRobot : public Robot {
 public:
 	LocalRobot(const std::string &name, const std::string &type=""); 
 	virtual ~LocalRobot();

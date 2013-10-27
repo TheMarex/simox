@@ -26,9 +26,9 @@ RobotNodePrismaticFactory::~RobotNodePrismaticFactory()
  *
  * \return instance of VirtualRobot::RobotNodePrismatic.
  */
-RobotNodePtr RobotNodePrismaticFactory::createRobotNode(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const Eigen::Matrix4f& preJointTransform, const Eigen::Vector3f& axis, const Eigen::Matrix4f& postJointTransform, const Eigen::Vector3f& translationDirection, const SceneObject::Physics &p, RobotNode::RobotNodeType rntype) const
+RobotNodePtr RobotNodePrismaticFactory::createRobotNode(RobotPtr robot, const std::string& nodeName, VisualizationNodePtr visualizationModel, CollisionModelPtr collisionModel, float limitLow, float limitHigh, float jointValueOffset, const Eigen::Matrix4f& preJointTransform, const Eigen::Vector3f& axis, const Eigen::Vector3f& translationDirection, const SceneObject::Physics &p, RobotNode::RobotNodeType rntype) const
 {
-	RobotNodePtr robotNode(new RobotNodePrismatic(robot, nodeName, limitLow, limitHigh, preJointTransform, translationDirection, postJointTransform, visualizationModel, collisionModel, jointValueOffset,p,CollisionCheckerPtr(), rntype));
+	RobotNodePtr robotNode(new RobotNodePrismatic(robot, nodeName, limitLow, limitHigh, preJointTransform, translationDirection, visualizationModel, collisionModel, jointValueOffset,p,CollisionCheckerPtr(), rntype));
 
 	return robotNode;
 }

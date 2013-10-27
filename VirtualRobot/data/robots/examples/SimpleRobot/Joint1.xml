@@ -3,13 +3,6 @@
 <Robot Type="Simple3DoFRobot" RootNode="Joint1">
 
 	<RobotNode name="Joint1">
-		<Joint type="fixed">
-            <postjointtransform>
-                <transform>
-                    <translation x="3000" y="0" z="0"/>
-                </transfrom>
-            </postjointtransform>
-        </Joint>
 		<Visualization enable="true">
 			 <File type="inventor">joint_rot2.iv</File>
 			 <UseAsCollisionModel/>
@@ -25,18 +18,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Joint2">
+		<Transform>
+            <translation x="0" y="0" z="3000"/>
+		</Transform>
 		<Joint type="revolute">
-  		    <!--prejointtransform>
-                <transform>
-                    <translation x="3000" y="0" z="0"/>
-                </transfrom>
-            </prejointtransform-->
 		    <axis x="0" y="1" z="0"/>
-		    <postjointtransform>
-                <transform>
-                    <translation x="3000" y="0" z="0"/>
-                </transform>
-            </postjointtransform>
 			<Limits unit="degree" lo="-90" hi="90"/>
         </Joint>
 		<Visualization enable="true">
@@ -55,13 +41,10 @@
 	</RobotNode-->
 	
 	<RobotNode name="Joint3">
-		<Joint type="fixed">
-		    <postjointtransform>
-                <transform>
-                    <translation x="3000" y="0" z="0"/>
-                </transform>
-            </postjointtransform>
-        </Joint>
+		<Transform>
+            <translation x="3000" y="0" z="0"/>
+		</Transform>
+		
 		<Visualization enable="true">
 			 <File type="inventor">joint_box.iv</File>
 			 <UseAsCollisionModel/>

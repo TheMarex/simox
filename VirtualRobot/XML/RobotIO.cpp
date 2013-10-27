@@ -6,6 +6,7 @@
 #include "../EndEffector/EndEffector.h"
 #include "../EndEffector/EndEffectorActor.h"
 #include "../Nodes/RobotNodeFactory.h"
+#include "../Nodes/SensorFactory.h"
 #include "../Nodes/RobotNodeFixedFactory.h"
 #include "../Transformation/DHParameter.h"
 #include "../Visualization/VisualizationFactory.h"
@@ -136,6 +137,42 @@ void RobotIO::processLimitsNode(rapidxml::xml_node<char> *limitsXMLNode, float &
 	}
 }
 
+bool RobotIO::processSensor(RobotNodePtr rn, rapidxml::xml_node<char> *sensorXMLNode)
+{
+	if (!rn|| !sensorXMLNode)
+	{
+		VR_ERROR << "NULL DATA ?!" << endl;
+		return false;
+	}
+	rapidxml::xml_attribute<> *attr;
+	std::string sensorType;
+	
+	attr = sensorXMLNode->first_attribute("type", 0, false);
+	if (attr)
+	{
+		sensorType = getLowerCase(attr->value());
+	} else
+	{
+		VR_WARNING << "No 'type' attribute for <Sensor> tag. Skipping Sensor definition of RobotNode " << rn->getName() << "!" << endl;
+		return false;
+	}
+
+	SensorPtr s;
+
+		
+	SensorFactoryPtr sensorFactory = SensorFactory::fromName(sensorType, NULL);
+	if (sensorFactory)
+	{
+		s = sensorFactory->createSensor(rn, sensorXMLNode);
+	}
+	else
+	{
+		VR_WARNING << "No Factory found for sensor of type " << sensorType << ". Skipping Sensor definition of RobotNode " << rn->getName() << "!" << endl;
+		return false;
+	}
+
+	return rn->registerSensor(s);
+}
 
 RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, const std::string& robotNodeName,
                                        RobotPtr robot,
@@ -149,8 +186,7 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	float jointLimitLow = (float)-M_PI;
 	float jointLimitHigh = (float)M_PI;
 
-	Eigen::Matrix4f preJointTransform = Eigen::Matrix4f::Identity();
-	Eigen::Matrix4f postJointTransform = Eigen::Matrix4f::Identity();
+	Eigen::Matrix4f preJointTransform = transformationMatrix;//Eigen::Matrix4f::Identity();
 	Eigen::Vector3f axis = Eigen::Vector3f::Zero();
 	Eigen::Vector3f translationDir = Eigen::Vector3f::Zero();
 
@@ -159,7 +195,6 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 
 	rapidxml::xml_attribute<> *attr;
 	float jointOffset = 0.0f;
-	DHParameter dh;
 	std::string jointType;
 
 	RobotNodePtr robotNode;
@@ -167,10 +202,9 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	if (!jointXMLNode)
 	{
 		// no <Joint> tag -> fixed joint
-        postJointTransform = transformationMatrix; // used by TransformationNodes
 		RobotNodeFactoryPtr fixedNodeFactory = RobotNodeFactory::fromName(RobotNodeFixedFactory::getName(), NULL);
 		if (fixedNodeFactory)
-			robotNode = fixedNodeFactory->createRobotNode(robot, robotNodeName, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, preJointTransform, axis, postJointTransform, translationDir, physics, rntype);
+			robotNode = fixedNodeFactory->createRobotNode(robot, robotNodeName, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, preJointTransform, axis, translationDir, physics, rntype);
 		return robotNode;
 	}
 
@@ -191,12 +225,9 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	}
 
 	rapidxml::xml_node<>* node = jointXMLNode->first_node();
-	rapidxml::xml_node<> *dhXMLNode = NULL;
-	rapidxml::xml_node<> *prejointTransformNode = NULL;
-	rapidxml::xml_node<> *tmpXMLNodeAxis = NULL;
+		rapidxml::xml_node<> *tmpXMLNodeAxis = NULL;
 	rapidxml::xml_node<> *tmpXMLNodeTranslation = NULL;
 	rapidxml::xml_node<> *limitsNode = NULL;
-	rapidxml::xml_node<> *postjointTransformNode = NULL;
 
 	float maxVelocity = 1.0f; // m/s
 	float maxAcceleration = 1.0f; // m/s^2
@@ -207,8 +238,10 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		std::string nodeName = getLowerCase(node->name());
 		if (nodeName == "dh")
 		{
-			THROW_VR_EXCEPTION_IF(dhXMLNode, "Multiple DH definitions in <Joint> tag of robot node <" << robotNodeName << ">." << endl);
-			dhXMLNode = node;
+			THROW_VR_EXCEPTION("DH specification in Joint tag is DEPRECATED! Use <RobotNode><Transform><DH>...</DH></Transform><Joint>...</Joint></RobotNode> structure")
+
+			//THROW_VR_EXCEPTION_IF(dhXMLNode, "Multiple DH definitions in <Joint> tag of robot node <" << robotNodeName << ">." << endl);
+			//dhXMLNode = node;
 		} else if (nodeName == "limits")
 		{
 			THROW_VR_EXCEPTION_IF(limitsNode, "Multiple limits definitions in <Joint> tag of robot node <" << robotNodeName << ">." << endl);
@@ -216,8 +249,9 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 			processLimitsNode(limitsNode, jointLimitLow, jointLimitHigh);
 		} else if (nodeName == "prejointtransform")
 		{
-			THROW_VR_EXCEPTION_IF(prejointTransformNode, "Multiple preJoint definitions in <Joint> tag of robot node <" << robotNodeName << ">." << endl);
-			prejointTransformNode = node;
+			THROW_VR_EXCEPTION("PreJointTransform is DEPRECATED! Use <RobotNode><Transform>...</Transform><Joint>...</Joint></RobotNode> structure")
+			//THROW_VR_EXCEPTION_IF(prejointTransformNode, "Multiple preJoint definitions in <Joint> tag of robot node <" << robotNodeName << ">." << endl);
+			//prejointTransformNode = node;
 		} else if (nodeName == "axis")
 		{
 			THROW_VR_EXCEPTION_IF(tmpXMLNodeAxis, "Multiple axis definitions in <Joint> tag of robot node <" << robotNodeName << ">." << endl);
@@ -228,8 +262,9 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 			tmpXMLNodeTranslation = node;
 		} else if (nodeName == "postjointtransform")
 		{
-			THROW_VR_EXCEPTION_IF(postjointTransformNode, "Multiple postjointtransform definitions in <Joint> tag of robot node <" << robotNodeName << ">." << endl);
-			postjointTransformNode = node;
+			THROW_VR_EXCEPTION("postjointtransform is DEPRECATED and not longer allowed! Use <RobotNode><Transform>...</Transform><Joint>...</Joint></RobotNode> structure")
+			//THROW_VR_EXCEPTION_IF(postjointTransformNode, "Multiple postjointtransform definitions in <Joint> tag of robot node <" << robotNodeName << ">." << endl);
+			//postjointTransformNode = node;
 		} else if (nodeName == "maxvelocity")
 		{
 			maxVelocity = getFloatByAttributeName(node,"value");
@@ -317,7 +352,7 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 
 		node = node->next_sibling();
 	}
-
+	/*
 	if (dhXMLNode)
 	{
 		// check for wrongly defined nodes
@@ -329,7 +364,7 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		dh.isSet = false;
 		processTransformNode(prejointTransformNode, robotNodeName, preJointTransform);
 		processTransformNode(postjointTransformNode, robotNodeName, postJointTransform);
-
+		*/
 		if (jointType=="revolute")
 		{
 			if (tmpXMLNodeAxis)
@@ -339,7 +374,10 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 				axis[2] = getFloatByAttributeName(tmpXMLNodeAxis, "z");
 			} else
 			{
-				THROW_VR_EXCEPTION("joint '" << robotNodeName << "' wrongly defined, expecting 'DH' parameters or 'axis' tag." << endl);
+				// silently setting axis to (0,0,1)
+				//VR_WARNING << "Joint '" << robotNodeName << "' without 'axis' tag. Setting rotation axis to (0,0,1)." << endl;
+				axis << 0,0,1.0f;
+				//THROW_VR_EXCEPTION("joint '" << robotNodeName << "' wrongly defined, expecting 'axis' tag." << endl);
 			}
 		} else if (jointType=="prismatic")
 		{
@@ -350,22 +388,22 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 				translationDir[2] = getFloatByAttributeName(tmpXMLNodeTranslation, "z");
 			} else
 			{
-				THROW_VR_EXCEPTION("Prismatic joint '" << robotNodeName << "' wrongly defined, expecting 'DH' parameters or 'TranslationDirection' tag." << endl);
+				THROW_VR_EXCEPTION("Prismatic joint '" << robotNodeName << "' wrongly defined, expecting 'TranslationDirection' tag." << endl);
 			}
 		}
-	}
+	//}
 
 	RobotNodeFactoryPtr robotNodeFactory = RobotNodeFactory::fromName(jointType, NULL);
 	if (robotNodeFactory)
 	{
-		if (dh.isSet)
+		/*if (dh.isSet)
 		{
 			robotNode = robotNodeFactory->createRobotNodeDH(robot, robotNodeName, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, dh, physics, rntype);
 		} else
-		{
+		{*/
 			// create nodes that are not defined via DH parameters
-			robotNode = robotNodeFactory->createRobotNode(robot, robotNodeName, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, preJointTransform, axis, postJointTransform, translationDir, physics, rntype);
-		}
+			robotNode = robotNodeFactory->createRobotNode(robot, robotNodeName, visualizationNode, collisionModel, jointLimitLow, jointLimitHigh, jointOffset, preJointTransform, axis, translationDir, physics, rntype);
+		//}
 	}
 	else
 		THROW_VR_EXCEPTION("RobotNode of type " << jointType << " nyi..." << endl);
@@ -432,6 +470,8 @@ RobotNodePtr RobotIO::processRobotNode(rapidxml::xml_node<char> *robotNodeXMLNod
 
 	rapidxml::xml_node<>* node = robotNodeXMLNode->first_node();
 	rapidxml::xml_node<>* jointNodeXML = NULL;
+
+	std::vector< rapidxml::xml_node<>* > sensorTags;
 	while (node)
 	{
 		std::string nodeName = getLowerCase(node->name());
@@ -493,7 +533,10 @@ RobotNodePtr RobotIO::processRobotNode(rapidxml::xml_node<char> *robotNodeXMLNod
         } else if (nodeName == "transform")
         {
             processTransformNode(robotNodeXMLNode,robotNodeName,transformMatrix);
-        } else
+		} else if (nodeName == "sensor")
+		{
+			sensorTags.push_back(node);
+		} else
 		{
 			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in RobotNode <" << robotNodeName << ">." << endl);
 		}
@@ -505,6 +548,11 @@ RobotNodePtr RobotIO::processRobotNode(rapidxml::xml_node<char> *robotNodeXMLNod
 	//create joint from xml data
 	robotNode = processJointNode(jointNodeXML,robotNodeName, robo, visualizationNode, collisionModel, physics, rntype, transformMatrix);
 
+	// process sensors
+	for (size_t i=0;i<sensorTags.size();i++)
+	{
+		processSensor(robotNode,sensorTags[i]);
+	}
 	return robotNode;
 }
 

@@ -810,6 +810,20 @@ VirtualRobot::BoundingBox Robot::getBoundingBox(bool collisionModel)
 	return bbox;
 }
 
+std::vector<SensorPtr> Robot::getSensors()
+{
+	std::vector<SensorPtr> result;
+	std::vector<RobotNodePtr> rn = getRobotNodes();
+	for (size_t i=0;i<rn.size();i++)
+	{
+		std::vector<SensorPtr> s = rn[i]->getSensors();
+		if (s.size()>0)
+		{
+			result.insert(result.end(),s.begin(),s.end());
+		}
+	}
+	return result;
+}
 
 } // namespace VirtualRobot
 

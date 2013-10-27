@@ -115,9 +115,6 @@ public:
 				std::cout << sos.str();
 			} // scope
 
-			/*std::cout << " ** Mass: " << massKg << " [kg]" << std::endl;
-			std::cout << " ** local CoM [mm]: " <<  localCoM(0) << localCoM(1) << localCoM(2) << std::endl;
-			std::cout << " ** inertia matrix [kg*m^2] :\n " << intertiaMatrix  << std::endl;*/
             if (ignoreCollisions.size()>0)
             {
                 std::cout << " ** Ignore Collisions with:" << std::endl;
@@ -186,9 +183,7 @@ public:
 	*/
 	virtual Eigen::Matrix4f getGlobalPose() const;
 	/*!
-		The global pose defines the position of the object's visualization in the world. 
-		Since RobotNodes do have a postJointTransformation, this value may differ from getGlobalPose(). 
-		For ManipulationObjects and Obstacles it is the same.
+		DEPRECATED: same as GlobalPose
 	*/
 	virtual Eigen::Matrix4f getGlobalPoseVisualization() const;
 

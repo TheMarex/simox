@@ -9,34 +9,23 @@
 	</RobotNode>
 	
 	<RobotNode name="TCP R">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="130"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation x="0" y="0" z="130"/>
+		</Transform>
 	</RobotNode>
 	
 	<RobotNode name="GCP R">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation X="-40" Y="20" Z="90"/>
-					<rollpitchyaw roll="0" pitch="-45" yaw="0" units="degree"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation X="-40" Y="20" Z="90"/>
+			<rollpitchyaw roll="0" pitch="-45" yaw="0" units="degree"/>
+		</Transform>
 	</RobotNode>
 	
 	<RobotNode name="Hand Palm 1 R">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="36"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+
+		<Transform>
+			<Translation x="0" y="0" z="36"/>
+		</Transform>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/palm1_r.iv</File>
@@ -56,12 +45,10 @@
 	</RobotNode>
 	
 	<RobotNode name="Hand Palm 2 R">
+		<Transform>
+			<Translation x="-8.7" y="-13.5" z="29.25"/>
+		</Transform>
 		<Joint type="revolute">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="-8.7" y="-13.5" z="29.25"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 			<Limits unit="degree" lo="-90" hi="90"/>
 		</Joint>
@@ -86,13 +73,9 @@
 	</RobotNode>
 	
 	<RobotNode name="Thumb R">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="-48.9" y="0" z="29.25"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation x="-48.9" y="0" z="29.25"/>
+		</Transform>
 		<Child name="Thumb R J0"/>
 	</RobotNode>
 	
@@ -119,13 +102,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Thumb R J1">
+        <Transform>
+			<Translation x="-40.2" y="0" z="0"/>
+		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="-40.2" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="1" z="0"/>
 		</Joint>
 		
@@ -144,13 +125,9 @@
 	</RobotNode>
 	
 	<RobotNode name="Pinky R">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="73" z="40.4"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation x="0" y="73" z="40.4"/>
+		</Transform>
 		
 		<Child name="Pinky R J0"/>
 	</RobotNode>
@@ -178,13 +155,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Pinky R J1">
+		<Transform>
+			<Translation x="0" y="0" z="40.2"/>
+		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="40.2"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
@@ -203,13 +178,10 @@
 	</RobotNode>
 	
 	<RobotNode name="Ring R">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="51" z="40.4"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+
+		<Transform>
+			<Translation x="0" y="51" z="40.4"/>
+		</Transform>
 		
 		<Child name="Ring R J0"/>
 	</RobotNode>
@@ -237,13 +209,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Ring R J1">
+    	<Transform>
+    		<Translation x="0" y="0" z="40.2"/>
+    	</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="40.2"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
@@ -262,14 +232,10 @@
 	</RobotNode>
 	
 	<RobotNode name="Middle R">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="27" z="40.4"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
-		
+		<Transform>
+			<Translation x="0" y="27" z="40.4"/>
+		</Transform>
+
 		<Child name="Middle R J0"/>
 	</RobotNode>
 	
@@ -296,13 +262,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Middle R J1">
+		<Transform>
+			<Translation x="0" y="0" z="40.2"/>
+		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="40.2"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		
@@ -321,13 +285,9 @@
 	</RobotNode>
 	
 	<RobotNode name="Index R">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="40.2"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation x="0" y="0" z="40.2"/>
+		</Transform>
 		
 		<Child name="Index R J0"/>
 	</RobotNode>
@@ -355,13 +315,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Index R J1">
+		<Transform>
+			<Translation x="0" y="0" z="40.2"/>
+		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="40.2"/>
-				</Transform>
-			</PreJointTransform>
 			<Axis x="0" y="-1" z="0"/>
 		</Joint>
 		

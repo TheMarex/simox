@@ -3,13 +3,11 @@
 <Robot Type="iCub_RightHand" RootNode="Right Hand Start">
 
 	<RobotNode name="Right Hand Start">
-		<Joint type="fixed">
-			<PreJointTransform>
+
 				<Transform>
 					<rollpitchyaw roll="0" pitch="0" yaw="0" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
+
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 			<File type="Inventor">model/RightHand/rightPalm0.iv</File>
@@ -28,23 +26,21 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Arm TCP">
-		<Joint type="fixed">
+		<Transform>
 			<DH a="62.5" d="16" theta="0" alpha="0" units="degree"/>
-		</Joint>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
 	</RobotNode>
 
 	<RobotNode name="Right Arm GCP">
-		<Joint type="fixed">
-		    <PreJointTransform>
+
 				<Transform>
 					<Translation x="60" y="-10" z="25"/>
 					<rollpitchyaw roll="0" pitch="45" yaw="0" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
+
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
@@ -52,13 +48,11 @@
 
 
 	<RobotNode name="Right Hand Palm">
-		<Joint type="fixed">
-			<PreJointTransform>
+
 				<Transform>
 					<Translation x="0" y="0" z="12"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
+
 		<Visualization enable="true">
 			<File type="Inventor">model/RightHand/rightPalm.iv</File>
 		</Visualization>
@@ -77,33 +71,26 @@
 	
 	<!-- INDEX FINGER -->
 	<RobotNode name="Right Hand Index Start1">
-		<Joint type="fixed">
-			<PreJointTransform>
+
 				<Transform>
 					<Translation x="64.25" y="-26.22" z="-6.7"/>
-					<rollpitchyaw roll="0" pitch="0" yaw="0" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Child name="Right Hand Index Start2"/>
 	</RobotNode>
 	
 	
 	<RobotNode name="Right Hand Index Start2">
-		<Joint type="fixed">
-			<PreJointTransform>
+
 				<Transform>
-					<Translation x="0" y="0" z="0"/>
 					<rollpitchyaw roll="-5" pitch="0" yaw="-4.1" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
+
 		<Child name="Right Hand Index Joint1"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Index Joint1">
 		<Joint type="revolute">
-			<DH a="14.8" d="0" theta="0" alpha="90" units="degree"/>
+			<!--DH a="14.8" d="0" theta="0" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-25" hi="25"/>
 		</Joint>
 		<Visualization enable="true">
@@ -116,15 +103,16 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Index BaseToFinger">
-		<Joint type="fixed">
+	    <Transform>
+			<DH a="14.8" d="0" theta="0" alpha="90" units="degree"/>
 			<DH a="0" d="-1.75" theta="0" alpha="0" units="degree"/>
-		</Joint>
+		</Transform>
 		<Child name="Right Hand Index Joint2"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Index Joint2">
 		<Joint type="revolute">
-			<DH a="25.9" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="25.9" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -137,8 +125,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Index Joint3">
+	    <Transform>
+			<DH a="25.9" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="22" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="22" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -151,8 +142,10 @@
 	</RobotNode>
 
 	<RobotNode name="Right Hand Index Joint4">
+	    <Transform>
+			<DH a="22" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="0" alpha="0" units="degree"/>
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -165,13 +158,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Index FingerTip">
-		<Joint type="fixed">
-			<PreJointTransform>
+
 				<Transform>
 					<Translation x="18" y="5" z="0"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
+
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
@@ -181,33 +172,23 @@
 	
 	<!-- MIDDLE FINGER -->
 	<RobotNode name="Right Hand Middle Start1">
-		<Joint type="fixed">
-			<PreJointTransform>
+
 				<Transform>
 					<Translation x="65" y="-9.77" z="-7.6"/>
-					<rollpitchyaw roll="0" pitch="0" yaw="0" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
+
 		<Child name="Right Hand Middle Start2"/>
 	</RobotNode>
 	
 	
 	<RobotNode name="Right Hand Middle Start2">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="0"/>
-					<rollpitchyaw roll="0" pitch="0" yaw="0" units="degree"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+
 		<Child name="Right Hand Middle Joint1"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Middle Joint1">
 		<Joint type="revolute">
-			<DH a="15.3" d="0" theta="0" alpha="90" units="degree"/>
+			<!--DH a="15.3" d="0" theta="0" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-25" hi="25"/>
 		</Joint>
 		<Visualization enable="true">
@@ -220,15 +201,16 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Middle BaseToFinger">
-		<Joint type="fixed">
+	    <Transform>
+			<DH a="15.3" d="0" theta="0" alpha="90" units="degree"/>
 			<DH a="0" d="-2.2" theta="0" alpha="0" units="degree"/>
-		</Joint>
+		</Transform>
 		<Child name="Right Hand Middle Joint2"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Middle Joint2">
 		<Joint type="revolute">
-			<DH a="25.8" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="25.8" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -241,8 +223,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Middle Joint3">
-		<Joint type="revolute">
-			<DH a="24" d="0" theta="0" alpha="0" units="degree"/>
+		<Transform>
+			<DH a="25.8" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
+    	<Joint type="revolute">
+			<!--DH a="24" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -255,8 +240,10 @@
 	</RobotNode>
 
 	<RobotNode name="Right Hand Middle Joint4">
+		<Transform>
+			<DH a="25.8" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="0" alpha="0" units="degree"/>
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -269,13 +256,10 @@
 	</RobotNode>
 	
     <RobotNode name="Right Hand Middle FingerTip">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="18" y="5" z="0"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation x="18" y="5" z="0"/>
+		</Transform>
+
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
@@ -286,33 +270,25 @@
 
 	<!-- RING FINGER -->
 	<RobotNode name="Right Hand Ring Start1">
-		<Joint type="fixed">
-			<PreJointTransform>
 				<Transform>
 					<Translation x="64.13" y="5.65" z="-7"/>
 					<rollpitchyaw roll="0" pitch="0" yaw="0" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Child name="Right Hand Ring Start2"/>
 	</RobotNode>
 	
 	
 	<RobotNode name="Right Hand Ring Start2">
-		<Joint type="fixed">
-			<PreJointTransform>
 				<Transform>
 					<Translation x="0" y="0" z="0"/>
 					<rollpitchyaw roll="5" pitch="0" yaw="6.1" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Child name="Right Hand Ring Joint1"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Ring Joint1">
 		<Joint type="revolute">
-			<DH a="14.8" d="0" theta="0" alpha="90" units="degree"/>
+			<!--DH a="14.8" d="0" theta="0" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-25" hi="25"/>
 		</Joint>
 		<Visualization enable="true">
@@ -325,15 +301,16 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Ring BaseToFinger">
-		<Joint type="fixed">
+		<Transform>
+			<DH a="14.8" d="0" theta="0" alpha="90" units="degree"/>
 			<DH a="0" d="-1.75" theta="0" alpha="0" units="degree"/>
-		</Joint>
+		</Transform>
 		<Child name="Right Hand Ring Joint2"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Ring Joint2">
 		<Joint type="revolute">
-			<DH a="25.9" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="25.9" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -346,8 +323,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Ring Joint3">
+		<Transform>
+			<DH a="25.9" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="22" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="22" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -360,8 +340,10 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Ring Joint4">
+		<Transform>
+			<DH a="22" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="0" alpha="0" units="degree"/>
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -374,13 +356,9 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Ring FingerTip">
-		<Joint type="fixed">
-			<PreJointTransform>
 				<Transform>
 					<Translation x="18" y="5" z="0"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
@@ -389,33 +367,25 @@
 
 	<!-- PINKY FINGER -->
 	<RobotNode name="Right Hand Pinky Start1">
-		<Joint type="fixed">
-			<PreJointTransform>
 				<Transform>
 					<Translation x="62.11" y="24.54" z="-6"/>
 					<rollpitchyaw roll="0" pitch="0" yaw="0" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Child name="Right Hand Pinky Start2"/>
 	</RobotNode>
 	
 
 	<RobotNode name="Right Hand Pinky Start2">
-		<Joint type="fixed">
-			<PreJointTransform>
 				<Transform>
 					<Translation x="0" y="0" z="0"/>
 					<rollpitchyaw roll="5" pitch="0" yaw="6.1" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Child name="Right Hand Pinky Joint1"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Pinky Joint1">
 		<Joint type="revolute">
-			<DH a="14.8" d="0" theta="0" alpha="90" units="degree"/>
+			<!--DH a="14.8" d="0" theta="0" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-25" hi="25"/>
 		</Joint>
 		<Visualization enable="true">
@@ -428,15 +398,16 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Pinky BaseToFinger">
-		<Joint type="fixed">
+		<Transform>
+			<DH a="14.8" d="0" theta="0" alpha="90" units="degree"/>
 			<DH a="0" d="1.75" theta="0" alpha="0" units="degree"/>
-		</Joint>
+		</Transform>
 		<Child name="Right Hand Pinky Joint2"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Pinky Joint2">
 		<Joint type="revolute">
-			<DH a="21.9" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="21.9" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -449,8 +420,11 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Pinky Joint3">
+		<Transform>
+			<DH a="21.9" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="19.0" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="19.0" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -463,8 +437,10 @@
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Pinky Joint4">
+		<Transform>
+			<DH a="19.0" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="0" alpha="0" units="degree"/>
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -477,13 +453,9 @@
 	</RobotNode>
 
 	<RobotNode name="Right Hand Pinky FingerTip">
-		<Joint type="fixed">
-			<PreJointTransform>
 				<Transform>
 					<Translation x="18" y="5" z="0"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
@@ -492,33 +464,25 @@
 
 	<!-- THUMB -->
 	<RobotNode name="Right Hand Thumb Start1">
-		<Joint type="fixed">
-			<PreJointTransform>
 				<Transform>
 					<Translation x="39" y="-12" z="2.5"/>
 					<rollpitchyaw roll="0" pitch="4.76364" yaw="29.04" units="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Child name="Right Hand Thumb Start2"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Thumb Start2">
-		<Joint type="fixed">
-			<PreJointTransform>
 				<Transform>
 					<Translation x="0" y="0" z="0"/>
 					<rollpitchyaw roll="90" pitch="0" yaw="-90" unit="degree"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Child name="Right Hand Thumb Joint1"/>
 	</RobotNode>
 
 
 	<RobotNode name="Right Hand Thumb Joint1">
 		<Joint type="revolute">
-			<DH a="21.1" d="0" theta="0" alpha="-90" units="degree"/>
+			<!--DH a="21.1" d="0" theta="0" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="120"/>
 		</Joint>
 		<Visualization enable="true">
@@ -531,15 +495,16 @@
 	</RobotNode>
 
 	<RobotNode name="Right Hand Thumb BaseToFinger">
-		<Joint type="fixed">
+		<Transform>
+			<DH a="21.1" d="0" theta="0" alpha="-90" units="degree"/>
 			<DH a="0" d="4.9" theta="0" alpha="0" units="degree"/>
-		</Joint>
+		</Transform>
 		<Child name="Right Hand Thumb Joint2"/>
 	</RobotNode>
 	
 	<RobotNode name="Right Hand Thumb Joint2">
 		<Joint type="revolute">
-			<DH a="26" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="26" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -552,8 +517,11 @@
 	</RobotNode>
 
 	<RobotNode name="Right Hand Thumb Joint3">
+		<Transform>
+			<DH a="26" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="22" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="22" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -566,8 +534,10 @@
 	</RobotNode>
 
 	<RobotNode name="Right Hand Thumb Joint4">
+		<Transform>
+			<DH a="22" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="0" alpha="0" units="degree"/>
 			<Limits unit="degree" lo="0" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -580,13 +550,9 @@
 	</RobotNode>
 
 	<RobotNode name="Right Hand Thumb FingerTip">
-		<Joint type="fixed">
-			<PreJointTransform>
 				<Transform>
 					<Translation x="18" y="5" z="0"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>

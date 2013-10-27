@@ -104,11 +104,6 @@ void showRobotWindow::setupUI()
 
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));
 	connect(UI.pushButtonLoad, SIGNAL(clicked()), this, SLOT(selectRobot()));
-	//connect(UI.pushButtonCloseRightHand, SIGNAL(clicked()), this, SLOT(closeRightHand()));
-	//connect(UI.pushButtonCloseLeftHand, SIGNAL(clicked()), this, SLOT(closeLeftHand()));
-    //connect(UI.pushButtonPlaceObstacles, SIGNAL(clicked()), this, SLOT(placeObstacles()));
-	//connect(UI.pushButtonLoadRSpace, SIGNAL(clicked()), this, SLOT(loadReachabilitySpace()));
-	//connect(UI.pushButtonSaveRSpace, SIGNAL(clicked()), this, SLOT(saveReachabilitySpace()));
 
 	connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeHand()));
 	connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openHand()));
@@ -381,6 +376,17 @@ void showRobotWindow::jointValueChanged(int pos)
 	robot->setJointValue(currentRobotNodes[nr],fPos);
 	UI.lcdNumberJointValue->display((double)fPos);
 
+#if 0
+	RobotNodePtr rnl = robot->getRobotNode("LeftLeg_TCP");
+	RobotNodePtr rnr = robot->getRobotNode("RightLeg_TCP");
+	if (rnl && rnr)
+	{
+		cout << "LEFT:" << endl;
+		MathTools::printMat(rnl->getGlobalPose());
+		cout << "RIGHT:" << endl;
+		MathTools::printMat(rnr->getGlobalPose());
+	}
+#endif
 }
 
 void showRobotWindow::showCoordSystem()

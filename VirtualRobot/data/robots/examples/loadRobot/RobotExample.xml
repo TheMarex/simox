@@ -14,9 +14,12 @@
 	</RobotNode>
 	
 	<RobotNode name="Joint2">
+		<Transform>
+			<DH a="0" d="0" theta="-30" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute" offset="0">
 			<Limits unit="degree" lo="-90" hi="45"/>
-			<DH a="0" d="100" theta="-30" alpha="15" units="degree"/>
+			<!--DH a="0" d="100" theta="-30" alpha="15" units="degree"/-->
 		</Joint>
 		<Visualization enable="true">
       <File type="Inventor">test.iv</File>
@@ -29,16 +32,20 @@
 	</RobotNode>
 
 	<RobotNode name="Joint3">
+		<Transform>
+			<DH a="0" d="100" theta="0" alpha="15" units="degree"/>
+			<Translation x="100" y="0" z="0"/>
+		</Transform>
 		<Joint type="revolute" offset="0">
 			<Limits unit="degree" lo="-180" hi="180"/>
-			<PreJointTransform>
+			<!--PreJointTransform>
 				<Transform>
 					<Translation x="100" y="0" z="0"/>
 					<Quaternion x="0.3" y="0.4" z="0.2" w="0.1"/>
 				</Transform>
-			</PreJointTransform>
+			</PreJointTransform-->
 			<Axis x="1" y="0" z="0"/>
-			<PostJointTransform>
+			<!--PostJointTransform>
 				<Transform>
 					<Matrix4x4>
 						<row1 c1="1" c2="0" c3="0" c4="100"/>
@@ -47,7 +54,7 @@
 						<row4 c1="0" c2="0" c3="0" c4="1"/>
 					</Matrix4x4>	
 				</Transform>
-			</PostJointTransform>			
+			</PostJointTransform-->			
 		</Joint>
 		<Visualization enable="true">
       <File type="Inventor">test.iv</File>
@@ -61,14 +68,12 @@
 	</RobotNode>
 
 	<RobotNode name="TCP">
-		<Joint type="fixed">
-			<PreJointTransform>
+
 				<Transform>
 					<Translation x="100" y="0" z="0"/>
 					<RollPitchYaw unit="radian" roll="1.57" pitch="0" yaw="-0.9"/>
 				</Transform>
-			</PreJointTransform>
-		</Joint>
+
 	</RobotNode>
 
 </Robot>

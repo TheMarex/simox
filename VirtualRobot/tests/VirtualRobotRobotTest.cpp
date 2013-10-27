@@ -229,8 +229,11 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 		"     <row3 c1='7' c2='8' c3='9'/>"
 		"   </InertiaMatrix>"
 		"  </Physics>"
+		"  <Transform>"
+		"    <DH a='1' d='0' theta='0' alpha='0' units='degree' unitsLength='m'/>"
+		"  </Transform>"
 		"  <Joint type='revolute'>"
-		"    <DH a='1' d='0' theta='0' alpha='-90' units='degree' unitsLength='m'/>"
+		"    <axis x='0' y='0' z='1'/>"
 		"    <MaxVelocity value='36' unitsLength='mm' unitsTime='h'/>"
 		"    <MaxAcceleration value='36' unitsTime='min'/>"
 		"    <MaxTorque value='0.2' units='meter'/>"
@@ -259,7 +262,7 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotPhysicsTag)
 	expectedMat << 0.001f,0.002f,0.003f,0.004f,0.005f,0.006f,0.007f,0.008f,0.009f;
 	bool inertiaMatrixOK = inertia.isApprox(expectedMat);
 	BOOST_REQUIRE(inertiaMatrixOK);
-	Eigen::Matrix4f m = rn->getPostJointTransformation();
+	Eigen::Matrix4f m = rn->getLocalTransformation();
 	BOOST_CHECK_EQUAL(m(0,3),1000.0f);
 }
 
@@ -269,18 +272,24 @@ BOOST_AUTO_TEST_CASE(testVirtualRobotDependendNodes)
 	const std::string robotString =
 		"<Robot Type='MyDemoRobotType' RootNode='Joint1'>"
 		" <RobotNode name='Joint1'>"
-		" <Joint type='revolute'>"
+		"  <Transform>"
 		"    <DH a='1' d='0' theta='0' alpha='-90' units='degree' unitsLength='m'/>"
+		"  </Transform>"
+		"  <Joint type='revolute'>"
+		"    <axis x='0' y='0' z='1'/>"
 		"    <Limits unit='degree' lo='0' hi='180'/>"
 		"    <PropagateJointValue factor='0.5' name='Joint2'/>"
-		" </Joint>"
-		" <Child name='Joint2'/>"
+		"  </Joint>"
+		"  <Child name='Joint2'/>"
 		" </RobotNode>"
 		" <RobotNode name='Joint2'>"
-		"  <Joint type='revolute'>"
+		"  <Transform>"
 		"    <DH a='0' d='0' theta='0' alpha='0' units='degree'/>"
+		"  </Transform>"
+		"   <Joint type='revolute'>"
+		"    <axis x='0' y='0' z='1'/>"
 		"    <Limits unit='degree' lo='0' hi='90'/>"
-		"  </Joint>"
+		"   </Joint>"
 		" </RobotNode>"
 		"</Robot>";
 	VirtualRobot::RobotPtr rob;

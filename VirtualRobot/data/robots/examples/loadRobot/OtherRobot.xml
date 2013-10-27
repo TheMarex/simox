@@ -14,9 +14,12 @@
 	</RobotNode>
 	
 	<RobotNode name="otherRob2">
+		<Transform>
+			<DH a="0" d="0" theta="-30" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute" offset="0">
 			<Limits unit="degree" lo="-90" hi="45"/>
-			<DH a="0" d="100" theta="-30" alpha="15" units="degree"/>
+			<!--DH a="0" d="100" theta="-30" alpha="15" units="degree"/-->
 		</Joint>
 		<Visualization enable="true">
 			<File type="inventor">test.iv</File>

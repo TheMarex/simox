@@ -61,16 +61,12 @@ public:
 		Create a file and store XML content. 
 		\param filename The filename
 		\param content The XML content as string. No checks are performed.
-		\param overwrite If true, a potentionally existing file is silently overwritten.
+		\param overwrite If true, a potentially existing file is silently overwritten.
 		\return True on success
 	*/
 	static bool writeXMLFile(const std::string &filename, const std::string &content, bool overwrite = true);
-protected:
 
-	// instantiation not allowed
-	BaseIO();
-	virtual ~BaseIO();
-	
+
 	static bool isTrue(const char* s);
 	static float convertToFloat(const char* s);
 	static int convertToInt(const char* s);
@@ -101,7 +97,13 @@ protected:
 	static bool hasUnitsAttribute(rapidxml::xml_node<char> *node);
 	static std::vector< Units > getUnitsAttributes(rapidxml::xml_node<char> *node);
 	static void getAllAttributes(rapidxml::xml_node<char> *node, const std::string &attrString, std::vector<std::string> &storeValues);
-    static void processDHNode(rapidxml::xml_node<char> *dhXMLNode, DHParameter &dh);
+    static void processDHNode(rapidxml::xml_node<char> *dhXMLNode, DHParameter &dh);protected:
+
+	// instantiation not allowed
+	BaseIO();
+	virtual ~BaseIO();
+	
+
     static boost::mutex mutex; 
 };
 

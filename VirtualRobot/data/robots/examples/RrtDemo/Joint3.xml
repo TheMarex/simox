@@ -12,13 +12,8 @@
 	<RobotNode name="Joint1">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="-180" hi="180"/>
-      <Axis x="0" y="0" z="1"/>
-      <PostJointTransform>
-        <Transform>
-          <Translation x="0" y="0" z="300"/>
-        </Transform>
-      </PostJointTransform>
-    </Joint>
+            <Axis x="0" y="0" z="1"/>
+        </Joint>
 		<Visualization enable="true">
 			 <File type="Inventor">joint_sphere.iv</File>
 			 <UseAsCollisionModel/>
@@ -27,15 +22,13 @@
 	</RobotNode>
 
 	<RobotNode name="Joint2">
+		<Transform>
+			<Translation x="0" y="0" z="300"/>
+		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="-180" hi="180"/>
-      <Axis x="1" y="0" z="0"/>
-      <PostJointTransform>
-        <Transform>
-          <Translation x="0" y="0" z="300"/>
-        </Transform>
-      </PostJointTransform>
-    </Joint>
+            <Axis x="1" y="0" z="0"/>
+        </Joint>
 		<Visualization enable="true">
 			 <File type="Inventor">joint_sphere.iv</File>
 			 <UseAsCollisionModel/>
@@ -44,15 +37,13 @@
 	</RobotNode>
 
 	<RobotNode name="Joint3">
+		<Transform>
+			<Translation x="0" y="0" z="300"/>
+		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="-180" hi="180"/>
-      <Axis x="1" y="0" z="0"/>
-      <PostJointTransform>
-        <Transform>
-          <Translation x="0" y="0" z="300"/>
-        </Transform>
-      </PostJointTransform>
-    </Joint>
+            <Axis x="1" y="0" z="0"/>
+        </Joint>
 		<Visualization enable="true">
 			 <File type="Inventor">joint_sphere.iv</File>
 			 <UseAsCollisionModel/>
@@ -61,8 +52,10 @@
 	</RobotNode>
 
 	<RobotNode name="EndPoint">
-	  <Joint type="fixed">
-    </Joint>
+		<Transform>
+			<Translation x="0" y="0" z="300"/>
+		</Transform>
+
 		<Visualization enable="true">
 			 <File type="Inventor">sphere.iv</File>
 			 <UseAsCollisionModel/>

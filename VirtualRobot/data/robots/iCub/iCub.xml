@@ -3,13 +3,9 @@
 <Robot Type="iCub" RootNode="iCubRoot">
 	
 	<RobotNode name="iCubRoot">
-	    <Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="598"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation x="0" y="0" z="598"/>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis  type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
@@ -18,33 +14,35 @@
 	</RobotNode>
 	
 	<RobotNode name="UpperBody">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<matrix4x4>
-						<row1 c1="0" c2="-1" c3="0"  c4="0"/>
-						<row2 c1="0" c2="0"  c3="-1" c4="0"/>
-						<row3 c1="1" c2="0"  c3="0"  c4="0"/>
-						<row4 c1="0" c2="0"  c3="0"  c4="1"/>
-					</matrix4x4>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+
+		<Transform>
+			<matrix4x4>
+				<row1 c1="0" c2="-1" c3="0"  c4="0"/>
+				<row2 c1="0" c2="0"  c3="-1" c4="0"/>
+				<row3 c1="1" c2="0"  c3="0"  c4="0"/>
+				<row4 c1="0" c2="0"  c3="0"  c4="1"/>
+			</matrix4x4>
+		</Transform>
+
 		<Child name="Torso1"/>
 	</RobotNode>
 
 	
 	<RobotNode name="Torso1"><!-- PITCH -->
 		<Joint type="revolute">
-			<DH a="32" d="0" theta="0" alpha="90" units="degree"/>
+			<!--DH a="32" d="0" theta="0" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-10" hi="70"/> <!--lo="-22" hi="84"/> changed to values of ini files in main/app/robots/iCubGenova02 (hip:reverse order!)-->
 		</Joint>
 		<Child name="Torso2"/>
 	</RobotNode>
 	
 	<RobotNode name="Torso2"><!-- ROLL -->
+		<Transform>
+			<DH a="32" d="0" theta="0" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="-5.5" theta="-90" alpha="90" units="degree"/>
+			<!--DH a="0" d="-5.5" theta="-90" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-30" hi="30"/> <!--lo="-39" hi="39"/>changed to values of ini files in main/app/robots/iCubGenova02 (hip:reverse order!)-->
 		</Joint>
 		<Child name="Torso3"/>
@@ -52,8 +50,10 @@
 
 	
 	<RobotNode name="Torso3"><!-- YAW -->
+		<Transform>
+			<DH  a="0" d="-5.5" theta="0" alpha="90" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="0" alpha="0" units="degree"/>
 			<Limits unit="degree" lo="-50" hi="50"/><!--lo="-59" hi="59"/>changed to values of ini files in main/app/robots/iCubGenova02 (hip:reverse order!)-->
 		</Joint>
 		<Child name="CenterArms"/>
@@ -61,9 +61,7 @@
 	
 	
 	<RobotNode name="CenterArms">
-		<Joint type="fixed">
-			<DH a="0" d="-143.3" theta="0" alpha="0" units="degree"/>
-		</Joint>
+
 	
 		<!--Child name="UpperBodyModel"/-->
 		<Visualization enable="true">
@@ -75,21 +73,25 @@
 		<Physics>
 			<Mass value="8" unit="kg"/>
 		</Physics>
+		<Child name="CenterArms2"/>
+	</RobotNode>
+	
+	<RobotNode name="CenterArms2">
 		
-		
-		
+		<Transform>
+			<DH a="0" d="-143.3" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<ChildFromRobot>
 			<File>iCub_Head.xml</File>
 		</ChildFromRobot>
 		<Child name="LeftArmTrafo"/>
 		<Child name="RightArmTrafo"/>
 	</RobotNode>
-	
-	
+		
 	<RobotNode name="LeftArmTrafo">
-		<Joint type="fixed">
+		<Transform>
 			<DH a="23.3647" d="0" theta="105" alpha="-90" units="degree"/>
-		</Joint>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
@@ -97,9 +99,9 @@
 	</RobotNode>
 	
 	<RobotNode name="LeftArmTrafo2">
-		<Joint type="fixed">
+		<Transform>
 			<DH a="0" d="107.74" theta="90" alpha="0" units="degree"/>
-		</Joint>
+		</Transform>
 	    <ChildFromRobot>
 			<File importEEF="true">iCub_LeftArm.xml</File>
 		</ChildFromRobot>
@@ -108,9 +110,9 @@
 	
 	
 	<RobotNode name="RightArmTrafo">
-		<Joint type="fixed">
+		<Transform>
 			<DH a="-23.3647" d="0" theta="-105" alpha="90" units="degree"/>
-		</Joint>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
@@ -118,9 +120,9 @@
 	</RobotNode>
 	
 	<RobotNode name="RightArmTrafo2">
-		<Joint type="fixed">
+		<Transform>
 			<DH a="0" d="-107.74" theta="-90" alpha="0" units="degree"/>
-		</Joint>
+		</Transform>
 	    <ChildFromRobot>
 			<File importEEF="true">iCub_RightArm.xml</File>
 		</ChildFromRobot>
@@ -143,6 +145,14 @@
 
 
 	<RobotNode name="LowerBody">
+		<Transform>
+			<matrix4x4>
+				<row1 c1="1" c2="0"  c3="0" c4="0"/>
+				<row2 c1="0" c2="0"  c3="1" c4="0"/>
+				<row3 c1="0" c2="-1" c3="0" c4="-119.9"/>
+				<row4 c1="0" c2="0"  c3="0" c4="1"/>
+			</matrix4x4>
+		</Transform>		
 		<Visualization enable="true">
 			<File type="Inventor">model/hip.iv</File>
 		</Visualization>
@@ -152,18 +162,7 @@
 		<Physics>
 			<Mass value="10" unit="kg"/>
 		</Physics>
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<matrix4x4>
-						<row1 c1="1" c2="0"  c3="0" c4="0"/>
-						<row2 c1="0" c2="0"  c3="1" c4="0"/>
-						<row3 c1="0" c2="-1" c3="0" c4="-119.9"/>
-						<row4 c1="0" c2="0"  c3="0" c4="1"/>
-					</matrix4x4>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+
 		<ChildFromRobot>
 			<File>iCub_LeftLeg.xml</File>
 		</ChildFromRobot>		

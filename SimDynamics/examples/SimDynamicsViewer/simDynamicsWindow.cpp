@@ -549,6 +549,8 @@ void SimDynamicsWindow::updateContactVisu()
 
 void SimDynamicsWindow::updateComVisu()
 {
+	if (!robot)
+		return;
     std::vector<RobotNodePtr> n = robot->getRobotNodes();
     std::map< VirtualRobot::RobotNodePtr, SoSeparator* >::iterator i = comVisuMap.begin();
     while (i!=comVisuMap.end())

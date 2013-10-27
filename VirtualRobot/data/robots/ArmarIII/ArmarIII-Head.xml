@@ -3,9 +3,9 @@
 <Robot Type="ArmarIII Head" RootNode="Head Base">
     
     <RobotNode name="Head Base">
-        <Joint type="fixed">
-            <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
-        </Joint>
+        <Transform>
+            <DH theta="90" d="0" a="0" alpha="0" units="degree"/>
+        </Transform>
                 
         <Visualization>
             <File type="Inventor">fullmodel/head_base.iv</File>
@@ -24,8 +24,15 @@
     </RobotNode>
 
     <RobotNode name="Neck_1_Pitch">
+        <Transform>
+            <DH theta="0" d="0" a="0" alpha="90" units="degree"/>
+            <DH theta="90" d="0" a="0" alpha="0" units="degree"/>
+        </Transform>
+                
+
         <Joint type="revolute">
-            <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
+            <!--DH theta="90" d="0" a="0" alpha="90" units="degree"/-->
+            <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
 
@@ -47,8 +54,13 @@
     </RobotNode>
         
     <RobotNode name="Neck_2_Roll">
+        <Transform>
+			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
         <Joint type="revolute">
-            <DH theta="90" d="0" a="0" alpha="90" units="degree"/>
+            <!--DH theta="90" d="0" a="0" alpha="90" units="degree"/-->
+            <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
         
@@ -71,8 +83,13 @@
     </RobotNode>    
     
     <RobotNode name="Neck_3_Yaw">
+       <Transform>
+			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
         <Joint type="revolute">
-            <DH theta="90" d="120" a="0"  alpha="90" units="degree"/>
+            <!--DH theta="90" d="120" a="0"  alpha="90" units="degree"/-->
+            <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
         
@@ -93,8 +110,12 @@
     </RobotNode>
 
     <RobotNode name="Head_Tilt">
+        <Transform>
+			<DH theta="0" d="120" a="0" alpha="90" units="degree"/>
+		</Transform>
         <Joint type="revolute">
-            <DH theta="0" d="0" a="0"  alpha="-90" units="degree"/>
+            <!--DH theta="0" d="0" a="0"  alpha="-90" units="degree"/-->
+            <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
         
@@ -113,20 +134,28 @@
             <File type="Inventor">convexModel/head.iv</File>
         </CollisionModel>  
          
-        <Child name="Head Center"/>
+        <Child name="Head Center1"/>
     </RobotNode>
     
+    <RobotNode name="Head Center1">
+        <Transform>
+			<DH theta="0" d="0" a="0" alpha="-90" units="degree"/>
+		</Transform>
+        <Child name="Head Center"/>
+    </RobotNode>
+ 
+ 
     <RobotNode name="Head Center">
-        <Joint type="fixed">
-          <DH theta="0" d="54.5" a="0" alpha="-90" units="degree"/>
-        </Joint>
+        <Transform>
+			<DH theta="0" d="54.5" a="0" alpha="-90" units="degree"/>
+		</Transform>
         <Child name="Cameras"/>
         <Child name="Jaw"/>
     </RobotNode>
 
     <RobotNode name="Jaw"> 
         <Joint type="revolute"> 
-            <DH theta="0" d="0" a="0" alpha="0" units="degree"/>
+            <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-30" hi="30"/>
         </Joint>
         <Visualization> 
@@ -136,18 +165,11 @@
 
     <RobotNode name="Cameras">
         <!-- TODO: this was an AlphaJoint: but rotations around alpha axis are not supported by DH!! -->
+        <Transform>
+            <Translation x="100" y="0" z="0"/>
+        </Transform>
         <Joint type="revolute">
-            <PreJointTransform>
-                <Transform>
-                    <Translation x="100" y="0" z="0"/>
-                </Transform>
-            </PreJointTransform>       
             <Axis x="0" y="0" z="1"/>
-            <PostJointTransform>
-                <Transform>
-                    <Translation x="0" y="0" z="0"/>
-                </Transform>
-            </PostJointTransform>
             <Limits unit="degree" lo="-30" hi="45"/>
         </Joint>
         <Child name="Eye_Left_Dummy"/>
@@ -155,22 +177,22 @@
     </RobotNode>
 
     <RobotNode name="Eye_Left_Dummy">
-        <Joint type="fixed">
-            <DH a="0" d="46.5" theta="0" alpha="-90" units="degree"/>
-        </Joint>
+        <Transform>
+          <DH a="0" d="46.5" theta="0" alpha="-90" units="degree"/>
+        </Transform>
         <Child name="Eye_Left"/>
     </RobotNode>
 
     <RobotNode name="Eye_Right_Dummy">
-        <Joint type="fixed">
+        <Transform>
           <DH a="0" d="-46.5" theta="0" alpha="-90" units="degree"/>
-        </Joint>
+        </Transform>
         <Child name="Eye_Right"/>
       </RobotNode>
 
     <RobotNode name="Eye_Left">
         <Joint type="revolute">
-          <DH theta="0" d="0" a="0" alpha="0" units="degree"/>
+          <Axis x="0" y="0" z="1"/>
           <Limits unit="degree" lo="-30" hi="30"/>
         </Joint>
         <Visualization>
@@ -183,7 +205,7 @@
 
     <RobotNode name="Eye_Right">
         <Joint type="revolute">
-          <DH theta="0" d="0" a="0" alpha="0" units="degree"/>
+          <Axis x="0" y="0" z="1"/>
           <Limits unit="degree" lo="-30" hi="30"/>
         </Joint>
         <Visualization>
@@ -195,14 +217,12 @@
     </RobotNode>
 
     <RobotNode name="EyeLeftCamera">
-        <Joint type="fixed">
-            <PreJointTransform>
-                <Transform>
-                    <translation x="20" y="0" z="0"/>
-                    <RollPitchYaw roll="0" pitch="90" yaw ="0" units="degree"/>
-                </Transform>
-            </PreJointTransform>
-        </Joint>
+        <Transform>
+            <translation x="20" y="0" z="0"/>
+            <RollPitchYaw roll="0" pitch="90" yaw ="0" units="degree"/>
+        </Transform>
+        <!--Sensor type="Camera" name="LeftEyeCam">
+        </Sensor-->
     </RobotNode>
 
   <RobotNode name="Lid Left Bottom">
@@ -224,14 +244,12 @@
   </RobotNode>
 
     <RobotNode name="EyeRightCamera">
-        <Joint type="fixed">
-            <PreJointTransform>
-                <Transform>
-                    <translation x="20" y="0" z="0"/>
-                    <RollPitchYaw roll="0" pitch="90" yaw ="0" units="degree"/>
-                </Transform>
-            </PreJointTransform>
-        </Joint>
+        <Transform>
+            <translation x="20" y="0" z="0"/>
+            <RollPitchYaw roll="0" pitch="90" yaw ="0" units="degree"/>
+        </Transform>
+        <!--Sensor type="Camera" name="RightEyeCam">
+        </Sensor-->
     </RobotNode>
 
   <RobotNode name="Lid Right Bottom">

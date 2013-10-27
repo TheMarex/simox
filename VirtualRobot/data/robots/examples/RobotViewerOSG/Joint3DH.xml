@@ -12,8 +12,8 @@
 	<RobotNode name="Joint1">
 		<Joint type="revolute">
 			<Limits unit="degree" lo="-90" hi="90"/>
-      <DH a="300" d="0" theta="0" alpha="90" units="degree"/>
-    </Joint>
+            <!--DH a="300" d="0" theta="0" alpha="90" units="degree"/-->
+        </Joint>
 		<Visualization enable="true">
 			 <File type="osg">joint_rot_sphere.iv</File>
 			 <UseAsCollisionModel/>
@@ -22,10 +22,13 @@
 	</RobotNode>
 
 	<RobotNode name="Joint2">
+		<Transform>
+			<DH a="300" d="0" theta="0" alpha="90" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="360"/>
-      <DH a="300" d="0" theta="0" alpha="0" units="degree"/>
-    </Joint>
+            <!--DH a="300" d="0" theta="0" alpha="0" units="degree"/-->
+        </Joint>
 		<Visualization enable="true">
 			 <File type="osg">joint_rot_sphere.iv</File>
 		</Visualization>
@@ -36,10 +39,13 @@
 	</RobotNode>
 
 	<RobotNode name="Joint3">
+		<Transform>
+			<DH a="300" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="-90" hi="90"/>
-      <DH a="300" d="0" theta="0" alpha="0" units="degree"/>
-    </Joint>
+            <!--DH a="300" d="0" theta="0" alpha="0" units="degree"/-->
+        </Joint>
 		<Visualization enable="true">
 			 <File type="osg">joint_rot_sphere.iv</File>
 			 <UseAsCollisionModel/>
@@ -48,8 +54,10 @@
 	</RobotNode>
 
 	<RobotNode name="EndPoint">
-	  <Joint type="fixed">
-    </Joint>
+		<Transform>
+			<DH a="300" d="0" theta="0" alpha="90" units="degree"/>
+		</Transform>
+
 		<Visualization enable="true">
 			 <File type="osg">sphere.iv</File>
 			 <UseAsCollisionModel/>

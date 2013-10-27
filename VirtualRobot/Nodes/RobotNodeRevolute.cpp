@@ -16,7 +16,6 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 									   float jointLimitHi,
 									   const Eigen::Matrix4f &preJointTransform,			//!< This transformation is applied before the translation of the joint is done
 									   const Eigen::Vector3f &axis,			//!< This is the direction of the translation
-									   const Eigen::Matrix4f &postJointTransform,			//!< This is an additional transformation, that is applied after the translation is done
 									   VisualizationNodePtr visualization, 
 									   CollisionModelPtr collisionModel,
 									   float jointValueOffset,
@@ -27,9 +26,8 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 {
 	initialized = false;
 	optionalDHParameter.isSet = false;
-	this->preJointTransformation = preJointTransform;
+	this->localTransformation = preJointTransform;
 	this->jointRotationAxis = axis;
-	this->postJointTransformation = postJointTransform;
     checkValidRobotNodeType();
 }
 
@@ -70,9 +68,8 @@ RobotNodeRevolute::RobotNodeRevolute(RobotWeakPtr rob,
 	RotAlpha(2,1) = sin(alpha);
 	RotAlpha(2,2) = cos(alpha);
 
-	this->preJointTransformation = RotTheta;
+	this->localTransformation = RotTheta*TransD*TransA*RotAlpha;
 	this->jointRotationAxis = Eigen::Vector3f(0,0,1);			// rotation around z axis
-	this->postJointTransformation = TransD*TransA*RotAlpha;
     checkValidRobotNodeType();
 }
 
@@ -89,8 +86,7 @@ bool RobotNodeRevolute::initialize(SceneObjectPtr parent, const std::vector<Scen
 void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
 	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
-	globalPose = parentPose * getPreJointTransformation() * tmpT.matrix();
-	globalPosePostJoint = globalPose*getPostJointTransformation();
+	globalPose = parentPose * getLocalTransformation() * tmpT.matrix();
 }
 
 void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
@@ -112,7 +108,7 @@ void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 		std::for_each(children.begin(), children.end(), boost::bind(&SceneObject::print, _1, true, true));
 }
 
-RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, /*const std::vector<std::string> newChildren,*/ const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
+RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
 {
 	ReadLockPtr lock = getRobot()->getReadLock();
 	RobotNodePtr result;
@@ -120,7 +116,7 @@ RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, /*const std::vec
 	if (optionalDHParameter.isSet)
 		result.reset(new RobotNodeRevolute(newRobot,name, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker,nodeType));
 	else
-		result.reset(new RobotNodeRevolute(newRobot,name,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointRotationAxis,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics,colChecker,nodeType));
+		result.reset(new RobotNodeRevolute(newRobot,name,jointLimitLo,jointLimitHi,getLocalTransformation(),jointRotationAxis,visualizationModel,collisionModel,jointValueOffset,physics,colChecker,nodeType));
 	return result;
 }
 
@@ -156,9 +152,9 @@ void RobotNodeRevolute::updateVisualizationPose( const Eigen::Matrix4f &globalPo
 
 	Eigen::Matrix4f initFrame;
 	if (this->getParent())
-		initFrame = this->getParent()->getGlobalPose() * getPreJointTransformation();
+		initFrame = this->getParent()->getGlobalPose() * getLocalTransformation();
 	else
-		initFrame = getPreJointTransformation();
+		initFrame = getLocalTransformation();
 
 	Eigen::Matrix4f localPose = initFrame.inverse() * globalPose;
 

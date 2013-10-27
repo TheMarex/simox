@@ -161,6 +161,10 @@ public:
 	*/
 	void getSelfDistConfig(bool &storeConsiderSelfDist, RobotNodeSetPtr &storeStatic, RobotNodeSetPtr &storeDynamic);
 
+	/*!
+		Creates a deep copy of this data structure. A ManipulabilityPtr is returned.
+	*/
+	virtual WorkspaceRepresentationPtr clone();
 protected:
 
 	virtual bool customLoad(std::ifstream &file);

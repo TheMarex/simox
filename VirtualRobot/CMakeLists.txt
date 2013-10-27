@@ -24,7 +24,10 @@ Nodes/RobotNodeRevoluteFactory.cpp
 Nodes/RobotNodeFixed.cpp
 Nodes/RobotNodeFixedFactory.cpp
 Nodes/RobotNodeActuator.cpp
-Transformation/Transformation.cpp
+Nodes/Sensor.cpp
+Nodes/PositionSensor.cpp
+Nodes/CameraSensor.cpp
+Nodes/PositionSensorFactory.cpp
 Visualization/Visualization.cpp
 Visualization/VisualizationNode.cpp
 Visualization/ColorMap.cpp
@@ -89,8 +92,12 @@ Nodes/RobotNodeFixed.h
 Nodes/RobotNodeFixedFactory.h
 Nodes/RobotNodeActuator.h
 Nodes/ConditionedLock.h
+Nodes/Sensor.h
+Nodes/PositionSensor.h
+Nodes/CameraSensor.h
+Nodes/SensorFactory.h
+Nodes/PositionSensorFactory.h
 Transformation/DHParameter.h
-Transformation/Transformation.h
 Visualization/VisualizationFactory.h
 Visualization/Visualization.h
 Visualization/VisualizationNode.h

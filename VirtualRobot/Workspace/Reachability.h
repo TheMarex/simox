@@ -33,7 +33,7 @@ namespace VirtualRobot
 /*!
 		This class represents an approximation of the reachability distribution of a kinematic chain (e.g. an arm).
 		Consists of voxels covering the 6D space for position (XYZ) and orientation (Tait–Bryan angles, EulerXYZ, static frame).
-		Each voxels holds a counter with the number of successful IK solver calls, 
+		Each voxel holds a counter with the number of successful IK solver calls, 
 		representing the approximated probability that an IK solver call can be successfully answered.
 		The discretized reachability data can be written to and loaded from binary files.
 
@@ -77,6 +77,11 @@ public:
 
 	//! returns a random pose that is covered by the workspace data.
 	Eigen::Matrix4f sampleReachablePose();
+
+	/*!
+		Creates a deep copy of this data structure. A ReachabilityPtr is returned.
+	*/
+	virtual WorkspaceRepresentationPtr clone();
 
 protected:
 

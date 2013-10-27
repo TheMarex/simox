@@ -7,8 +7,7 @@
 		<Visualization enable="true">
 			<CoordinateAxis  type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
-		<Joint type="fixed">
-			<PreJointTransform>
+
 				<Transform>
 					<matrix4x4>
 						<row1 c1="1" c2="0"  c3="0" c4="0"/>
@@ -17,16 +16,18 @@
 						<row4 c1="0" c2="0"  c3="0" c4="1"/>
 					</matrix4x4>
 				</Transform>
-			</prejointtransform>
-		</Joint>
+
 		<Child name="Left Leg Waist1"/>
 	</RobotNode>
 
 
 	
 	<RobotNode name="Left Leg Waist1">
+		<Transform>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
+			<!--DH a="0" d="0" theta="90" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-44" hi="132"/>
 		</Joint>
 		<Child name="Left Leg Waist2"/>
@@ -34,16 +35,24 @@
 	
 
 	<RobotNode name="Left Leg Waist2">
+		<Transform>
+			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
+			<!--DH a="0" d="0" theta="90" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-119" hi="17"/>
 		</Joint>
 		<Child name="Left Leg Waist3"/>
 	</RobotNode>
 	
 	<RobotNode name="Left Leg Waist3">
+	<Transform>
+			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="-223.6" theta="-90" alpha="90" units="degree"/>
+			<!--DH a="0" d="-223.6" theta="-90" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-79" hi="79"/>
 		</Joint>
 		<Visualization enable="true">
@@ -60,8 +69,12 @@
 	
 	
 	<RobotNode name="Left Leg Knee">
+	    <Transform>
+			<DH a="0" d="-223.6" theta="0" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="-213" d="0" theta="90" alpha="0" units="degree"/>
+			<!--DH a="-213" d="0" theta="90" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="-125" hi="0"/>
 		</Joint>
 		<Visualization enable="true">
@@ -78,8 +91,11 @@
 	
 	
 	<RobotNode name="Left Leg Foot1">
+	    <Transform>
+			<DH a="-213" d="0" theta="0" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+			<!--DH a="0" d="0" theta="0" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-42" hi="21"/>
 		</Joint>
 		<Child name="Left Leg Foot2"/>
@@ -87,8 +103,11 @@
 	
 	
 	<RobotNode name="Left Leg Foot2">
+	    <Transform>
+			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="-41" d="0" theta="0" alpha="0" units="degree"/>
+			<!--DH a="-41" d="0" theta="0" alpha="0" units="degree"/-->
 			<Limits unit="degree" lo="-24" hi="24"/>
 		</Joint>
 		<Visualization enable="true">
@@ -104,9 +123,9 @@
 	</RobotNode>
 	
 	<RobotNode name="Left Leg Foot TCP">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
+	    <Transform>
+			<DH a="-41" d="0" theta="0" alpha="0" units="degree"/>
+
 				    <Translation x="0" y="0" z="-60"/>
 					<!--matrix4x4>
 						<row1 c1="0" c2="0"  c3="-1" c4="0"/>
@@ -115,8 +134,7 @@
 						<row4 c1="0" c2="0"  c3="0" c4="1"/>
 					</matrix4x4-->
 				</Transform>
-			</PreJointTransform>
-		</Joint>
+	
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="1"/>
 		</Visualization>

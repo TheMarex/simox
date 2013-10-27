@@ -310,6 +310,12 @@ void GenericIKWindow::solve()
 	qd3 += " deg";
 	UI.labelOri->setText(qd3);
 
+	cout << "Joint values:" << endl;
+	std::vector<RobotNodePtr> nodes = kc->getAllRobotNodes();
+	for (size_t i=0;i<nodes.size();i++)
+	{
+		cout << nodes[i]->getJointValue() << endl;
+	}
 
 	/*
 	DifferentialIKPtr j(new DifferentialIK(kc));

@@ -54,7 +54,6 @@ public:
 						float jointLimitHi,									//!< upper joint limit
 						const Eigen::Matrix4f &preJointTransform,			//!< This transformation is applied before the translation of the joint is done
 						const Eigen::Vector3f &axis,						//!< The rotation axis (in local joint coord system)
-						const Eigen::Matrix4f &postJointTransform,			//!< This is an additional transformation, that is applied after the rotation is done
 						VisualizationNodePtr visualization = VisualizationNodePtr(),	//!< A visualization model
 						CollisionModelPtr collisionModel = CollisionModelPtr(),			//!< A collision model
 						float jointValueOffset = 0.0f,									//!< An offset that is internally added to the joint value

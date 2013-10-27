@@ -156,156 +156,162 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 		transform = Eigen::Matrix4f::Identity();
 		return;
 	}
-
-	rapidxml::xml_node<> *trXMLNode = transformXMLNode->first_node("transform",0,false);
-	THROW_VR_EXCEPTION_IF(!trXMLNode, "transformation node does not specify a <transform> tag")
-
-	bool rotation = false;
-	bool translation = false;
-
-	// Homogeneous Matrix 4x4
-	rapidxml::xml_node<> *matrixXMLNode = trXMLNode->first_node("matrix4x4",0,false);
-	if (matrixXMLNode)
+	rapidxml::xml_node<> *trXMLNode = NULL;
+	std::string nodeName = getLowerCase(transformXMLNode->name());
+	if (nodeName=="transform")
+		trXMLNode = transformXMLNode;
+	else
 	{
-		rapidxml::xml_node<> *row1XMLNode = matrixXMLNode->first_node("row1",0,false);
-		rapidxml::xml_node<> *row2XMLNode = matrixXMLNode->first_node("row2",0,false);
-		rapidxml::xml_node<> *row3XMLNode = matrixXMLNode->first_node("row3",0,false);
-		rapidxml::xml_node<> *row4XMLNode = matrixXMLNode->first_node("row4",0,false);
-		if (row1XMLNode)
-		{
-			transform(0, 0) = getFloatByAttributeName(row1XMLNode, "c1");
-			transform(0, 1) = getFloatByAttributeName(row1XMLNode, "c2");
-			transform(0, 2) = getFloatByAttributeName(row1XMLNode, "c3");
-			transform(0, 3) = getFloatByAttributeName(row1XMLNode, "c4");
-		}
-
-		if (row2XMLNode)
-		{
-			transform(1, 0) = getFloatByAttributeName(row2XMLNode, "c1");
-			transform(1, 1) = getFloatByAttributeName(row2XMLNode, "c2");
-			transform(1, 2) = getFloatByAttributeName(row2XMLNode, "c3");
-			transform(1, 3) = getFloatByAttributeName(row2XMLNode, "c4");
-		}
-
-		if (row3XMLNode)
-		{
-			transform(2, 0) = getFloatByAttributeName(row3XMLNode, "c1");
-			transform(2, 1) = getFloatByAttributeName(row3XMLNode, "c2");
-			transform(2, 2) = getFloatByAttributeName(row3XMLNode, "c3");
-			transform(2, 3) = getFloatByAttributeName(row3XMLNode, "c4");
-		}
-
-		if (row4XMLNode)
-		{
-			transform(3, 0) = getFloatByAttributeName(row4XMLNode, "c1");
-			transform(3, 1) = getFloatByAttributeName(row4XMLNode, "c2");
-			transform(3, 2) = getFloatByAttributeName(row4XMLNode, "c3");
-			transform(3, 3) = getFloatByAttributeName(row4XMLNode, "c4");
-		}
-		rotation = true;
-		translation = true;
-		if (hasUnitsAttribute(matrixXMLNode))
-		{
-			Units u = getUnitsAttribute(matrixXMLNode,Units::eLength);
-			if (u.isMeter())
-			{
-				transform(0,3) *= 1000.0f;
-				transform(1,3) *= 1000.0f;
-				transform(2,3) *= 1000.0f;
-			}
-		}
+		trXMLNode = transformXMLNode->first_node("transform",0,false);
+		THROW_VR_EXCEPTION_IF(!trXMLNode, "transformation node does not specify a <transform> tag")
 	}
+	//bool rotation = false;
+	//bool translation = false;
+	transform = Eigen::Matrix4f::Identity();
 
-	// Rotation Matrix 3x3
-	matrixXMLNode = trXMLNode->first_node("matrix3x3",0,false);
-	THROW_VR_EXCEPTION_IF((rotation && matrixXMLNode), "Multiple rotations defined in <Transformation> tag: " << tagName << ". Ignoring matrix3x3 node." << endl);
-
-	if (matrixXMLNode)
+	rapidxml::xml_node<>* node = trXMLNode->first_node();
+	while (node)
 	{
-		Eigen::Matrix3f m = process3x3Matrix(matrixXMLNode);
+		std::string nodeName = getLowerCase(node->name());
 		
-		transform.block(0,0,3,3) = m;
-		rotation = true;
-	}
-
-	// ROLL PITCH YAW
-	rapidxml::xml_node<> *rpyXMLNode = trXMLNode->first_node("rollpitchyaw",0,false);
-	THROW_VR_EXCEPTION_IF((rpyXMLNode && rotation), "Multiple rotations defined in <Transformation> tag: " << tagName << "! Ignoring rpy node." << endl);
-
-	if (rpyXMLNode)
-	{
-		float r,p,y;
-		r = p = y = 0.0f;
-		r = getFloatByAttributeName(rpyXMLNode, "roll");
-		p = getFloatByAttributeName(rpyXMLNode, "pitch");
-		y = getFloatByAttributeName(rpyXMLNode, "yaw");
-		if (!hasUnitsAttribute(rpyXMLNode))
+	
+		// Homogeneous Matrix 4x4
+		//rapidxml::xml_node<> *matrixXMLNode = trXMLNode->first_node("matrix4x4",0,false);
+		if (nodeName=="matrix4x4")
 		{
-			VR_ERROR << "No units attribute at <" << tagName << ">" << endl;
-		}
-		Units u = getUnitsAttribute(rpyXMLNode,Units::eAngle);
-		if (u.isDegree())
-		{
-			r = r/180.0f * (float)M_PI;
-			p = p/180.0f * (float)M_PI;
-			y = y/180.0f * (float)M_PI;
-		}
-		MathTools::rpy2eigen4f(r,p,y,transform);
-		rotation = true;
-	}
-
-	// Quaternions
-	rapidxml::xml_node<> *quatXMLNode = trXMLNode->first_node("quaternion",0,false);
-	THROW_VR_EXCEPTION_IF((quatXMLNode && rotation), "Multiple rotations defined in <Transformation> tag: " << tagName << "! Ignoring quaternion node." << endl);
-
-	if (quatXMLNode)
-	{
-		float x,y,z,w;
-		x = y = z = w = 0.0f;
-		x = getFloatByAttributeName(quatXMLNode, "x");
-		y = getFloatByAttributeName(quatXMLNode, "y");
-		z = getFloatByAttributeName(quatXMLNode, "z");
-		w = getFloatByAttributeName(quatXMLNode, "w");
-		Eigen::Matrix4f r = MathTools::quat2eigen4f(x,y,z,w);
-		transform.block(0,0,3,3) = r.block(0,0,3,3);
-		//MathTools::quat2eigen4f(x,y,z,w,transform);
-		rotation = true;
-	}
-	// Translation
-	rapidxml::xml_node<> *translationXMLNode = trXMLNode->first_node("translation",0,false);
-	THROW_VR_EXCEPTION_IF((translationXMLNode && translation), "Multiple translations defined in <Transformation> tag: " << tagName << "! Ignoring translation node." << endl);
-
-	if (translationXMLNode)
-	{
-		transform(0,3) = getFloatByAttributeName(translationXMLNode, "x");
-		transform(1,3) = getFloatByAttributeName(translationXMLNode, "y");
-		transform(2,3) = getFloatByAttributeName(translationXMLNode, "z");
-		translation = true;
-
-		if (hasUnitsAttribute(translationXMLNode))
-		{
-			Units u = getUnitsAttribute(translationXMLNode,Units::eLength);
-			if (u.isMeter())
+			Eigen::Matrix4f localT = Eigen::Matrix4f::Identity();
+			rapidxml::xml_node<> *row1XMLNode = node->first_node("row1",0,false);
+			rapidxml::xml_node<> *row2XMLNode = node->first_node("row2",0,false);
+			rapidxml::xml_node<> *row3XMLNode = node->first_node("row3",0,false);
+			rapidxml::xml_node<> *row4XMLNode = node->first_node("row4",0,false);
+			if (row1XMLNode)
 			{
-				transform(0,3) *= 1000.0f;
-				transform(1,3) *= 1000.0f;
-				transform(2,3) *= 1000.0f;
+				localT(0, 0) = getFloatByAttributeName(row1XMLNode, "c1");
+				localT(0, 1) = getFloatByAttributeName(row1XMLNode, "c2");
+				localT(0, 2) = getFloatByAttributeName(row1XMLNode, "c3");
+				localT(0, 3) = getFloatByAttributeName(row1XMLNode, "c4");
 			}
+
+			if (row2XMLNode)
+			{
+				localT(1, 0) = getFloatByAttributeName(row2XMLNode, "c1");
+				localT(1, 1) = getFloatByAttributeName(row2XMLNode, "c2");
+				localT(1, 2) = getFloatByAttributeName(row2XMLNode, "c3");
+				localT(1, 3) = getFloatByAttributeName(row2XMLNode, "c4");
+			}
+
+			if (row3XMLNode)
+			{
+				localT(2, 0) = getFloatByAttributeName(row3XMLNode, "c1");
+				localT(2, 1) = getFloatByAttributeName(row3XMLNode, "c2");
+				localT(2, 2) = getFloatByAttributeName(row3XMLNode, "c3");
+				localT(2, 3) = getFloatByAttributeName(row3XMLNode, "c4");
+			}
+
+			if (row4XMLNode)
+			{
+				localT(3, 0) = getFloatByAttributeName(row4XMLNode, "c1");
+				localT(3, 1) = getFloatByAttributeName(row4XMLNode, "c2");
+				localT(3, 2) = getFloatByAttributeName(row4XMLNode, "c3");
+				localT(3, 3) = getFloatByAttributeName(row4XMLNode, "c4");
+			}
+			if (hasUnitsAttribute(node))
+			{
+				Units u = getUnitsAttribute(node,Units::eLength);
+				if (u.isMeter())
+				{
+					localT(0,3) *= 1000.0f;
+					localT(1,3) *= 1000.0f;
+					localT(2,3) *= 1000.0f;
+				}
+			}
+			transform *= localT;
+		} else if (nodeName == "matrix3x3")
+		{
+			// Rotation Matrix 3x3
+			//matrixXMLNode = trXMLNode->first_node("matrix3x3",0,false);
+			//THROW_VR_EXCEPTION_IF((rotation && matrixXMLNode), "Multiple rotations defined in <Transformation> tag: " << tagName << ". Ignoring matrix3x3 node." << endl);
+
+			Eigen::Matrix4f localT = Eigen::Matrix4f::Identity();
+			Eigen::Matrix3f m = process3x3Matrix(node);
+
+			localT.block(0,0,3,3) = m;
+			transform *= localT;
+		} else if (nodeName == "rollpitchyaw" || nodeName == "rpy")
+		{
+			// ROLL PITCH YAW
+			//rapidxml::xml_node<> *rpyXMLNode = trXMLNode->first_node("rollpitchyaw",0,false);
+			//THROW_VR_EXCEPTION_IF((rpyXMLNode && rotation), "Multiple rotations defined in <Transformation> tag: " << tagName << "! Ignoring rpy node." << endl);
+
+			float r,p,y;
+			r = p = y = 0.0f;
+			r = getFloatByAttributeName(node, "roll");
+			p = getFloatByAttributeName(node, "pitch");
+			y = getFloatByAttributeName(node, "yaw");
+			if (!hasUnitsAttribute(node))
+			{
+				VR_ERROR << "No units attribute at <" << tagName << ">" << endl;
+			}
+			Units u = getUnitsAttribute(node,Units::eAngle);
+			if (u.isDegree())
+			{
+				r = r/180.0f * (float)M_PI;
+				p = p/180.0f * (float)M_PI;
+				y = y/180.0f * (float)M_PI;
+			}
+			Eigen::Matrix4f localT = Eigen::Matrix4f::Identity();
+			MathTools::rpy2eigen4f(r,p,y,localT);
+			transform *= localT;
+		} else if (nodeName == "quaternion" || nodeName == "quat")
+		{
+			// Quaternions
+			//rapidxml::xml_node<> *quatXMLNode = trXMLNode->first_node("quaternion",0,false);
+			//THROW_VR_EXCEPTION_IF((quatXMLNode && rotation), "Multiple rotations defined in <Transformation> tag: " << tagName << "! Ignoring quaternion node." << endl);
+
+			float x,y,z,w;
+			x = y = z = w = 0.0f;
+			x = getFloatByAttributeName(node, "x");
+			y = getFloatByAttributeName(node, "y");
+			z = getFloatByAttributeName(node, "z");
+			w = getFloatByAttributeName(node, "w");
+			Eigen::Matrix4f r = MathTools::quat2eigen4f(x,y,z,w);
+			transform *= r;
+		} else if (nodeName == "translation" || nodeName == "trans")
+		{
+			// Translation
+			//rapidxml::xml_node<> *translationXMLNode = trXMLNode->first_node("translation",0,false);
+			//THROW_VR_EXCEPTION_IF((translationXMLNode && translation), "Multiple translations defined in <Transformation> tag: " << tagName << "! Ignoring translation node." << endl);
+			Eigen::Matrix4f localT = Eigen::Matrix4f::Identity();
+			localT(0,3) = getFloatByAttributeName(node, "x");
+			localT(1,3) = getFloatByAttributeName(node, "y");
+			localT(2,3) = getFloatByAttributeName(node, "z");
+			if (hasUnitsAttribute(node))
+			{
+				Units u = getUnitsAttribute(node,Units::eLength);
+				if (u.isMeter())
+				{
+					localT(0,3) *= 1000.0f;
+					localT(1,3) *= 1000.0f;
+					localT(2,3) *= 1000.0f;
+				}
+			}
+			transform *= localT;
+		} else if (nodeName == "dh")
+		{
+			// DH
+			//rapidxml::xml_node<> *dhXMLNode = trXMLNode->first_node("dh",0,false);
+			//THROW_VR_EXCEPTION_IF((dhXMLNode && (rotation||translation)), "Multiple rotations/translations defined in <Transformation> tag: " << tagName << "! Ignoring DH node." << endl);
+			DHParameter dh;
+			processDHNode(node,dh);
+			Eigen::Matrix4f localT = dh.transformation();
+			transform *= localT;
+		} else
+		{
+			VR_ERROR << "Ignoring unknown tag " << nodeName << endl;
 		}
+		node = node->next_sibling();
 	}
 
-    // DH
-    rapidxml::xml_node<> *dhXMLNode = trXMLNode->first_node("dh",0,false);
-    THROW_VR_EXCEPTION_IF((dhXMLNode && (rotation||translation)), "Multiple rotations/translations defined in <Transformation> tag: " << tagName << "! Ignoring DH node." << endl);
-
-    if (dhXMLNode)
-    {
-        DHParameter dh;
-        processDHNode(dhXMLNode,dh);
-        transform = dh.transformation();
-        rotation = true;
-        translation = true;
-    }
 }
 
 
@@ -718,7 +724,7 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 			if (!attr)
 			{
 				if (VisualizationFactory::first(NULL))
-					visuFileType = VisualizationFactory::first(NULL)->getName();
+					visuFileType = VisualizationFactory::first(NULL)->getDescription();
 				else
 					VR_WARNING << "No visualization present..." << endl;
 			} else
@@ -762,8 +768,9 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 				//THROW_VR_EXCEPTION_IF(!attr, "Missing 'type' attribute in <CoordinateAxis> tag of node " << tagName << "." << endl)
 				if (!attr)
 				{
-					if (VisualizationFactory::first(NULL))
-						visuCoordType = VisualizationFactory::first(NULL)->getName();
+					VisualizationFactoryPtr f = VisualizationFactory::first(NULL);
+					if (f)
+						visuCoordType = f->getDescription();
 					else
 						VR_WARNING << "No visualization present..." << endl;
 				} else
@@ -828,7 +835,7 @@ CollisionModelPtr BaseIO::processCollisionTag(rapidxml::xml_node<char> *colXMLNo
 			if (!attr)
 			{
 				if (VisualizationFactory::first(NULL))
-					collisionFileType = VisualizationFactory::first(NULL)->getName();
+					collisionFileType = VisualizationFactory::first(NULL)->getDescription();
 				else
 					VR_WARNING << "No visualization present..." << endl;
 			} else

@@ -8,25 +8,39 @@
 	</RobotNode>
 	
 	<RobotNode name="X">
+		<Transform>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="prismatic">
 			<Limits unit="mm" lo="-1000" hi="1000"/>
-			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
+			<TranslationDirection x="0" y="0" z="1"/>
+			<!--DH a="0" d="0" theta="90" alpha="-90" units="degree"/-->
 		</Joint>
 		<Child name="Y"/>
 	</RobotNode>
 	
 	<RobotNode name="Y">
+		<Transform>
+			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="prismatic">
 			<Limits unit="mm" lo="-1000" hi="1000"/>
-			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
+			<TranslationDirection x="0" y="0" z="1"/>
+			<!--DH a="0" d="0" theta="90" alpha="-90" units="degree"/-->
 		</Joint>
 		<Child name="Z"/>
 	</RobotNode>
 	
 	<RobotNode name="Z">
+		<Transform>
+			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="prismatic">
 			<Limits unit="mm" lo="-1000" hi="1000"/>
-			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
+			<TranslationDirection x="0" y="0" z="1"/>
+			<!--DH a="0" d="0" theta="90" alpha="-90" units="degree"/-->
 		</Joint>
 
 		<Child name="Visu"/>

@@ -1499,4 +1499,39 @@ void WorkspaceRepresentation::setOrientationType( eOrientationType t)
     orientationType = t;
 }
 
+VirtualRobot::WorkspaceRepresentationPtr WorkspaceRepresentation::clone()
+{
+	VirtualRobot::WorkspaceRepresentationPtr res(new WorkspaceRepresentation(robot));
+	res->setOrientationType(this->orientationType);
+	res->versionMajor = this->versionMajor;
+	res->versionMinor = this->versionMinor;
+	res->nodeSet = this->nodeSet;
+	res->type = this->type;
+
+	res->baseNode = this->baseNode;
+	res->tcpNode = this->tcpNode;
+	res->staticCollisionModel = this->staticCollisionModel;
+	res->dynamicCollisionModel = this->dynamicCollisionModel;
+	res->buildUpLoops = this->buildUpLoops;
+	res->collisionConfigs = this->collisionConfigs;
+	res->discretizeStepTranslation = this->discretizeStepTranslation;
+	res->discretizeStepRotation = this->discretizeStepRotation;
+	memcpy(res->minBounds,this->minBounds,sizeof(float)*6);
+	memcpy(res->maxBounds,this->maxBounds,sizeof(float)*6);	
+	memcpy(res->numVoxels,this->numVoxels,sizeof(float)*6);	
+	memcpy(res->achievedMinValues,this->achievedMinValues,sizeof(float)*6);	
+	memcpy(res->achievedMaxValues,this->achievedMaxValues,sizeof(float)*6);	
+	memcpy(res->spaceSize,this->spaceSize,sizeof(float)*6);	
+
+	res->adjustOnOverflow = this->adjustOnOverflow;
+	res->data.reset(new WorkspaceData(this->data));
+
+	return res;
+}
+
+VirtualRobot::WorkspaceDataPtr WorkspaceRepresentation::getData()
+{
+	return data;
+}
+
 } // namespace VirtualRobot

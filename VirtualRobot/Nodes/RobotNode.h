@@ -33,6 +33,7 @@
 #include "../Transformation/DHParameter.h"
 #include "../Visualization/VisualizationNode.h"
 #include "ConditionedLock.h"
+#include "Sensor.h"
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -48,15 +49,12 @@ namespace VirtualRobot
 {
 class RobotNodeActuator;
 /*!
-	Each RobotNode owns three transformations:
-	* preJointTransformation: This transformation is fixed.
+	Each RobotNode may consider two transformations:
+	* localTransformation: This transformation is fixed.
 	* jointTransformation: This is the flexible part of the joint. Here, the jointValue is used to compute the transformation according to the implementation of the joint type.
-	* postJointTransformation: This is a fixed transformation that is applied after the jointTransformation.
 
-	The visualization (of limb and/or coordinateAxis) is linked to the local coordinate sysytem of this joint: preJointTransformation*jointTransformation
-	The global pose of this joint is computed by considering all transformations: preJointTransformation*jointTransformation*postJointTransformation
-
-
+	The visualization (of limb and/or coordinateAxis) is linked to the local coordinate sysytem of this joint: localTransformation*jointTransformation
+	The global pose of this joint is the same: localTransformation*jointTransformation
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNode : public SceneObject
 {
@@ -82,7 +80,6 @@ public:
 	*/
 	RobotNode(	RobotWeakPtr rob, 
 				const std::string &name,
-				//const std::vector<std::string> &childrenNames,
 				float jointLimitLo,
 				float jointLimitHi,
 				VisualizationNodePtr visualization = VisualizationNodePtr(), 
@@ -124,15 +121,11 @@ public:
 	*/
 	bool checkJointLimits( float jointValue, bool verbose = false ) const;
 
-	/*!
-		The postJoint transformation.
-	*/
-	virtual Eigen::Matrix4f getPostJointTransformation() {return postJointTransformation;}
 
 	/*!
-		The preJoint transformation.
+		The preJoint/preVisualization transformation. This transformation is applied before the joint and the visualization.
 	*/
-	virtual Eigen::Matrix4f getPreJointTransformation() {return preJointTransformation;}
+	virtual Eigen::Matrix4f getLocalTransformation() {return localTransformation;}
 	
 	/*!
 		Initialize robot node. Here pointers to robot and children are created from names. 
@@ -155,22 +148,18 @@ public:
 	virtual Eigen::Matrix4f getGlobalPose() const;
 
 	/*!
-		The visualization is linked to this globalPose of this node.
-		The end point of this node additionally considers the postJointTransformation.
-		@see getGlobalPose()
+		DEPRECATED: same as GlobalPose
 	*/
 	virtual Eigen::Matrix4f getGlobalPoseVisualization() const;
 
 	/*!
-		The joint of this robot node is located this pose.
-		The end point of this node additionally considers the postJointTransformation 
-		@see getGlobalPose()
+		DEPRECATED: same as GlobalPose
 	*/
 	virtual Eigen::Matrix4f getGlobalPoseJoint() const;
 
 
 	/*!
-		Display the coordinate system of this RobotNode. This is the global pose of it's visualization with applying the postJoint transformation.
+		Display the coordinate system of this RobotNode. This is the global pose of it's visualization.
 		\p enable Show or hide coordinate system
 		\p scaling Size of coordinate system
 		\p text Text to display at coordinate system. If not given, the name of this robot node will be displayed.
@@ -283,6 +272,12 @@ public:
 	*/
 	virtual void propagateJointValue(const std::string &jointName, float factor = 1.0f);
 
+
+	virtual SensorPtr getSensor(const std::string & name) const;
+	virtual bool hasSensor(const std::string & name) const;
+	virtual std::vector<SensorPtr> getSensors() const;
+	virtual bool registerSensor(SensorPtr sensor);
+
 protected:
 
 	/*!
@@ -331,8 +326,7 @@ protected:
 	float maxVelocity;			//! given in m/s
 	float maxAcceleration;		//! given in m/s^2
 	float maxTorque;			//! given in Nm
-	Eigen::Matrix4f preJointTransformation;
-	Eigen::Matrix4f postJointTransformation;
+	Eigen::Matrix4f localTransformation;
 
 	std::map< std::string, float > propagatedJointValues;
 	///////////////////////// SETUP ////////////////////////////////////
@@ -342,8 +336,8 @@ protected:
 
     RobotNodeType nodeType;
 
+	std::vector<SensorPtr> sensors;
 
-	Eigen::Matrix4f globalPosePostJoint;	    //< The postJoint transformation applied to globalPose. Defines the starting pose for all child joints.
 	float jointValue;							//< The joint value
 	
 	/*!

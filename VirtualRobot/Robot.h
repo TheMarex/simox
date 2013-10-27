@@ -25,6 +25,7 @@
 
 #include "VirtualRobotImportExport.h"
 #include "SceneObject.h"
+#include "Nodes/Sensor.h"
 #include "Nodes/RobotNode.h"
 #include "Nodes/ConditionedLock.h"
 
@@ -354,6 +355,11 @@ public:
 		\return The bounding box.
 	*/
 	BoundingBox getBoundingBox(bool collisionModel = true);
+
+	/*!
+		Returns all sensors that are defined within this robot.
+	*/
+	std::vector<SensorPtr> getSensors();
 
 protected:
 	Robot();

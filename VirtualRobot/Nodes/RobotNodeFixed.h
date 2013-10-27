@@ -49,7 +49,6 @@ public:
 	RobotNodeFixed(RobotWeakPtr rob,				//!< The robot
 		const std::string &name,					//!< The name
 		const Eigen::Matrix4f &preJointTransform,   //!<  This is the fixed transformation of this RobotNode (used to compute globalPose)
-		const Eigen::Matrix4f &postJointTransform,	//!<  This is the fixed transformation of this RobotNode (used to compute transformation to children)
 		VisualizationNodePtr visualization = VisualizationNodePtr(),//!< A visualization model
 		CollisionModelPtr collisionModel = CollisionModelPtr(),		//!< A collision model
 		const SceneObject::Physics &p = SceneObject::Physics(),		//!< physics information
@@ -58,11 +57,7 @@ public:
 	/*!
 		Initialize with DH parameters.
 
-		Since the DH convention expects the visualization to be linked at the end of the joint transformation and VirtualRobot is linking the visualization at the local (=preJoint*jointTrafo) coordinate system,
-		there might be an unexpected behavior when using fixed joints with visualizations:
-		The visualization is linked after the theta transformation is applied and d, alpha and a transformations are considered as postJoint transformations.
-		When converting a prismatic joint with visualization to a fixed join, the (fixed) d transformation is not applied to the visualization of this joint. 
-		Since the prismatic joint considers theta and d for computing the visualization pose, there might be a different visualization.
+		The DH parameters are all applied before! any visualization is added to the kinematic structure.  
 	*/
 	RobotNodeFixed(RobotWeakPtr rob,						//!< The robot
 		const std::string &name,							//!< The name

@@ -13,7 +13,6 @@ namespace VirtualRobot {
 RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob, 
 	const std::string &name,
 	const Eigen::Matrix4f &preJointTransform,
-	const Eigen::Matrix4f &postJointTransform,
 	VisualizationNodePtr visualization, 
 	CollisionModelPtr collisionModel,
 	const SceneObject::Physics &p,
@@ -22,8 +21,7 @@ RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob,
 	) : RobotNode(rob,name,0.0f,0.0f,visualization,collisionModel,0.0f,p,colChecker,type)
 {
 	optionalDHParameter.isSet = false;
-	this->preJointTransformation = preJointTransform;
-	this->postJointTransformation = postJointTransform;
+	this->localTransformation = preJointTransform;
     checkValidRobotNodeType();
 }
 
@@ -60,8 +58,7 @@ RobotNodeFixed::RobotNodeFixed(RobotWeakPtr rob,
 	RotAlpha(2,1) = sin(alpha);
 	RotAlpha(2,2) = cos(alpha);
 
-	this->preJointTransformation = RotTheta;
-	this->postJointTransformation = TransD*TransA*RotAlpha;
+	this->localTransformation = RotTheta*TransD*TransA*RotAlpha;
 }
 
 RobotNodeFixed::~RobotNodeFixed()
@@ -75,8 +72,7 @@ bool RobotNodeFixed::initialize(SceneObjectPtr parent, const std::vector<SceneOb
 
 void RobotNodeFixed::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
-	this->globalPose = parentPose * getPreJointTransformation();
-	globalPosePostJoint = this->globalPose*getPostJointTransformation();
+	this->globalPose = parentPose * getLocalTransformation();
 }
 
 void RobotNodeFixed::print( bool printChildren, bool printDecoration ) const
@@ -105,7 +101,7 @@ RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, /*const std::vector
 	if (optionalDHParameter.isSet)
 		result.reset(new RobotNodeFixed(newRobot,name,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,physics,colChecker,nodeType));
 	else
-		result.reset(new RobotNodeFixed(newRobot,name,getPreJointTransformation(),getPostJointTransformation(),visualizationModel,collisionModel,physics,colChecker,nodeType));
+		result.reset(new RobotNodeFixed(newRobot,name,getLocalTransformation(),visualizationModel,collisionModel,physics,colChecker,nodeType));
 
 	return result;
 }

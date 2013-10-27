@@ -11,17 +11,17 @@
 	</RobotNode>
 	
 	<RobotNode name="Dummy_Platform">
-		<Joint type="fixed">
+		<Transform>
 			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
-		</Joint>
+		</Transform>
 		<Child name="X_Platform"/>
 	</RobotNode>
 	
 	<RobotNode name="X_Platform">
-		<Joint type="fixed">
+		<Transform>
 			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
             <!--Limits unit="mm" lo="-10000" hi="10000"/-->
-		</Joint>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 		</Visualization>
@@ -29,10 +29,10 @@
 	</RobotNode>
 	
 	<RobotNode name="Y_Platform">
-		<Joint type="fixed">
+		<Transform>
 			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
             <!--Limits unit="mm" lo="-10000" hi="10000"/-->
-		</Joint>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 		</Visualization>
@@ -40,8 +40,12 @@
 	</RobotNode>
 	
 	<RobotNode name="Yaw_Platform">
-		<Joint type="revolute">
+	    <Transform>
 			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+            <!--Limits unit="mm" lo="-10000" hi="10000"/-->
+		</Transform>
+		<Joint type="revolute">
+			<axis x="0" y="0" z="1"/>
 			<Limits unit="degree" lo="-360" hi="360"/>
 		</Joint>
 		<Visualization enable="true">
@@ -51,7 +55,6 @@
 	</RobotNode>
 	
 	<RobotNode name="Platform">  <!-- visualization via 3D-model at the very end of the kinematic chain-->
-		<Joint type="fixed"/>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/platform.iv</File>
@@ -67,14 +70,12 @@
 	</RobotNode>
 
 	<RobotNode name="Hip Pitch">
-		<Joint type="revolute">
+			<Transform>
+				<Translation x="0" y="158" z="890"/>
+			</Transform>
+			<Joint type="revolute">
 			<Axis x="1" y="0" z="0"/>
 			<Limits unit="degree" lo="-45" hi="45"/>
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="158" z="890"/>  <!-- x,y,z of THIS COS, NOT any other COS-->
-				</Transform>
-			</PreJointTransform>
 		</Joint>
 
 		<Visualization enable="true">
@@ -132,14 +133,9 @@
 	</RobotNode>
 	
 	<RobotNode name="Center of Arms">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="-35" z="485"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
-
+		<Transform>
+			<Translation x="0" y="-35" z="485"/>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 		</Visualization>
@@ -150,13 +146,9 @@
 	</RobotNode>
 	
 	<RobotNode name="TrafoToHead">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="118"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation x="0" y="0" z="118"/>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 		</Visualization>
@@ -167,13 +159,9 @@
 	</RobotNode>
 	
 	<RobotNode name="TrafoToLeftArm">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="-232" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation x="-232" y="0" z="0"/>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 		</Visualization>
@@ -184,13 +172,9 @@
 	</RobotNode>
 	
 	<RobotNode name="TrafoToRightArm">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="232" y="0" z="0"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<Translation x="232" y="0" z="0"/>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 		</Visualization>

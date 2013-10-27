@@ -3,9 +3,12 @@
 <Robot Type="iCub_Head" StandardName="iCub_Head" RootNode="Neck1">
 
 	<RobotNode name="Neck1">
+		<Transform>
+			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
 			<!-- CenterOfArms is -143.3, the official DH_d value is -223.3(-> -80 here), but in the iCubGui the value is -193.3(-> -50 here), that looks better?! --> 
-			<DH a="0" d="-50.0" theta="-90" alpha="-90" units="degree"/>
+			<!--DH a="0" d="-50.0" theta="-90" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-50" hi="50"/>
 		</Joint>
 		<Child name="Neck2"/>
@@ -13,16 +16,24 @@
 	
 
 	<RobotNode name="Neck2">
+		<Transform>
+			<DH a="0" d="-50.0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="9.5" d="0.0" theta="90" alpha="90" units="degree"/>
+			<!--DH a="9.5" d="0.0" theta="90" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-50" hi="50"/>
 		</Joint>
 		<Child name="Neck3"/>
 	</RobotNode>
 
 	<RobotNode name="Neck3">
+		<Transform>
+			<DH a="9.5" d="0.0" theta="0" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0.0" theta="-90" alpha="-90" units="degree"/>
+			<!--DH a="0" d="0.0" theta="-90" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-50" hi="50"/>
 		</Joint>
 		<Visualization enable="true">
@@ -38,8 +49,12 @@
 	</RobotNode>
 
 	<RobotNode name="EyesCenter">
+		<Transform>
+			<DH a="0" d="0.0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="-50.9" d="82.05" theta="90" alpha="-90" units="degree"/>
+			<!--DH a="-50.9" d="82.05" theta="90" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-30" hi="30"/>
 		</Joint>
 		<Child name="EyeLeft1"/>
@@ -48,8 +63,11 @@
 	
 	
 	<RobotNode name="EyeLeft1">
+		<Transform>
+			<DH a="-50.9" d="82.05" theta="0" alpha="-90" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="-34.0" theta="0" alpha="-90" units="degree"/>
+			<!--DH a="0" d="-34.0" theta="0" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-15" hi="15"/>
 		</Joint>
 		<Child name="EyeLeft2"/>
@@ -57,8 +75,12 @@
 	
 	
 	<RobotNode name="EyeLeft2">
+		<Transform>
+			<DH a="0" d="-34.0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
+			<!--DH a="0" d="0" theta="-90" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-30" hi="30"/>
 		</Joint>
 		<Visualization enable="true">
@@ -68,21 +90,21 @@
 	</RobotNode>
 
 	<RobotNode name="EyeLeftCam">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="15"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
+			<Translation x="0" y="0" z="15"/>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis  type="Inventor" enable="false" scaling="1"/>
 		</Visualization>
 	</RobotNode>
 		
 	<RobotNode name="EyeRight1">
+		<Transform>
+			<DH a="-50.9" d="82.05" theta="0" alpha="-90" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="34.0" theta="0" alpha="-90" units="degree"/>
+			<!--DH a="0" d="34.0" theta="0" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-15" hi="15"/>
 		</Joint>
 		<Child name="EyeRight2"/>
@@ -90,8 +112,12 @@
 	
 	
 	<RobotNode name="EyeRight2">
+		<Transform>
+			<DH a="0" d="34.0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
+			<!--DH a="0" d="0" theta="-90" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-30" hi="30"/>
 		</Joint>
 		<Visualization enable="true">
@@ -102,13 +128,10 @@
 	
 	
 	<RobotNode name="EyeRightCam">
-		<Joint type="fixed">
-			<PreJointTransform>
-				<Transform>
-					<Translation x="0" y="0" z="15"/>
-				</Transform>
-			</PreJointTransform>
-		</Joint>
+		<Transform>
+			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
+			<Translation x="0" y="0" z="15"/>
+		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis  type="Inventor" enable="false" scaling="1"/>
 		</Visualization>

@@ -3,13 +3,6 @@
 <Robot Type="Simple3DoFRobot" RootNode="Joint1">
 
 	<RobotNode name="Joint1">
-		<Joint type="fixed">
-            <postjointtransform>
-                <transform>
-                    <translation x="0" y="0" z="3000"/>
-                </transfrom>
-            </postjointtransform>
-        </Joint>
 		<Visualization enable="true">
 			 <File type="inventor">box.iv</File>
 			 <UseAsCollisionModel/>
@@ -26,23 +19,12 @@
 	</RobotNode-->
 
 	<RobotNode name="Joint2">
+		<Transform>
+            <translation x="0" y="0" z="3000"/>
+            <rollpitchyaw roll="0" pitch="90" yaw="0" unitsAngle="degree"/>
+		</Transform>
 	    <Joint type="revolute">
-  		    <!--prejointtransform>
-                <transform>
-                    <translation x="3000" y="0" z="0"/>
-                </transfrom>
-            </prejointtransform-->
-            <prejointtransform>
-                <transform>
-                    <rollpitchyaw roll="0" pitch="90" yaw="0" unitsAngle="degree"/>
-                </transfrom>
-            </prejointtransform>
 		    <axis x="1" y="0" z="0"/>
-		     <postjointtransform>
-                <transform>
-                    <translation x="0" y="0" z="3000"/>
-                </transform>
-            </postjointtransform>
 		    <Limits unit="degree" lo="-90" hi="90"/>
 		</Joint>
 		<Visualization enable="true">
@@ -58,6 +40,9 @@
 	</RobotNode>
 
 	<RobotNode name="Joint3">
+		<Transform>
+            <translation x="0" y="0" z="3000"/>
+		</Transform>
 		<Visualization enable="true">
 			 <File type="inventor">sphere.iv</File>
 			 <UseAsCollisionModel/>

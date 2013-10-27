@@ -15,7 +15,6 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	float jointLimitHi,
 	const Eigen::Matrix4f &preJointTransform,
 	const Eigen::Vector3f &translationDirection, 
-	const Eigen::Matrix4f &postJointTransform,
 	VisualizationNodePtr visualization, 
 	CollisionModelPtr collisionModel,
 	float jointValueOffset,
@@ -26,8 +25,7 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 {
 	initialized = false;
 	optionalDHParameter.isSet = false;
-	this->preJointTransformation = preJointTransform;
-	this->postJointTransformation = postJointTransform;
+	this->localTransformation = preJointTransform;
 	this->jointTranslationDirection = translationDirection;
     checkValidRobotNodeType();
 }
@@ -69,11 +67,9 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	RotAlpha(2,2) = cos(alpha);
 
 	// fixed rotation around theta
-	this->preJointTransformation = RotTheta*TransD;
+	this->localTransformation = RotTheta*TransD*TransA*RotAlpha;
 	// joint setup
 	jointTranslationDirection = Eigen::Vector3f(0,0,1);	// translation along the z axis
-	// compute postJointTransformation
-	this->postJointTransformation = TransA*RotAlpha;
     checkValidRobotNodeType();
 }
 
@@ -90,8 +86,7 @@ bool RobotNodePrismatic::initialize(SceneObjectPtr parent, const std::vector<Sce
 void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
 	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
-	globalPose = parentPose * getPreJointTransformation() * tmpT.matrix();
-	globalPosePostJoint = globalPose*getPostJointTransformation();
+	globalPose = parentPose * getLocalTransformation() * tmpT.matrix();
 }
 
 void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
@@ -114,7 +109,7 @@ void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 		std::for_each(children.begin(), children.end(), boost::bind(&SceneObject::print, _1, true, true));
 }
 
-RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, /*const std::vector<std::string> newChildren,*/ const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
+RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
 {
 	RobotNodePtr result;
 	ReadLockPtr lock = getRobot()->getReadLock();
@@ -122,7 +117,7 @@ RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, /*const std::ve
 	if (optionalDHParameter.isSet)
 		result.reset(new RobotNodePrismatic(newRobot,name, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker,nodeType));
 	else
-		result.reset(new RobotNodePrismatic(newRobot,name,jointLimitLo,jointLimitHi,getPreJointTransformation(),jointTranslationDirection,getPostJointTransformation(),visualizationModel,collisionModel,jointValueOffset,physics,colChecker,nodeType));
+		result.reset(new RobotNodePrismatic(newRobot,name,jointLimitLo,jointLimitHi,getLocalTransformation(),jointTranslationDirection,visualizationModel,collisionModel,jointValueOffset,physics,colChecker,nodeType));
 	return result;
 }
 
@@ -155,9 +150,9 @@ void RobotNodePrismatic::updateVisualizationPose( const Eigen::Matrix4f &globalP
 	// compute the jointValue from pose
     Eigen::Matrix4f initFrame;
     if (this->getParent())
-        initFrame = this->getParent()->getGlobalPose() * getPreJointTransformation();
+        initFrame = this->getParent()->getGlobalPose() * getLocalTransformation();
     else
-        initFrame = getPreJointTransformation();
+        initFrame = getLocalTransformation();
 
     Eigen::Matrix4f localPose = initFrame.inverse() * globalPose;
 

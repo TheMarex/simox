@@ -44,8 +44,8 @@ namespace VirtualRobot
 
 /*!
 		This class represents a voxelized approximation of the workspace that is covered by a kinematic chain of a robot. 
-		The voxel grid covers the 6d Cartesian space: xyz translations (mm) and Tait–Bryan angles (eulerXYZ, fixed frame) orientations.
-        Older versions (<=2.5) used RPY for storing orientations, but it turned out that this representation is not suitable for discretization.
+		The voxel grid covers the 6d Cartesian space: xyz translations (mm) and Tait–Bryan angles (eulerXYZ, fixed frame, extrinsic) orientations.
+        Older versions (<=2.5) used RPY (intrinsic) for storing orientations, but it turned out that this representation is not suitable for discretization.
 		Each voxels holds a counter (uchar) that holds information, e.g. about reachability.
 		The discretized data can be written to and loaded from binary files.
 
@@ -338,6 +338,16 @@ public:
         Usually not needed. Don't call this method after data has been loaded or created!
     */
     void setOrientationType(eOrientationType t);
+
+	/*!
+		Creates a deep copy of this data structure. Derived classes may overwrite this method that provides a generic interface for cloning.
+	*/
+	virtual WorkspaceRepresentationPtr clone();
+
+	/*!
+		Returns the raw data.
+	*/
+	WorkspaceDataPtr getData();
 
 protected:
 

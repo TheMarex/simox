@@ -8,6 +8,8 @@
 #include "VirtualRobot/XML/ObjectIO.h"
 #include "VirtualRobot/XML/RobotIO.h"
 #include "VirtualRobot/Visualization/CoinVisualization/CoinVisualizationFactory.h"
+#include "VirtualRobot/SphereApproximator.h"
+#include "VirtualRobot/Visualization/TriMeshModel.h"
 
  #include <QFileDialog>
 #include <Eigen/Geometry>
@@ -50,6 +52,30 @@ GraspEditorWindow::GraspEditorWindow(std::string &objFile, std::string &robotFil
 	sceneSep->addChild(objectSep);
 	sceneSep->addChild(graspSetVisu);
 
+#if 0
+	// 2d map test
+	Eigen::MatrixXf d(10,10);
+	for (int x=0;x<10;x++)
+		for (int y=0;y<10;y++)
+			d(x,y) = (float)(x+y) / 20.0f;
+	SoSeparator *sep1 = CoinVisualizationFactory::Create2DMap(d,10.0f,10.0f,VirtualRobot::ColorMap::ColorMap(VirtualRobot::ColorMap::eHot),true);
+	SoSeparator *sep2 = CoinVisualizationFactory::Create2DHeightMap(d,10.0f,10.0f,50.0f);
+	sceneSep->addChild(sep1);
+	sceneSep->addChild(sep2);
+#endif
+
+#if 0
+	SphereApproximatorPtr sa(new SphereApproximator());
+	SphereApproximator::SphereApproximation app;
+	sa->generateGraph(app,SphereApproximator::eIcosahedron,3,200.0f);
+	cout << "nr faces:" << app.faces.size() << ", vert:" << app.vertices.size() << endl;
+
+	TriMeshModelPtr tri = sa->generateTriMesh(app);
+	cout << "2 nr faces:" << tri->faces.size() << ", vert:" << tri->vertices.size() << endl;
+	SoNode* m = CoinVisualizationFactory::getCoinVisualization(tri,true);
+	sceneSep->addChild(m);
+	
+#endif
 	setupUI();
 	
 	loadObject();
@@ -172,19 +198,37 @@ void GraspEditorWindow::buildVisu()
 	eefVisu->removeAllChildren();
 
 	showCoordSystem();
-	
 	SceneObject::VisualizationType colModel = (UI.checkBoxColModel->isChecked())?SceneObject::Collision:SceneObject::Full;
-	if (robotEEF)
-	{
-		visualizationRobot = robotEEF->getVisualization<CoinVisualization>(colModel);
-		SoNode* visualisationNode = visualizationRobot->getCoinVisualization();
-    	if (visualisationNode)
-		{
-    	    eefVisu->addChild(visualisationNode);
-			visualizationRobot->highlight(true);
-		}
-    }
 	
+	if (!UI.checkBoxTCP->isChecked())
+	{
+		if (robotEEF)
+		{
+			visualizationRobot = robotEEF->getVisualization<CoinVisualization>(colModel);
+			SoNode* visualisationNode = visualizationRobot->getCoinVisualization();
+    		if (visualisationNode)
+			{
+    			eefVisu->addChild(visualisationNode);
+				//visualizationRobot->highlight(true);
+			}
+		}
+	} else
+	{
+		if (robotEEF && robotEEF_EEF)
+		{
+			RobotNodePtr tcp = robotEEF_EEF->getTcp();
+			if (tcp)
+			{
+				SoSeparator *res = new SoSeparator;
+				eefVisu->addChild(res);
+				SoMatrixTransform* m = CoinVisualizationFactory::getMatrixTransformScaleMM2M(tcp->getGlobalPose());
+				res->addChild(m);
+				SoSeparator *co = CoinVisualizationFactory::CreateCoordSystemVisualization();
+				res->addChild(co);
+
+			}	
+		}
+	}
 	objectSep->removeAllChildren();
 	if (object)
 	{
@@ -374,7 +418,7 @@ void GraspEditorWindow::loadObject()
 		return;
 	}
 
-	object->print();
+	//object->print();
 
 	selectEEF(0);
 
@@ -429,7 +473,7 @@ void GraspEditorWindow::renameGrasp()
 
 	if (ok && !text.isEmpty())
 	{
-		std::string sText = text.toStdString();
+		std::string sText = text.toAscii();
 		currentGrasp->setName(sText);
 
 		updateGraspBox();

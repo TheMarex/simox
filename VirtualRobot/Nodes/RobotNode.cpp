@@ -23,7 +23,6 @@ namespace VirtualRobot {
 
 RobotNode::RobotNode(	RobotWeakPtr rob, 
 						const std::string &name,
-						//const std::vector<std::string> &childrenNames,
 						float jointLimitLo,
 						float jointLimitHi,
 						VisualizationNodePtr visualization, 
@@ -41,17 +40,14 @@ RobotNode::RobotNode(	RobotWeakPtr rob,
 	maxAcceleration = 0.0f;
 	maxTorque = 0.0f;
 	robot = rob;
-	//this->childrenNames = childrenNames;
 	this->jointLimitLo = jointLimitLo;
 	this->jointLimitHi = jointLimitHi;
 	this->jointValueOffset = jointValueOffset;
-	preJointTransformation = Eigen::Matrix4f::Identity();
-	postJointTransformation = Eigen::Matrix4f::Identity();
+	localTransformation = Eigen::Matrix4f::Identity();
+	//postJointTransformation = Eigen::Matrix4f::Identity();
 	optionalDHParameter.isSet = false;
-	globalPosePostJoint = Eigen::Matrix4f::Identity();
+	//globalPosePostJoint = Eigen::Matrix4f::Identity();
 	jointValue = 0.0f;
-	children.clear();
-	initialized = false;
 }
 
 
@@ -78,13 +74,19 @@ bool RobotNode::initialize(SceneObjectPtr parent, const std::vector<SceneObjectP
 	if (visualizationModel && visualizationModel->hasAttachedVisualization("CoordinateSystem"))
 	{
 		VisualizationNodePtr v = visualizationModel->getAttachedVisualization("CoordinateSystem");
+		// not needed any more!
 		// this is a little hack: The globalPose is used to set the "local" position of the attached Visualization:
 		// Since the attached visualizations are already positioned at the global pose of the visualizationModel, 
 		// we just need the local postJointTransform
-		v->setGlobalPose(postJointTransformation);
+		//v->setGlobalPose(postJointTransformation);
 	}
 
     checkValidRobotNodeType();
+
+	for (size_t i=0;i<sensors.size();i++)
+	{
+		sensors[i]->initialize(shared_from_this());
+	}
 
 	return SceneObject::initialize(parent,children);	
 }
@@ -100,12 +102,12 @@ void RobotNode::checkValidRobotNodeType()
     case Joint:
         THROW_VR_EXCEPTION_IF(visualizationModel, "No visualization models allowed in JointNodes");
         THROW_VR_EXCEPTION_IF(collisionModel, "No collision models allowed in JointNodes");
-        THROW_VR_EXCEPTION_IF(postJointTransformation != Eigen::Matrix4f::Identity() , "No postJoint transformations allowed in JointNodes");
+        //THROW_VR_EXCEPTION_IF(postJointTransformation != Eigen::Matrix4f::Identity() , "No postJoint transformations allowed in JointNodes");
         break;
 
     case Body:
-        THROW_VR_EXCEPTION_IF(postJointTransformation != Eigen::Matrix4f::Identity() , "No transformations allowed in BodyNodes");
-        THROW_VR_EXCEPTION_IF(preJointTransformation != Eigen::Matrix4f::Identity() , "No transformations allowed in BodyNodes");
+        //THROW_VR_EXCEPTION_IF(postJointTransformation != Eigen::Matrix4f::Identity() , "No transformations allowed in BodyNodes");
+        THROW_VR_EXCEPTION_IF(localTransformation != Eigen::Matrix4f::Identity() , "No transformations allowed in BodyNodes");
 
         break;
     case Transform:
@@ -162,9 +164,9 @@ void RobotNode::updateTransformationMatrices()
 
 void RobotNode::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
-	this->globalPose = parentPose * getPreJointTransformation();
+	this->globalPose = parentPose * getLocalTransformation();
 
-	globalPosePostJoint = this->globalPose*getPostJointTransformation();
+	//globalPosePostJoint = this->globalPose*getPostJointTransformation();
 }
 
 
@@ -302,8 +304,7 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 	{ // scope1
 		std::ostringstream sos;
 		sos << std::setiosflags(std::ios::fixed);
-		sos << "* preJointTransformation:" << endl << preJointTransformation << endl;
-		sos << "* postJointTransformation:" << endl << postJointTransformation << endl;
+		sos << "* localTransformation:" << endl << localTransformation << endl;
 		sos << "* globalPose:" << endl << getGlobalPose() << endl;
 		cout << sos.str();
 	} // scope1
@@ -318,52 +319,6 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 			children[i]->print(true, true);
 	}
 }
-/*
-void RobotNode::addChildNode( RobotNodePtr child )
-{
-	if (!child)
-		return;
-	if (!this->hasChildNode(child->getName()))
-		childrenNames.push_back(child->getName());
-
-	if (!this->hasChildNode(child) && initialized)
-		this->children.push_back(child);
-}
-
-bool RobotNode::hasChildNode( const RobotNodePtr child, bool recursive ) const
-{
-	std::vector< RobotNodePtr > children = this->getChildren();
-	for (unsigned int i = 0; i < children.size(); i++)
-	{
-		if (children[i] == child)
-			return true;
-		if (recursive)
-		{
-			if (children[i]->hasChildNode(child, true))
-				return true;
-		}	
-	}
-	return false;
-}
-
-bool RobotNode::hasChildNode( const std::string &child, bool recursive ) const
-{
-	RobotPtr rob(robot);
-	for (unsigned int i=0; i<this->getChildrenNames().size(); i++)
-	{
-		VR_ASSERT(rob);
-
-		if (this->getChildrenNames()[i] == child)
-			return true;
-		if (recursive)
-		{
-			RobotNodePtr p = rob->getRobotNode(this->getChildrenNames()[i]);
-			if (p && p->hasChildNode(child))
-				return true;
-		}	
-	}
-	return false;
-}*/
 
 RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodePtr initializeWithParent, CollisionCheckerPtr colChecker )
 {
@@ -375,8 +330,6 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 	}
 
 	std::vector< std::string > clonedChildrenNames;
-	//if (cloneChildren)
-	//	clonedChildrenNames = this->getChildrenNames();
 
 	VisualizationNodePtr clonedVisualizationNode;
 	if (visualizationModel)
@@ -385,7 +338,7 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 	if (collisionModel)
 		clonedCollisionModel = collisionModel->clone(colChecker);
 
-	RobotNodePtr result = _clone(newRobot, /*clonedChildrenNames,*/ clonedVisualizationNode, clonedCollisionModel,colChecker);
+	RobotNodePtr result = _clone(newRobot, clonedVisualizationNode, clonedCollisionModel,colChecker);
 
 	if (!result)
 	{
@@ -403,14 +356,20 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 			{
 				RobotNodePtr c = n->clone(newRobot,true,RobotNodePtr(),colChecker);
 				if (c)
-				{
 					result->attachChild(c);
-				}
 			} else
 			{
-				SceneObjectPtr so = children[i]->clone(children[i]->getName(),colChecker);
-				if (so)
-					result->attachChild(so);
+				SensorPtr s =  dynamic_pointer_cast<Sensor>(children[i]);
+				if (s)
+				{
+					// performs registering and initialization
+					SensorPtr c = s->clone(result);
+				} else
+				{
+					SceneObjectPtr so = children[i]->clone(children[i]->getName(),colChecker);
+					if (so)
+						result->attachChild(so);
+				}
 			}
 		}
 	}
@@ -489,12 +448,13 @@ void RobotNode::showCoordinateSystem( bool enable, float scaling, std::string *t
 		}
 		// create coord visu
 		VisualizationNodePtr visualizationNode = visualizationFactory->createCoordSystem(scaling,&coordName);
+		// not needed any more
 		// this is a little hack: The globalPose is used to set the "local" position of the attached Visualization:
 		// Since the attached visualizations are already positioned at the global pose of the visualizationModel, 
 		// we just need the local postJointTransform
 		if (visualizationNode)
 		{
-			visualizationNode->setGlobalPose(postJointTransformation);
+			//visualizationNode->setGlobalPose(postJointTransformation);
 			visualizationModel->attachVisualization("CoordinateSystem",visualizationNode);
 		}
 	}
@@ -539,18 +499,19 @@ void RobotNode::showStructure( bool enable, const std::string &visualizationType
 		// create visu
 		Eigen::Matrix4f i = Eigen::Matrix4f::Identity();
 
-		if (!preJointTransformation.isIdentity())
+		if (!localTransformation.isIdentity())
 		{
 			VisualizationNodePtr visualizationNode1;
 			if (parRN && parRN->getVisualization())
 			{
 				// add to parent node (pre joint trafo moves with parent!)
-				visualizationNode1 = visualizationFactory->createLine(parRN->postJointTransformation, parRN->postJointTransformation*preJointTransformation);
+				//visualizationNode1 = visualizationFactory->createLine(parRN->postJointTransformation, parRN->postJointTransformation*localTransformation);
+				visualizationNode1 = visualizationFactory->createLine(Eigen::Matrix4f::Identity(), localTransformation);
 				if (visualizationNode1)
 					parRN->getVisualization()->attachVisualization(attachName1,visualizationNode1);
 			} else
 			{
-				visualizationNode1 = visualizationFactory->createLine(preJointTransformation.inverse(),i);
+				visualizationNode1 = visualizationFactory->createLine(localTransformation.inverse(),i);
 				if (visualizationNode1)
 					visualizationModel->attachVisualization(attachName1,visualizationNode1);
 			}
@@ -558,12 +519,6 @@ void RobotNode::showStructure( bool enable, const std::string &visualizationType
 		VisualizationNodePtr visualizationNode2 = visualizationFactory->createSphere(5.0f);
 		if (visualizationNode2)
 			visualizationModel->attachVisualization(attachName2,visualizationNode2);
-		if (!postJointTransformation.isIdentity())
-		{
-			VisualizationNodePtr visualizationNode3 = visualizationFactory->createLine(i,postJointTransformation,3);
-			if (visualizationNode3)
-				visualizationModel->attachVisualization(attachName3,visualizationNode3);
-		}
 	}
 }
 
@@ -632,14 +587,13 @@ void RobotNode::updateVisualizationPose( const Eigen::Matrix4f &globalPose, bool
 	{
 		if (rob && rob->getRootNode() == static_pointer_cast<RobotNode>(shared_from_this()))
 		{
-			Eigen::Matrix4f gpPre = getPreJointTransformation().inverse() * globalPose;
+			Eigen::Matrix4f gpPre = getLocalTransformation().inverse() * globalPose;
 			rob->setGlobalPose(gpPre, false);
 		} else
             VR_WARNING << "INTERNAL ERROR: getParent==robot but getRoot!=this ?! " << endl;
 	}
 
 	this->globalPose = globalPose;
-	globalPosePostJoint = this->globalPose*getPostJointTransformation();
 
 	// update collision and visualization model and children
 	SceneObject::updatePose(updateChildren);
@@ -660,7 +614,7 @@ Eigen::Matrix4f RobotNode::getGlobalPoseVisualization() const
 Eigen::Matrix4f RobotNode::getGlobalPose() const
 {
 	ReadLockPtr lock = getRobot()->getReadLock();
-	return globalPosePostJoint;
+	return globalPose;
 }
 
 RobotNode::RobotNodeType RobotNode::getType()
@@ -679,5 +633,40 @@ void RobotNode::propagateJointValue( const std::string &jointName, float factor 
 	}
 }
 
+SensorPtr RobotNode::getSensor(const std::string & name) const
+{
+	for (size_t i=0;i<sensors.size();i++)
+	{
+		if (sensors[i]->getName() == name)
+			return sensors[i];
+	}
+	THROW_VR_EXCEPTION("No sensor with name" << name << " registerd at robot node " << getName());
+	return SensorPtr();
+}
+
+bool RobotNode::hasSensor(const std::string & name) const
+{
+	for (size_t i=0;i<sensors.size();i++)
+	{
+		if (sensors[i]->getName() == name)
+			return true;
+	}
+	return false;
+}
+
+bool RobotNode::registerSensor(SensorPtr sensor)
+{
+	if (!this->hasChild(sensor))
+	{
+		sensors.push_back(sensor);
+		this->attachChild(sensor);
+	}
+	return true;
+}
+
+std::vector<SensorPtr> RobotNode::getSensors() const
+{
+	return sensors;
+}
 
 } // namespace VirtualRobot

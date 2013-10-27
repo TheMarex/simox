@@ -27,23 +27,31 @@
 
 	<RobotNode name="Left Arm Shoulder1">
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+			<!--DH a="0" d="0" theta="0" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-95.5" hi="10"/><!--lo="-95" hi="5"/>changed to values of ini files in main/app/robots/iCubGenova02-->
 		</Joint>
 		<Child name="Left Arm Shoulder2"/>
 	</RobotNode>
 
 	<RobotNode name="Left Arm Shoulder2">
+		<Transform>
+			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
+			<!--DH a="0" d="0" theta="-90" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="0" hi="160.8"/>
 		</Joint>
 		<Child name="Left Arm Shoulder3"/>
 	</RobotNode>
 
 	<RobotNode name="Left Arm Shoulder3">
+		<Transform>
+			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="75" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="15" d="152.28" theta="75" alpha="-90" units="degree"/>
+			<!--DH a="15" d="152.28" theta="75" alpha="-90" units="degree"/-->
 			<Limits unit="degree" lo="-37" hi="80"/><!--lo="-37" hi="100"/>changed to values of ini files in main/app/robots/iCubGenova02-->
 		</Joint>
 		<Visualization enable="true">
@@ -60,16 +68,23 @@
 	
 
 	<RobotNode name="Left Arm Elbow1">
+		<Transform>
+			<DH a="15" d="152.28" theta="0" alpha="-90" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="-15" d="0" theta="0" alpha="90" units="degree"/>
+			<!--DH a="-15" d="0" theta="0" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="15" hi="105"/><!--lo="5.5" hi="106"/>changed to values of ini files in main/app/robots/iCubGenova02-->
 		</Joint>
 		<Child name="Left Arm Elbow2"/>
 	</RobotNode>
 
 	<RobotNode name="Left Arm Elbow2">
+		<Transform>
+			<DH a="-15" d="0" theta="0" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="137.3" theta="-90" alpha="90" units="degree"/>
+			<!--DH a="0" d="137.3" theta="-90" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-90" hi="90"/><!--lo="-50" hi="50"/>changed to values of ini files in main/app/robots/iCubGenova02-->
 		</Joint>
 		<Visualization enable="true">
@@ -85,16 +100,22 @@
 	</RobotNode>
 
 	<RobotNode name="Left Arm Wrist1">
+		<Transform>
+			<DH a="0" d="137.3" theta="0" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="90" alpha="90" units="degree"/>
+			<!--DH a="0" d="0" theta="90" alpha="90" units="degree"/-->
 			<Limits unit="degree" lo="-90" hi="0"/><!--lo="-65" hi="10"/>changed to values of ini files in main/app/robots/iCubGenova02-->
 		</Joint>
 		<Child name="Left Arm Wrist2"/>
 	</RobotNode>
 
 	<RobotNode name="Left Arm Wrist2">
+		<Transform>
+			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
+		</Transform>
 		<Joint type="revolute">
-			<DH a="0" d="0" theta="0" alpha="0" units="degree"/>
 			<Limits unit="degree" lo="-20" hi="40"/><!--lo="-25" hi="25"/>changed to values of ini files in main/app/robots/iCubGenova02-->
 		</Joint>
 		<Physics>

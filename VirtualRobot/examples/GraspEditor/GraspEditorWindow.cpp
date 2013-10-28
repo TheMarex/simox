@@ -221,7 +221,8 @@ void GraspEditorWindow::buildVisu()
 			{
 				SoSeparator *res = new SoSeparator;
 				eefVisu->addChild(res);
-				SoMatrixTransform* m = CoinVisualizationFactory::getMatrixTransformScaleMM2M(tcp->getGlobalPose());
+				Eigen::Matrix4f tcpGP = tcp->getGlobalPose();
+				SoMatrixTransform* m = CoinVisualizationFactory::getMatrixTransformScaleMM2M(tcpGP);
 				res->addChild(m);
 				SoSeparator *co = CoinVisualizationFactory::CreateCoordSystemVisualization();
 				res->addChild(co);
@@ -473,7 +474,7 @@ void GraspEditorWindow::renameGrasp()
 
 	if (ok && !text.isEmpty())
 	{
-		std::string sText = text.toAscii();
+		std::string sText = text.toStdString();
 		currentGrasp->setName(sText);
 
 		updateGraspBox();

@@ -41,7 +41,6 @@
 #include <VirtualRobot/Nodes/RobotNodeActuator.h>
 #include <VirtualRobot/Nodes/ConditionedLock.h>
 #include <VirtualRobot/Transformation/DHParameter.h>
-#include <VirtualRobot/Transformation/Transformation.h>
 #include <VirtualRobot/Visualization/VisualizationFactory.h>
 #include <VirtualRobot/Visualization/Visualization.h>
 #include <VirtualRobot/Visualization/VisualizationNode.h>

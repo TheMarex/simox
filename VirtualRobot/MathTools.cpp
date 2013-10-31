@@ -685,7 +685,7 @@ Eigen::Vector3f MathTools::transformPosition( const Eigen::Vector3f &pos, const 
 
 bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::onNormalPointingSide( const Eigen::Vector3f &point, const Plane &p )
 {
-	return point.dot(p.n) >= 0;
+	return (point-p.p).dot(p.n) >= 0;
 }
 
 void VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::convertMM2M( const std::vector<ContactPoint> points, std::vector<ContactPoint> &storeResult )

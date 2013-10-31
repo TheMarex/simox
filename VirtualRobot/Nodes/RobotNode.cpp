@@ -159,7 +159,14 @@ void RobotNode::updateTransformationMatrices()
 	if (this->getParent())
 		updateTransformationMatrices(this->getParent()->getGlobalPose());
 	else
-		updateTransformationMatrices(Eigen::Matrix4f::Identity());
+	{
+		// check for root
+		RobotPtr r = getRobot();
+		if (r && r->getRootNode() == shared_from_this())
+			updateTransformationMatrices(r->getGlobalPose());
+		else
+			updateTransformationMatrices(Eigen::Matrix4f::Identity());
+	}
 }
 
 void RobotNode::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)

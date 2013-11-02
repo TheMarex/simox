@@ -313,7 +313,7 @@ MathTools::ConvexHull2DPtr MathTools::createConvexHull2D( std::vector< Eigen::Ve
 	int n = (int)P.size();
 	THROW_VR_EXCEPTION_IF(n<3,"Could not generate convex hull with " << n << " points...");
 	std::vector< Eigen::Vector2f > H;
-	H.resize(n);
+	H.resize(n*2);
 
 	// the output array H[] will be used as the stack
 	int    bot=0, top=(-1);  // indices for bottom and top of the stack

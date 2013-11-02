@@ -746,13 +746,14 @@ namespace VirtualRobot {
         u->units = SoUnits::MILLIMETERS;
         visu->addChild(u);
 
-
-        SoMaterial *m = new SoMaterial;
-        m->diffuseColor.setValue(colorInner.r, colorInner.g, colorInner.b);
-        m->ambientColor.setValue(colorInner.r, colorInner.g, colorInner.b);
-        m->transparency.setValue(colorInner.transparency);
-        visu->addChild(m);
-
+		if (!colorInner.isNone())
+		{
+			SoMaterial *m = new SoMaterial;
+			m->diffuseColor.setValue(colorInner.r, colorInner.g, colorInner.b);
+			m->ambientColor.setValue(colorInner.r, colorInner.g, colorInner.b);
+			m->transparency.setValue(colorInner.transparency);
+			visu->addChild(m);
+		}
 
         SoCoordinate3* coordinate3 = new SoCoordinate3;
         SoCoordinate3* coordinate3b = new SoCoordinate3;

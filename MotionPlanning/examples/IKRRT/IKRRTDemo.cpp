@@ -23,6 +23,8 @@ using namespace VirtualRobot;
 
 #include "IKRRTWindow.h"
 
+//#define ARMAR
+
 
 int main(int argc, char *argv[])
 {
@@ -30,14 +32,24 @@ int main(int argc, char *argv[])
 	SoQt::init(argc,argv,"IKRRT");
 	cout << " --- START --- " << endl;
 
+#ifdef ARMAR
+	std::string filenameScene("scenes/examples/IKRRT/planningHotSpot.xml");
+	std::string filenameReach("reachability/ArmarIII_HipLeftArm.bin");
+	std::string kinChain("TorsoLeftArm");
+	std::string eef("Hand L");
+	std::string colModel("LeftArmHandColModel");
+	std::string colModelRob("PlatformTorsoHeadColModel");
+#else
+	// ICUB
 	std::string filenameScene("scenes/IKRRT_scene_iCub.xml");
-	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameScene);
 	std::string filenameReach("reachability/iCub_HipLeftArm.bin");
-	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameReach);
-    std::string kinChain("Hip Left Arm");
-    std::string eef("Left Hand");
+	std::string kinChain("Hip Left Arm");
+	std::string eef("Left Hand");
 	std::string colModel("Left HandArm ColModel");
 	std::string colModelRob("BodyHeadLegsColModel");
+#endif
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameScene);
+	VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(filenameReach);
 
 	VirtualRobot::RuntimeEnvironment::considerKey("scene");
 	VirtualRobot::RuntimeEnvironment::considerKey("reachability");

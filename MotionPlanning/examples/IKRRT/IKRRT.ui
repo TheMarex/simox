@@ -455,6 +455,19 @@
         <string>Show Solution</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="pushButtonPlay">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>400</y>
+         <width>121</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Play and Save</string>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>

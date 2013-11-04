@@ -28,7 +28,7 @@ VisualizationNode::~VisualizationNode()
 	attachedVisualizations.clear();
 }
 
-VirtualRobot::VisualizationNodePtr VisualizationNode::clone(bool deepCopy)
+VirtualRobot::VisualizationNodePtr VisualizationNode::clone(bool deepCopy, float scaling)
 {
 	VisualizationNodePtr p(new VisualizationNode());
 	p->setUpdateVisualization(updateVisualization);

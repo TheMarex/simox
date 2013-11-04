@@ -701,16 +701,17 @@ void SceneObject::setName( const std::string &name )
 	this->name = name;
 }
 
-SceneObject* SceneObject::_clone( const std::string &name, CollisionCheckerPtr colChecker ) const
+SceneObject* SceneObject::_clone( const std::string &name, CollisionCheckerPtr colChecker, float scaling  ) const
 {
 	VisualizationNodePtr clonedVisualizationNode;
 	if (visualizationModel)
-		clonedVisualizationNode = visualizationModel->clone();
+		clonedVisualizationNode = visualizationModel->clone(true,scaling);
 	CollisionModelPtr clonedCollisionModel;
 	if (collisionModel)
-		clonedCollisionModel = collisionModel->clone(colChecker);
+		clonedCollisionModel = collisionModel->clone(colChecker,scaling);
 
-	SceneObject* result = new SceneObject(name, clonedVisualizationNode, clonedCollisionModel, physics, colChecker);
+	Physics p = physics.scale(scaling);
+	SceneObject* result = new SceneObject(name, clonedVisualizationNode, clonedCollisionModel, p, colChecker);
 
 	if (!result)
 	{

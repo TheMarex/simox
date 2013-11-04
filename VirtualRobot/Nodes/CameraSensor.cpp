@@ -29,9 +29,12 @@ void CameraSensor::print( bool printChildren, bool printDecoration ) const
 }
 
 
-SensorPtr CameraSensor::_clone(const RobotNodePtr newRobotNode, const VisualizationNodePtr visualizationModel)
+SensorPtr CameraSensor::_clone(const RobotNodePtr newRobotNode, const VisualizationNodePtr visualizationModel, float scaling)
 {
-	SensorPtr result(new CameraSensor(newRobotNode,name,visualizationModel,rnTransformation));
+	THROW_VR_EXCEPTION_IF(scaling<0,"Scaling must be >0");
+	Eigen::Matrix4f rnt = rnTransformation;
+	rnt.block(0,3,3,1) *= scaling;
+	SensorPtr result(new CameraSensor(newRobotNode,name,visualizationModel,rnt));
 	return result;
 }
 

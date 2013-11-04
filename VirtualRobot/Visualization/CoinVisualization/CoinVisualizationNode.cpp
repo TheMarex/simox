@@ -17,6 +17,7 @@
 #include <Inventor/actions/SoLineHighlightRenderAction.h>
 #include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/nodes/SoMatrixTransform.h>
+#include <Inventor/nodes/SoScale.h>
 
 namespace VirtualRobot {
 
@@ -249,17 +250,26 @@ void CoinVisualizationNode::detachVisualization(const std::string &name)
 }
 
 
-VirtualRobot::VisualizationNodePtr CoinVisualizationNode::clone(bool deepCopy)
+VirtualRobot::VisualizationNodePtr CoinVisualizationNode::clone(bool deepCopy, float scaling)
 {
-	SoNode* newModel = NULL;
+	THROW_VR_EXCEPTION_IF(scaling<=0,"Scaling must be >0");
+
+	SoSeparator* newModel = NULL;
 	if (visualization)
 	{
+		newModel = new SoSeparator;
+		newModel->ref();
+		if (scaling!=1.0)
+		{
+			SoScale *s = new SoScale;
+			s->scaleFactor.setValue(scaling,scaling,scaling);
+			newModel->addChild(s);
+		}
 		if (deepCopy)
 		{
-			newModel = visualization->copy(FALSE);
+			newModel->addChild(visualization->copy(FALSE));
 		} else
-			newModel = visualization;
-		newModel->ref();
+			newModel->addChild(visualization);
 	}
 	VisualizationNodePtr p(new CoinVisualizationNode(newModel));
 	if (newModel)
@@ -272,7 +282,7 @@ VirtualRobot::VisualizationNodePtr CoinVisualizationNode::clone(bool deepCopy)
 	std::map< std::string, VisualizationNodePtr >::const_iterator i = attachedVisualizations.begin();
 	while (i!=attachedVisualizations.end())
 	{
-		VisualizationNodePtr attachedClone = i->second->clone();
+		VisualizationNodePtr attachedClone = i->second->clone(deepCopy,scaling);
 		p->attachVisualization(i->first, attachedClone);
 		i++;
 	}

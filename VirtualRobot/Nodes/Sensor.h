@@ -92,12 +92,13 @@ public:
 	/*!
 		Clone this Sensor. 
 		\param newRobotNode The newly created Sensor belongs to newRobotNode.
+		\param scaling Scales the visualization and transformation data.
 	*/
-	virtual SensorPtr clone(RobotNodePtr newRobotNode);
+	virtual SensorPtr clone(RobotNodePtr newRobotNode, float scaling = 1.0f);
 
 
 	//! Forbid cloning method from SceneObject. We need to know the new robotnode for cloning
-	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
+	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
 
     /*!
 		Compute/Update the transformations of this sensor. Therefore the parent is queried for its pose.
@@ -122,11 +123,12 @@ protected:
 	RobotNodeWeakPtr robotNode;
 
 	/*!
-	Derived classes must implement their clone method here.
+		Derived classes must implement their clone method here.
+		The visualization is already scaled, the kinematic information (i.e. transformations) have to be scaled by derived implementations.
 	*/
-	virtual SensorPtr _clone(const RobotNodePtr newRobotNode, const VisualizationNodePtr visualizationModel) = 0;
+	virtual SensorPtr _clone(const RobotNodePtr newRobotNode, const VisualizationNodePtr visualizationModel, float scaling) = 0;
 
-	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
+	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
 
 };
 

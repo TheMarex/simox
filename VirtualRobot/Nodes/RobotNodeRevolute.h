@@ -114,7 +114,7 @@ protected:
 
 	Eigen::Vector3f jointRotationAxis;			// eRevoluteJoint  (given in local joint coord system)
 
-	virtual RobotNodePtr _clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker);
+	virtual RobotNodePtr _clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker, float scaling);
 };
 
 typedef boost::shared_ptr<RobotNodeRevolute> RobotNodeRevolutePtr;

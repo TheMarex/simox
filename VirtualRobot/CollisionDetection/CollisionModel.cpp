@@ -67,11 +67,11 @@ void CollisionModel::setGlobalPose(const Eigen::Matrix4f &m)
 		visualization->setGlobalPose(m);
 }
 
-VirtualRobot::CollisionModelPtr CollisionModel::clone(CollisionCheckerPtr colChecker)
+VirtualRobot::CollisionModelPtr CollisionModel::clone(CollisionCheckerPtr colChecker, float scaling)
 {
 	VisualizationNodePtr visuNew;
 	if (visualization)
-		visuNew = visualization->clone();
+		visuNew = visualization->clone(true,scaling);
 
 	std::string nameNew = name;
 	int idNew = id;

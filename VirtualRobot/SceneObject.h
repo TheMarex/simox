@@ -24,6 +24,7 @@
 #define _VirtualRobot_SceneObject_h_
 
 #include "VirtualRobot.h"
+#include "VirtualRobotException.h"
 #include "VirtualRobotImportExport.h"
 #include "Visualization/VisualizationNode.h"
 #include <Eigen/Core>
@@ -104,7 +105,7 @@ public:
 				std::cout << massKg << " [kg]" << std::endl;
 			cout << " ** local CoM [mm] ";
 			if (comLocation == SceneObject::Physics::eVisuBBoxCenter)
-				std::cout << "(center of visualisation's bounding box):";
+				std::cout << "(center of visualization's bounding box):";
 			else
 				std::cout << ":";
 			std::cout << localCoM(0) << ", " << localCoM(1) << ", " << localCoM(2) << std::endl;
@@ -152,6 +153,14 @@ public:
                 ss << ta << "\t<IgnoreCollisions name='" << ignoreCollisions[i] << "'/>\n";
 			ss << ta << "</Physics>\n";
 			return ss.str();
+		}
+
+		Physics scale(float scaling) const
+		{
+			THROW_VR_EXCEPTION_IF(scaling<=0,"Scaling must be > 0");
+			Physics res = *this;
+			res.localCoM *= scaling;
+			return res;
 		}
 
 		Eigen::Vector3f localCoM;	//!< Defined in the local coordinate system of this object [mm]
@@ -372,7 +381,7 @@ public:
 	/*!
 		Clones this object. If no col checker is given, the one of the original object is used.
 	*/
-	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {return SceneObjectPtr(_clone(name,colChecker));}
+	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f ) const {return SceneObjectPtr(_clone(name,colChecker,scaling));}
 
 	/*! 
 		Attach a connected object. The connected object is linked to this SceneObject and moves accordingly. 
@@ -413,7 +422,7 @@ public:
     virtual void updatePose( bool updateChildren = true);
 
 protected:
-	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const;
+	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f ) const;
 
 	//! Parent detached this object 
 	virtual void detachedFromParent();

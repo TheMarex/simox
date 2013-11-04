@@ -77,7 +77,7 @@ public:
 		\param deepCopy When true, the underlying visualization is copied, otherwise a reference to the existing visualization is passed. 
 		Since the underlying implementation may be able to re-use the visualization data, a deep copy may not be necessary in some cases.
 	*/
-	virtual VisualizationNodePtr clone(bool deepCopy = true);
+	virtual VisualizationNodePtr clone(bool deepCopy = true, float scaling = 1.0f);
 
 	virtual std::string getType(){return OSGVisualizationFactory::getName();}
 

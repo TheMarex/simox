@@ -327,7 +327,7 @@ void RobotNode::print( bool printChildren, bool printDecoration ) const
 	}
 }
 
-RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodePtr initializeWithParent, CollisionCheckerPtr colChecker )
+RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodePtr initializeWithParent, CollisionCheckerPtr colChecker, float scaling )
 {
 	ReadLockPtr lock = getRobot()->getReadLock();
 	if (!newRobot)
@@ -340,12 +340,12 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 
 	VisualizationNodePtr clonedVisualizationNode;
 	if (visualizationModel)
-		clonedVisualizationNode = visualizationModel->clone();
+		clonedVisualizationNode = visualizationModel->clone(true,scaling);
 	CollisionModelPtr clonedCollisionModel;
 	if (collisionModel)
-		clonedCollisionModel = collisionModel->clone(colChecker);
+		clonedCollisionModel = collisionModel->clone(colChecker,scaling);
 
-	RobotNodePtr result = _clone(newRobot, clonedVisualizationNode, clonedCollisionModel,colChecker);
+	RobotNodePtr result = _clone(newRobot, clonedVisualizationNode, clonedCollisionModel, colChecker, scaling);
 
 	if (!result)
 	{
@@ -361,7 +361,7 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 			RobotNodePtr n = dynamic_pointer_cast<RobotNode>(children[i]);
 			if (n)
 			{
-				RobotNodePtr c = n->clone(newRobot,true,RobotNodePtr(),colChecker);
+				RobotNodePtr c = n->clone(newRobot,true,RobotNodePtr(),colChecker,scaling);
 				if (c)
 					result->attachChild(c);
 			} else
@@ -370,10 +370,10 @@ RobotNodePtr RobotNode::clone( RobotPtr newRobot, bool cloneChildren, RobotNodeP
 				if (s)
 				{
 					// performs registering and initialization
-					SensorPtr c = s->clone(result);
+					SensorPtr c = s->clone(result,scaling);
 				} else
 				{
-					SceneObjectPtr so = children[i]->clone(children[i]->getName(),colChecker);
+					SceneObjectPtr so = children[i]->clone(children[i]->getName(),colChecker,scaling);
 					if (so)
 						result->attachChild(so);
 				}

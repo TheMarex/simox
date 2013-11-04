@@ -108,15 +108,22 @@ void RobotNodeRevolute::print( bool printChildren, bool printDecoration ) const
 		std::for_each(children.begin(), children.end(), boost::bind(&SceneObject::print, _1, true, true));
 }
 
-RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
+RobotNodePtr RobotNodeRevolute::_clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker, float scaling)
 {
 	ReadLockPtr lock = getRobot()->getReadLock();
 	RobotNodePtr result;
 
+	Physics p = physics.scale(scaling);
 	if (optionalDHParameter.isSet)
-		result.reset(new RobotNodeRevolute(newRobot,name, jointLimitLo,jointLimitHi,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,physics,colChecker,nodeType));
-	else
-		result.reset(new RobotNodeRevolute(newRobot,name,jointLimitLo,jointLimitHi,getLocalTransformation(),jointRotationAxis,visualizationModel,collisionModel,jointValueOffset,physics,colChecker,nodeType));
+	{
+		result.reset(new RobotNodeRevolute(newRobot,name, jointLimitLo,jointLimitHi,optionalDHParameter.aMM()*scaling,optionalDHParameter.dMM()*scaling, optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel, jointValueOffset,p,colChecker,nodeType));
+	} else
+	{
+		Eigen::Matrix4f lt = getLocalTransformation();
+		lt.block(0,3,3,1) *= scaling;
+		result.reset(new RobotNodeRevolute(newRobot,name,jointLimitLo,jointLimitHi,lt,jointRotationAxis,visualizationModel,collisionModel,jointValueOffset,p,colChecker,nodeType));
+	}
+
 	return result;
 }
 

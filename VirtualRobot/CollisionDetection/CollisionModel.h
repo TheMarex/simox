@@ -92,7 +92,7 @@ public:
 #endif
 
 
-	CollisionModelPtr clone(CollisionCheckerPtr colChecker = CollisionCheckerPtr());
+	CollisionModelPtr clone(CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f);
 
 	int getId();
 

@@ -73,6 +73,8 @@ public slots:
 
 	void planIKRRT();
 
+	void playAndSave();
+
 protected:
     
     void loadScene();
@@ -89,8 +91,9 @@ protected:
 
 	static void timerCB(void * data, SoSensor * sensor);
 	void buildRrtVisu();
+	void saveScreenshot();
 	Ui::MainWindowIKRRT UI;
-	SoQtExaminerViewer *m_pExViewer; /*!< Viewer to display the 3D model of the robot and the environment. */
+	SoQtExaminerViewer *viewer; /*!< Viewer to display the 3D model of the robot and the environment. */
 		
 	SoSeparator *sceneSep;
 	SoSeparator *robotSep;
@@ -124,6 +127,9 @@ protected:
 	Saba::CSpacePathPtr solutionOptimized; 
 	Saba::CSpaceTreePtr tree; 
 	Saba::CSpaceTreePtr tree2; 
+
+	bool playbackMode;
+	int playCounter;
 
     boost::shared_ptr<VirtualRobot::CoinVisualization> visualizationRobot;
     boost::shared_ptr<VirtualRobot::CoinVisualization> visualizationObject;

@@ -71,7 +71,7 @@ protected:
 	/*!
 	Derived classes must implement their clone method here.
 	*/
-	virtual SensorPtr _clone(const RobotNodePtr newRobotNode, const VisualizationNodePtr visualizationModel);
+	virtual SensorPtr _clone(const RobotNodePtr newRobotNode, const VisualizationNodePtr visualizationModel, float scaling);
 
 };
 

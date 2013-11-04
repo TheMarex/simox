@@ -21,6 +21,8 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <QImage>
+#include <QGLWidget>
 
 #include "Inventor/actions/SoLineHighlightRenderAction.h"
 #include <Inventor/nodes/SoShapeHints.h>
@@ -57,6 +59,8 @@ IKRRTWindow::IKRRTWindow(std::string &sceneFile, std::string &reachFile, std::st
 	obstaclesSep = new SoSeparator;
 	rrtSep = new SoSeparator;
 
+	playbackMode = false;
+
 	//sceneSep->addChild(robotSep);
 	
 	sceneSep->addChild(robotSep);
@@ -73,7 +77,7 @@ IKRRTWindow::IKRRTWindow(std::string &sceneFile, std::string &reachFile, std::st
 
 	loadReach();
 
-	m_pExViewer->viewAll();
+	viewer->viewAll();
 
 	SoSensorManager *sensor_mgr = SoDB::getSensorManager();
 	SoTimerSensor *timer = new SoTimerSensor(timerCB, this);
@@ -106,30 +110,54 @@ void IKRRTWindow::timerCB(void * data, SoSensor * sensor)
 	x[5] /= 300.0f;
 
 	if (x[0]!=0 || x[1]!=0 || x[2]!=0 || x[3]!=0 || x[4]!=0 || x[5]!=0)
+	{
 		ikWindow->updateObject(x);
-	ikWindow->redraw();
-	
+		ikWindow->redraw();
+	}
+	int maxSlider = 200;
+	if (ikWindow->playbackMode && ikWindow->playCounter<=maxSlider)
+	{
+		if (ikWindow->playCounter==0)
+		{
+			ikWindow->openEEF();
+			ikWindow->sliderSolution(0);
+			ikWindow->playCounter++;
+		} else if (ikWindow->playCounter==maxSlider)
+		{
+			ikWindow->sliderSolution(1000);
+			ikWindow->closeEEF();
+			cout << "Stopping playback" << endl;
+			ikWindow->playbackMode = false;
+		} else
+		{
+			ikWindow->playCounter++;
+			float pos = (float)ikWindow->playCounter / (float)maxSlider;
+			ikWindow->sliderSolution((int)(pos*1000.0f));
+		}
+		ikWindow->redraw();
+		ikWindow->saveScreenshot();
+	}
 }
 
 
 void IKRRTWindow::setupUI()
 {
 	 UI.setupUi(this);
-	 m_pExViewer = new SoQtExaminerViewer(UI.frameViewer,"",TRUE,SoQtExaminerViewer::BUILD_POPUP);
+	 viewer = new SoQtExaminerViewer(UI.frameViewer,"",TRUE,SoQtExaminerViewer::BUILD_POPUP);
 
 	// setup
-	m_pExViewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
-	m_pExViewer->setAccumulationBuffer(true);
+	viewer->setBackgroundColor(SbColor(1.0f, 1.0f, 1.0f));
+	viewer->setAccumulationBuffer(true);
 #ifdef WIN32
 //#ifndef _DEBUG
-	m_pExViewer->setAntialiasing(true, 8);
+	viewer->setAntialiasing(true, 8);
 //#endif
 #endif
-	m_pExViewer->setGLRenderAction(new SoLineHighlightRenderAction);
-	m_pExViewer->setTransparencyType(SoGLRenderAction::BLEND);
-	m_pExViewer->setFeedbackVisibility(true);
-	m_pExViewer->setSceneGraph(sceneSep);
-	m_pExViewer->viewAll();
+	viewer->setGLRenderAction(new SoLineHighlightRenderAction);
+	viewer->setTransparencyType(SoGLRenderAction::SORTED_OBJECT_BLEND);
+	viewer->setFeedbackVisibility(false);
+	viewer->setSceneGraph(sceneSep);
+	viewer->viewAll();
 
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));
 	connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeEEF()));
@@ -143,6 +171,7 @@ void IKRRTWindow::setupUI()
 	connect(UI.checkBoxReachableGrasps, SIGNAL(clicked()), this, SLOT(buildVisu()));
 	connect(UI.checkBoxReachabilitySpace, SIGNAL(clicked()), this, SLOT(reachVisu()));
 	connect(UI.pushButtonIKRRT, SIGNAL(clicked()), this, SLOT(planIKRRT()));
+	connect(UI.pushButtonPlay, SIGNAL(clicked()), this, SLOT(playAndSave()));
 	
 	connect(UI.horizontalSliderX, SIGNAL(sliderReleased()), this, SLOT(sliderReleased_ObjectX()));
 	connect(UI.horizontalSliderY, SIGNAL(sliderReleased()), this, SLOT(sliderReleased_ObjectY()));
@@ -150,11 +179,22 @@ void IKRRTWindow::setupUI()
 	connect(UI.horizontalSliderRo, SIGNAL(sliderReleased()), this, SLOT(sliderReleased_ObjectA()));
 	connect(UI.horizontalSliderPi, SIGNAL(sliderReleased()), this, SLOT(sliderReleased_ObjectB()));
 	connect(UI.horizontalSliderYa, SIGNAL(sliderReleased()), this, SLOT(sliderReleased_ObjectG()));
-	connect(UI.horizontalSliderSolution, SIGNAL(sliderMoved(int)), this, SLOT(sliderSolution(int)));
+	connect(UI.horizontalSliderSolution, SIGNAL(valueChanged(int)), this, SLOT(sliderSolution(int)));
 
-	UI.checkBoxColCheckIK->setChecked(true);
-	UI.checkBoxReachabilitySpaceIK->setChecked(true);
+	UI.checkBoxColCheckIK->setChecked(false);
+	UI.checkBoxReachabilitySpaceIK->setChecked(false);
 
+}
+
+void IKRRTWindow::playAndSave()
+{
+	if (playbackMode)
+		playbackMode = false;
+	else
+	{
+		playCounter = 0;
+		playbackMode = true;
+	}
 }
 
 QString IKRRTWindow::formatString(const char *s, float f)
@@ -188,6 +228,28 @@ void IKRRTWindow::closeEvent(QCloseEvent *event)
 	QMainWindow::closeEvent(event);
 }
 
+
+
+void IKRRTWindow::saveScreenshot()
+{
+	static int counter = 0;
+	SbString framefile;
+
+	framefile.sprintf("renderFrame_%06d.png", counter);
+	counter++;
+	redraw();
+	viewer->getSceneManager()->render();
+	viewer->getSceneManager()->scheduleRedraw();
+	QGLWidget* w = (QGLWidget*)viewer->getGLWidget();
+
+	QImage i = w->grabFrameBuffer();
+	bool bRes = i.save(framefile.getString(), "BMP");
+	if (bRes)
+		cout << "wrote image " << counter << endl;
+	else
+		cout << "failed writing image " << counter << endl;
+
+}
 
 void IKRRTWindow::buildVisu()
 {
@@ -231,10 +293,7 @@ void IKRRTWindow::buildVisu()
 
 	buildRRTVisu();
 
-
-	m_pExViewer->scheduleRedraw();
-	m_pExViewer->scheduleRedraw();
-
+	redraw();
 }
 
 int IKRRTWindow::main()
@@ -275,12 +334,13 @@ void IKRRTWindow::loadScene()
 	
 
 	std::vector< ManipulationObjectPtr > objects = scene->getManipulationObjects();
-	if (objects.size()!=1)
+	if (objects.size()<1)
 	{
-		VR_ERROR << "Need exactly 1 object" << endl;
+		VR_ERROR << "Need at least 1 object" << endl;
 		return;
 	}
 	object = objects[0];
+	VR_INFO << "using first manipulation object: " << object->getName() << endl;
 
 
 	obstacles = scene->getObstacles();
@@ -316,7 +376,8 @@ void IKRRTWindow::closeEEF()
 	{
 		eef->closeActors(object);
 	}
-	m_pExViewer->scheduleRedraw();
+	redraw();
+
 }
 
 void IKRRTWindow::openEEF()
@@ -325,7 +386,8 @@ void IKRRTWindow::openEEF()
 	{
 		eef->openActors();
 	}
-	m_pExViewer->scheduleRedraw();
+	redraw();
+
 }
 
 
@@ -345,7 +407,8 @@ void IKRRTWindow::updateObject( float x[6] )
 		cout << m << endl;
 
 	}
-	m_pExViewer->scheduleRedraw();
+	redraw();
+
 }
 
 void IKRRTWindow::sliderReleased_ObjectX()
@@ -410,10 +473,10 @@ void IKRRTWindow::buildRRTVisu()
 		w->addTree(tree);
 	if (tree2)
 		w->addTree(tree2);
-	w->addCSpacePath(solution);
+	//w->addCSpacePath(solution);
 	if (solutionOptimized)
 		w->addCSpacePath(solutionOptimized,Saba::CoinRrtWorkspaceVisualization::eGreen);
-	w->addConfiguration(startConfig,Saba::CoinRrtWorkspaceVisualization::eGreen,3.0f);
+	//w->addConfiguration(startConfig,Saba::CoinRrtWorkspaceVisualization::eGreen,3.0f);
 	SoSeparator *sol = w->getCoinVisualization();
 	rrtSep->addChild(sol);
 }
@@ -597,7 +660,7 @@ void IKRRTWindow::searchIK()
 	{
 		VR_INFO << "IK failed..." << endl;
 	}
-	m_pExViewer->scheduleRedraw();
+	redraw();
 }
 
 void IKRRTWindow::sliderSolution( int pos )
@@ -611,12 +674,18 @@ void IKRRTWindow::sliderSolution( int pos )
 	Eigen::VectorXf iPos;
 	s->interpolate(p,iPos);
 	robot->setJointValues(rns,iPos);
-	m_pExViewer->scheduleRedraw();
+
+	redraw();
+	//saveScreenshot();
 }
 
 void IKRRTWindow::redraw()
 {
-	m_pExViewer->scheduleRedraw();
+	viewer->scheduleRedraw();
+	UI.frameViewer->update();
+	viewer->scheduleRedraw();
+	this->update();
+	viewer->scheduleRedraw();
 }
 
 

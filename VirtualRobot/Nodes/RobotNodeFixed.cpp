@@ -92,16 +92,22 @@ void RobotNodeFixed::print( bool printChildren, bool printDecoration ) const
 }
 
 
-RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, /*const std::vector<std::string> newChildren,*/ const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker)
+RobotNodePtr RobotNodeFixed::_clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker, float scaling)
 {
 	ReadLockPtr lock = getRobot()->getReadLock();
 	
 	RobotNodePtr result;
 
+	Physics p = physics.scale(scaling);
 	if (optionalDHParameter.isSet)
-		result.reset(new RobotNodeFixed(newRobot,name,optionalDHParameter.aMM(),optionalDHParameter.dMM(), optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,physics,colChecker,nodeType));
-	else
-		result.reset(new RobotNodeFixed(newRobot,name,getLocalTransformation(),visualizationModel,collisionModel,physics,colChecker,nodeType));
+	{
+		result.reset(new RobotNodeFixed(newRobot,name,optionalDHParameter.aMM()*scaling,optionalDHParameter.dMM()*scaling, optionalDHParameter.alphaRadian(), optionalDHParameter.thetaRadian(),visualizationModel,collisionModel,p,colChecker,nodeType));
+	} else
+	{
+		Eigen::Matrix4f lt = getLocalTransformation();
+		lt.block(0,3,3,1) *= scaling;
+		result.reset(new RobotNodeFixed(newRobot,name,lt,visualizationModel,collisionModel,p,colChecker,nodeType));
+	}
 
 	return result;
 }

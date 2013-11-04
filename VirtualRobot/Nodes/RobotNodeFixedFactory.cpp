@@ -20,7 +20,6 @@ RobotNodeFixedFactory::~RobotNodeFixedFactory()
 {
 }
 
-
 /**
  * This method creates a VirtualRobot::RobotNodeFixed.
  *

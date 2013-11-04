@@ -583,9 +583,10 @@ std::vector< CollisionModelPtr > Robot::getCollisionModels()
 	return result;
 }
 
-VirtualRobot::RobotPtr Robot::extractSubPart( RobotNodePtr startJoint, const std::string &newRobotType, const std::string &newRobotName, bool cloneRNS, bool cloneEEFs, CollisionCheckerPtr collisionChecker  )
+VirtualRobot::RobotPtr Robot::extractSubPart( RobotNodePtr startJoint, const std::string &newRobotType, const std::string &newRobotName, bool cloneRNS, bool cloneEEFs, CollisionCheckerPtr collisionChecker, float scaling )
 {
 	THROW_VR_EXCEPTION_IF(!hasRobotNode(startJoint)," StartJoint is not part of this robot");
+	THROW_VR_EXCEPTION_IF(scaling<=0," Scaling must be >0.");
 
 	CollisionCheckerPtr colChecker = collisionChecker;
 	if (!colChecker)
@@ -594,7 +595,7 @@ VirtualRobot::RobotPtr Robot::extractSubPart( RobotNodePtr startJoint, const std
 	//stefan Warning!!!!! which robot-type to create
 	RobotPtr result(new LocalRobot(newRobotName,newRobotType));
 
-	RobotNodePtr rootNew = startJoint->clone(result, true, RobotNodePtr(), colChecker);
+	RobotNodePtr rootNew = startJoint->clone(result, true, RobotNodePtr(), colChecker, scaling);
 	THROW_VR_EXCEPTION_IF(!rootNew, "Clone failed...");
 	result->setRootNode(rootNew);
 
@@ -658,9 +659,9 @@ void Robot::setGlobalPoseForRobotNode( const RobotNodePtr &node, const Eigen::Ma
 	setGlobalPose(t);
 }
 
-VirtualRobot::RobotPtr Robot::clone( const std::string &name, CollisionCheckerPtr collisionChecker /*= CollisionCheckerPtr()*/ )
+VirtualRobot::RobotPtr Robot::clone( const std::string &name, CollisionCheckerPtr collisionChecker, float scaling )
 {
-	return extractSubPart(this->getRootNode(),this->getType(),name,true,true,collisionChecker);
+	return extractSubPart(this->getRootNode(), this->getType(), name, true, true, collisionChecker, scaling);
 }
 
 void Robot::createVisualizationFromCollisionModels()

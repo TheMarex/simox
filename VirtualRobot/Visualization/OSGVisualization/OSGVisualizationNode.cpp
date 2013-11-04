@@ -212,18 +212,28 @@ void OSGVisualizationNode::detachVisualization(const std::string &name)
 }
 
 
-VirtualRobot::VisualizationNodePtr OSGVisualizationNode::clone(bool deepCopy)
+VirtualRobot::VisualizationNodePtr OSGVisualizationNode::clone(bool deepCopy, float scaling)
 {
-	osg::Node* newModel = NULL;
+	osg::Group* newModel = NULL;
 	if (visualization)
 	{
+		newModel = new osg::Group;
+		newModel->ref();
+		if (scaling!=1.0)
+		{
+			osg::PositionAttitudeTransform *s = new osg::PositionAttitudeTransform;
+			s->setScale.setValue(osg::Vec3d(scaling,scaling,scaling));
+			newModel->addChild(s);
+		}
 		if (deepCopy)
 		{
-			newModel =  static_cast<osg::Node*>(visualization->clone(osg::CopyOp::DEEP_COPY_ALL));
+			newModel->addChild(static_cast<osg::Node*>(visualization->clone(osg::CopyOp::DEEP_COPY_ALL)));
 		} else
-			newModel = visualization;
+			newModel->addChild(visualization);
 	}
 	VisualizationNodePtr p(new OSGVisualizationNode(newModel));
+	if (newModel)
+		newModel->unref();
 
 	p->setUpdateVisualization(updateVisualization);
 	p->setGlobalPose(getGlobalPose());
@@ -233,7 +243,7 @@ VirtualRobot::VisualizationNodePtr OSGVisualizationNode::clone(bool deepCopy)
 	std::map< std::string, VisualizationNodePtr >::const_iterator i = attachedVisualizations.begin();
 	while (i!=attachedVisualizations.end())
 	{
-		VisualizationNodePtr attachedClone = i->second->clone();
+		VisualizationNodePtr attachedClone = i->second->clone(deepCopy,scaling);
 		p->attachVisualization(i->first, attachedClone);
 		i++;
 	}

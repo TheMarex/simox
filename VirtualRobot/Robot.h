@@ -230,16 +230,18 @@ public:
 		\param cloneRNS Clone all robot node sets that belong to the original robot and for which the remaining robot nodes of the subPart are sufficient.
 		\param cloneEEFs Clone all end effectors that belong to the original robot and for which the remaining robot nodes of the subPart are sufficient.
 		\param collisionChecker The new robot can be registered to a different collision checker. If not set, the collision checker of the original robot is used.
+		\param scaling Can be set to create a scaled version of this robot. Scaling is applied on kinematic, visual, and collision data.
 	*/
-	RobotPtr extractSubPart(RobotNodePtr startJoint, const std::string &newRobotType, const std::string &newRobotName, bool cloneRNS = true, bool cloneEEFs = true, CollisionCheckerPtr collisionChecker=CollisionCheckerPtr());
+	RobotPtr extractSubPart(RobotNodePtr startJoint, const std::string &newRobotType, const std::string &newRobotName, bool cloneRNS = true, bool cloneEEFs = true, CollisionCheckerPtr collisionChecker=CollisionCheckerPtr(), float scaling = 1.0f);
 
 	/*!
 		Clones this robot.
 		\param name The new name.
 		\param collisionChecker If set, the returned robot is registered with this col checker, otherwise the CollisionChecker of the original robot is used.
+		\param scaling Scale Can be set to create a scaled version of this robot. Scaling is applied on kinematic, visual, and collision data.
 
 	*/
-	RobotPtr clone(const std::string &name, CollisionCheckerPtr collisionChecker = CollisionCheckerPtr());
+	RobotPtr clone(const std::string &name, CollisionCheckerPtr collisionChecker = CollisionCheckerPtr(), float scaling = 1.0f);
 
 	/*!
 		Just storing the filename.

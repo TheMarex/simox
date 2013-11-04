@@ -91,7 +91,7 @@ void Sensor::print( bool printChildren, bool printDecoration ) const
 	}
 }
 
-SensorPtr Sensor::clone( RobotNodePtr newRobotNode )
+SensorPtr Sensor::clone( RobotNodePtr newRobotNode, float scaling )
 {
 	if (!newRobotNode)
 	{
@@ -102,10 +102,10 @@ SensorPtr Sensor::clone( RobotNodePtr newRobotNode )
 	
 	VisualizationNodePtr clonedVisualizationNode;
 	if (visualizationModel)
-		clonedVisualizationNode = visualizationModel->clone();
+		clonedVisualizationNode = visualizationModel->clone(true, scaling);
 
 
-	SensorPtr result = _clone(newRobotNode, clonedVisualizationNode);
+	SensorPtr result = _clone(newRobotNode, clonedVisualizationNode, scaling);
 
 	if (!result)
 	{

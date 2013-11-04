@@ -208,9 +208,9 @@ public:
 		\param cloneChildren If true, all children are cloned (and their children, etc).
 		\param initializeWithParent If given, the RobotNode is initialized with this parent.
 		\param colChecker Must only be set if the cloned RobotNode should be registered to a different collision checker instance.
+		\param scaling Scale Can be set to create a scaled version of this robot. Scaling is applied on kinematic, visual, and collision data.
 	*/
-	virtual RobotNodePtr clone(RobotPtr newRobot, bool cloneChildren = true, RobotNodePtr initializeWithParent = RobotNodePtr(), CollisionCheckerPtr colChecker = CollisionCheckerPtr());
-	//virtual std::vector< RobotNodePtr > getChildren() const {return children;};
+	virtual RobotNodePtr clone(RobotPtr newRobot, bool cloneChildren = true, RobotNodePtr initializeWithParent = RobotNodePtr(), CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f);
 	
 	inline float getJointValueOffset() const {return jointValueOffset;}
 	inline float getJointLimitHigh() const {return jointLimitHi;}
@@ -249,7 +249,7 @@ public:
     RobotNodeType getType();
 
 	//! Forbid cloning method from SceneObject. We need to know the new robot for cloning
-	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
+	SceneObjectPtr clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
 
     /*!
         When joint was created via DH parameters, they can be accessed here.
@@ -341,11 +341,12 @@ protected:
 	float jointValue;							//< The joint value
 	
 	/*!
-	Derived classes must implement their clone method here.
+		Derived classes must implement their clone method here.
+		Passed models are already scaled. Scaling factor should be only used for kinematic computations.
 	*/
-	virtual RobotNodePtr _clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker) = 0;
+	virtual RobotNodePtr _clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker, float scaling) = 0;
 
-	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr() ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
+	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
 
 };
 

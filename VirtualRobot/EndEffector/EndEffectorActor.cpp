@@ -430,6 +430,36 @@ VirtualRobot::RobotConfigPtr EndEffectorActor::getConfiguration()
 	return res;
 }
 
+std::string EndEffectorActor::toXML( int ident /*= 1*/ )
+{
+    std::stringstream ss;
+    std::string t = "\t";
+    std::string pre = "";
+    for (int i=0;i<ident;i++)
+        pre += t;
+    std::string tt = pre + t;
+    std::string ttt = tt + t;
+    ss << pre << "<Actor name='" << name << "'>" << endl;
+    for (size_t i=0;i<actors.size();i++)
+    {
+        ss << tt << "<Node name='" << actors[i].robotNode->getName() << "' ";
+        if (actors[i].colMode == eNone)
+            ss << "ConsiderCollisions=None ";
+        if (actors[i].colMode == eAll)
+            ss << "ConsiderCollisions=All ";
+        else
+        {
+            if (actors[i].colMode & eActors)
+                ss << "ConsiderCollisions=Actors ";
+            if (actors[i].colMode & eStatic)
+                ss << "ConsiderCollisions=Static ";
+        }
+        ss << "Direction='" << actors[i].directionAndSpeed << "/>" << endl;
+    }
+    ss << pre << "</Actor>" << endl;
+    return ss.str();
+}
+
 
 
 } // namespace VirtualRobot

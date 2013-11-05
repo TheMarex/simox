@@ -1,13 +1,14 @@
 /**
 * @package    VirtualRobot
-* @author     Manfred Kroehnert 
-* @copyright  2010 Manfred Kroehnert
+* @author     Manfred Kroehnert, Nikolaus Vahrenkamp
+* @copyright  2010 Manfred Kroehnert, Nikolaus Vahrenkamp
 */
 
 #include "CoinVisualizationNode.h"
 #include "CoinVisualizationFactory.h"
 #include "../TriMeshModel.h"
 #include "../../VirtualRobotException.h"
+#include "../../XML/BaseIO.h"
 
 #include <Inventor/SoPrimitiveVertex.h>
 #include <Inventor/SbLinear.h>
@@ -18,6 +19,9 @@
 #include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/nodes/SoMatrixTransform.h>
 #include <Inventor/nodes/SoScale.h>
+#include <Inventor/actions/SoWriteAction.h>
+
+#include <boost/filesystem.hpp>
 
 namespace VirtualRobot {
 
@@ -331,5 +335,40 @@ void CoinVisualizationNode::setVisualization( SoNode* newVisu )
 		visualizationAtGlobalPose->addChild(visualization);
 }
 
+bool CoinVisualizationNode::saveModel( const std::string &modelPath )
+{
+    std::string fnV = getFilename();
+    if (!visualization || fnV.empty())
+        return true; // no filename -> no model
+
+    if (!modelPath.empty())
+        BaseIO::makeRelativePath(modelPath,fnV);
+
+
+    boost::filesystem::path p(modelPath);
+    boost::filesystem::path fn(fnV);
+    boost::filesystem::path completeFile = boost::filesystem::operator/(p,fn);
+
+    // get complete path
+    boost::filesystem::path completePath = completeFile.parent_path();
+
+    if (!boost::filesystem::create_directories(completePath) || !boost::filesystem::is_directory(completePath))
+    {
+        VR_ERROR << "Could not create model dir  " << completePath.string() << endl;
+        return false;
+    }
+
+
+    SoOutput* so = new SoOutput();
+    if (!so->openFile(completeFile.string().c_str()))
+    {
+        VR_ERROR << "Could not open file " << fnV << " for writing." << endl;
+    }
+
+    SoWriteAction wa(so);
+    wa.apply(visualization);
+
+    return true;
+}
 
 } // namespace VirtualRobot

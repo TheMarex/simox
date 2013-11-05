@@ -7,6 +7,7 @@
 #include "../Visualization/VisualizationFactory.h"
 #include "../Visualization/Visualization.h"
 #include "../Visualization/TriMeshModel.h"
+#include "../XML/BaseIO.h"
 #include <cmath>
 #include <iomanip>
 #include <boost/bind.hpp>
@@ -675,5 +676,38 @@ std::vector<SensorPtr> RobotNode::getSensors() const
 {
 	return sensors;
 }
+
+std::string RobotNode::toXML( const std::string &modelPath /*= "models"*/ )
+{
+    std::stringstream ss;
+    ss << "\t<RobotNode name='" << name << "'>" << endl;
+    if (!localTransformation.isIdentity())
+    {
+        ss << "\t\t<Transform>" << endl;
+        ss << BaseIO::toXML(localTransformation,"\t\t\t");
+        ss << "\t\t</Transform>" << endl;
+    }
+    ss << _toXML(modelPath);
+    ss << physics.toXML(3);
+    if (visualizationModel)
+        ss << visualizationModel->toXML(modelPath,2);
+    if (collisionModel)
+        ss << collisionModel->toXML(modelPath,2);
+
+   
+    for (size_t i=0;i<sensors.size();i++)
+    {
+        ss << sensors[i]->toXML(modelPath,2);
+    }
+
+    std::vector<SceneObjectPtr> children = this->getChildren();
+    for (size_t i=0;i<children.size();i++)
+    {
+        ss << "\t\t<Child name='" << children[i]->getName() << "'/>" << endl;
+    }
+    ss << "\t</RobotNode>" << endl << endl;
+    return ss.str();
+}
+
 
 } // namespace VirtualRobot

@@ -107,6 +107,8 @@ public:
 
 	virtual bool initialize(SceneObjectPtr parent = SceneObjectPtr(), const std::vector<SceneObjectPtr> &children = std::vector<SceneObjectPtr>());
 
+    virtual std::string toXML(const std::string &modelPath, int tabs = 1);
+
 protected:
 
 

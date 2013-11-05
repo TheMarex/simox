@@ -121,7 +121,7 @@ public:
 
 	TriMeshModelPtr getTriMeshModel(){return collisionModelImplementation->getTriMeshModel();}
 
-	std::string getXMLString(const std::string &basePath, int tabs);
+	std::string toXML(const std::string &basePath, int tabs);
 
 	/*!
 		Create a united collision model. 
@@ -129,6 +129,11 @@ public:
 	*/
 	static CollisionModelPtr CreateUnitedCollisionModel(const std::vector<CollisionModelPtr> &colModels);
 
+        
+    /*!
+        Saves model file to model path.
+    */
+    virtual bool saveModel(const std::string &modelPath);
 
 
 protected:

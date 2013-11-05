@@ -76,7 +76,7 @@ public:
 		\param colChecker Only needed if you plan to use the collision checker in parallel. If not given, the object is registered with the global singleton collision checker.
 	*/
 	static ObstaclePtr createSphere(float radius, VisualizationFactory::Color color = VisualizationFactory::Color::Red(), std::string visualizationType = "", CollisionCheckerPtr colChecker = CollisionCheckerPtr());
-	std::string getXMLString(const std::string &basePath, int tabs=0);
+	std::string toXML(const std::string &basePath, int tabs=0);
 	
 	void setFilename(const std::string &filename);
 	std::string getFilename();

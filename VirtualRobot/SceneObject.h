@@ -129,7 +129,7 @@ public:
 			return (massKg!=0.0f || comLocation!=eCustom || !localCoM.isZero() || !intertiaMatrix.isIdentity() || ignoreCollisions.size()>0);
 		}
 
-		std::string getXMLString(int tabs)
+		std::string toXML(int tabs)
 		{
 			std::string ta;
 			std::stringstream ss;
@@ -420,6 +420,11 @@ public:
 
     //! Compute the global pose of this object 
     virtual void updatePose( bool updateChildren = true);
+
+    /*!
+        Saves model files (visu and col model, if present) to model path.
+    */
+    virtual bool saveModelFiles(const std::string &modelPath);
 
 protected:
 	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f ) const;

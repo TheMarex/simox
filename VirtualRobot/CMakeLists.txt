@@ -28,6 +28,7 @@ Nodes/Sensor.cpp
 Nodes/PositionSensor.cpp
 Nodes/CameraSensor.cpp
 Nodes/PositionSensorFactory.cpp
+Nodes/CameraSensorFactory.cpp
 Visualization/Visualization.cpp
 Visualization/VisualizationNode.cpp
 Visualization/ColorMap.cpp
@@ -97,6 +98,7 @@ Nodes/PositionSensor.h
 Nodes/CameraSensor.h
 Nodes/SensorFactory.h
 Nodes/PositionSensorFactory.h
+Nodes/CameraSensorFactory.h
 Transformation/DHParameter.h
 Visualization/VisualizationFactory.h
 Visualization/Visualization.h

@@ -331,14 +331,17 @@ void WorkspaceRepresentation::load(const std::string &filename)
 						for (int z=0;z<numVoxels[2];z++)
 						{
 							int n;
-							bzip2->read((void*)(uncompressedData),dataSize,n);
-							if (n!=dataSize)
+							bool readOK = bzip2->read((void*)(uncompressedData),dataSize,n);
+                            if (!readOK || (n!=dataSize && n!=0))
 							{
 								VR_ERROR << "Invalid number of bytes?!" << endl;
 								bzip2->close();
 								file.close();
 								return;
 							}
+                            if (n==0) // no data in block
+                                continue;
+
 							// check if we need to set the data (avoid to allocate memory for empty data blocks)
 							bool empty = true;
 							for (int i=0;i<dataSize;i++)

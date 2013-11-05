@@ -320,7 +320,7 @@ std::vector<Eigen::Matrix4f > Trajectory::createWorkspaceTrajectory( VirtualRobo
 	return result;
 }
 
-std::string Trajectory::getXMLString(int tabs) const
+std::string Trajectory::toXML(int tabs) const
 {
 	std::stringstream ss;
 	std::string tab = "";
@@ -350,7 +350,7 @@ std::string Trajectory::getXMLString(int tabs) const
 
 void Trajectory::print() const
 {
-	std::string s = getXMLString(0);
+	std::string s = toXML(0);
 	VR_INFO << s << endl;
 }
 

@@ -122,7 +122,7 @@ std::string VisualizationNode::getFilename()
 }
 
 
-std::string VisualizationNode::getXMLString(const std::string &basePath, int tabs)
+std::string VisualizationNode::toXML(const std::string &basePath, int tabs)
 {
 	std::stringstream ss;
 	std::string t = "\t";
@@ -183,6 +183,13 @@ VirtualRobot::BoundingBox VisualizationNode::getBoundingBox()
 	bbox = tm->boundingBox;
 	bbox.transform(globalPose);
 	return bbox;
+}
+
+bool VisualizationNode::saveModel( const std::string &modelPath )
+{
+    // derived classes have to overwrite this method, otherwise a NYI will show up
+    VR_ERROR << "NYI..." << endl;
+    return false;
 }
 
 } // namespace VirtualRobot

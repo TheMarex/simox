@@ -1,5 +1,7 @@
 
 #include "PositionSensor.h"
+#include "PositionSensorFactory.h"
+#include "../XML/BaseIO.h"
 
 using namespace boost;
 
@@ -36,6 +38,25 @@ SensorPtr PositionSensor::_clone(const RobotNodePtr newRobotNode, const Visualiz
 	rnt.block(0,3,3,1) *= scaling;
 	SensorPtr result(new PositionSensor(newRobotNode,name,visualizationModel,rnt));
 	return result;
+}
+
+
+std::string PositionSensor::toXML(const std::string &modelPath, int tabs)
+{
+    std::stringstream ss;
+    std::string t = "\t";
+    std::string pre = "";
+    for (int i=0;i<tabs;i++)
+        pre += t;
+    ss << pre << "<Sensor type='" << PositionSensorFactory::getName() << "' name='" << name << "'>" << endl;
+    std::string pre2 = pre + t;
+    ss << pre << "<Transform>" << endl;
+    ss << BaseIO::toXML(rnTransformation,pre2);
+    ss << pre << "</Transform>" << endl;
+    if (visualizationModel)
+        ss << visualizationModel->toXML(modelPath,tabs+1);
+    ss << pre << "</Sensor>" << endl;
+    return ss.str();
 }
 
 } // namespace VirtualRobot

@@ -64,6 +64,8 @@ public:
 	virtual void print(bool printChildren = false, bool printDecoration = true) const;
 
 
+    virtual std::string toXML(const std::string &modelPath, int tabs);
+
 protected:
 
 

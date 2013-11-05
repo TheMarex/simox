@@ -155,7 +155,7 @@ Obstacle* Obstacle::_clone( const std::string &name, CollisionCheckerPtr colChec
 	return result;
 }
 
-std::string Obstacle::getXMLString(const std::string &basePath, int tabs)
+std::string Obstacle::toXML(const std::string &basePath, int tabs)
 {
 	std::stringstream ss;
 	std::string t = "\t";

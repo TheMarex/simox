@@ -89,6 +89,11 @@ protected:
 	RobotNodeFixed(){};
 	virtual void updateTransformationMatrices(const Eigen::Matrix4f &parentPose);
 	virtual RobotNodePtr _clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker, float scaling);
+    /*!
+        Derived classes add custom XML tags here
+    */
+    virtual std::string _toXML(const std::string &modelPath);
+
 };
 
 } // namespace VirtualRobot

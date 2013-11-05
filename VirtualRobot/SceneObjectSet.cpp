@@ -246,7 +246,7 @@ VirtualRobot::SceneObjectPtr SceneObjectSet::getSceneObject( unsigned int nr )
 	return sceneObjects[nr];
 }
 
-std::string SceneObjectSet::getXMLString( int tabs )
+std::string SceneObjectSet::toXML( int tabs )
 {
 	std::stringstream ss;
 	std::string t = "\t";

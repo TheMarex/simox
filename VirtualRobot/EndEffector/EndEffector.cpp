@@ -443,5 +443,60 @@ std::vector<std::string> EndEffector::getPreshapes()
 	return res;
 }
 
+std::string EndEffector::toXML( int ident /*= 1*/ )
+{
+    std::stringstream ss;
+    std::string t = "\t";
+    std::string pre = "";
+    for (int i=0;i<ident;i++)
+        pre += t;
+    std::string tt = pre + t;
+    std::string ttt = tt + t;
+    ss << pre << "<EndEffector name='" << name << "' ";
+    if (baseNode)
+        ss << "base='" << baseNode->getName() << "' ";
+    if (tcpNode)
+        ss << "tcp='" << tcpNode->getName() << "' ";
+    if (gcpNode)
+        ss << "gcp='" << gcpNode->getName() << "' ";
+    ss << ">" << endl;
+
+    // Preshapes
+    std::map< std::string, RobotConfigPtr >::iterator itPre = preshapes.begin();
+    while (itPre!=preshapes.end())
+    {
+        ss << tt << "<Preshape name='" << itPre->first << "'>" << endl;
+        std::map < std::string, float > jv = itPre->second->getRobotNodeJointValueMap();
+
+        std::map< std::string, float >::const_iterator i = jv.begin();
+        while (i != jv.end())
+        {
+            ss << ttt << "<Node name='" << i->first << "' unit='radian' value='" << i->second << "'/>\n";
+            i++;
+        }
+        ss << tt << "</Preshape>" << endl;
+        itPre++;
+    }
+    // Static
+    if (statics.size()>0)
+    {
+        ss << tt << "<Static>" << endl;
+        for (size_t i=0;i<statics.size();i++)
+        {
+            ss << ttt << "<Node name='" << statics[i]->getName() << "'>" << endl;
+        }
+        ss << tt << "</Static>" << endl;
+    }
+
+    // Actors
+    for (size_t i=0;i<actors.size();i++)
+    {
+        ss << actors[i]->toXML(ident+2);
+    }
+    ss << pre << "</EndEffector>" << endl;
+
+    return ss.str();
+}
+
 
 } // namespace VirtualRobot

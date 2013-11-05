@@ -148,7 +148,7 @@ public:
 	/*!
 		Create an XML string. All lines are indented with tabs tab stops.
 	*/
-	virtual std::string getXMLString(int tabs = 0) const;
+	virtual std::string toXML(int tabs = 0) const;
 
 	std::string getName() const;
 

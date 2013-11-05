@@ -98,7 +98,7 @@ public:
 	/*!
 		Enables/Disables the visualization updates. 
 		Usually if a SceneObject or a RobotNode changes its state, the visualization is automatically updated.
-		This behaviour can be changed here.
+		This behavior can be changed here.
 	*/
 	void setUpdateVisualization (bool enable);
 	bool getUpdateVisualizationStatus();
@@ -119,7 +119,7 @@ public:
 
 	virtual std::string getType(){return VisualizationFactory::getName();}
 
-	std::string getXMLString(const std::string &basePath, int tabs);
+	std::string toXML(const std::string &basePath, int tabs);
 
 
 	/*!
@@ -132,6 +132,12 @@ public:
 		Returns (current) bounding box in global coordinate system.
 	*/
 	BoundingBox getBoundingBox();
+
+    
+    /*!
+        Saves model file to model path.
+    */
+    virtual bool saveModel(const std::string &modelPath);
 
 protected:
 	bool boundingBox; //!< Indicates, if the bounding box model was used

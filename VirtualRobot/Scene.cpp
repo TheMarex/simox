@@ -575,13 +575,13 @@ std::string Scene::getXMLString( const std::string &basePath )
 			ss << "\t\t</GlobalPose>\n";
 		}
 		// store current config
-		ss << currentConfig->getXMLString(2);
+		ss << currentConfig->toXML(2);
 
 		// store all other configs for robot
 		std::vector<RobotConfigPtr> rc = getRobotConfigs(robots[i]);
 		for (size_t j=0;j<rc.size();j++)
 		{
-			ss << rc[j]->getXMLString(2);
+			ss << rc[j]->toXML(2);
 		}
 		ss << "\t</Robot>\n";
 		ss << "\n";
@@ -590,28 +590,28 @@ std::string Scene::getXMLString( const std::string &basePath )
 	// process manipulation objects
 	for (size_t i=0;i<manipulationObjects.size();i++)
 	{
-		ss << manipulationObjects[i]->getXMLString(basePath,1,true);
+		ss << manipulationObjects[i]->toXML(basePath,1,true);
 		ss << "\n";
 	}
 
 	// process obstacles
 	for (size_t i=0;i<obstacles.size();i++)
 	{
-		ss << obstacles[i]->getXMLString(basePath,1);
+		ss << obstacles[i]->toXML(basePath,1);
 		ss << "\n";
 	}
 
 	// process sceneObjectSets
 	for (size_t i=0;i<sceneObjectSets.size();i++)
 	{
-		ss << sceneObjectSets[i]->getXMLString(1);
+		ss << sceneObjectSets[i]->toXML(1);
 		ss << "\n";
 	}
 
 	// process trajectories
 	for (size_t i=0;i<trajectories.size();i++)
 	{
-		ss << trajectories[i]->getXMLString(1);
+		ss << trajectories[i]->toXML(1);
 		ss << "\n";
 	}
 

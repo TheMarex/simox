@@ -249,7 +249,7 @@ bool RobotConfig::setJointValues( RobotPtr r )
 	return true;
 }
 
-std::string RobotConfig::getXMLString(int tabs)
+std::string RobotConfig::toXML(int tabs)
 {
 	std::map < std::string, float > jv = getRobotNodeJointValueMap();
 	return createXMLString(jv,name,tabs);

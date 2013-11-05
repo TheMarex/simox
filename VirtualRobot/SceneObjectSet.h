@@ -99,7 +99,7 @@ public:
 	//! fills the current globalPose of all associated sceneobjects to map.
 	virtual bool getCurrentSceneObjectConfig( std::map< SceneObjectPtr, Eigen::Matrix4f > &storeConfig );
 
-	virtual std::string getXMLString( int tabs);
+	virtual std::string toXML( int tabs);
 
 	/*!
 		Create a (shallow) copy of this set. The containing sceneobjects are not cloned, but referenced by the newly generated set.

@@ -740,12 +740,12 @@ std::string SceneObject::getSceneObjectXMLString(const std::string &basePath, in
 
 	if (visualizationModel)
 	{
-		ss << visualizationModel->getXMLString(basePath,tabs);
+		ss << visualizationModel->toXML(basePath,tabs);
 	}
 
 	if (collisionModel && collisionModel->getVisualization())
 	{
-		ss << collisionModel->getXMLString(basePath,tabs);
+		ss << collisionModel->toXML(basePath,tabs);
 	}
 	Eigen::Matrix4f gp = getGlobalPose();
 	if (!gp.isIdentity())
@@ -758,7 +758,7 @@ std::string SceneObject::getSceneObjectXMLString(const std::string &basePath, in
 	}
 	if (physics.isSet())
 	{
-		ss << physics.getXMLString(tabs);
+		ss << physics.toXML(tabs);
 	}
 
 	return ss.str();
@@ -873,6 +873,16 @@ void SceneObject::attached( SceneObjectPtr parent )
 std::vector<std::string> SceneObject::getIgnoredCollisionModels()
 {
     return physics.ignoreCollisions;
+}
+
+bool SceneObject::saveModelFiles( const std::string &modelPath )
+{
+    bool res = true;
+    if (visualizationModel)
+        res = res & visualizationModel->saveModel(modelPath);
+    if (collisionModel)
+        res = res & collisionModel->saveModel(modelPath);
+    return res;
 }
 
 } // namespace

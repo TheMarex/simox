@@ -82,6 +82,7 @@ public:
 
 	virtual std::string getType(){return CoinVisualizationFactory::getName();}
 
+    virtual bool saveModel( const std::string &modelPath );
 
 protected:
 	void createTriMeshModel();

@@ -169,7 +169,7 @@ VirtualRobot::VisualizationNodePtr CollisionModel::getModelDataVisualization()
 	return modelVisualization;
 }
 
-std::string CollisionModel::getXMLString(const std::string &basePath, int tabs)
+std::string CollisionModel::toXML(const std::string &basePath, int tabs)
 {
 	std::stringstream ss;
 	std::string t = "\t";
@@ -211,6 +211,15 @@ VirtualRobot::CollisionModelPtr CollisionModel::CreateUnitedCollisionModel( cons
 
 	VisualizationNodePtr vc = VisualizationNode::CreateUnitedVisualization(visus);
 	return CollisionModelPtr(new CollisionModel(vc,"",colChecker));
+}
+
+bool CollisionModel::saveModel( const std::string &modelPath )
+{
+    if (visualization)
+        return visualization->saveModel(modelPath);
+    if (modelVisualization)
+        return modelVisualization->saveModel(modelPath);
+    return true; // no model given
 }
 
 /*

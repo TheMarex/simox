@@ -463,7 +463,7 @@ bool ObjectIO::saveManipulationObject( ManipulationObjectPtr object, const std::
 	boost::filesystem::path filenameBasePath = filenameBaseComplete.branch_path();
 	std::string basePath = filenameBasePath.string();
 
-	std::string xmlString = object->getXMLString(basePath);
+	std::string xmlString = object->toXML(basePath);
 
 	// save file
 	return BaseIO::writeXMLFile(xmlFile,xmlString,true);

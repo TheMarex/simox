@@ -81,7 +81,7 @@ public:
 		\param storeLinkToFile If set, the data (e.g. grasps) are not explicitly listed, but an xml tag directing to the XML file, 
 				from which this instance was loaded, is set. If not set a deep description is created.
 	*/
-	std::string getXMLString(const std::string &basePath = std::string(), int tabs = 0, bool storeLinkToFile = false);
+	std::string toXML(const std::string &basePath = std::string(), int tabs = 0, bool storeLinkToFile = false);
 
 	/*!
 		Clones this object. If no col checker is given, the one of the original object is used.

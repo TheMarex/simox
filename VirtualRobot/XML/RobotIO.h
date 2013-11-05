@@ -70,10 +70,19 @@ public:
             Creates Robot from string.
 			@param xmlString The input string.
             @param basePath If any \<childFromRobot\> tags are given, the path for searching the robot files can be specified.
-            @param loadMode Standard: eFull, When eStructure is used no visualization oand collision models are loaded for faster access.
+            @param loadMode Standard: eFull, When eStructure is used no visualization and collision models are loaded for faster access.
         */
         static RobotPtr createRobotFromString(const std::string &xmlString, const std::string &basePath = "", RobotDescription loadMode = eFull);
 
+
+        /*!
+            Creates an XML string that defines the robot and stores it to the file basePath/filename. All visualizations and collision models are stored to the basePath/modeDir directory
+            @param robot The robot to save.
+            @param filename The filename without path.
+            @param basePath The directory to store the robot to
+            @param modelDir The local directory where all visualization files should be stored to.
+        */
+        static bool saveXML(RobotPtr robot, const std::string &filename, const std::string &basePath, const std::string &modelDir ="models");
 
 
 protected:

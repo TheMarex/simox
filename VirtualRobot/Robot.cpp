@@ -826,5 +826,34 @@ std::vector<SensorPtr> Robot::getSensors()
 	return result;
 }
 
+std::string Robot::toXML( const std::string &modelPath /*= "models"*/ )
+{
+    std::stringstream ss;
+    ss << "<?xml version='1.0' encoding='UTF-8'?>" << endl << endl;
+    ss << "<Robot Type='" << this->type << "' RootNode='" << this->getRootNode()->getName() << "'>" << endl << endl;
+    std::vector<RobotNodePtr> nodes = getRobotNodes();
+    for (size_t i=0;i<nodes.size();i++)
+    {
+        ss << nodes[i]->toXML(modelPath) << endl;
+    }
+    ss << endl;
+    std::vector<RobotNodeSetPtr> rns;
+    this->getRobotNodeSets(rns);
+    for (size_t i=0;i<rns.size();i++)
+    {
+        ss << rns[i]->toXML(1) << endl;
+    }
+    ss << endl;
+    std::vector<EndEffectorPtr> eefs = this->getEndEffectors();
+    for (size_t i=0;i<eefs.size();i++)
+    {
+        ss << eefs[i]->toXML(1) << endl;
+    }
+    ss << endl;
+    ss << "</Robot>" << endl;
+
+    return ss.str();
+}
+
 } // namespace VirtualRobot
 

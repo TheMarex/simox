@@ -2,6 +2,7 @@
 #include "Sensor.h"
 #include "../VirtualRobot.h"
 #include "../VirtualRobotException.h"
+#include "../XML/BaseIO.h"
 #include "RobotNode.h"
 
 #include <Eigen/Core>
@@ -142,6 +143,25 @@ void Sensor::updatePose(const Eigen::Matrix4f &globalPose, bool updateChildren)
 
 	// update collision and visualization model and children
 	SceneObject::updatePose(updateChildren);
+}
+
+std::string Sensor::toXML(const std::string &modelPath, int tabs)
+{
+    // this will not work, since no type is available, just a reference implementation of a sensor XML tag
+    std::stringstream ss;
+    std::string t = "\t";
+    std::string pre = "";
+    for (int i=0;i<tabs;i++)
+        pre += t;
+    ss << pre << "<Sensor name='" << name << "'>" << endl;
+    std::string pre2 = pre + t;
+    ss << pre << "<Transform>" << endl;
+    ss << BaseIO::toXML(rnTransformation,pre2);
+    ss << pre << "</Transform>" << endl;
+    if (visualizationModel)
+        ss << visualizationModel->toXML(modelPath,tabs+1);
+    ss << pre << "</Sensor>" << endl;
+    return ss.str();
 }
 
 

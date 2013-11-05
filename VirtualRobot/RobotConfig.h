@@ -122,7 +122,7 @@ public:
 	/*!
 		Create an XML string that defines this object.
 	*/
-	std::string getXMLString(int tabs=0);
+	std::string toXML(int tabs=0);
 
 	static std::string createXMLString(const std::map< std::string, float > &config, const std::string &name, int tabs=0);
 

@@ -97,8 +97,11 @@ public:
 	static bool hasUnitsAttribute(rapidxml::xml_node<char> *node);
 	static std::vector< Units > getUnitsAttributes(rapidxml::xml_node<char> *node);
 	static void getAllAttributes(rapidxml::xml_node<char> *node, const std::string &attrString, std::vector<std::string> &storeValues);
-    static void processDHNode(rapidxml::xml_node<char> *dhXMLNode, DHParameter &dh);protected:
+    static void processDHNode(rapidxml::xml_node<char> *dhXMLNode, DHParameter &dh);
 
+    static std::string toXML(const Eigen::Matrix4f &m, std::string ident = "\t");
+
+protected:
 	// instantiation not allowed
 	BaseIO();
 	virtual ~BaseIO();

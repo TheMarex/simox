@@ -177,6 +177,11 @@ public:
 	*/
 	float getApproximatedLength();
 
+    /*!
+        Creates an XML string of this EEF.
+    */
+    virtual std::string toXML(int ident = 1);
+
 private:
 	std::string name;
 	std::vector<EndEffectorActorPtr> actors;

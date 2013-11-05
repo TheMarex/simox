@@ -100,7 +100,7 @@ public:
 	*/
 	Eigen::Matrix4f getTransformation();
 
-	std::string getXMLString(int tabs=2);
+	std::string toXML(int tabs=2);
 
 	GraspPtr clone();
 

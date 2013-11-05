@@ -400,7 +400,7 @@ bool CompressionBZip2::close()
 		//ofs->close();
         //fclose (dataFile);
 		bzFileData = NULL;
-        if (currentError == BZ_IO_ERROR) {
+        if (currentError < 0){//== BZ_IO_ERROR) { 
             VR_ERROR << "Could not close file?!" << endl;
             return false;
         }
@@ -3770,7 +3770,7 @@ bool CompressionBZip2::write(void* buf, int len)
     }
     BZ2_bzWrite(&currentError,bzFileData,buf,len);
     
-   if (currentError == BZ_IO_ERROR) { 
+   if (currentError < 0){//== BZ_IO_ERROR) { 
         VR_ERROR << "Could not compress data..." << endl;
         close();
         return false;
@@ -3803,7 +3803,7 @@ bool CompressionBZip2::read(void* buf, int maxLen, int &storeLengthRead)
         return false;
     }
     storeLengthRead = BZ2_bzRead ( &currentError, bzFileData, buf, maxLen );
-    if (currentError == BZ_IO_ERROR) { 
+    if (currentError < 0){//== BZ_IO_ERROR) { 
         VR_ERROR << "Could not uncompress data..." << endl;
         close();
         return false;

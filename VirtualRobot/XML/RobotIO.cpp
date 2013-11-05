@@ -17,7 +17,8 @@
 #include <boost/pointer_cast.hpp>
 #include <boost/filesystem.hpp>
 #include <vector>
-
+#include <fstream>
+#include <iostream>
 
 namespace VirtualRobot {
 
@@ -1130,6 +1131,49 @@ VirtualRobot::RobotPtr RobotIO::loadRobot(const std::string &xmlFile, RobotDescr
 	res->applyJointValues();
 	res->setFilename(xmlFile);
 	return res;
+}
+
+
+bool RobotIO::saveXML(RobotPtr robot, const std::string &filename, const std::string &basePath, const std::string &modelDir)
+{
+    THROW_VR_EXCEPTION_IF(!robot,"NULL data");
+
+
+    boost::filesystem::path p(basePath);
+    boost::filesystem::path fn(filename);
+    boost::filesystem::path pModelDir(modelDir);
+
+     if (boost::filesystem::exists(pModelDir) && !boost::filesystem::is_directory(pModelDir))
+     {
+         VR_ERROR << "Could not create model directory (existing & !dir)  " << pModelDir.string() << endl;
+         return false;
+     }
+     if (!boost::filesystem::create_directories(pModelDir) || !boost::filesystem::is_directory(pModelDir))
+     {
+         VR_ERROR << "Could not create model dir  " << pModelDir.string() << endl;
+         return false;
+     }
+
+    boost::filesystem::path fnComplete = boost::filesystem::operator/(p,fn);
+    boost::filesystem::path modelDirComplete = boost::filesystem::operator/(p,pModelDir);
+    std::ofstream f( fnComplete.string() );
+    if (!f)
+    {
+        VR_ERROR << "Could not create file " << fnComplete.string() << endl;
+        return false;
+    }
+
+    std::string xmlRob = robot->toXML(modelDir);
+    f << xmlRob;
+    f.close();
+
+    std::vector<RobotNodePtr> nodes = robot->getRobotNodes();
+    for (size_t i=0;i<nodes.size();i++)
+    {
+        nodes[i]->saveModelFiles(pModelDir.string());
+    }
+
+    return true;
 }
 
 

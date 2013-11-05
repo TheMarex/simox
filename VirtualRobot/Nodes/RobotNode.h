@@ -278,6 +278,12 @@ public:
 	virtual std::vector<SensorPtr> getSensors() const;
 	virtual bool registerSensor(SensorPtr sensor);
 
+    /*!
+        Creates an XML string that defines the robotnode. Filenames of all visualization models are set to modelPath/RobotNodeName_visu and/or modelPath/RobotNodeName_colmodel.
+        @see RobotIO::saveXML.
+    */
+    std::string toXML(const std::string &modelPath = "models");
+
 protected:
 
 	/*!
@@ -347,6 +353,11 @@ protected:
 	virtual RobotNodePtr _clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker, float scaling) = 0;
 
 	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f ) const {THROW_VR_EXCEPTION("Cloning not allowed this way...");}
+
+    /*!
+        Derived classes add custom XML tags here
+    */
+    virtual std::string _toXML(const std::string &modelPath) = 0;
 
 };
 

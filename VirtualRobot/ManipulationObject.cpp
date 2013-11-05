@@ -85,7 +85,7 @@ VirtualRobot::GraspSetPtr ManipulationObject::getGraspSet( const std::string &na
 	return GraspSetPtr();
 }
 
-std::string ManipulationObject::getXMLString(const std::string &basePath, int tabs, bool storeLinkToFile)
+std::string ManipulationObject::toXML(const std::string &basePath, int tabs, bool storeLinkToFile)
 {
 	std::stringstream ss;
 	std::string t = "\t";

@@ -129,7 +129,7 @@ std::string GraspSet::getXMLString(int tabs)
 
 	ss << t << "<GraspSet name='" << name << "' RobotType='" << robotType << "' EndEffector='" << eef << "'>\n";
 	for (size_t i=0;i<grasps.size();i++)
-		ss << grasps[i]->getXMLString(tabs+1);
+		ss << grasps[i]->toXML(tabs+1);
 	ss << t << "</GraspSet>\n";
 
 	return ss.str();

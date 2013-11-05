@@ -115,6 +115,10 @@ protected:
 	Eigen::Vector3f jointTranslationDirection;	// used when ePrismaticJoint (local coord system)
 
 	virtual RobotNodePtr _clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker, float scaling);
+    /*!
+        Derived classes add custom XML tags here
+    */
+    virtual std::string _toXML(const std::string &modelPath);
 
 };
 

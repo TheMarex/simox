@@ -121,6 +121,7 @@ public:
 
 	RobotConfigPtr getConfiguration();
 
+    virtual std::string toXML(int ident = 1);
 
 private:
 

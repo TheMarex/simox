@@ -89,7 +89,7 @@ void Grasp::setName( const std::string &name )
 	this->name = name;
 }
 
-std::string Grasp::getXMLString(int tabs)
+std::string Grasp::toXML(int tabs)
 {
 	std::stringstream ss;
 	std::string t;

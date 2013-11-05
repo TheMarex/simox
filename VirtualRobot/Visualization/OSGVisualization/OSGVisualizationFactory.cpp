@@ -344,11 +344,10 @@ osg::Node* OSGVisualizationFactory::CreateBoundingBox(osg::Node *model, bool wir
 	osg::Vec3 maxV = bboxOSG._max * m.front(); 
 
 	BoundingBox bbox;
-	for (int i=0;i<3;i++)
-	{
-		bbox.min(i) = minV[i];
-		bbox.max(i) = maxV[i];
-	}
+	Eigen::Vector3f minPoint(minV[0],minV[1],minV[2]);
+	Eigen::Vector3f maxPoint(maxV[0],maxV[1],maxV[2]);
+	bbox.addPoint(minPoint);
+	bbox.addPoint(maxPoint);
 	return CreateBoundingBoxVisualization(bbox,wireFrame);
 }
 
@@ -356,8 +355,8 @@ osg::Node* OSGVisualizationFactory::CreateBoundingBoxVisualization( const Boundi
 {
 	osg::BoundingBox bboxOSG;
 
-	bboxOSG.expandBy( bbox.min(0),bbox.min(1),bbox.min(2) );
-	bboxOSG.expandBy( bbox.max(0),bbox.max(1),bbox.max(2) );
+	bboxOSG.expandBy( bbox.getMin(0),bbox.getMin(1),bbox.getMin(2) );
+	bboxOSG.expandBy( bbox.getMax(0),bbox.getMax(1),bbox.getMax(2) );
 
 	osg::Vec3 ext( bboxOSG._max - bboxOSG._min ); 
 	osg::Box* box = new osg::Box(bboxOSG.center(), ext[0], ext[1], ext[2]);

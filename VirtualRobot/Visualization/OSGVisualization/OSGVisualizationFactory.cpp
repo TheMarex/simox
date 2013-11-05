@@ -355,8 +355,8 @@ osg::Node* OSGVisualizationFactory::CreateBoundingBoxVisualization( const Boundi
 {
 	osg::BoundingBox bboxOSG;
 
-	bboxOSG.expandBy( bbox.getMin(0),bbox.getMin(1),bbox.getMin(2) );
-	bboxOSG.expandBy( bbox.getMax(0),bbox.getMax(1),bbox.getMax(2) );
+	bboxOSG.expandBy( bbox.getMin()(0),bbox.getMin()(1),bbox.getMin()(2) );
+	bboxOSG.expandBy( bbox.getMax()(0),bbox.getMax()(1),bbox.getMax()(2) );
 
 	osg::Vec3 ext( bboxOSG._max - bboxOSG._min ); 
 	osg::Box* box = new osg::Box(bboxOSG.center(), ext[0], ext[1], ext[2]);

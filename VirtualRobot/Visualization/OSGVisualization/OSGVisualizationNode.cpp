@@ -13,6 +13,7 @@
 #include <osg/Geode>
 #include <osg/Node>
 #include <osg/Group>
+#include <osg/PositionAttitudeTransform>
 
 namespace VirtualRobot {
 
@@ -222,7 +223,7 @@ VirtualRobot::VisualizationNodePtr OSGVisualizationNode::clone(bool deepCopy, fl
 		if (scaling!=1.0)
 		{
 			osg::PositionAttitudeTransform *s = new osg::PositionAttitudeTransform;
-			s->setScale.setValue(osg::Vec3d(scaling,scaling,scaling));
+			s->setScale(osg::Vec3d(scaling,scaling,scaling));
 			newModel->addChild(s);
 		}
 		if (deepCopy)

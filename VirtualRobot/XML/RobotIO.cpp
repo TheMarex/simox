@@ -1156,7 +1156,7 @@ bool RobotIO::saveXML(RobotPtr robot, const std::string &filename, const std::st
 
     boost::filesystem::path fnComplete = boost::filesystem::operator/(p,fn);
     boost::filesystem::path modelDirComplete = boost::filesystem::operator/(p,pModelDir);
-    std::ofstream f( fnComplete.string() );
+    std::ofstream f( fnComplete.string().c_str() );
     if (!f)
     {
         VR_ERROR << "Could not create file " << fnComplete.string() << endl;

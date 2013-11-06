@@ -677,7 +677,7 @@ std::vector<SensorPtr> RobotNode::getSensors() const
 	return sensors;
 }
 
-std::string RobotNode::toXML( const std::string &modelPath /*= "models"*/ )
+std::string RobotNode::toXML( const std::string &modelPath /*= "models"*/, bool storeSensors )
 {
     std::stringstream ss;
     ss << "\t<RobotNode name='" << name << "'>" << endl;
@@ -688,22 +688,27 @@ std::string RobotNode::toXML( const std::string &modelPath /*= "models"*/ )
         ss << "\t\t</Transform>" << endl;
     }
     ss << _toXML(modelPath);
-    ss << physics.toXML(3);
+    ss << physics.toXML(2);
     if (visualizationModel)
         ss << visualizationModel->toXML(modelPath,2);
     if (collisionModel)
         ss << collisionModel->toXML(modelPath,2);
 
-   
-    for (size_t i=0;i<sensors.size();i++)
-    {
-        ss << sensors[i]->toXML(modelPath,2);
-    }
+    if (storeSensors)
+	{
+		for (size_t i=0;i<sensors.size();i++)
+		{
+			ss << sensors[i]->toXML(modelPath,2);
+		}
+	}
 
     std::vector<SceneObjectPtr> children = this->getChildren();
     for (size_t i=0;i<children.size();i++)
     {
-        ss << "\t\t<Child name='" << children[i]->getName() << "'/>" << endl;
+		// check if child is a RobotNode
+		RobotNodePtr crn = boost::dynamic_pointer_cast<RobotNode>(children[i]);
+		if (crn)
+			ss << "\t\t<Child name='" << children[i]->getName() << "'/>" << endl;
     }
     ss << "\t</RobotNode>" << endl << endl;
     return ss.str();

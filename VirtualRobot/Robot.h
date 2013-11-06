@@ -367,7 +367,7 @@ public:
         Creates an XML string that defines the complete robot. Filenames of all visualization models are set to modelPath/RobotNodeName_visu and/or modelPath/RobotNodeName_colmodel.
         @see RobotIO::saveXML.
     */
-    std::string toXML(const std::string &modelPath = "models");
+    std::string toXML(const std::string &modelPath = "models", bool storeEEF = true, bool storeRNS = true, bool storeSensors = true);
 
 protected:
 	Robot();

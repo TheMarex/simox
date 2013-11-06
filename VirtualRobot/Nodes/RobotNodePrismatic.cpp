@@ -193,21 +193,21 @@ void RobotNodePrismatic::checkValidRobotNodeType()
 std::string RobotNodePrismatic::_toXML( const std::string &modelPath )
 {
     std::stringstream ss;
-    ss << "\t<Joint type='prismatic'>" << endl;
-    ss << "\t\t<translationdirection x='" << jointTranslationDirection[0] << "' y='" << jointTranslationDirection[1] << "' z='" << jointTranslationDirection[2] << "'/>" << endl;
-    ss << "\t\t<limits lo='" << jointLimitLo << "' hi='" << jointLimitHi << "'/>" << endl;
-    ss << "\t\t<MaxAcceleration value='" << maxAcceleration << "'/>" << endl;
-    ss << "\t\t<MaxVelocity value='" << maxVelocity << "'/>" << endl;
-    ss << "\t\t<MaxTorque value='" << maxTorque << "'/>" << endl;
+    ss << "\t\t<Joint type='prismatic'>" << endl;
+    ss << "\t\t\t<translationdirection x='" << jointTranslationDirection[0] << "' y='" << jointTranslationDirection[1] << "' z='" << jointTranslationDirection[2] << "'/>" << endl;
+    ss << "\t\t\t<limits lo='" << jointLimitLo << "' hi='" << jointLimitHi << "' units='mm'/>" << endl;
+    ss << "\t\t\t<MaxAcceleration value='" << maxAcceleration << "'/>" << endl;
+    ss << "\t\t\t<MaxVelocity value='" << maxVelocity << "'/>" << endl;
+    ss << "\t\t\t<MaxTorque value='" << maxTorque << "'/>" << endl;
 
     std::map< std::string, float >::iterator propIt = propagatedJointValues.begin();
     while (propIt!=propagatedJointValues.end())
     {
-        ss << "\t\t<PropagateJointValue name='" << propIt->first << "' factor='" << propIt->second << "'/>" << endl;
+        ss << "\t\t\t<PropagateJointValue name='" << propIt->first << "' factor='" << propIt->second << "'/>" << endl;
         propIt++;
     }
 
-    ss << "\t</Joint>" << endl;
+    ss << "\t\t</Joint>" << endl;
     return ss.str();
 }
 

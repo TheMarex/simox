@@ -82,7 +82,7 @@ public:
             @param basePath The directory to store the robot to
             @param modelDir The local directory where all visualization files should be stored to.
         */
-        static bool saveXML(RobotPtr robot, const std::string &filename, const std::string &basePath, const std::string &modelDir ="models");
+        static bool saveXML(RobotPtr robot, const std::string &filename, const std::string &basePath, const std::string &modelDir ="models", bool storeEEF = true, bool storeRNS = true, bool storeSensors = true, bool storeModelFiles = true);
 
 
 protected:

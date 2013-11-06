@@ -195,21 +195,21 @@ void RobotNodeRevolute::checkValidRobotNodeType()
 std::string RobotNodeRevolute::_toXML( const std::string &modelPath )
 {
     std::stringstream ss;
-    ss << "\t<Joint type='revolute'>" << endl;
-    ss << "\t\t<axis x='" << jointRotationAxis[0] << "' y='" << jointRotationAxis[1] << "' z='" << jointRotationAxis[2] << "'/>" << endl;
-    ss << "\t\t<limits lo='" << jointLimitLo << "' hi='" << jointLimitHi << "'/>" << endl;
-    ss << "\t\t<MaxAcceleration value='" << maxAcceleration << "'/>" << endl;
-    ss << "\t\t<MaxVelocity value='" << maxVelocity << "'/>" << endl;
-    ss << "\t\t<MaxTorque value='" << maxTorque << "'/>" << endl;
+	ss << "\t\t<Joint type='revolute'>" << endl;
+    ss << "\t\t\t<axis x='" << jointRotationAxis[0] << "' y='" << jointRotationAxis[1] << "' z='" << jointRotationAxis[2] << "'/>" << endl;
+    ss << "\t\t\t<limits lo='" << jointLimitLo << "' hi='" << jointLimitHi << "' units='radian'/>" << endl;
+    ss << "\t\t\t<MaxAcceleration value='" << maxAcceleration << "'/>" << endl;
+    ss << "\t\t\t<MaxVelocity value='" << maxVelocity << "'/>" << endl;
+    ss << "\t\t\t<MaxTorque value='" << maxTorque << "'/>" << endl;
 
     std::map< std::string, float >::iterator propIt = propagatedJointValues.begin();
     while (propIt!=propagatedJointValues.end())
     {
-        ss << "\t\t<PropagateJointValue name='" << propIt->first << "' factor='" << propIt->second << "'/>" << endl;
+        ss << "\t\t\t<PropagateJointValue name='" << propIt->first << "' factor='" << propIt->second << "'/>" << endl;
         propIt++;
     }
 
-    ss << "\t</Joint>" << endl;
+    ss << "\t\t</Joint>" << endl;
 
     return ss.str();
 }

@@ -49,10 +49,11 @@ std::string PositionSensor::toXML(const std::string &modelPath, int tabs)
     for (int i=0;i<tabs;i++)
         pre += t;
     ss << pre << "<Sensor type='" << PositionSensorFactory::getName() << "' name='" << name << "'>" << endl;
-    std::string pre2 = pre + t;
-    ss << pre << "<Transform>" << endl;
-    ss << BaseIO::toXML(rnTransformation,pre2);
-    ss << pre << "</Transform>" << endl;
+	std::string pre2 = pre + t;
+	std::string pre3 = pre2 + t;
+    ss << pre2 << "<Transform>" << endl;
+    ss << BaseIO::toXML(rnTransformation,pre3);
+    ss << pre2 << "</Transform>" << endl;
     if (visualizationModel)
         ss << visualizationModel->toXML(modelPath,tabs+1);
     ss << pre << "</Sensor>" << endl;

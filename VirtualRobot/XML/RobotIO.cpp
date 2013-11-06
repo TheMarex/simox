@@ -1134,7 +1134,7 @@ VirtualRobot::RobotPtr RobotIO::loadRobot(const std::string &xmlFile, RobotDescr
 }
 
 
-bool RobotIO::saveXML(RobotPtr robot, const std::string &filename, const std::string &basePath, const std::string &modelDir)
+bool RobotIO::saveXML(RobotPtr robot, const std::string &filename, const std::string &basePath, const std::string &modelDir, bool storeEEF, bool storeRNS, bool storeSensors, bool storeModelFiles)
 {
     THROW_VR_EXCEPTION_IF(!robot,"NULL data");
 
@@ -1163,15 +1163,18 @@ bool RobotIO::saveXML(RobotPtr robot, const std::string &filename, const std::st
         return false;
     }
 
-    std::string xmlRob = robot->toXML(modelDir);
+    std::string xmlRob = robot->toXML(modelDir, storeEEF, storeRNS, storeSensors);
     f << xmlRob;
     f.close();
 
-    std::vector<RobotNodePtr> nodes = robot->getRobotNodes();
-    for (size_t i=0;i<nodes.size();i++)
-    {
-        nodes[i]->saveModelFiles(pModelDir.string());
-    }
+	if (storeModelFiles)
+	{
+		std::vector<RobotNodePtr> nodes = robot->getRobotNodes();
+		for (size_t i=0;i<nodes.size();i++)
+		{
+			nodes[i]->saveModelFiles(pModelDir.string());
+		}
+	}
 
     return true;
 }

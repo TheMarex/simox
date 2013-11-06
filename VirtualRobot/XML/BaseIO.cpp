@@ -1271,13 +1271,13 @@ bool BaseIO::writeXMLFile(const std::string &filename, const std::string &conten
 std::string BaseIO::toXML( const Eigen::Matrix4f &m, std::string ident /*= "\t"*/ )
 {
     std::stringstream ss;
-    ss << ident << "<Matrix4x4 units='mm'/>"<< endl;
+    ss << ident << "<Matrix4x4 units='mm'>"<< endl;
     for (int r=1;r<=4;r++)
     {
         ss << ident << "\t<row" << r << " ";
 
         for (int i=1;i<=4;i++)
-            ss << "c" << i << "='" << m(r,i) <<"' ";
+            ss << "c" << i << "='" << m(r-1,i-1) <<"' ";
         ss << "/>"<< endl;
     }
     ss << ident << "</Matrix4x4>"<< endl;

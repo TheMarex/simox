@@ -94,14 +94,14 @@ public:
 	// experimental...
 	virtual void ensureKinematicConstraints();
 
-protected:
-
 	/*!
-		Returns links where the given node is the second connected node. 
+		Returns link where the given node is the second connected node. 
 		There could only one link with this setup, since on VirtualRobot side node2 is the actuated one.
 	*/
 	LinkInfo getLink(VirtualRobot::RobotNodePtr node);
 
+
+protected:
 	void buildBulletModels(bool enableJointMotors);
 
     //void createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::RobotNodePtr joint, VirtualRobot::RobotNodePtr bodyB, Eigen::Matrix4f &trafoA2J, Eigen::Matrix4f &trafoJ2B, bool enableJointMotors = true );

@@ -20,6 +20,8 @@
 #include <Inventor/nodes/SoCube.h>
 #include <Inventor/nodes/SoUnits.h>
 
+#include "BulletDynamics/ConstraintSolver/btTypedConstraint.h"
+
 #include <sstream>
 using namespace std;
 using namespace VirtualRobot;
@@ -358,7 +360,41 @@ void SimDynamicsWindow::updateJointInfo()
 	{	
 		rn = robotNodes[n];
 	}
-	//SimDynamics::DynamicsObjectPtr dynRN = dynamicsRobot->getDynamicsRobotNode(rn);
+	SimDynamics::DynamicsObjectPtr dynRN = dynamicsRobot->getDynamicsRobotNode(rn);
+	SimDynamics::BulletObjectPtr bulletRN = boost::shared_dynamic_cast<SimDynamics::BulletObject>(dynRN);
+	if (bulletRN)
+	{
+		cout << "FORCE: " << bulletRN->getRigidBody()->getTotalForce()[0] << "," << bulletRN->getRigidBody()->getTotalForce()[1] << "," << bulletRN->getRigidBody()->getTotalForce()[2] << endl;
+		cout << "TORQUE: " << bulletRN->getRigidBody()->getTotalTorque()[0] << "," << bulletRN->getRigidBody()->getTotalTorque()[1] << "," << bulletRN->getRigidBody()->getTotalTorque()[2] << endl;
+		cout << "getLinearVelocity: " << bulletRN->getRigidBody()->getLinearVelocity()[0] << "," << bulletRN->getRigidBody()->getLinearVelocity()[1] << "," << bulletRN->getRigidBody()->getLinearVelocity()[2] << endl;
+		cout << "getAngularVelocity: " << bulletRN->getRigidBody()->getAngularVelocity()[0] << "," << bulletRN->getRigidBody()->getAngularVelocity()[1] << "," << bulletRN->getRigidBody()->getAngularVelocity()[2] << endl;
+		
+	}
+	BulletRobotPtr bulletRobot = boost::shared_dynamic_cast<SimDynamics::BulletRobot>(dynamicsRobot);
+	if (rn && bulletRobot && bulletRobot->hasLink(rn))
+	{
+		BulletRobot::LinkInfo linkInfo = bulletRobot->getLink(rn);
+		if (!linkInfo.joint->needsFeedback())
+		{
+			linkInfo.joint->enableFeedback(true);
+			btJointFeedback* feedback = new btJointFeedback;
+			feedback->m_appliedForceBodyA = btVector3(0, 0, 0);
+			feedback->m_appliedForceBodyB = btVector3(0, 0, 0);
+			feedback->m_appliedTorqueBodyA = btVector3(0, 0, 0);
+			feedback->m_appliedTorqueBodyB = btVector3(0, 0, 0);
+			linkInfo.joint->setJointFeedback(feedback);
+		}
+		else
+		{
+			btJointFeedback* feedback = linkInfo.joint->getJointFeedback();
+			cout << "feedback->m_appliedForceBodyA: " << feedback->m_appliedForceBodyA[0] << "," << feedback->m_appliedForceBodyA[1] << "," << feedback->m_appliedForceBodyA[2] << endl;
+			cout << "feedback->m_appliedForceBodyB: " << feedback->m_appliedForceBodyB[0] << "," << feedback->m_appliedForceBodyB[1] << "," << feedback->m_appliedForceBodyB[2] << endl;
+			cout << "feedback->m_appliedTorqueBodyA: " << feedback->m_appliedTorqueBodyA[0] << "," << feedback->m_appliedTorqueBodyA[1] << "," << feedback->m_appliedTorqueBodyA[2] << endl;
+			cout << "feedback->m_appliedTorqueBodyB: " << feedback->m_appliedTorqueBodyB[0] << "," << feedback->m_appliedTorqueBodyB[1] << "," << feedback->m_appliedTorqueBodyB[2] << endl;
+
+		}
+	}
+	
 	if (rn)
 	{
 		qMin = QString::number(rn->getJointLimitLo(),'f',4);

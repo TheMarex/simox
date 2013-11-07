@@ -423,8 +423,10 @@ public:
 
     /*!
         Saves model files (visu and col model, if present) to model path.
+		\param modelPath The path where the model files should be stored.
+		\param replsceFilenames If set, the filenames will be replaced with 'name_visu' and 'name_col'. Otherwise the original filename is used without any preceding paths.
     */
-    virtual bool saveModelFiles(const std::string &modelPath);
+    virtual bool saveModelFiles(const std::string &modelPath, bool replaceFilenames);
 
 protected:
 	virtual SceneObject* _clone( const std::string &name, CollisionCheckerPtr colChecker = CollisionCheckerPtr(), float scaling = 1.0f ) const;
@@ -436,6 +438,10 @@ protected:
 
 	virtual void updatePose( const Eigen::Matrix4f &parentPose, bool updateChildren = true );
 
+
+
+	std::string getFilenameReplacementVisuModel();
+	std::string getFilenameReplacementColModel();
 
     SceneObject(){}
 

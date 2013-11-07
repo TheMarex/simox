@@ -1142,20 +1142,23 @@ bool RobotIO::saveXML(RobotPtr robot, const std::string &filename, const std::st
     boost::filesystem::path p(basePath);
     boost::filesystem::path fn(filename);
     boost::filesystem::path pModelDir(modelDir);
+	boost::filesystem::path fnComplete = boost::filesystem::operator/(p,fn);
+	boost::filesystem::path modelDirComplete = boost::filesystem::operator/(p,pModelDir);
 
-     if (boost::filesystem::exists(pModelDir) && !boost::filesystem::is_directory(pModelDir))
+     if (boost::filesystem::exists(modelDirComplete) && !boost::filesystem::is_directory(modelDirComplete))
      {
          VR_ERROR << "Could not create model directory (existing & !dir)  " << pModelDir.string() << endl;
          return false;
      }
-     if (!boost::filesystem::create_directories(pModelDir) || !boost::filesystem::is_directory(pModelDir))
-     {
-         VR_ERROR << "Could not create model dir  " << pModelDir.string() << endl;
-         return false;
-     }
+	 if (!boost::filesystem::is_directory(modelDirComplete))
+	 {
+		 if (!boost::filesystem::create_directories(modelDirComplete))
+		 {
+			 VR_ERROR << "Could not create model dir  " << modelDirComplete.string() << endl;
+			 return false;
+		 }
+	 }
 
-    boost::filesystem::path fnComplete = boost::filesystem::operator/(p,fn);
-    boost::filesystem::path modelDirComplete = boost::filesystem::operator/(p,pModelDir);
     std::ofstream f( fnComplete.string().c_str() );
     if (!f)
     {
@@ -1172,7 +1175,7 @@ bool RobotIO::saveXML(RobotPtr robot, const std::string &filename, const std::st
 		std::vector<RobotNodePtr> nodes = robot->getRobotNodes();
 		for (size_t i=0;i<nodes.size();i++)
 		{
-			nodes[i]->saveModelFiles(pModelDir.string());
+			nodes[i]->saveModelFiles(modelDirComplete.string(),true);
 		}
 	}
 

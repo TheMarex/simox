@@ -12,6 +12,7 @@
 #include "VirtualRobot/VirtualRobot.h"
 #include "VirtualRobot/VirtualRobotException.h"
 #include "VirtualRobot/XML/BaseIO.h"
+#include <boost/filesystem.hpp>
 
 namespace VirtualRobot {
 
@@ -121,8 +122,7 @@ std::string VisualizationNode::getFilename()
 	return filename;
 }
 
-
-std::string VisualizationNode::toXML(const std::string &basePath, int tabs)
+std::string VisualizationNode::toXML(const std::string &basePath, const std::string &filename, int tabs)
 {
 	std::stringstream ss;
 	std::string t = "\t";
@@ -136,16 +136,29 @@ std::string VisualizationNode::toXML(const std::string &basePath, int tabs)
 		ss << " BoundingBox='true'";
 	}
 	ss << ">\n";
-	std::string fnV = getFilename();
-	if (!fnV.empty())
+	if (!filename.empty())
 	{
-		if (!basePath.empty())
-			BaseIO::makeRelativePath(basePath,fnV);
-		ss << pre << t << "<File type='" << getType() << "'>" << fnV << "</File>\n";
+		boost::filesystem::path localPath(basePath);
+		boost::filesystem::path fn(filename);
+		boost::filesystem::path completeFile = boost::filesystem::operator/(localPath,fn);
+
+		ss << pre << t << "<File type='" << getType() << "'>" << completeFile.string() << "</File>\n";
 	}
 	ss << pre << "</Visualization>\n";
 
 	return ss.str();
+}
+
+std::string VisualizationNode::toXML(const std::string &basePath, int tabs)
+{
+	std::string fnV = getFilename();
+	/*if (!fnV.empty())
+	{
+		//if (!basePath.empty())
+		//	BaseIO::makeRelativePath(basePath,fnV);
+	}*/
+	boost::filesystem::path fn(fnV);
+	return toXML(basePath,fn.filename().string(),tabs);
 }
 
 VirtualRobot::VisualizationNodePtr VisualizationNode::CreateUnitedVisualization( const std::vector<VisualizationNodePtr> &visualizations )
@@ -185,11 +198,12 @@ VirtualRobot::BoundingBox VisualizationNode::getBoundingBox()
 	return bbox;
 }
 
-bool VisualizationNode::saveModel( const std::string &modelPath )
+bool VisualizationNode::saveModel(const std::string &modelPath, const std::string &filename)
 {
-    // derived classes have to overwrite this method, otherwise a NYI will show up
-    VR_ERROR << "NYI..." << endl;
-    return false;
+	// derived classes have to overwrite this method, otherwise a NYI will show up
+	VR_ERROR << "NYI..." << endl;
+	return false;
 }
+
 
 } // namespace VirtualRobot

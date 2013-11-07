@@ -171,6 +171,8 @@ public:
 	bool nodesSufficient(std::vector<RobotNodePtr> nodes) const;
 
 
+	virtual std::string toXML( int tabs);
+
 	//! this is forbidden for RobotNodeSets, a call will throw an exception
 	virtual bool addSceneObject(SceneObjectPtr sceneObject);
 	//! this is forbidden for RobotNodeSets, a call will throw an exception

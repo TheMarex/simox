@@ -82,7 +82,12 @@ public:
 
 	virtual std::string getType(){return CoinVisualizationFactory::getName();}
 
-    virtual bool saveModel( const std::string &modelPath );
+    /*!
+        Saves model file to model path.
+		\param modelPath The directory.
+		\param filename The new filename.
+    */
+	virtual bool saveModel(const std::string &modelPath, const std::string &filename);
 
 protected:
 	void createTriMeshModel();

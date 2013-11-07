@@ -557,6 +557,23 @@ bool RobotNodeSet::removeSceneObject( SceneObjectPtr sceneObject )
 
 
 
+std::string RobotNodeSet::toXML( int tabs )
+{
+	std::stringstream ss;
+	std::string t = "\t";
+	std::string pre = "";
+	for (int i=0;i<tabs;i++)
+		pre += "\t";
+
+	ss << pre << "<RobotNodeSet name='" << name << "'>\n";
+	for (size_t i=0;i<robotNodes.size();i++)
+	{
+		ss << pre << t << "<Node name='" << robotNodes[i]->getName() << "'/>\n";
+	}
+
+	ss << pre << "</RobotNodeSet>\n";
+	return ss.str();
+}
 
 
 

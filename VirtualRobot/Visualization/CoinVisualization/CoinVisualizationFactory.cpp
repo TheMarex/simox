@@ -19,6 +19,7 @@
 #include "../../Workspace/Reachability.h"
 #include "../../Workspace/WorkspaceGrid.h"
 #include <Inventor/SoDB.h>
+#include <Inventor/nodes/SoFile.h>
 #include <Inventor/nodes/SoNode.h>
 #include <Inventor/nodes/SoUnits.h>
 #include <Inventor/nodes/SoSeparator.h>
@@ -178,7 +179,7 @@ namespace VirtualRobot {
             coinVisualization = bboxVisu;
         }
 
-        // create new CoinVisualizationNode if no error occured 
+        // create new CoinVisualizationNode if no error occurred 
         visualizationNode.reset(new CoinVisualizationNode(coinVisualization));
 
         coinVisualization->unref();
@@ -2537,6 +2538,43 @@ void CoinVisualizationFactory::applyDisplacement( VisualizationNodePtr o, Eigen:
 	{
 		VR_WARNING << "Invalid type casting to CoinVisualizationNode?!" << endl;
 	}
+}
+
+
+SoGroup* CoinVisualizationFactory::convertSoFileChildren(SoGroup* orig)
+{
+	SoGroup *storeResult = new SoGroup;
+	if (!orig)
+		return storeResult;
+	storeResult->ref();
+	if (orig->getTypeId().isDerivedFrom(SoGroup::getClassTypeId()))
+	{
+		// process group node
+		for (int i=0;i<orig->getNumChildren();i++)
+		{
+			SoNode* n1 = orig->getChild(i);
+			if (n1->getTypeId().isDerivedFrom(SoGroup::getClassTypeId()))
+			{
+				// convert group
+				SoGroup *n2 = (SoGroup*)n1;
+				SoGroup *gr1 = convertSoFileChildren(n2);
+				storeResult->addChild(gr1);
+			} else if (n1->getTypeId() == SoFile::getClassTypeId())
+			{
+				// really load file!!
+				SoFile *fn = (SoFile*)n1;
+				SoGroup *fileChildren;
+				fileChildren = fn->copyChildren();
+				storeResult->addChild(fileChildren);
+			} else
+			{
+				// just copy child node
+				storeResult->addChild(n1);
+			}
+		}
+	}
+	storeResult->unrefNoDelete();
+	return storeResult;
 }
 
 

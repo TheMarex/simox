@@ -483,7 +483,7 @@ std::string EndEffector::toXML( int ident /*= 1*/ )
         ss << tt << "<Static>" << endl;
         for (size_t i=0;i<statics.size();i++)
         {
-            ss << ttt << "<Node name='" << statics[i]->getName() << "'>" << endl;
+            ss << ttt << "<Node name='" << statics[i]->getName() << "'/>" << endl;
         }
         ss << tt << "</Static>" << endl;
     }
@@ -491,7 +491,7 @@ std::string EndEffector::toXML( int ident /*= 1*/ )
     // Actors
     for (size_t i=0;i<actors.size();i++)
     {
-        ss << actors[i]->toXML(ident+2);
+        ss << actors[i]->toXML(ident+1);
     }
     ss << pre << "</EndEffector>" << endl;
 

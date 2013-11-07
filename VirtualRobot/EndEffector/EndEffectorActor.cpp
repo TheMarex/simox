@@ -444,17 +444,17 @@ std::string EndEffectorActor::toXML( int ident /*= 1*/ )
     {
         ss << tt << "<Node name='" << actors[i].robotNode->getName() << "' ";
         if (actors[i].colMode == eNone)
-            ss << "ConsiderCollisions=None ";
+            ss << "ConsiderCollisions='None' ";
         if (actors[i].colMode == eAll)
-            ss << "ConsiderCollisions=All ";
+            ss << "ConsiderCollisions='All' ";
         else
         {
             if (actors[i].colMode & eActors)
-                ss << "ConsiderCollisions=Actors ";
+                ss << "ConsiderCollisions='Actors' ";
             if (actors[i].colMode & eStatic)
-                ss << "ConsiderCollisions=Static ";
+                ss << "ConsiderCollisions='Static' ";
         }
-        ss << "Direction='" << actors[i].directionAndSpeed << "/>" << endl;
+        ss << "Direction='" << actors[i].directionAndSpeed << "'/>" << endl;
     }
     ss << pre << "</Actor>" << endl;
     return ss.str();

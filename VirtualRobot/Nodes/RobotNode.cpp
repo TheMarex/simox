@@ -690,10 +690,15 @@ std::string RobotNode::toXML( const std::string &modelPath /*= "models"*/, bool 
     ss << _toXML(modelPath);
     ss << physics.toXML(2);
     if (visualizationModel)
-        ss << visualizationModel->toXML(modelPath,2);
+	{
+		std::string visuFile = getFilenameReplacementVisuModel();
+        ss << visualizationModel->toXML(modelPath,visuFile,2);
+	}
     if (collisionModel)
-        ss << collisionModel->toXML(modelPath,2);
-
+	{
+		std::string colFile = getFilenameReplacementColModel();
+        ss << collisionModel->toXML(modelPath,colFile,2);
+	}
     if (storeSensors)
 	{
 		for (size_t i=0;i<sensors.size();i++)

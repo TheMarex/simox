@@ -121,6 +121,10 @@ public:
 
 	std::string toXML(const std::string &basePath, int tabs);
 
+	/*!
+		Ctreate XML string and replace filename
+	*/
+	std::string toXML(const std::string &basePath, const std::string &filename, int tabs);
 
 	/*!
 		Create a united visualization. Behavior depends on the derived implementation, 
@@ -133,11 +137,11 @@ public:
 	*/
 	BoundingBox getBoundingBox();
 
-    
     /*!
         Saves model file to model path.
+		\param modelPath The directory.
     */
-    virtual bool saveModel(const std::string &modelPath);
+	virtual bool saveModel(const std::string &modelPath, const std::string &filename);
 
 protected:
 	bool boundingBox; //!< Indicates, if the bounding box model was used

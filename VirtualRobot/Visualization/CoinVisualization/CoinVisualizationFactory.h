@@ -284,6 +284,13 @@ public:
 	static bool renderOffscreen( SoOffscreenRenderer* renderer, SoCamera* cam, SoNode* scene, unsigned char **buffer);
 
 	/*!
+		When SoFiles are used, Coin3D just stores references to files instead of the real contents.
+		This may cause problems when saving an inventor file. With this method, a group node can be converted in
+		order to ensure that all potential files are loaded and added to the group.
+	*/
+	static SoGroup* convertSoFileChildren(SoGroup* orig);
+
+	/*!
 		Here, a manual cleanup can be called, no Coin3D access possible after this. 
 		Usually no need to call cleanup explicitly, since cleanup is performed automatically at application exit.
 	*/

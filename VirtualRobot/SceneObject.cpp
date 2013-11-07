@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <Eigen/Dense>
 
+#include <boost/filesystem.hpp>
+
 namespace VirtualRobot {
 
 
@@ -875,14 +877,76 @@ std::vector<std::string> SceneObject::getIgnoredCollisionModels()
     return physics.ignoreCollisions;
 }
 
-bool SceneObject::saveModelFiles( const std::string &modelPath )
+
+bool SceneObject::saveModelFiles( const std::string &modelPath, bool replaceFilenames )
 {
     bool res = true;
     if (visualizationModel)
-        res = res & visualizationModel->saveModel(modelPath);
+	{
+		std::string newFilename;
+		if (replaceFilenames)
+		{
+			newFilename = getFilenameReplacementVisuModel();
+		} else
+		{
+			std::string fnV = visualizationModel->getFilename();
+			boost::filesystem::path fn(fnV);
+			boost::filesystem::path filnameNoPath = fn.filename();
+			newFilename = filnameNoPath.string();
+		}
+        res = res & visualizationModel->saveModel(modelPath,newFilename);
+	}
     if (collisionModel)
-        res = res & collisionModel->saveModel(modelPath);
+	{
+		// check if we need to replace the filename (also in case the trimesh model is stored!)
+		std::string newFilename;
+
+		if (replaceFilenames || !collisionModel->getVisualization())
+		{
+			newFilename = getFilenameReplacementColModel();
+		} else
+		{
+			std::string fnV = collisionModel->getVisualization()->getFilename();
+			boost::filesystem::path fn(fnV);
+			boost::filesystem::path filnameNoPath = fn.filename();
+			newFilename = filnameNoPath.string();
+		}
+		res = res & collisionModel->saveModel(modelPath,newFilename);
+	}
     return res;
+}
+
+std::string SceneObject::getFilenameReplacementVisuModel()
+{
+	std::string fnV = visualizationModel->getFilename();
+	boost::filesystem::path fn(fnV);
+	boost::filesystem::path filnameNoPath = fn.filename();
+	boost::filesystem::path extension = fn.extension();
+	std::string extStr = extension.string();
+	if (extStr.empty())
+		extStr = ".iv"; // try with iv
+
+	std::string newFilename = name;
+	newFilename += "_visu";
+	newFilename += extStr;
+	return newFilename;
+}
+
+std::string SceneObject::getFilenameReplacementColModel()
+{
+	std::string newFilename = name;
+	newFilename += "_col";
+	std::string extStr;
+	if (collisionModel && collisionModel->getVisualization())
+	{
+		boost::filesystem::path fn(collisionModel->getVisualization()->getFilename());
+		boost::filesystem::path extension = fn.extension();
+		extStr = extension.string();
+	}
+	if (extStr.empty())
+		extStr = ".iv"; // try with iv
+	newFilename += extStr;
+	return newFilename;
 }
 
 } // namespace

@@ -6,6 +6,8 @@
 #include "../XML/BaseIO.h"
 #include <algorithm>
 
+#include <boost/filesystem.hpp>
+
 namespace VirtualRobot {
 
 CollisionModel::CollisionModel(VisualizationNodePtr visu, const std::string &name, CollisionCheckerPtr colChecker, int id)
@@ -169,7 +171,7 @@ VirtualRobot::VisualizationNodePtr CollisionModel::getModelDataVisualization()
 	return modelVisualization;
 }
 
-std::string CollisionModel::toXML(const std::string &basePath, int tabs)
+std::string CollisionModel::toXML(const std::string &basePath, const std::string &filename, int tabs)
 {
 	std::stringstream ss;
 	std::string t = "\t";
@@ -183,15 +185,41 @@ std::string CollisionModel::toXML(const std::string &basePath, int tabs)
 		ss << " BoundingBox='true'";
 	}
 	ss << ">\n";
-	std::string fnC = getVisualization()->getFilename();
+
+	std::string fileType("unknown");
+	if (visualization)
+		fileType = visualization->getType();
+	else if (modelVisualization)
+		fileType = modelVisualization->getType();
+
+	if (!filename.empty())
+	{
+		boost::filesystem::path localPath(basePath);
+		boost::filesystem::path fn(filename);
+		boost::filesystem::path completeFile = boost::filesystem::operator/(localPath,fn);
+		ss << pre << t << "<File type='" << fileType << "'>" << completeFile.string() << "</File>\n";
+	}
+	ss << pre << "</CollisionModel>\n";
+	return ss.str();
+}
+
+std::string CollisionModel::toXML(const std::string &basePath, int tabs)
+{
+	std::string fnC;
+	if (visualization)
+		fnC = visualization->getFilename();
+	else if (modelVisualization)
+		fnC = modelVisualization->getFilename();
+
+	/*
 	if (!fnC.empty())
 	{
 		if (!basePath.empty())
 			BaseIO::makeRelativePath(basePath,fnC);
-		ss << pre << t << "<File type='" << getVisualization()->getType() << "'>" << fnC << "</File>\n";
-	}
-	ss << pre << "</CollisionModel>\n";
-	return ss.str();
+	}*/
+	boost::filesystem::path fn(fnC);
+	return toXML(basePath,fn.filename().string(),tabs);
+
 }
 
 VirtualRobot::CollisionModelPtr CollisionModel::CreateUnitedCollisionModel( const std::vector<CollisionModelPtr> &colModels )
@@ -213,12 +241,12 @@ VirtualRobot::CollisionModelPtr CollisionModel::CreateUnitedCollisionModel( cons
 	return CollisionModelPtr(new CollisionModel(vc,"",colChecker));
 }
 
-bool CollisionModel::saveModel( const std::string &modelPath )
+bool CollisionModel::saveModel( const std::string &modelPath, const std::string &filename )
 {
     if (visualization)
-        return visualization->saveModel(modelPath);
+        return visualization->saveModel(modelPath,filename);
     if (modelVisualization)
-        return modelVisualization->saveModel(modelPath);
+        return modelVisualization->saveModel(modelPath,filename);
     return true; // no model given
 }
 

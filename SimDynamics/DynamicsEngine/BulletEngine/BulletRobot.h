@@ -58,6 +58,10 @@ public:
 		float jointValueOffset; // offset simox -> bullet joint values
 	};
 
+
+	void enableForceTorqueFeedback(const LinkInfo& link);
+	Eigen::VectorXf getForceTorqueFeedbackA(const LinkInfo& link);
+	Eigen::VectorXf getForceTorqueFeedbackB(const LinkInfo& link);
 	
 	// We do not allow to re-adjust the robot. 
 	// The position of the robot is queried once on construction. 

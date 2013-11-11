@@ -1280,4 +1280,49 @@ void BulletRobot::setPoseNonActuatedRobotNodes()
     }
 }
 
+void BulletRobot::enableForceTorqueFeedback( const LinkInfo& link )
+{
+	if (!link.joint->needsFeedback())
+	{
+		link.joint->enableFeedback(true);
+		btJointFeedback* feedback = new btJointFeedback;
+		feedback->m_appliedForceBodyA = btVector3(0, 0, 0);
+		feedback->m_appliedForceBodyB = btVector3(0, 0, 0);
+		feedback->m_appliedTorqueBodyA = btVector3(0, 0, 0);
+		feedback->m_appliedTorqueBodyB = btVector3(0, 0, 0);
+		link.joint->setJointFeedback(feedback);
+	}
+}
+
+Eigen::VectorXf BulletRobot::getForceTorqueFeedbackA( const LinkInfo& link )
+{
+	Eigen::VectorXf r(6);
+	r.setZero();
+	if (!link.joint || !link.joint->needsFeedback())
+	{
+		return r;
+	}
+
+	btJointFeedback* feedback = link.joint->getJointFeedback();
+	if (!feedback)
+		return r;
+	r << feedback->m_appliedForceBodyA[0],feedback->m_appliedForceBodyA[1],feedback->m_appliedForceBodyA[2],feedback->m_appliedTorqueBodyA[0],feedback->m_appliedTorqueBodyA[1],feedback->m_appliedTorqueBodyA[2];
+	return r;
+}
+Eigen::VectorXf BulletRobot::getForceTorqueFeedbackB( const LinkInfo& link )
+{
+	Eigen::VectorXf r(6);
+	r.setZero();
+	if (!link.joint || !link.joint->needsFeedback())
+	{
+		return r;
+	}
+
+	btJointFeedback* feedback = link.joint->getJointFeedback();
+	if (!feedback)
+		return r;
+	r << feedback->m_appliedForceBodyB[0],feedback->m_appliedForceBodyB[1],feedback->m_appliedForceBodyB[2],feedback->m_appliedTorqueBodyB[0],feedback->m_appliedTorqueBodyB[1],feedback->m_appliedTorqueBodyB[2];
+	return r;
+}
+
 } // namespace VirtualRobot

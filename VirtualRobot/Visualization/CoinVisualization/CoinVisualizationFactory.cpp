@@ -774,7 +774,7 @@ namespace VirtualRobot {
         visu->addChild(faceSet);
 
         // create line around polygon
-        if (lineSize > 0.f)
+        if (lineSize > 0.f && !colorLine.isNone())
         {
             SoSeparator *lineSep = new SoSeparator;
             visu->addChild(lineSep);
@@ -964,7 +964,7 @@ namespace VirtualRobot {
         return res;
     }
 
-    SoNode * CoinVisualizationFactory::getCoinVisualization( TriMeshModelPtr model, bool showNormals, VisualizationFactory::Color color )
+    SoNode * CoinVisualizationFactory::getCoinVisualization( TriMeshModelPtr model, bool showNormals, VisualizationFactory::Color color, bool showLines )
     {
         SoSeparator *res = new SoSeparator;
         res->ref();
@@ -972,6 +972,16 @@ namespace VirtualRobot {
         u->units = SoUnits::MILLIMETERS;
         res->addChild(u);
         Eigen::Vector3f v1,v2,v3;
+		Eigen::Vector3f z(0,0,1.0f);
+		SoSeparator *arrow = CreateArrow(z,30.0f,1.5f);
+		arrow->ref();
+		float lineSize = 4.0f;
+		VisualizationFactory::Color lineColor = VisualizationFactory::Color::Black();
+		if (!showLines)
+		{
+			lineColor = VisualizationFactory::Color::None();
+			lineSize = 0.0f;
+		}
         for (size_t i=0;i<model->faces.size();i++)
         {
             v1 = model->vertices[model->faces[i].id1];
@@ -983,25 +993,28 @@ namespace VirtualRobot {
             v.push_back(v1);
             v.push_back(v2);
             v.push_back(v3);
-            SoSeparator* s = CreatePolygonVisualization(v,color);
+            SoSeparator* s = CreatePolygonVisualization(v,color,lineColor,lineSize);
             res->addChild(s);
             if (showNormals)
             {
                 v1 = (v1 + v2 + v3) / 3.0f;
+				SoMatrixTransform *mt = new SoMatrixTransform;
 
-                SoSeparator *n = CreateArrow(model->faces[i].normal,30.0f,1.5f);
-                SoMatrixTransform *mt = new SoMatrixTransform;
-                Eigen::Matrix4f mat = Eigen::Matrix4f::Identity();
+				Eigen::Vector3f normal = model->faces[i].normal;
+				MathTools::Quaternion q = MathTools::getRotation(z,normal);
+				Eigen::Matrix4f mat = MathTools::quat2eigen4f(q);
+                //Eigen::Matrix4f mat = Eigen::Matrix4f::Identity();
                 mat.block(0,3,3,1) = v1;
                 SbMatrix m(reinterpret_cast<SbMat*>(mat.data()));
                 mt->matrix.setValue(m);
                 SoSeparator *sn = new SoSeparator();
                 sn->addChild(mt);
-                sn->addChild(n);
+                sn->addChild(arrow);
                 res->addChild(sn);
             }
 
         }
+		arrow->unref();
         res->unrefNoDelete();
         return res;
     }
@@ -1265,10 +1278,10 @@ namespace VirtualRobot {
         return res;
     }
 
-    VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createTriMeshModelVisualization( TriMeshModelPtr model, bool showNormals, Eigen::Matrix4f &pose )
+    VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createTriMeshModelVisualization( TriMeshModelPtr model, bool showNormals, Eigen::Matrix4f &pose, bool showLines )
     {
         SoSeparator *res = new SoSeparator;
-        SoNode *res1 = CoinVisualizationFactory::getCoinVisualization(model,showNormals);
+        SoNode *res1 = CoinVisualizationFactory::getCoinVisualization(model,showNormals,VisualizationFactory::Color::Gray(),showLines);
         SoMatrixTransform *mt = getMatrixTransformScaleMM2M(pose);
         res->addChild(mt);
         res->addChild(res1);

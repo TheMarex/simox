@@ -69,7 +69,7 @@ public:
 	virtual VisualizationNodePtr createCoordSystem(float scaling = 1.0f, std::string *text = NULL, float axisLength = 100.0f, float axisSize = 3.0f, int nrOfBlocks = 10);
 	virtual VisualizationNodePtr createBoundingBox(const BoundingBox &bbox, bool wireFrame=false);
 	virtual VisualizationNodePtr createVertexVisualization(const Eigen::Vector3f &position, float radius, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
-	virtual VisualizationNodePtr createTriMeshModelVisualization(TriMeshModelPtr model, bool showNormals, Eigen::Matrix4f &pose);
+	virtual VisualizationNodePtr createTriMeshModelVisualization(TriMeshModelPtr model, bool showNormals, Eigen::Matrix4f &pose, bool showLines = true);
 	virtual VisualizationNodePtr createPlane(const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
 	virtual VisualizationNodePtr createArrow(const Eigen::Vector3f &n, float length = 50.0f, float width = 2.0f, const Color &color = Color::Gray());
 	virtual VisualizationNodePtr createTrajectory(TrajectoryPtr t, Color colorNode = Color::Blue(), Color colorLine = Color::Gray(), float nodeSize = 15.0f, float lineSize = 4.0f);
@@ -206,7 +206,7 @@ public:
 	
 	static SoNode *getCoinVisualization(VisualizationNodePtr visu);
 
-	static SoNode *getCoinVisualization(TriMeshModelPtr model, bool shownormals, VisualizationFactory::Color color = VisualizationFactory::Color::Gray());
+	static SoNode *getCoinVisualization(TriMeshModelPtr model, bool shownormals, VisualizationFactory::Color color = VisualizationFactory::Color::Gray(), bool showLines = true);
 
 
 	static SoNode *getCoinVisualization(TrajectoryPtr t, Color colorNode = Color::Blue(), Color colorLine = Color::Gray(), float nodeSize = 15.0f, float lineSize = 4.0f);

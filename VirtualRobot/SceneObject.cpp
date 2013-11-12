@@ -694,8 +694,9 @@ void SceneObject::highlight (VisualizationPtr visualization, bool enable)
 		visualization->highlight(getVisualization(Full),enable);
 	if (getVisualization(Collision) && visualization->isVisualizationNodeRegistered(getVisualization(Collision)))
 		visualization->highlight(getVisualization(Collision),enable);
-	if (getVisualization(CollisionData) && visualization->isVisualizationNodeRegistered(getVisualization(CollisionData)))
-		visualization->highlight(getVisualization(CollisionData),enable);
+	// collision model data will be created if calling these methods->huge models may be built (arrows that show the normals are build for every triangle) -> disabling highlight option for col model data
+	//if (getVisualization(CollisionData) && visualization->isVisualizationNodeRegistered(getVisualization(CollisionData)))
+	//	visualization->highlight(getVisualization(CollisionData),enable);
 }
 
 void SceneObject::setName( const std::string &name )

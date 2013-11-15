@@ -286,7 +286,7 @@ void GenericIKWindow::solve()
 
 	Eigen::Matrix4f targetPose = box->getGlobalPose();
 	clock_t startT = clock();
-	ikSolver->solve(targetPose,s,1);
+	ikSolver->solve(targetPose,s,300);
 	clock_t endT = clock();
 
 	Eigen::Matrix4f actPose = tcp->getGlobalPose();

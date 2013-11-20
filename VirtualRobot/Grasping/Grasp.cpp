@@ -156,6 +156,16 @@ void Grasp::setPreshape( const std::string &preshapeName )
 	preshape = preshapeName;
 }
 
+float Grasp::getQuality()
+{
+	return quality;
+}
+
+std::string Grasp::getCreationMethod()
+{
+	return creation;
+}
+
 
 } //  namespace
 

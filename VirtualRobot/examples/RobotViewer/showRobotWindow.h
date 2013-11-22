@@ -78,6 +78,7 @@ protected:
 		
 	SoSeparator *sceneSep;
 	SoSeparator *robotSep;
+	SoSeparator *extraSep;
 
 	VirtualRobot::RobotPtr robot;
 	std::string m_sRobotFilename;

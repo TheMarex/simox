@@ -35,6 +35,8 @@ showRobotWindow::showRobotWindow(std::string &sRobotFilename, Qt::WFlags flags)
 	sceneSep = new SoSeparator;
 	sceneSep->ref();
 	robotSep = new SoSeparator;
+	extraSep = new SoSeparator;
+	sceneSep->addChild(extraSep);
 
 	/*SoShapeHints * shapeHints = new SoShapeHints;
 	shapeHints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
@@ -113,6 +115,7 @@ void showRobotWindow::setupUI()
 	connect(UI.checkBoxPhysicsInertia, SIGNAL(clicked()), this, SLOT(displayPhysics()));
 
 	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(collisionModel()));
+	connect(UI.checkBoxRobotSensors, SIGNAL(clicked()), this, SLOT(collisionModel()));
 	connect(UI.checkBoxStructure, SIGNAL(clicked()), this, SLOT(robotStructure()));
 	UI.checkBoxFullModel->setChecked(true);
 	connect(UI.checkBoxFullModel, SIGNAL(clicked()), this, SLOT(robotFullModel()));
@@ -212,6 +215,7 @@ void showRobotWindow::collisionModel()
 	robotSep->removeAllChildren();
 	//setRobotModelShape(UI.checkBoxColModel->state() == QCheckBox::On);
 	useColModel = UI.checkBoxColModel->checkState() == Qt::Checked;
+	bool sensors = UI.checkBoxRobotSensors->checkState() == Qt::Checked;
 	SceneObject::VisualizationType colModel = (UI.checkBoxColModel->isChecked())?SceneObject::Collision:SceneObject::Full;
 
     visualization = robot->getVisualization<CoinVisualization>(colModel);
@@ -225,6 +229,7 @@ void showRobotWindow::collisionModel()
 	selectJoint(UI.comboBoxJoint->currentIndex());
 
 	UI.checkBoxStructure->setEnabled(!useColModel);
+	UI.checkBoxRobotSensors->setEnabled(!useColModel);
 	UI.checkBoxFullModel->setEnabled(!useColModel);
 	UI.checkBoxRobotCoordSystems->setEnabled(!useColModel);
 
@@ -478,6 +483,23 @@ void showRobotWindow::loadRobot()
 		selectEEF(0);
 
 	displayTriangles();
+
+#if 0
+	RobotPtr r2 = robot->clone(robot->getName(),robot->getCollisionChecker(),2.0f);
+	Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
+	gp(0,3) += 1000.0f;
+
+	r2->setGlobalPose(gp);
+	extraSep->removeAllChildren();
+	useColModel = UI.checkBoxColModel->checkState() == Qt::Checked;
+	SceneObject::VisualizationType colModel = (UI.checkBoxColModel->isChecked())?SceneObject::Collision:SceneObject::Full;
+
+	boost::shared_ptr<VirtualRobot::CoinVisualization> visualization = r2->getVisualization<CoinVisualization>(colModel);
+	SoNode* visualisationNode = NULL;
+	if (visualization)
+		visualisationNode = visualization->getCoinVisualization();
+	extraSep->addChild(visualisationNode);
+#endif
 
 	// build visualization
 	collisionModel();

@@ -138,7 +138,7 @@ void RobotIO::processLimitsNode(rapidxml::xml_node<char> *limitsXMLNode, float &
 	}
 }
 
-bool RobotIO::processSensor(RobotNodePtr rn, rapidxml::xml_node<char> *sensorXMLNode)
+bool RobotIO::processSensor(RobotNodePtr rn, rapidxml::xml_node<char> *sensorXMLNode, RobotDescription loadMode, const std::string &basePath)
 {
 	if (!rn|| !sensorXMLNode)
 	{
@@ -164,7 +164,7 @@ bool RobotIO::processSensor(RobotNodePtr rn, rapidxml::xml_node<char> *sensorXML
 	SensorFactoryPtr sensorFactory = SensorFactory::fromName(sensorType, NULL);
 	if (sensorFactory)
 	{
-		s = sensorFactory->createSensor(rn, sensorXMLNode);
+		s = sensorFactory->createSensor(rn, sensorXMLNode, loadMode, basePath);
 	}
 	else
 	{
@@ -552,7 +552,7 @@ RobotNodePtr RobotIO::processRobotNode(rapidxml::xml_node<char> *robotNodeXMLNod
 	// process sensors
 	for (size_t i=0;i<sensorTags.size();i++)
 	{
-		processSensor(robotNode,sensorTags[i]);
+		processSensor(robotNode,sensorTags[i],loadMode,basePath);
 	}
 	return robotNode;
 }

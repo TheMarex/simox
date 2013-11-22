@@ -91,13 +91,15 @@ public:
 
 	/*!
 		Retrieve a visualization in the given format.
+		\param visuType The visualization type (Full or Collision model)
+		\param sensors Add sensors models to the visualization.
 		Example usage:
 		 boost::shared_ptr<VirtualRobot::CoinVisualization> visualization = robot->getVisualization<CoinVisualization>();
 		 SoNode* visualisationNode = NULL;
 		 if (visualization)
 		     visualisationNode = visualization->getCoinVisualization();
 	*/
-	template <typename T> boost::shared_ptr<T> getVisualization(SceneObject::VisualizationType visuType = SceneObject::Full);
+	template <typename T> boost::shared_ptr<T> getVisualization(SceneObject::VisualizationType visuType = SceneObject::Full, bool sensors = true);
 	/*! 
 		Shows the structure of the robot
 	*/
@@ -399,16 +401,22 @@ protected:
  * A compile time error is thrown if a different class type is used as template argument.
  */
 template <typename T>
-boost::shared_ptr<T> Robot::getVisualization(SceneObject::VisualizationType visuType)
+boost::shared_ptr<T> Robot::getVisualization(SceneObject::VisualizationType visuType, bool sensors)
 {
 	const bool IS_SUBCLASS_OF_VISUALIZATION = ::boost::is_base_of<Visualization, T>::value;
 	BOOST_MPL_ASSERT_MSG(IS_SUBCLASS_OF_VISUALIZATION, TEMPLATE_PARAMETER_FOR_VirtualRobot_getVisualization_MUST_BT_A_SUBCLASS_OF_VirtualRobot__Visualization, (T));
 	std::vector<RobotNodePtr> collectedRobotNodes;
 	getRobotNodes(collectedRobotNodes);
-	std::vector<VisualizationNodePtr> collectedVisualizationNodes(collectedRobotNodes.size());
+	std::vector<VisualizationNodePtr> collectedVisualizationNodes;
 	for (size_t i=0;i<collectedRobotNodes.size();i++)
-		collectedVisualizationNodes[i] = collectedRobotNodes[i]->getVisualization(visuType);
+		collectedVisualizationNodes.push_back(collectedRobotNodes[i]->getVisualization(visuType));
 
+	if (sensors)
+	{
+		std::vector<SensorPtr> sn = getSensors();
+		for (size_t i=0;i<sn.size();i++)
+			collectedVisualizationNodes.push_back(sn[i]->getVisualization(visuType));
+	}
 	boost::shared_ptr<T> visualization(new T(collectedVisualizationNodes));
 	return visualization;
 }

@@ -93,8 +93,12 @@ void PathProcessingThread::workingMethod()
 	CSpacePathPtr res = pathProcessor->optimize(optimizeSteps);
 
 	mutex.lock();
-	threadStarted = false;
-	processingFinished = (res);
+
+	if (res)
+		processingFinished = true;
+	else
+		processingFinished = false;
+
 	resultPath = res;
 	mutex.unlock();
 }

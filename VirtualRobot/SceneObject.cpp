@@ -849,7 +849,10 @@ bool SceneObject::attachChild( SceneObjectPtr child )
 
 bool SceneObject::hasParent()
 {
-	return (getParent());
+	SceneObjectPtr p = getParent();
+	if (p)
+		return true;
+	return false;
 }
 
 VirtualRobot::SceneObjectPtr SceneObject::getParent() const

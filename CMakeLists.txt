@@ -1,7 +1,9 @@
 PROJECT(Simox)
 
 cmake_minimum_required(VERSION 2.6)
-cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warninss
+if("${CMAKE_VERSION}" VERSION_GREATER 2.8.11)
+	cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warninss
+ENDIF()
 
 MESSAGE(STATUS "******************** Configuring Simox ************************")
 set (Simox_BUILD_DIRECTORY ${CMAKE_BINARY_DIR} CACHE STRING "Simox build directory")

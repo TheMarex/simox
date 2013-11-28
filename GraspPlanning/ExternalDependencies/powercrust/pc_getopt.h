@@ -5,6 +5,8 @@ AT&T Public License
 
 Code given out at the 1985 UNIFORUM conference in Dallas.  
 */
+#ifndef __GRASPSTUDIO_GETOPT_
+#define __GRASPSTUDIO_GETOPT_
 
 #ifdef __GNUC__
 #include <getopt.h>
@@ -30,3 +32,5 @@ extern "C" {
 
 #endif  /* _GETOPT_H_ */
 #endif  /* __GNUC__ */
+
+#endif

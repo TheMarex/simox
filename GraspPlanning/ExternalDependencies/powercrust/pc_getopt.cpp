@@ -9,7 +9,7 @@ Code given out at the 1985 UNIFORUM conference in Dallas.
 #ifndef __GNUC__
 
 #include <string>
-#include "getopt.h"
+#include "pc_getopt.h"
 #include <stdio.h>
 
 #define NULL	0

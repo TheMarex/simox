@@ -74,7 +74,7 @@
 #include <string>
 
 #include "hull.h"
-#include "getopt.h"
+#include "pc_getopt.h"
 #include "pointsites.h"
 
 #include <boost/shared_ptr.hpp>

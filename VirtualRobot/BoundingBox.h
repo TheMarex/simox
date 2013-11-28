@@ -88,6 +88,8 @@ public:
 	*/
 	void transform(Eigen::Matrix4f &pose);
 
+    void scale (Eigen::Vector3f &scaleFactor);
+
 protected:
 	Eigen::Vector3f min;
 	Eigen::Vector3f max;

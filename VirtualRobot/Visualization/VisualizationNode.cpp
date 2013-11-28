@@ -205,5 +205,10 @@ bool VisualizationNode::saveModel(const std::string &modelPath, const std::strin
 	return false;
 }
 
+void VisualizationNode::scale( Eigen::Vector3f &scaleFactor )
+{
+    VR_WARNING << "not implemented..." << endl;
+}
+
 
 } // namespace VirtualRobot

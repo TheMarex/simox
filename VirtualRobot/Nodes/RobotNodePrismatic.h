@@ -97,6 +97,15 @@ public:
 	*/
 	Eigen::Vector3f getJointTranslationDirectionJointCoordSystem() const;
 
+    /*!
+        Enables scaling of visualization and collision model according to joint value.
+        The jointOffset is used to determine the unscaled value.
+        Be careful, the scaling triggers a computation of the collision model, which may be time consuming.
+        \param scaleFactor If (0,0,0), the scaling is disabled, otherwise the value indicates the scale factors for each dimension.
+
+    */
+    void setVisuScaleFactor(Eigen::Vector3f &scaleFactor);
+
 protected:
 	/*!
 		Can be called by a RobotNodeActuator in order to set the pose of this node.
@@ -119,6 +128,10 @@ protected:
         Derived classes add custom XML tags here
     */
     virtual std::string _toXML(const std::string &modelPath);
+
+    bool visuScaling;
+    Eigen::Vector3f visuScaleFactor;
+    Eigen::Vector3f unscaledLocalCoM;
 
 };
 

@@ -31,6 +31,7 @@
 
 class SoNode;
 class SoSeparator;
+class SoScale;
 class SoCallbackAction;
 class SoPrimitiveVertex;
 class SoMatrixTransform;
@@ -52,6 +53,8 @@ public:
 	virtual void setGlobalPose (const Eigen::Matrix4f &m);
 
 	virtual void print();
+
+    virtual void scale(Eigen::Vector3f &scaleFactor);
 
 	/*!
 		Attach an optional visualization to this VisualizationNode. The attached visualizations will not show up in the TriMeshModel.
@@ -101,10 +104,12 @@ protected:
 	SoNode* visualization;
 	SoSeparator* visualizationAtGlobalPose;
 	SoSeparator* attachedVisualizationsSeparator;
+    SoSeparator* scaledVisualization;
 	std::map< std::string, SoNode* > attachedCoinVisualizations;	//< These optional visualizations will not show up in the TriMeshModel
 
 	SoMatrixTransform *globalPoseTransform;
-	TriMeshModelPtr triMeshModel;
+    TriMeshModelPtr triMeshModel;
+    SoScale* scaling;
 
 	static void InventorTriangleCB(void* data, SoCallbackAction* action,
 	                               const SoPrimitiveVertex* v1,

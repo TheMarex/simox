@@ -143,6 +143,8 @@ public:
     */
 	virtual bool saveModel(const std::string &modelPath, const std::string &filename);
 
+    virtual void scale(Eigen::Vector3f &scaleFactor);
+
 protected:
 	bool boundingBox; //!< Indicates, if the bounding box model was used
 	std::string filename; //!< if the visualization was build from a file, the filename is stored here

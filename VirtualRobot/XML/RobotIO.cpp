@@ -8,6 +8,7 @@
 #include "../Nodes/RobotNodeFactory.h"
 #include "../Nodes/SensorFactory.h"
 #include "../Nodes/RobotNodeFixedFactory.h"
+#include "../Nodes/RobotNodePrismatic.h"
 #include "../Transformation/DHParameter.h"
 #include "../Visualization/VisualizationFactory.h"
 #include "../Visualization/TriMeshModel.h"
@@ -196,6 +197,7 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 
 	rapidxml::xml_attribute<> *attr;
 	float jointOffset = 0.0f;
+    float initialvalue = 0.0f;
 	std::string jointType;
 
 	RobotNodePtr robotNode;
@@ -219,11 +221,17 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		jointType = RobotNodeFixedFactory::getName();
 	}
 
-	attr = jointXMLNode->first_attribute("offset", 0, false);
-	if (attr)
-	{
-		jointOffset = convertToFloat(attr->value());
-	}
+    attr = jointXMLNode->first_attribute("offset", 0, false);
+    if (attr)
+    {
+        jointOffset = convertToFloat(attr->value());
+    }
+
+    attr = jointXMLNode->first_attribute("initialvalue", 0, false);
+    if (attr)
+    {
+        initialvalue = convertToFloat(attr->value());
+    }
 
 	rapidxml::xml_node<>* node = jointXMLNode->first_node();
 		rapidxml::xml_node<> *tmpXMLNodeAxis = NULL;
@@ -233,6 +241,8 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	float maxVelocity = 1.0f; // m/s
 	float maxAcceleration = 1.0f; // m/s^2
 	float maxTorque = 1.0f; // Nm
+    float scaleVisu = false;
+    Eigen::Vector3f scaleVisuFactor = Eigen::Vector3f::Zero();
 
 	while (node)
 	{
@@ -345,7 +355,13 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 			if (attrPropa)
 				f = convertToFloat(attrPropa->value());
 			propagateJVFactor.push_back(f);
-		}
+		}else if (nodeName == "scalevisualization")
+		{
+            scaleVisu = true;
+            scaleVisuFactor[0] = getFloatByAttributeName(node, "x");
+            scaleVisuFactor[1] = getFloatByAttributeName(node, "y");
+            scaleVisuFactor[2] = getFloatByAttributeName(node, "z");
+        }
 		else
 		{
 			THROW_VR_EXCEPTION("XML definition <" << nodeName << "> not supported in <Joint> tag of RobotNode <" << robotNodeName << ">." << endl);
@@ -368,6 +384,11 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		*/
 		if (jointType=="revolute")
 		{
+            if (scaleVisu)
+            {
+                VR_WARNING << "Ignoring ScaleVisualization in Revolute joint." << endl;
+                scaleVisu = false;
+            }
 			if (tmpXMLNodeAxis)
 			{
 				axis[0] = getFloatByAttributeName(tmpXMLNodeAxis, "x");
@@ -391,6 +412,11 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 			{
 				THROW_VR_EXCEPTION("Prismatic joint '" << robotNodeName << "' wrongly defined, expecting 'TranslationDirection' tag." << endl);
 			}
+            if (scaleVisu)
+            {
+                THROW_VR_EXCEPTION_IF(scaleVisuFactor.norm() == 0.0f,"Zero scale factor");
+
+            }
 		}
 	//}
 
@@ -413,6 +439,8 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	robotNode->setMaxAcceleration(maxAcceleration);
 	robotNode->setMaxTorque(maxTorque);
 
+    robotNode->jointValue = initialvalue;
+
 	if (robotNode->isRotationalJoint() || robotNode->isTranslationalJoint()) 
 	{
 		if (robotNode->jointValue < robotNode->jointLimitLo)
@@ -420,6 +448,12 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 		else if (robotNode->jointValue > robotNode->jointLimitHi)
 			robotNode->jointValue =robotNode->jointLimitHi;
 	}
+    if (scaleVisu)
+    {
+        boost::shared_ptr<RobotNodePrismatic> rnPM = boost::dynamic_pointer_cast<RobotNodePrismatic>(robotNode);
+        if (rnPM)
+            rnPM->setVisuScaleFactor(scaleVisuFactor);
+    }
 
 	VR_ASSERT (propagateJVName.size() == propagateJVFactor.size());
 	for (size_t i=0;i<propagateJVName.size();i++)

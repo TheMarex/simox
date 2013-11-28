@@ -144,5 +144,14 @@ void BoundingBox::transform( Eigen::Matrix4f &pose )
 	}
 }
 
+void BoundingBox::scale( Eigen::Vector3f &scaleFactor )
+{
+    for (int i=0;i<3;i++)
+    {
+        min(i) *= scaleFactor(i);
+        max(i) *= scaleFactor(i);
+    }
+}
+
 
 }

@@ -51,6 +51,10 @@ public:
 	bool checkFacesHaveSameEdge(const MathTools::TriangleFace& face1, const MathTools::TriangleFace& face2, std::vector<std::pair<int, int> >& commonVertexIds) const;
 	unsigned int checkAndCorrectNormals(bool inverted);
 
+    virtual void scale(Eigen::Vector3f &scaleFactor);
+    TriMeshModelPtr clone ();
+    TriMeshModelPtr clone (Eigen::Vector3f &scaleFactor);
+
 	std::vector<Eigen::Vector3f> vertices;
 	std::vector<MathTools::TriangleFace> faces;
 	BoundingBox boundingBox;

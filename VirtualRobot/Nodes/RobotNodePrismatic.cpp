@@ -24,6 +24,8 @@ RobotNodePrismatic::RobotNodePrismatic(RobotWeakPtr rob,
 	) : RobotNode(rob,name,jointLimitLo,jointLimitHi,visualization,collisionModel,jointValueOffset,p,colChecker,type)
 {
 	initialized = false;
+    visuScaling = false;
+    visuScaleFactor << 1.0f,1.0f,1.0f;
 	optionalDHParameter.isSet = false;
 	this->localTransformation = preJointTransform;
 	this->jointTranslationDirection = translationDirection;
@@ -80,13 +82,32 @@ RobotNodePrismatic::~RobotNodePrismatic()
 
 bool RobotNodePrismatic::initialize(SceneObjectPtr parent, const std::vector<SceneObjectPtr> &children)
 {
-	return RobotNode::initialize(parent,children);
+	bool res = RobotNode::initialize(parent,children);
+    unscaledLocalCoM = physics.localCoM;
+    return res;
 }
 
 void RobotNodePrismatic::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
 	Eigen::Affine3f tmpT(Eigen::Translation3f((this->getJointValue()+jointValueOffset)*jointTranslationDirection));
 	globalPose = parentPose * getLocalTransformation() * tmpT.matrix();
+    if (visuScaling)
+    {
+        float scValue = 0;
+        if (jointValueOffset==0)
+            scValue = jointValue;
+        else
+            scValue = (jointValue) / jointValueOffset;
+        Eigen::Vector3f scVec;
+        for (int i=0;i<3;i++)
+            scVec(i) = 1.0f + visuScaleFactor(i) * scValue;
+        if (visualizationModel)
+            visualizationModel->scale(scVec);
+        if (collisionModel)
+            collisionModel->scale(scVec);
+        for (int i=0;i<3;i++)
+            physics.localCoM(i) = unscaledLocalCoM(i) * scVec(i);
+    }
 }
 
 void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
@@ -98,7 +119,12 @@ void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 
 	RobotNode::print(false,false);
 
-	cout << "* jointTranslationDirection: " << jointTranslationDirection[0] << ", " << jointTranslationDirection[1] << "," << jointTranslationDirection[2] << endl;
+    cout << "* jointTranslationDirection: " << jointTranslationDirection[0] << ", " << jointTranslationDirection[1] << "," << jointTranslationDirection[2] << endl;
+    cout << "* VisuScaling: ";
+    if (visuScaling)
+        cout << visuScaleFactor[0] << ", " << visuScaleFactor[1] << "," << visuScaleFactor[2] << endl;
+    else
+        cout << "disabled" << endl;
 
 	if (printDecoration)
 		cout << "******** End RobotNodePrismatic ********" << endl;
@@ -111,7 +137,7 @@ void RobotNodePrismatic::print( bool printChildren, bool printDecoration ) const
 
 RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, const VisualizationNodePtr visualizationModel, const CollisionModelPtr collisionModel, CollisionCheckerPtr colChecker, float scaling)
 {
-	RobotNodePtr result;
+	boost::shared_ptr<RobotNodePrismatic> result;
 	ReadLockPtr lock = getRobot()->getReadLock();
 	Physics p = physics.scale(scaling);
 	if (optionalDHParameter.isSet)
@@ -123,6 +149,10 @@ RobotNodePtr RobotNodePrismatic::_clone(const RobotPtr newRobot, const Visualiza
 		lt.block(0,3,3,1) *= scaling;
 		result.reset(new RobotNodePrismatic(newRobot,name,jointLimitLo,jointLimitHi,lt,jointTranslationDirection,visualizationModel,collisionModel,jointValueOffset,p,colChecker,nodeType));
 	}
+    if (result && visuScaling)
+    {
+        result->setVisuScaleFactor(visuScaleFactor);
+    }
 	return result;
 }
 
@@ -209,6 +239,17 @@ std::string RobotNodePrismatic::_toXML( const std::string &modelPath )
 
     ss << "\t\t</Joint>" << endl;
     return ss.str();
+}
+
+void RobotNodePrismatic::setVisuScaleFactor( Eigen::Vector3f &scaleFactor )
+{
+    if (scaleFactor.norm()==0.0f)
+        visuScaling = false;
+    else
+    {
+        visuScaling = true;
+        visuScaleFactor = scaleFactor;
+    }
 }
 
 

@@ -48,7 +48,13 @@ CoinVisualizationNode::CoinVisualizationNode(SoNode* visualizationNode) :
 		visualization = new SoSeparator(); // create dummy node
 
 	visualization->ref();
-	visualizationAtGlobalPose->addChild(visualization);
+    scaledVisualization = new SoSeparator;
+    scaledVisualization->ref();
+    scaling = new SoScale;
+    scaling->scaleFactor.setValue(1.0f,1.0f,1.0f);
+    scaledVisualization->addChild(scaling);
+    scaledVisualization->addChild(visualization);
+	visualizationAtGlobalPose->addChild(scaledVisualization);
 
 }
 
@@ -65,6 +71,8 @@ CoinVisualizationNode::~CoinVisualizationNode()
 		attachedVisualizationsSeparator->unref();
 	if (visualizationAtGlobalPose)
 		visualizationAtGlobalPose->unref();
+    if (scaledVisualization)
+        scaledVisualization->unref();
 }
 
 /*
@@ -116,7 +124,7 @@ TriMeshModelPtr CoinVisualizationNode::getTriMeshModel()
  * CoinVisualizationNode::triMeshModel.
  * If CoinVisualizationMode::visualization is invalid VirtualRobotException
  * is thrown.
- * Otherwise CoinVisualizationNode::InentorTriangleCB() is called on the
+ * Otherwise CoinVisualizationNode::InventorTriangleCB() is called on the
  * Inventor graph stored in CoinVisualizationNode::visualization.
  */
 void CoinVisualizationNode::createTriMeshModel()
@@ -306,10 +314,10 @@ void CoinVisualizationNode::setupVisualization( bool showVisualization, bool sho
 		visualizationAtGlobalPose->removeChild(attachedVisualizationsSeparator);
 
 
-	if (showVisualization && visualizationAtGlobalPose->findChild(visualization)<0)
-		visualizationAtGlobalPose->addChild(visualization);
-	if (!showVisualization && visualizationAtGlobalPose->findChild(visualization)>=0)
-		visualizationAtGlobalPose->removeChild(visualization);
+	if (showVisualization && visualizationAtGlobalPose->findChild(scaledVisualization)<0)
+		visualizationAtGlobalPose->addChild(scaledVisualization);
+	if (!showVisualization && visualizationAtGlobalPose->findChild(scaledVisualization)>=0)
+		visualizationAtGlobalPose->removeChild(scaledVisualization);
 }
 
 void CoinVisualizationNode::setVisualization( SoNode* newVisu )
@@ -373,6 +381,12 @@ bool CoinVisualizationNode::saveModel(const std::string &modelPath, const std::s
 	n->unref();
 
     return true;
+}
+
+void CoinVisualizationNode::scale( Eigen::Vector3f &scaleFactor )
+{
+    scaling->scaleFactor.setValue(scaleFactor(0),scaleFactor(1),scaleFactor(2));
+    triMeshModel.reset();
 }
 
 } // namespace VirtualRobot

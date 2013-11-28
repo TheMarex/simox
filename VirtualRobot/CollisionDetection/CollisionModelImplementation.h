@@ -69,6 +69,7 @@ public:
 	virtual void print() {cout << "Dummy Collision Model Implementation..." << endl;};
 
 	TriMeshModelPtr getTriMeshModel(){return modelData;}
+
 protected:
 
 	//! delete all data

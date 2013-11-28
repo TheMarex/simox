@@ -26,7 +26,6 @@ CollisionModel::CollisionModel(VisualizationNodePtr visu, const std::string &nam
 		VR_WARNING << "no col checker..." << endl;
 	}
 
-	TriMeshModelPtr model;
 	visualization = visu;
 	updateVisualization = true;
 	if (visualization)
@@ -248,6 +247,22 @@ bool CollisionModel::saveModel( const std::string &modelPath, const std::string 
     if (modelVisualization)
         return modelVisualization->saveModel(modelPath,filename);
     return true; // no model given
+}
+
+void CollisionModel::scale( Eigen::Vector3f &scaleFactor )
+{
+    if (model)
+    {
+        TriMeshModelPtr modelScaled = model->clone(scaleFactor);
+        bbox = modelScaled->boundingBox;
+#if defined(VR_COLLISION_DETECTION_PQP)
+        collisionModelImplementation.reset(new CollisionModelPQP(modelScaled, colChecker,id));
+#else
+        collisionModelImplementation.reset(new CollisionModelDummy(modelScaled, colChecker,id));
+#endif
+    }
+    if (visualization)
+        visualization->scale(scaleFactor);
 }
 
 /*

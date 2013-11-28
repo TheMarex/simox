@@ -138,6 +138,7 @@ public:
     */
     virtual bool saveModel(const std::string &modelPath, const std::string &filename);
 
+    virtual void scale(Eigen::Vector3f &scaleFactor);
 
 protected:
 
@@ -146,6 +147,7 @@ protected:
 	VisualizationNodePtr visualization;			// this is the original visualization
 	VisualizationNodePtr modelVisualization;	// this is the visualization of the trimeshmodel
 	bool updateVisualization;
+    TriMeshModelPtr model;
 
 	BoundingBox bbox;
 

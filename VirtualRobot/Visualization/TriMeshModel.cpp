@@ -286,5 +286,36 @@ void TriMeshModel::print()
 	cout.precision(pr);
 }
 
+void TriMeshModel::scale( Eigen::Vector3f &scaleFactor )
+{
+    if (scaleFactor(0) == 1.0f && scaleFactor(1) == 1.0f && scaleFactor(2) == 1.0f)
+        return;
+    for (size_t i=0; i < vertices.size(); i++)
+    {
+        for (int j=0;j<3;j++)
+        {
+            vertices[i][j] *= scaleFactor(j);
+        }
+    }
+    boundingBox.scale(scaleFactor);
+}
+
+VirtualRobot::TriMeshModelPtr TriMeshModel::clone()
+{
+    Eigen::Vector3f scaleFactor;
+    scaleFactor << 1.0f,1.0f,1.0f;
+    return clone(scaleFactor);
+}
+
+VirtualRobot::TriMeshModelPtr TriMeshModel::clone( Eigen::Vector3f &scaleFactor )
+{
+    TriMeshModelPtr r(new TriMeshModel());
+    r->vertices = vertices;
+    r->faces = faces;
+    r->boundingBox = boundingBox;
+    r->scale(scaleFactor);
+    return r;
+}
+
 
 } // namespace VirtualRobot

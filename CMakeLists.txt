@@ -1,6 +1,8 @@
 PROJECT(Simox)
 
 cmake_minimum_required(VERSION 2.6)
+cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warninss
+
 MESSAGE(STATUS "******************** Configuring Simox ************************")
 set (Simox_BUILD_DIRECTORY ${CMAKE_BINARY_DIR} CACHE STRING "Simox build directory")
 #set (Simox_BUILD_VirtualRobot TRUE CACHE BOOL "Build Simox VirtualRobot")

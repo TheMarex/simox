@@ -4,6 +4,7 @@ MESSAGE (STATUS "\n ***** CONFIGURING Simox project VirtualRobot *****")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 CMAKE_POLICY(VERSION 2.6)
+cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warninss
 
 INCLUDE(config.cmake)
 

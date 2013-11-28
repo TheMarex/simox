@@ -6,6 +6,8 @@ CMAKE_POLICY(VERSION 2.6)
 MESSAGE (STATUS "\n ***** CONFIGURING Simox project GraspStudio *****")
 INCLUDE (config.cmake)
 
+INCLUDE_DIRECTORIES(${VirtualRobot_EXTERNAL_INCLUDE_DIRS})
+ADD_DEFINITIONS(${VirtualRobot_EXTERNAL_LIBRARY_FLAGS})
 
 ########### QHULL #################
 OPTION(BUILD_qhull "if on builds qhull external library" ON)
@@ -13,6 +15,15 @@ IF(BUILD_qhull)
 	ADD_SUBDIRECTORY(ExternalDependencies/qhull-2003.1)
 ENDIF(BUILD_qhull)
 ########### END QHULL #################
+
+
+########### POWERCRUST #################
+OPTION(BUILD_powercrust "if on builds powercrust external library" ON)
+IF(BUILD_powercrust)
+	ADD_SUBDIRECTORY(ExternalDependencies/powercrust)
+ENDIF(BUILD_powercrust)
+########### END QHULL #################
+
 
 SET(SOURCES
 ConvexHullGenerator.cpp
@@ -53,19 +64,20 @@ if (Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)
 endif ()
 
 # this var is considered for generating Simox_INCLUDE_DIRS_
-SET(GRASP_STUDIO_INCLUDE_DIRS "${GRASPSTUDIO_SimoxDir}" "${GRASPSTUDIO_DIR}" "${GRASPSTUDIO_DIR}/ExternalDependencies/qhull-2003.1/include")
+SET(GRASP_STUDIO_INCLUDE_DIRS "${GRASPSTUDIO_SimoxDir}" "${GRASPSTUDIO_DIR}" "${GRASPSTUDIO_DIR}/ExternalDependencies/qhull-2003.1/include" "${GRASPSTUDIO_DIR}/ExternalDependencies" "${GRASPSTUDIO_DIR}/ExternalDependencies/powercrust")
 
 INCLUDE_DIRECTORIES(${GRASPSTUDIO_SimoxDir})
 INCLUDE_DIRECTORIES(${GRASPSTUDIO_DIR})
+INCLUDE_DIRECTORIES(${GRASPSTUDIO_DIR}/ExternalDependencies)
 INCLUDE_DIRECTORIES(${GRASPSTUDIO_DIR}/ExternalDependencies/qhull-2003.1/include)
+INCLUDE_DIRECTORIES(${GRASPSTUDIO_DIR}/ExternalDependencies/powercrust)
 
-INCLUDE_DIRECTORIES(${VirtualRobot_EXTERNAL_INCLUDE_DIRS})
-ADD_DEFINITIONS(${VirtualRobot_EXTERNAL_LIBRARY_FLAGS})
+
 
 
 ADD_LIBRARY (GraspStudio SHARED ${SOURCES} ${INCLUDES})
 #MESSAGE("VirtualRobot_ROBOT_LINK_LIBRARIES:" ${VirtualRobot_LINK_LIBRARIES})
-TARGET_LINK_LIBRARIES (GraspStudio ${COLLISIONDETECTION_LIB} ${VirtualRobot_EXTERNAL_LIBRARIES} VirtualRobot qhull)
+TARGET_LINK_LIBRARIES (GraspStudio ${COLLISIONDETECTION_LIB} ${VirtualRobot_EXTERNAL_LIBRARIES} VirtualRobot qhull powercrust)
 
 # include examples
 ADD_SUBDIRECTORY(examples/)

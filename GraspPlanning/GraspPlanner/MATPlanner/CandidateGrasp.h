@@ -23,7 +23,7 @@
 #ifndef CANDIDATEGRASP_H
 #define CANDIDATEGRASP_H
 
-#include <VirtualRobot\EndEffector\EndEffector.h>
+#include <VirtualRobot/EndEffector/EndEffector.h>
 #include "../../GraspStudio.h"
 #include <Eigen/Geometry>
 #include "MedialSphere.h"

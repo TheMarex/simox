@@ -51,6 +51,56 @@ Visualization/ConvexHullVisualization.h
 ${GRASPSTUDIO_SimoxDir}/VirtualRobot/definesVR.h
 )
 
+IF(BUILD_powercrust)
+	# Adding MATGraspPlanner
+	SET(SOURCES
+		${SOURCES}
+		GraspPlanner/MATPlanner/CandidateGrasp.cpp
+		GraspPlanner/MATPlanner/CandidateGraspGenerator.cpp
+		GraspPlanner/MATPlanner/Converter.cpp
+		GraspPlanner/MATPlanner/GraspPlannerConfiguration.cpp
+		GraspPlanner/MATPlanner/GridOfMedialSpheres.cpp
+		GraspPlanner/MATPlanner/GridParameters.cpp
+		GraspPlanner/MATPlanner/LocalNeighborhood.cpp
+		GraspPlanner/MATPlanner/MatGraspPlanner.cpp
+		GraspPlanner/MATPlanner/MedialSphere.cpp
+		GraspPlanner/MATPlanner/MeshConverter.cpp
+		GraspPlanner/MATPlanner/SphereHelpers.cpp
+		GraspPlanner/MATPlanner/StrOutHelpers.cpp
+		GraspPlanner/MATPlanner/TestCases.cpp
+		GraspPlanner/MATPlanner/CandidateGraspTester.cpp
+	)
+
+	SET(INCLUDES
+		${INCLUDES}
+		GraspPlanner/MATPlanner/CandidateGrasp.h
+		GraspPlanner/MATPlanner/CandidateGraspGenerator.h
+		GraspPlanner/MATPlanner/Converter.h
+		GraspPlanner/MATPlanner/GraspPlannerConfiguration.h
+		GraspPlanner/MATPlanner/GridOfMedialSpheres.h
+		GraspPlanner/MATPlanner/GridParameters.h
+		GraspPlanner/MATPlanner/LocalNeighborhood.h
+		GraspPlanner/MATPlanner/MatGraspPlanner.h
+		GraspPlanner/MATPlanner/MedialSphere.h
+		GraspPlanner/MATPlanner/MeshConverter.h
+		GraspPlanner/MATPlanner/SphereHelpers.h
+		GraspPlanner/MATPlanner/StrOutHelpers.h
+		GraspPlanner/MATPlanner/TestCases.h
+		GraspPlanner/MATPlanner/CandidateGraspTester.h
+	)
+
+	if (Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)
+		SET(SOURCES
+			${SOURCES}
+			GraspPlanner/MATPlanner/CoinVisualization/DrawHelpers.cpp
+		)
+		SET(INCLUDES
+			${INCLUDES}
+			GraspPlanner/MATPlanner/CoinVisualization/DrawHelpers.h
+		)
+	endif()
+ENDIF()
+
 if (Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)
 	SET(SOURCES
 	${SOURCES}

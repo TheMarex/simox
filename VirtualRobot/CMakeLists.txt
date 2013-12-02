@@ -31,8 +31,10 @@ Nodes/RobotNodeFixedFactory.cpp
 Nodes/RobotNodeActuator.cpp
 Nodes/Sensor.cpp
 Nodes/PositionSensor.cpp
+Nodes/ForceTorqueSensor.cpp
 Nodes/CameraSensor.cpp
 Nodes/PositionSensorFactory.cpp
+Nodes/ForceTorqueSensorFactory.cpp
 Nodes/CameraSensorFactory.cpp
 Visualization/Visualization.cpp
 Visualization/VisualizationNode.cpp
@@ -100,9 +102,11 @@ Nodes/RobotNodeActuator.h
 Nodes/ConditionedLock.h
 Nodes/Sensor.h
 Nodes/PositionSensor.h
+Nodes/ForceTorqueSensor.h
 Nodes/CameraSensor.h
 Nodes/SensorFactory.h
 Nodes/PositionSensorFactory.h
+Nodes/ForceTorqueSensorFactory.h
 Nodes/CameraSensorFactory.h
 Transformation/DHParameter.h
 Visualization/VisualizationFactory.h

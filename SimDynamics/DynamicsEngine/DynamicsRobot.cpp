@@ -9,6 +9,8 @@ DynamicsRobot::DynamicsRobot(VirtualRobot::RobotPtr rob)
 {
 	THROW_VR_EXCEPTION_IF(!rob,"NULL object");
 	robot = rob;
+    sensors = rob->getSensors();
+
 }
 	
 DynamicsRobot::~DynamicsRobot()

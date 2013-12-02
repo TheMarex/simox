@@ -170,7 +170,7 @@
             <Mass value="2.59945309" units="kg" />
             <IgnoreCollision name="Underarm R"/>
         </Physics>
-        
+        <Sensor type="forcetorque"/>
 		<Child name="EndArmR"/>
 	</RobotNode>
 	

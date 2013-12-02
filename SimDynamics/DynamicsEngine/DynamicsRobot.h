@@ -26,6 +26,8 @@
 #include "../SimDynamics.h"
 #include "DynamicsObject.h"
 #include <VirtualRobot/Robot.h>
+#include <VirtualRobot/Nodes/Sensor.h>
+
 
 namespace SimDynamics
 {
@@ -80,7 +82,8 @@ public:
 		Usually this method is called by the framework in every tick to perform joint actuation.
 		\param dt Timestep
 	*/
-	virtual void actuateJoints(float dt);
+    virtual void actuateJoints(float dt);
+    virtual void updateSensors(){}
 
 	// experimental...
 	virtual void ensureKinematicConstraints();
@@ -119,6 +122,8 @@ protected:
 	std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget> actuationTargets;
 
 	VirtualRobot::RobotPtr robot;
+
+    std::vector<VirtualRobot::SensorPtr> sensors;
 
 	std::vector<VirtualRobot::RobotNodePtr> robotNodes;
 	std::map<VirtualRobot::RobotNodePtr, DynamicsObjectPtr> dynamicRobotNodes;

@@ -9,6 +9,7 @@
 #include <VirtualRobot/Nodes/RobotNodePrismatic.h>
 #include <VirtualRobot/Nodes/RobotNodeFixed.h>
 #include <VirtualRobot/Nodes/RobotNodeRevolute.h>
+#include <VirtualRobot/Nodes/ForceTorqueSensor.h>
 
 // either hinge or generic6DOF constraints can be used
 //#define USE_BULLET_GENERIC_6DOF_CONSTRAINT
@@ -29,6 +30,23 @@ BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
 	bulletMaxMotorImulse = 50.0f; 
     bulletMotorVelFactor = 10.0f;
 	buildBulletModels(enableJointMotors);
+
+    // activate force torque sensors
+    std::vector<SensorPtr>::iterator it = sensors.begin();
+    for(; it != sensors.end(); it++)
+    {
+//        SensorPtr sensor = *it;
+        ForceTorqueSensorPtr ftSensor = boost::dynamic_pointer_cast<ForceTorqueSensor>(*it);
+        if(ftSensor)
+        {
+            VirtualRobot::RobotNodePtr node = ftSensor->getRobotNode();//boost::dynamic_pointer_cast<VirtualRobot::RobotNode>(ftSensor->getParent());
+            THROW_VR_EXCEPTION_IF(!node, "parent of sensor could not be casted to RobotNode")
+
+            const LinkInfo& link = getLink(node);
+            enableForceTorqueFeedback(link);
+            std::cout << "Found force torque sensor: " << node->getName() << std::endl;
+        }
+    }
 }
 	
 BulletRobot::~BulletRobot()
@@ -980,6 +998,27 @@ void BulletRobot::actuateJoints(float dt)
     setPoseNonActuatedRobotNodes();
 }
 
+void BulletRobot::updateSensors()
+{
+    std::vector<SensorPtr>::iterator it = sensors.begin();
+    for(; it != sensors.end(); it++)
+    {
+//        SensorPtr sensor = *it;
+        ForceTorqueSensorPtr ftSensor = boost::dynamic_pointer_cast<ForceTorqueSensor>(*it);
+        if(ftSensor)
+        {
+            VirtualRobot::RobotNodePtr node = ftSensor->getRobotNode();
+                    //boost::dynamic_pointer_cast<VirtualRobot::RobotNode>(ftSensor->getParent());
+            THROW_VR_EXCEPTION_IF(!node, "parent of sensor could not be casted to RobotNode")
+
+            const LinkInfo& link = getLink(node);
+            Eigen::VectorXf forceTorques = getJointForceTorqueGlobal(link);
+            ftSensor->updateSensors(forceTorques);
+            std::cout << "Updating force torque sensor: " << node->getName() << ": " << forceTorques << std::endl;
+        }
+    }
+}
+
 BulletRobot::LinkInfo BulletRobot::getLink( VirtualRobot::RobotNodePtr node )
 {
 	for (size_t i=0;i<links.size();i++)
@@ -1223,6 +1262,29 @@ float BulletRobot::getNodeTarget( VirtualRobot::RobotNodePtr node )
 
 }
 
+Eigen::Vector3f BulletRobot::getJointTorques(RobotNodePtr rn)
+{
+    VR_ASSERT(rn);
+    Eigen::Vector3f result;
+    result.setZero();
+    if (!hasLink(rn))
+    {
+        VR_ERROR << "No link with node " << rn->getName() << endl;
+        return result;
+    }
+    LinkInfo link = getLink(rn);
+
+
+
+
+    if(rn->isRotationalJoint())
+    {
+        result = getJointForceTorqueGlobal(link).tail(3);
+    }
+
+    return result;
+}
+
 Eigen::Matrix4f BulletRobot::getComGlobal( VirtualRobot::RobotNodePtr rn )
 {
     BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(getDynamicsRobotNode(rn));
@@ -1280,11 +1342,11 @@ void BulletRobot::setPoseNonActuatedRobotNodes()
     }
 }
 
-void BulletRobot::enableForceTorqueFeedback( const LinkInfo& link )
+void BulletRobot::enableForceTorqueFeedback(const LinkInfo& link , bool enable)
 {
-	if (!link.joint->needsFeedback())
+    if (!link.joint->needsFeedback() && enable)
 	{
-		link.joint->enableFeedback(true);
+        link.joint->enableFeedback(true);
 		btJointFeedback* feedback = new btJointFeedback;
 		feedback->m_appliedForceBodyA = btVector3(0, 0, 0);
 		feedback->m_appliedForceBodyB = btVector3(0, 0, 0);
@@ -1292,6 +1354,10 @@ void BulletRobot::enableForceTorqueFeedback( const LinkInfo& link )
 		feedback->m_appliedTorqueBodyB = btVector3(0, 0, 0);
 		link.joint->setJointFeedback(feedback);
 	}
+    else if(link.joint->needsFeedback() && !enable)
+    {
+        link.joint->enableFeedback(false);
+    }
 }
 
 Eigen::VectorXf BulletRobot::getForceTorqueFeedbackA( const LinkInfo& link )
@@ -1322,7 +1388,32 @@ Eigen::VectorXf BulletRobot::getForceTorqueFeedbackB( const LinkInfo& link )
 	if (!feedback)
 		return r;
 	r << feedback->m_appliedForceBodyB[0],feedback->m_appliedForceBodyB[1],feedback->m_appliedForceBodyB[2],feedback->m_appliedTorqueBodyB[0],feedback->m_appliedTorqueBodyB[1],feedback->m_appliedTorqueBodyB[2];
-	return r;
+    return r;
+}
+
+Eigen::VectorXf BulletRobot::getJointForceTorqueGlobal(const BulletRobot::LinkInfo &link)
+{
+    Eigen::VectorXf ftA = getForceTorqueFeedbackA(link);
+    Eigen::VectorXf ftB = getForceTorqueFeedbackB(link);
+
+    Eigen::Vector3f jointGlobal = link.nodeJoint->getGlobalPose().block(0,3,3,1);
+    Eigen::Vector3f comBGlobal = link.nodeB->getCoMGlobal();
+
+    // force that is applied on objectA by objectB -> so the force that object B applies on the joint
+    Eigen::Vector3f forceOnBGlobal =  ftB.head(3);
+
+    Eigen::Vector3f torqueBGlobal =  ftB.tail(3);
+
+    // the lever from Object B CoM to Joint
+    Eigen::Vector3f leverOnJoint = (comBGlobal-jointGlobal) * 0.001;
+    // Calculate the torque in Joint by taking the torque that presses on the CoM of BodyB and the Torque of BodyB on the joint
+    // forceOnBGlobal is inverted in next line because it is the force of A on B to hold it in position
+    // torqueBGlobal is inverted in next line because it is the torque on B from A to compensate torque of other objects (which is the torque we would like) to hold it in place and therefore needs to be inverted as well
+    Eigen::Vector3f torqueJointGlobal =  (leverOnJoint).cross(-forceOnBGlobal)  + (-1)*torqueBGlobal;
+    Eigen::VectorXf result(6);
+    result.head(3) = ftA.head(3); // force in joint is same as force on CoM of A
+    result.tail(3) = torqueJointGlobal;
+    return result;
 }
 
 } // namespace VirtualRobot

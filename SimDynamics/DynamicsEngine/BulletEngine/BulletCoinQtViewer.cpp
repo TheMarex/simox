@@ -21,7 +21,7 @@ BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 	bulletMaxSubSteps = 50;
     enablePhysicsUpdates = true;
 
-	const float TIMER_MS = 30.0f;
+    const float TIMER_MS = 30.0f;
 
 	SIMDYNAMICS_ASSERT(world);
 
@@ -176,6 +176,7 @@ void BulletCoinQtViewer::updateMotors(float dt)
 	for (size_t i=0;i<robots.size();i++)
 	{
 		robots[i]->actuateJoints(dt);
+        robots[i]->updateSensors();
 	}
 }
 

@@ -59,10 +59,32 @@ public:
 	};
 
 
-	void enableForceTorqueFeedback(const LinkInfo& link);
+    /**
+     * @brief The force torque output needs to be activated before use
+     * @param link Link for which the force torque should be enabled/disabled
+     * @param enable
+     */
+    void enableForceTorqueFeedback(const LinkInfo& link, bool enable = true);
+
+    /**
+     * @brief getForceTorqueFeedbackA retrieves the force torque in the first body of the link
+     * @param link  Link for which the force torque should be retrieved
+     * @return 6 Dim. vector. First 3 values are the forces, last 3 are torques.
+     * Values are in N and N*m. Position of the values is the center of mass of first body of the link
+     * in the global coordinate system.
+     */
 	Eigen::VectorXf getForceTorqueFeedbackA(const LinkInfo& link);
-	Eigen::VectorXf getForceTorqueFeedbackB(const LinkInfo& link);
-	
+    Eigen::VectorXf getForceTorqueFeedbackB(const LinkInfo& link);
+    /**
+     * @brief getJointForceTorqueGlobal retrieves the force torque in the joint between the bodies
+     * @param link  Link for which the force torque should be retrieved
+     * @return 6 Dim. vector. First 3 values are the forces, last 3 are torques.
+     * Values are in N and N*m. Position of the values is in the middle of the joint
+     * in the global coordinate system.
+     */
+    Eigen::VectorXf getJointForceTorqueGlobal(const LinkInfo& link);
+
+
 	// We do not allow to re-adjust the robot. 
 	// The position of the robot is queried once on construction. 
 	// Then the physics simulation takes over.
@@ -85,10 +107,22 @@ public:
 	*/
 	virtual void actuateJoints(float dt);
 
+    virtual void updateSensors();
+
 	virtual float getJointAngle(VirtualRobot::RobotNodePtr rn);
     virtual float getJointSpeed(VirtualRobot::RobotNodePtr rn);
     virtual float getJointTargetSpeed(VirtualRobot::RobotNodePtr rn);
     virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
+
+    /*!
+     * \brief getJointTorques retrieves the torques in the given joint.
+     * \param rn
+     * \return Returns the torques in the given joint. If rn is not a
+     * rotational joint.
+     * Values are in N*m. Position of the values is in the middle of the joint
+     * in the global coordinate system.
+     */
+    Eigen::Vector3f getJointTorques(VirtualRobot::RobotNodePtr rn);
 
     /*!
         Returns the CoM pose, which is reported by bullet

@@ -173,8 +173,9 @@
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2.59945309" units="kg" />
             <IgnoreCollision name="Underarm L"/>
+
         </Physics>
-        
+        <Sensor type="forcetorque"/>
 		<Child name="EndArmL"/>
 	</RobotNode>
 	

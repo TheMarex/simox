@@ -56,6 +56,7 @@ void BulletOpenGLViewer::updateMotors(float dt)
 	for (size_t i=0;i<robots.size();i++)
 	{
 		robots[i]->actuateJoints(dt);
+        robots[i]->updateSensors();
 	}
 }
 

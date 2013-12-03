@@ -46,6 +46,9 @@ SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags fla
 	contactsSep = new SoSeparator;
 	sceneSep->addChild(contactsSep);
 
+	forceSep = new SoSeparator;
+	sceneSep->addChild(forceSep);
+
 	// optional visualizations (not considered by dynamics)
 	SoSeparator *cc = CoinVisualizationFactory::CreateCoordSystemVisualization(10.0f);
 	sceneSep->addChild(cc);
@@ -57,10 +60,10 @@ SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags fla
 	dynamicsWorld->createFloorPlane();
 
 	VirtualRobot::ObstaclePtr o = VirtualRobot::Obstacle::createBox(1000.0f,1000.0f,1000.0f,VirtualRobot::VisualizationFactory::Color::Blue());
-	o->setMass(1.0f); // 1kg
+    o->setMass(1.0f); // 1kg
 
 	dynamicsObject = dynamicsWorld->CreateDynamicsObject(o);
-	dynamicsObject->setPosition(Eigen::Vector3f(3000,3000,10000.0f));
+    dynamicsObject->setPosition(Eigen::Vector3f(3000,3000,10000.0f));
 	dynamicsWorld->addObject(dynamicsObject);
 
 #if 0
@@ -364,16 +367,117 @@ void SimDynamicsWindow::updateJointInfo()
 	SimDynamics::BulletObjectPtr bulletRN = boost::shared_dynamic_cast<SimDynamics::BulletObject>(dynRN);
 	if (bulletRN)
 	{
-		cout << "FORCE: " << bulletRN->getRigidBody()->getTotalForce()[0] << "," << bulletRN->getRigidBody()->getTotalForce()[1] << "," << bulletRN->getRigidBody()->getTotalForce()[2] << endl;
-		cout << "TORQUE: " << bulletRN->getRigidBody()->getTotalTorque()[0] << "," << bulletRN->getRigidBody()->getTotalTorque()[1] << "," << bulletRN->getRigidBody()->getTotalTorque()[2] << endl;
-		cout << "getLinearVelocity: " << bulletRN->getRigidBody()->getLinearVelocity()[0] << "," << bulletRN->getRigidBody()->getLinearVelocity()[1] << "," << bulletRN->getRigidBody()->getLinearVelocity()[2] << endl;
-		cout << "getAngularVelocity: " << bulletRN->getRigidBody()->getAngularVelocity()[0] << "," << bulletRN->getRigidBody()->getAngularVelocity()[1] << "," << bulletRN->getRigidBody()->getAngularVelocity()[2] << endl;
+//		cout << "FORCE: " << bulletRN->getRigidBody()->getTotalForce()[0] << ", " << bulletRN->getRigidBody()->getTotalForce()[1] << ", " << bulletRN->getRigidBody()->getTotalForce()[2] << endl;
+//		cout << "TORQUE: " << bulletRN->getRigidBody()->getTotalTorque()[0] << ", " << bulletRN->getRigidBody()->getTotalTorque()[1] << ", " << bulletRN->getRigidBody()->getTotalTorque()[2] << endl;
+//		cout << "getLinearVelocity: " << bulletRN->getRigidBody()->getLinearVelocity()[0] << ", " << bulletRN->getRigidBody()->getLinearVelocity()[1] << ", " << bulletRN->getRigidBody()->getLinearVelocity()[2] << endl;
+//		cout << "getAngularVelocity: " << bulletRN->getRigidBody()->getAngularVelocity()[0] << ", " << bulletRN->getRigidBody()->getAngularVelocity()[1] << ", " << bulletRN->getRigidBody()->getAngularVelocity()[2] << endl;
 		
 	}
 	BulletRobotPtr bulletRobot = boost::shared_dynamic_cast<SimDynamics::BulletRobot>(dynamicsRobot);
 	if (rn && bulletRobot && bulletRobot->hasLink(rn))
 	{
 		BulletRobot::LinkInfo linkInfo = bulletRobot->getLink(rn);
+
+		linkInfo.nodeA->showCoordinateSystem(true);
+		linkInfo.nodeB->showCoordinateSystem(true);
+
+		bulletRobot->enableForceTorqueFeedback(linkInfo);
+		Eigen::VectorXf ftA = bulletRobot->getForceTorqueFeedbackA(linkInfo);
+		Eigen::VectorXf ftB = bulletRobot->getForceTorqueFeedbackB(linkInfo);
+
+        std::stringstream streamFTA;
+
+        streamFTA << "ForceTorqueA: " << std::fixed;
+        streamFTA.precision(1);
+        for (int i = 0; i < 6; ++i) {
+            streamFTA << ftA[i] << ",";
+        }
+        UI.label_ForceTorqueA->setText(QString::fromStdString(streamFTA.str()));
+        std::stringstream streamFTB;
+        streamFTB << "ForceTorqueB: "<< std::fixed;
+        streamFTB.precision(1);
+        for (int i = 0; i < 6; ++i) {
+            streamFTB << ftB[i] << ",";
+        }
+        UI.label_ForceTorqueB->setText(QString::fromStdString(streamFTB.str()));
+
+//		cout << "ForceTorqueA:" << endl;
+//		MathTools::print(ftA);
+//		cout << "ForceTorqueB:" << endl;
+//		MathTools::print(ftB);
+
+		forceSep->removeAllChildren();
+
+		SoUnits *u = new SoUnits();
+		u->units = SoUnits::MILLIMETERS;
+		forceSep->addChild(u);
+
+		Eigen::Vector3f n = ftA.head(3);
+		//n = linkInfo.nodeA->toGlobalCoordinateSystemVec(n);
+		float l = ftA.head(3).norm();
+		float w = 5.0f;
+		SoSeparator *forceA = new SoSeparator;
+		SoSeparator *arrowForceA = CoinVisualizationFactory::CreateArrow(n,l,w,VisualizationFactory::Color::Red());
+
+		/*
+		cout << "FORCE_A: " << linkInfo.dynNode1->getRigidBody()->getTotalForce()[0] << "," << linkInfo.dynNode1->getRigidBody()->getTotalForce()[1] << "," << linkInfo.dynNode1->getRigidBody()->getTotalForce()[2] << endl;
+		cout << "TORQUEA: " << linkInfo.dynNode1->getRigidBody()->getTotalTorque()[0] << "," << linkInfo.dynNode1->getRigidBody()->getTotalTorque()[1] << "," << linkInfo.dynNode1->getRigidBody()->getTotalTorque()[2] << endl;
+		cout << "FORCE_B: " << linkInfo.dynNode2->getRigidBody()->getTotalForce()[0] << "," << linkInfo.dynNode2->getRigidBody()->getTotalForce()[1] << "," << linkInfo.dynNode2->getRigidBody()->getTotalForce()[2] << endl;
+		cout << "TORQUEB: " << linkInfo.dynNode2->getRigidBody()->getTotalTorque()[0] << "," << linkInfo.dynNode2->getRigidBody()->getTotalTorque()[1] << "," << linkInfo.dynNode2->getRigidBody()->getTotalTorque()[2] << endl;
+		*/
+
+		// show as nodeA local coords system
+		/*
+		Eigen::Matrix4f comCoord = linkInfo.nodeA->getGlobalPose();
+		Eigen::Matrix4f comLocal = Eigen::Matrix4f::Identity();
+		comLocal.block(0,3,3,1) = linkInfo.nodeA->getCoMLocal();
+		comCoord = comCoord * comLocal;
+		*/
+		// show as global coords 
+		Eigen::Matrix4f comGlobal = Eigen::Matrix4f::Identity();
+		comGlobal.block(0,3,3,1) = linkInfo.nodeA->getCoMGlobal();
+		SoMatrixTransform *m = CoinVisualizationFactory::getMatrixTransform(comGlobal);
+		forceA->addChild(m);
+		forceA->addChild(arrowForceA);
+
+		forceSep->addChild(forceA);
+
+		Eigen::Vector3f jointGlobal = linkInfo.nodeJoint->getGlobalPose().block(0,3,3,1);
+		Eigen::Vector3f comBGlobal = linkInfo.nodeB->getCoMGlobal();
+
+		// force that is applied on objectA by objectB
+        Eigen::Vector3f FBGlobal =  ftA.head(3);
+        Eigen::Vector3f TBGlobal =  ftB.tail(3) ;
+
+        Eigen::VectorXf torqueJointGlobal  = bulletRobot->getJointForceTorqueGlobal(linkInfo);//= TBGlobal  - (comBGlobal-jointGlobal).cross(FBGlobal) * 0.001;
+//        cout << "torqueJointGlobal: " << torqueJointGlobal << endl;
+        std::stringstream streamFTJoint;
+        streamFTJoint.precision(1);
+        streamFTJoint << "ForceTorqueJoint: "<< std::fixed;
+        for (int i = 0; i < 6; ++i) {
+            streamFTJoint << torqueJointGlobal[i] << ",";
+        }
+        UI.label_ForceTorqueJoint->setText(QString::fromStdString(streamFTJoint.str()));
+
+		
+		n = ftB.head(3);
+		//n = linkInfo.nodeB->toGlobalCoordinateSystemVec(n);
+		l = ftB.head(3).norm();
+		w = 5.0f;
+		SoSeparator *forceB = new SoSeparator;
+		SoSeparator *arrowForceB = CoinVisualizationFactory::CreateArrow(n,l,w,VisualizationFactory::Color::Red());
+
+		comGlobal = Eigen::Matrix4f::Identity();
+		comGlobal.block(0,3,3,1) = linkInfo.nodeB->getCoMGlobal();
+		m = CoinVisualizationFactory::getMatrixTransform(comGlobal);
+		forceB->addChild(m);
+		forceB->addChild(arrowForceB);
+
+		forceSep->addChild(forceB);
+
+
+
+/*
 		if (!linkInfo.joint->needsFeedback())
 		{
 			linkInfo.joint->enableFeedback(true);
@@ -393,6 +497,7 @@ void SimDynamicsWindow::updateJointInfo()
 			cout << "feedback->m_appliedTorqueBodyB: " << feedback->m_appliedTorqueBodyB[0] << "," << feedback->m_appliedTorqueBodyB[1] << "," << feedback->m_appliedTorqueBodyB[2] << endl;
 
 		}
+		*/
 	}
 	
 	if (rn)

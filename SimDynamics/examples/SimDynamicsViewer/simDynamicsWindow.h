@@ -81,6 +81,7 @@ protected:
     SoSeparator* sceneSep;
     SoSeparator* comSep;
 	SoSeparator* contactsSep;
+	SoSeparator* forceSep;
 
 	SimDynamics::BulletCoinQtViewerPtr viewer;
 	

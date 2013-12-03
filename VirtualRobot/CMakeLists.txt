@@ -306,9 +306,9 @@ EXPORT(PACKAGE VirtualRobot)
 #message(STATUS "VirtualRobot_external_INCLUDE_DIRS: ${VirtualRobot_external_INCLUDE_DIRS}")
 
 SET (VirtualRobot_CONFIG_INBUILD_DIR ${VirtualRobot_BUILD_DIRECTORY}/share/VirtualRobot/cmake)
-SET (VirtualRobot_CONFIG_INBUILD "${VirtualRobot_BUILD_DIRECTORY}/VirtualRobotConfig.cmake")
-SET (VirtualRobot_CONFIG_INSTALL_LCOAL_DIR ${VirtualRobot_BUILD_DIRECTORY}/InstallFiles)
-SET (VirtualRobot_CONFIG_INSTALL_LOCAL "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfig.cmake")
+SET (VirtualRobot_CONFIG_INBUILD "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotConfig.cmake")
+SET (VirtualRobot_CONFIG_INSTALL_LOCAL_DIR ${VirtualRobot_BUILD_DIRECTORY}/InstallFiles)
+SET (VirtualRobot_CONFIG_INSTALL_LOCAL "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfig.cmake")
 SET (VirtualRobot_CONFIG_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/VirtualRobot/cmake)
 SET (VirtualRobot_CONFIG_INSTALL "${CMAKE_INSTALL_PREFIX}/VirtualRobotConfig.cmake")
 
@@ -334,18 +334,18 @@ SET(VirtualRobot_LIBRARY_CMAKE_INCLUDE "${VirtualRobot_EXTERNAL_LIBRARY_CMAKE_IN
 SET(VirtualRobot_DATA_PATH "${PROJECT_SOURCE_DIR}/data")
 configure_file(
     ${VR_DIR}/CMakeModules/VirtualRobotConfig.cmake.in
-    "${VirtualRobot_BUILD_DIRECTORY}/VirtualRobotConfig.cmake"
+    "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotConfig.cmake"
     @ONLY)
 configure_file(
     ${VR_DIR}/CMakeModules/VirtualRobotConfigVersion.cmake.in
-    "${VirtualRobot_BUILD_DIRECTORY}/VirtualRobotConfigVersion.cmake"
+    "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotConfigVersion.cmake"
     @ONLY)
 configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotExternalLibrarySetup.cmake"
     "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotExternalLibrarySetup.cmake" COPYONLY)
 configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotMacros.cmake"
     "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotMacros.cmake" COPYONLY)
-configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/FindVirtualRobot.cmake"
-    "${VirtualRobot_CONFIG_INBUILD_DIR}/FindVirtualRobot.cmake" COPYONLY)
+#configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/FindVirtualRobot.cmake"
+#    "${VirtualRobot_CONFIG_INBUILD_DIR}/FindVirtualRobot.cmake" COPYONLY)
 
     
     
@@ -362,16 +362,16 @@ SET(VirtualRobot_DATA_PATH "${CMAKE_INSTALL_PREFIX}/data")
 
 configure_file(
     ${VR_DIR}/CMakeModules/VirtualRobotConfig.cmake.in
-    "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfig.cmake"
+    "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfig.cmake"
     @ONLY)
 configure_file(
     ${VR_DIR}/CMakeModules/VirtualRobotConfigVersion.cmake.in
-    "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfigVersion.cmake"
+    "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfigVersion.cmake"
     @ONLY)
 
 install(FILES
-    "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfig.cmake"
-    "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfigVersion.cmake"
+    "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfig.cmake"
+    "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfigVersion.cmake"
     DESTINATION "${VirtualRobot_CMAKE_DIR}"
     COMPONENT ApplicationData
     )

@@ -184,6 +184,8 @@ public:
 
 	//! Min valid value is 1 by default. In cases some values are needed to indicate special flags (e.g. stability) the minimum valid number can be set here
 	void setMinValidValue(unsigned char v);
+
+    unsigned char** getRawData(){return data;}
 protected:
 	unsigned int sizes[6];
 	unsigned int sizeTr0,sizeTr1;

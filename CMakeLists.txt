@@ -47,7 +47,7 @@ set(Simox_EXECUTABLES "")
 EXPORT(PACKAGE Simox)
 
 # import Virtual-Robot configs (build)
-SET (VirtualRobot_CONFIG_INBUILD "${Simox_BUILD_DIRECTORY}/VirtualRobotConfig.cmake")
+SET (VirtualRobot_CONFIG_INBUILD "${Simox_BUILD_DIRECTORY}/share/VirtualRobot/cmake/VirtualRobotConfig.cmake")
 SET (VirtualRobot_CONFIG_INSTALL_LOCAL "${Simox_BUILD_DIRECTORY}/InstallFiles/VirtualRobotConfig.cmake")
 #MESSAGE ("VirtualRobot_CONFIG_INBUILD = ${VirtualRobot_CONFIG_INBUILD}")
 #MESSAGE ("VirtualRobot_CONFIG_INSTALL_LOCAL = ${VirtualRobot_CONFIG_INSTALL_LOCAL}")
@@ -80,20 +80,20 @@ SET(Simox_DATA_PATH "${VirtualRobot_DATA_PATH}")
 # So it must be located in the Simox_DIR directory (build-tree -> Simox_BUILD_DIRECTORY)
 configure_file(
     ${PROJECT_SOURCE_DIR}/CMakeModules/SimoxConfig.cmake.in
-    "${Simox_BUILD_DIRECTORY}/SimoxConfig.cmake"
+    "${Simox_BUILD_DIRECTORY}/share/Simox/cmake/SimoxConfig.cmake"
     @ONLY)
 
 configure_file(
     ${PROJECT_SOURCE_DIR}/CMakeModules/SimoxConfigVersion.cmake.in
-    "${Simox_BUILD_DIRECTORY}/SimoxConfigVersion.cmake"
+    "${Simox_BUILD_DIRECTORY}/share/Simox/cmake/SimoxConfigVersion.cmake"
     @ONLY)
 
 configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/SimoxExternalLibrarySetup.cmake"
     "${Simox_BUILD_DIRECTORY}/share/Simox/cmake/SimoxExternalLibrarySetup.cmake" COPYONLY)
 configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/SimoxMacros.cmake"
     "${Simox_BUILD_DIRECTORY}/share/Simox/cmake/SimoxMacros.cmake" COPYONLY)
-configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
-    "${Simox_BUILD_DIRECTORY}/share/Simox/cmake/FindSimox.cmake" COPYONLY)
+#configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
+#    "${Simox_BUILD_DIRECTORY}/share/Simox/cmake/FindSimox.cmake" COPYONLY)
  
 # Create an SimoxConfig.cmake file for the use from the install tree
 # and install it
@@ -120,7 +120,7 @@ configure_file(
     ${PROJECT_SOURCE_DIR}/CMakeModules/SimoxConfigVersion.cmake.in
     "${Simox_BUILD_DIRECTORY}/InstallFiles/SimoxConfigVersion.cmake"
     @ONLY)
-# The SimoxConfig.cmake will be used by external porjects to setup Simox via the FindPackage method.
+# The SimoxConfig.cmake will be used by external projects to setup Simox via the FindPackage method.
 # So it must be located in the Simox_DIR directory (install-tree -> CMAKE_INSTALL_PREFIX)
 # changed from DESTINATION "${CMAKE_INSTALL_PREFIX}" to "${Simox_CMAKE_DIR}"
 install(FILES

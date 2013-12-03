@@ -7,7 +7,7 @@ endif()
 
 # VR
 
-INCLUDE (${Simox_DIR}/VirtualRobotConfig.cmake)
+INCLUDE (${VirtualRobot_CMAKE_DIR}/VirtualRobotConfig.cmake)
 INCLUDE (${VirtualRobot_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake)
 
 # SABA

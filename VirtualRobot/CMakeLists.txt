@@ -372,14 +372,13 @@ configure_file(
 install(FILES
     "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfig.cmake"
     "${VirtualRobot_CONFIG_INSTALL_LCOAL_DIR}/VirtualRobotConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    DESTINATION "${VirtualRobot_CMAKE_DIR}"
     COMPONENT ApplicationData
     )
 
 install(FILES
     "${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotExternalLibrarySetup.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotMacros.cmake"
-    "${PROJECT_SOURCE_DIR}/CMakeModules/FindVirtualRobot.cmake"
     DESTINATION "${VirtualRobot_CMAKE_DIR}"
     COMPONENT ApplicationData)
 

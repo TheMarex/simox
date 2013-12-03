@@ -122,33 +122,24 @@ configure_file(
     @ONLY)
 # The SimoxConfig.cmake will be used by external porjects to setup Simox via the FindPackage method.
 # So it must be located in the Simox_DIR directory (install-tree -> CMAKE_INSTALL_PREFIX)
+# changed from DESTINATION "${CMAKE_INSTALL_PREFIX}" to "${Simox_CMAKE_DIR}"
 install(FILES
     "${Simox_BUILD_DIRECTORY}/InstallFiles/SimoxConfig.cmake"
     "${Simox_BUILD_DIRECTORY}/InstallFiles/SimoxConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}"
-    COMPONENT ApplicationData
-    )
-install(FILES
-    "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxExternalLibrarySetup.cmake"
-    "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxMacros.cmake"
-    "${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
     DESTINATION "${Simox_CMAKE_DIR}"
     COMPONENT ApplicationData
     )
+#removed "${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
+
 install(FILES
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxExternalLibrarySetup.cmake"
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxMacros.cmake"
-    "${PROJECT_SOURCE_DIR}/CMakeModules/FindSimox.cmake"
     DESTINATION "${Simox_CMAKE_DIR}"
     COMPONENT ApplicationData
     )
-
-
 
 #############################################################
 # PACKAGING (DEB)
-
-
 
 INCLUDE(InstallRequiredSystemLibraries)
 SET(CPACK_SET_DESTDIR "on")

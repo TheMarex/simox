@@ -14,7 +14,6 @@
 #include <iomanip>
 namespace VirtualRobot {
 
-
 /**
  * This method adds the vertices \p vertex1,
  * \p vertex2 and \p vertex3 to TriMeshModel::vertices and creates a new
@@ -30,11 +29,15 @@ void TriMeshModel::addTriangleWithFace(Eigen::Vector3f& vertex1, Eigen::Vector3f
 	addTriangleWithFace (vertex1,vertex2,vertex3,normal);
 }
 
-void TriMeshModel::addTriangleWithFace( Eigen::Vector3f& vertex1, Eigen::Vector3f& vertex2, Eigen::Vector3f& vertex3, Eigen::Vector3f& normal )
+void TriMeshModel::addTriangleWithFace( Eigen::Vector3f& vertex1, Eigen::Vector3f& vertex2, Eigen::Vector3f& vertex3, Eigen::Vector3f& normal, VisualizationFactory::Color color1, VisualizationFactory::Color color2, VisualizationFactory::Color color3 )
 {
 	this->addVertex(vertex1);
 	this->addVertex(vertex2);
 	this->addVertex(vertex3);
+
+    this->addColor(color1);
+    this->addColor(color2);
+    this->addColor(color3);
 
 	if (normal.norm()<1e-10)
 		normal = TriMeshModel::CreateNormal(vertex1, vertex2, vertex3);
@@ -47,12 +50,23 @@ void TriMeshModel::addTriangleWithFace( Eigen::Vector3f& vertex1, Eigen::Vector3
 	face.id2 = this->vertices.size()-2;
 	face.id3 = this->vertices.size()-1;
 
+    face.idColor1 = this->colors.size() - 3;
+    face.idColor2 = this->colors.size() - 2;
+    face.idColor3 = this->colors.size() - 1;
+
 	face.normal = normal;
 
 	this->addFace(face);
 }
 
-
+void TriMeshModel::addTriangleWithFace(Eigen::Vector3f& vertex1, Eigen::Vector3f& vertex2, Eigen::Vector3f& vertex3, Eigen::Vector4f& vertexColor1, Eigen::Vector4f& vertexColor2, Eigen::Vector4f& vertexColor3)
+{
+    Eigen::Vector3f normal = TriMeshModel::CreateNormal(vertex1, vertex2, vertex3);
+    VisualizationFactory::Color color1(vertexColor1(0), vertexColor1(1), vertexColor1(2), vertexColor1(4));
+    VisualizationFactory::Color color2(vertexColor2(0), vertexColor2(1), vertexColor2(2), vertexColor2(4));
+    VisualizationFactory::Color color3(vertexColor3(0), vertexColor3(1), vertexColor3(2), vertexColor3(4));
+    addTriangleWithFace(vertex1, vertex2, vertex3, normal, color1, color2, color3);
+}
 
 
 /**
@@ -100,6 +114,27 @@ void TriMeshModel::addVertex(const Eigen::Vector3f& vertex)
 	boundingBox.addPoint(vertex);
 }
 
+/**
+ * This method adds a color to the internal data structure TriMeshModel::colors
+ */
+void TriMeshModel::addColor(const VisualizationFactory::Color& color) {
+    colors.push_back(color);
+}
+
+/**
+ * This method converts and adds a color to the internal data structure TriMeshModel::colors
+ */
+void TriMeshModel::addColor(const Eigen::Vector4f& color) {
+    addColor(VisualizationFactory::Color(color(0), color(1), color(2), color(3)));
+}
+
+/**
+ * This method converts and adds a color to the internal data structure TriMeshModel::materials
+ */
+void TriMeshModel::addMaterial(const VisualizationFactory::PhongMaterial& material) {
+    materials.push_back(material);
+}
+
 
 /**
  * This method clears the internal data structures TriMeshModel::faces and
@@ -108,7 +143,9 @@ void TriMeshModel::addVertex(const Eigen::Vector3f& vertex)
 void TriMeshModel::clear()
 {
 	vertices.clear();
+    colors.clear();
 	faces.clear();
+    materials.clear();
 	boundingBox.clear();
 }
 

@@ -341,10 +341,26 @@ namespace MathTools
 		{
 			this->id1 = id1; this->id2 = id2; this->id3 = id3;
 		}
+        void setColor(unsigned int idColor1, unsigned int idColor2, unsigned int idColor3) {
+            this->idColor1 = idColor1; this->idColor2 = idColor2; this->idColor3 = idColor3;
+        }
+        void setMaterial(unsigned int idMaterial) {
+            this->idMaterial = idMaterial;
+        }
+
 		// id == position in vertex array
 		unsigned int id1;
 		unsigned int id2;
 		unsigned int id3;
+
+        // idColor == position in color array
+        unsigned int idColor1;
+        unsigned int idColor2;
+        unsigned int idColor3;
+
+        // idMaterial == position in material array
+        unsigned int idMaterial;
+
 		Eigen::Vector3f normal;
 	};
 	struct TriangleFace6D

@@ -736,7 +736,17 @@ namespace VirtualRobot {
         return pGrid;
     }
 
-    SoSeparator* CoinVisualizationFactory::CreatePolygonVisualization( const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner /*= VisualizationFactory::Color::Blue()*/, VisualizationFactory::Color colorLine /*= VisualizationFactory::Color::Black()*/, float lineSize /*= 4.0f*/ )
+    SoSeparator* CoinVisualizationFactory::CreatePolygonVisualization( const std::vector<Eigen::Vector3f> &points, VisualizationFactory::Color colorInner, VisualizationFactory::Color colorLine, float lineSize)
+    {
+        VisualizationFactory::PhongMaterial mat;
+        mat.diffuse = colorInner;
+        mat.ambient = colorInner;
+        mat.transparency = colorInner.transparency;
+
+        return CreatePolygonVisualization(points, mat, colorLine, lineSize);
+    }
+
+    SoSeparator* CoinVisualizationFactory::CreatePolygonVisualization( const std::vector<Eigen::Vector3f> &points, VisualizationFactory::PhongMaterial mat, VisualizationFactory::Color colorLine, float lineSize)
     {
         SoSeparator* visu = new SoSeparator;
         if (points.size()==0)
@@ -747,14 +757,14 @@ namespace VirtualRobot {
         u->units = SoUnits::MILLIMETERS;
         visu->addChild(u);
 
-		if (!colorInner.isNone())
-		{
-			SoMaterial *m = new SoMaterial;
-			m->diffuseColor.setValue(colorInner.r, colorInner.g, colorInner.b);
-			m->ambientColor.setValue(colorInner.r, colorInner.g, colorInner.b);
-			m->transparency.setValue(colorInner.transparency);
-			visu->addChild(m);
-		}
+        SoMaterial *m = new SoMaterial;
+        m->diffuseColor.setValue(mat.diffuse.r, mat.diffuse.g, mat.diffuse.b);
+        m->ambientColor.setValue(mat.ambient.r, mat.ambient.g, mat.ambient.b);
+        m->emissiveColor.setValue(mat.emission.r, mat.emission.g, mat.emission.b);
+//        m->shininess.setValue(mat.shininess, mat.shininess, mat.shininess);
+        m->specularColor.setValue(mat.specular.r, mat.specular.g, mat.specular.b);
+        m->transparency.setValue(mat.transparency);
+        visu->addChild(m);
 
         SoCoordinate3* coordinate3 = new SoCoordinate3;
         SoCoordinate3* coordinate3b = new SoCoordinate3;
@@ -993,7 +1003,18 @@ namespace VirtualRobot {
             v.push_back(v1);
             v.push_back(v2);
             v.push_back(v3);
-            SoSeparator* s = CreatePolygonVisualization(v,color,lineColor,lineSize);
+//            SoSeparator* s = CreatePolygonVisualization(v,color,lineColor,lineSize);
+
+            VisualizationFactory::Color triColor = (model->colors.size() == 0)? color : model->colors[model->faces[i].idColor1];
+
+            SoSeparator* s;
+            if (model->materials.size() == 0) {
+                s = CreatePolygonVisualization(v,triColor,lineColor,lineSize);
+            } else {
+                VisualizationFactory::PhongMaterial mat = model->materials[model->faces[i].idMaterial];
+                s = CreatePolygonVisualization(v, mat, lineColor,lineSize);
+            }
+
             res->addChild(s);
             if (showNormals)
             {

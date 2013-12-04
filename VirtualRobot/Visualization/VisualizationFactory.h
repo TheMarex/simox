@@ -43,7 +43,7 @@ public:
 	struct Color
 	{
 		Color(){transparency=0.0f;r=g=b=0.5f;}
-		Color(float r, float g, float b, float transparency):r(r),g(g),b(b),transparency(transparency){}
+        Color(float r, float g, float b, float transparency = 0.0f):r(r),g(g),b(b),transparency(transparency){}
 		float r,g,b;
 		float transparency;
 		bool isNone() const {return transparency>=1.0f;}
@@ -54,6 +54,21 @@ public:
 		static Color Gray(){return Color(0.5f,0.5f,0.5f,0);}
 		static Color None(){return Color(0.0f,0.0f,0.0f,1.0f);}
 	};
+
+    struct PhongMaterial
+    {
+        PhongMaterial(){};
+        Color emission;
+        Color ambient;
+        Color diffuse;
+        Color specular;
+        float shininess;
+        Color reflective;
+        float reflectivity;
+        Color transparent;
+        float transparency;
+        float refractionIndex;
+    };
 
 	VisualizationFactory() {;}
 	virtual ~VisualizationFactory() {;}

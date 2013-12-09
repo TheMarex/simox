@@ -1008,7 +1008,7 @@ namespace VirtualRobot {
             VisualizationFactory::Color triColor = (model->colors.size() == 0)? color : model->colors[model->faces[i].idColor1];
 
             SoSeparator* s;
-            if (model->materials.size() == 0) {
+			if (model->faces[i].idMaterial >= model->materials.size()) {
                 s = CreatePolygonVisualization(v,triColor,lineColor,lineSize);
             } else {
                 VisualizationFactory::PhongMaterial mat = model->materials[model->faces[i].idMaterial];

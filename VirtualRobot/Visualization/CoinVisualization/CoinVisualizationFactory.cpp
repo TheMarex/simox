@@ -36,6 +36,7 @@
 #include <Inventor/nodes/SoAsciiText.h>
 #include <Inventor/nodes/SoDrawStyle.h>
 #include <Inventor/nodes/SoLineSet.h>
+#include <Inventor/nodes/SoIndexedFaceSet.h>
 #include <Inventor/nodes/SoDirectionalLight.h>
 #include <Inventor/nodes/SoCoordinate3.h>
 #include <Inventor/SbViewportRegion.h>
@@ -972,7 +973,157 @@ namespace VirtualRobot {
             res->addChild(getCoinVisualization(contacts[i],frictionConeHeight,frictionConeRadius,scaleAccordingToApproachDir));
         res->unrefNoDelete();
         return res;
-    }
+	}
+
+	SoNode * CoinVisualizationFactory::getCoinVisualization(TriMeshModelPtr model)
+	{
+		SoSeparator *res = new SoSeparator;
+		res->ref();
+		SoUnits *u = new SoUnits();
+		u->units = SoUnits::MILLIMETERS;
+		res->addChild(u);
+
+		if (!model)
+			return res;
+
+		bool materialMode = false;
+		bool colorMode = false;
+		if (model->materials.size() > 0)
+		{
+			materialMode = true;
+
+			SoMaterialBinding *myBinding = new SoMaterialBinding;
+			myBinding->value = SoMaterialBinding::PER_FACE_INDEXED;
+			res->addChild(myBinding);
+
+			//SbColor *matAmb = new SbColor[model->materials.size()];
+			SbColor *matDif = new SbColor[model->materials.size()];
+			SbColor *matSpec = new SbColor[model->materials.size()];
+			float *transp = new float[model->materials.size()];
+			float *shin = new float[model->materials.size()];
+
+			for (size_t i = 0; i < model->materials.size(); i++)
+			{
+				//matAmb[i].setValue(model->materials[i].ambient.r, model->materials[i].ambient.g, model->materials[i].ambient.b);
+				matDif[i].setValue(model->materials[i].diffuse.r, model->materials[i].diffuse.g, model->materials[i].diffuse.b);
+				matSpec[i].setValue(model->materials[i].specular.r, model->materials[i].specular.g, model->materials[i].specular.b);
+				transp[i] = model->materials[i].transparency;
+				shin[i] = model->materials[i].shininess;
+			}
+
+
+			// Define colors for the faces
+			SoMaterial *myMaterials = new SoMaterial;
+			myMaterials->diffuseColor.setValues(0, model->materials.size(), matDif);
+			myMaterials->specularColor.setValues(0, model->materials.size(), matSpec);
+			//myMaterials->ambientColor.setValues(0, model->materials.size(), matAmb);
+			myMaterials->transparency.setValues(0, model->materials.size(), transp);
+			myMaterials->shininess.setValues(0, model->materials.size(), shin);
+			res->addChild(myMaterials);
+
+			//delete[] matAmb;
+			delete[] matDif;
+			delete[] matSpec;
+			delete[] shin;
+			delete[] transp;
+
+		}
+		else if (model->colors.size() > 0)
+		{
+			colorMode = true;
+
+			SoMaterialBinding *myBinding = new SoMaterialBinding;
+			myBinding->value = SoMaterialBinding::PER_VERTEX_INDEXED;
+			res->addChild(myBinding);
+
+			SbColor *matAmb = new SbColor[model->colors.size()];
+			SbColor *matDif = new SbColor[model->colors.size()];
+			float *transp = new float[model->colors.size()];
+
+			for (size_t i = 0; i < model->colors.size(); i++)
+			{
+				matAmb[i].setValue(model->colors[i].r, model->colors[i].g, model->colors[i].b);
+				matDif[i].setValue(model->colors[i].r, model->colors[i].g, model->colors[i].b);
+				transp[i] = model->colors[i].transparency;
+			}
+
+			// Define colors for the faces
+			SoMaterial *myMaterials = new SoMaterial;
+			myMaterials->diffuseColor.setValues(0, model->materials.size(), matDif);
+			myMaterials->ambientColor.setValues(0, model->materials.size(), matAmb);
+			myMaterials->transparency.setValues(0, model->materials.size(), transp);
+			res->addChild(myMaterials);
+			delete[] matAmb;
+			delete[] matDif;
+			delete[] transp;		
+		}
+		
+		// define vertex array
+		SbVec3f *vertexPositions = new SbVec3f[model->vertices.size()];
+		for (size_t i = 0; i < model->vertices.size(); i++)
+		{
+			vertexPositions[i].setValue(model->vertices[i](0), model->vertices[i](1), model->vertices[i](2));
+		}
+		// Define coordinates for vertices
+		SoCoordinate3 *myCoords = new SoCoordinate3;
+		myCoords->point.setValues(0, model->vertices.size(), vertexPositions);
+		res->addChild(myCoords);
+		delete[] vertexPositions;
+
+		// define faces
+		int32_t* faces = new int32_t[model->faces.size() * 4];
+		for (size_t i = 0; i < model->faces.size(); i++)
+		{
+			faces[i * 4] = model->faces[i].id1;
+			faces[i * 4 + 1] = model->faces[i].id2;
+			faces[i * 4 + 2] = model->faces[i].id3;
+			faces[i * 4 + 3] = SO_END_FACE_INDEX;
+		}
+
+
+		SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
+		myFaceSet->coordIndex.setValues(0, model->faces.size() * 4, faces);
+		res->addChild(myFaceSet);
+
+		if (materialMode)
+		{
+			int32_t *matInx = new int32_t[model->faces.size()];
+			for (size_t i = 0; i < model->faces.size(); i++)
+			{
+				if (model->faces[i].idMaterial < model->materials.size())
+					matInx[i] = model->faces[i].idMaterial;
+				else
+					matInx[i] = 0;
+			}
+			myFaceSet->materialIndex.setValues(0, model->faces.size(), matInx);
+			delete[] matInx;
+		} else if (colorMode)
+		{
+			int32_t *matInx = new int32_t[model->faces.size()*3];
+			for (size_t i = 0; i < model->faces.size(); i++)
+			{
+				if (model->faces[i].idColor1 < model->colors.size())
+				{
+					matInx[i * 3] = model->faces[i].idColor1;
+					matInx[i * 3+1] = model->faces[i].idColor2;
+					matInx[i * 3+2] = model->faces[i].idColor3;
+				}
+				else
+				{
+					matInx[i * 3] = 0;
+					matInx[i * 3+1] = 0;
+					matInx[i * 3+2] = 0;
+				}
+			}
+			myFaceSet->materialIndex.setValues(0, model->faces.size()*3, matInx);
+			delete[] matInx;
+		}
+		
+
+		res->unrefNoDelete();
+		return res;
+
+	}
 
     SoNode * CoinVisualizationFactory::getCoinVisualization( TriMeshModelPtr model, bool showNormals, VisualizationFactory::Color color, bool showLines )
     {
@@ -1299,19 +1450,32 @@ namespace VirtualRobot {
         return res;
     }
 
-    VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createTriMeshModelVisualization( TriMeshModelPtr model, bool showNormals, Eigen::Matrix4f &pose, bool showLines )
-    {
-        SoSeparator *res = new SoSeparator;
-        SoNode *res1 = CoinVisualizationFactory::getCoinVisualization(model,showNormals,VisualizationFactory::Color::Gray(),showLines);
-        SoMatrixTransform *mt = getMatrixTransformScaleMM2M(pose);
-        res->addChild(mt);
-        res->addChild(res1);
+	VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createTriMeshModelVisualization(TriMeshModelPtr model, bool showNormals, Eigen::Matrix4f &pose, bool showLines)
+	{
+		SoSeparator *res = new SoSeparator;
+		SoNode *res1 = CoinVisualizationFactory::getCoinVisualization(model, showNormals, VisualizationFactory::Color::Gray(), showLines);
+		SoMatrixTransform *mt = getMatrixTransformScaleMM2M(pose);
+		res->addChild(mt);
+		res->addChild(res1);
 
-        VisualizationNodePtr node(new CoinVisualizationNode(res));
-        return node;
-    }
+		VisualizationNodePtr node(new CoinVisualizationNode(res));
+		return node;
+	}
 
-    SoMatrixTransform* CoinVisualizationFactory::getMatrixTransform( Eigen::Matrix4f &m )
+
+	VirtualRobot::VisualizationNodePtr CoinVisualizationFactory::createTriMeshModelVisualization(TriMeshModelPtr model,Eigen::Matrix4f &pose)
+	{
+		SoSeparator *res = new SoSeparator;
+		SoNode *res1 = CoinVisualizationFactory::getCoinVisualization(model);
+		SoMatrixTransform *mt = getMatrixTransformScaleMM2M(pose);
+		res->addChild(mt);
+		res->addChild(res1);
+
+		VisualizationNodePtr node(new CoinVisualizationNode(res));
+		return node;
+	}
+
+	SoMatrixTransform* CoinVisualizationFactory::getMatrixTransform(Eigen::Matrix4f &m)
     {
         SoMatrixTransform *mt = new SoMatrixTransform;
         SbMatrix m_(reinterpret_cast<SbMat*>(m.data()));

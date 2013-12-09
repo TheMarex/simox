@@ -85,7 +85,8 @@ public:
 	virtual VisualizationNodePtr createCoordSystem(float scaling = 1.0f, std::string *text = NULL, float axisLength = 100.0f, float axisSize = 3.0f, int nrOfBlocks = 10){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createBoundingBox(const BoundingBox &bbox, bool wireFrame=false){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createVertexVisualization(const Eigen::Vector3f &position, float radius, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}
-	virtual VisualizationNodePtr createTriMeshModelVisualization(TriMeshModelPtr model, bool showNormals, Eigen::Matrix4f &pose, bool showLines = true){return VisualizationNodePtr();}
+	virtual VisualizationNodePtr createTriMeshModelVisualization(TriMeshModelPtr model, Eigen::Matrix4f &pose){ return VisualizationNodePtr(); }
+	virtual VisualizationNodePtr createTriMeshModelVisualization(TriMeshModelPtr model, bool showNormals, Eigen::Matrix4f &pose, bool showLines = true){ return VisualizationNodePtr(); }
 	virtual VisualizationNodePtr createPlane(const Eigen::Vector3f &position, const Eigen::Vector3f &normal, float extend, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createPlane(const MathTools::Plane &plane, float extend, float transparency,  float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return createPlane(plane.p, plane.n,extend,transparency,colorR,colorG,colorB);}
 	virtual VisualizationNodePtr createArrow(const Eigen::Vector3f &n, float length = 50.0f, float width = 2.0f, const Color &color = Color::Gray()){return VisualizationNodePtr();}

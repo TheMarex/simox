@@ -19,6 +19,7 @@
 		</Transform>
 		<Joint type="revolute" offset="0">
 			<Limits unit="degree" lo="-90" hi="45"/>
+			<axis x="0" y="0" z="1"/>
 			<!--DH a="0" d="100" theta="-30" alpha="15" units="degree"/-->
 		</Joint>
 		<Visualization enable="true">

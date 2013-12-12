@@ -1,7 +1,7 @@
 PROJECT(Simox)
 
 cmake_minimum_required(VERSION 2.6)
-if("${CMAKE_VERSION}" VERSION_GREATER 2.8.11)
+if(NOT ("${CMAKE_VERSION}" VERSION_LESS 2.8.12))
 	cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warninss
 ENDIF()
 

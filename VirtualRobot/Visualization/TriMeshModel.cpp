@@ -106,12 +106,20 @@ void TriMeshModel::addFace(const MathTools::TriangleFace& face)
 
 
 /**
- * This method adds a vertex to the internal data structure TriMeshModel::vertices.
- */
+* This method adds a vertex to the internal data structure TriMeshModel::vertices.
+*/
 void TriMeshModel::addVertex(const Eigen::Vector3f& vertex)
 {
 	vertices.push_back(vertex);
 	boundingBox.addPoint(vertex);
+}
+
+/**
+* This method adds a normal to the internal data structure TriMeshModel::normals.
+*/
+void TriMeshModel::addNormal(const Eigen::Vector3f& normal)
+{
+	normals.push_back(normal);
 }
 
 /**

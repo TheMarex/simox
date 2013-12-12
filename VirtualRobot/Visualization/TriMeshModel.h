@@ -47,7 +47,8 @@ public:
 	static Eigen::Vector3f CreateNormal(Eigen::Vector3f& vertex1, Eigen::Vector3f& vertex2, Eigen::Vector3f& vertex3);
 	void addFace(const MathTools::TriangleFace& face);
 	void addVertex(const Eigen::Vector3f& vertex);
-    void addColor(const VisualizationFactory::Color& color);
+	void addNormal(const Eigen::Vector3f& normal);
+	void addColor(const VisualizationFactory::Color& color);
     void addColor(const Eigen::Vector4f& color);
     void addMaterial(const VisualizationFactory::PhongMaterial& material);
 	void clear();
@@ -63,8 +64,9 @@ public:
     TriMeshModelPtr clone ();
     TriMeshModelPtr clone (Eigen::Vector3f &scaleFactor);
 
+	std::vector<Eigen::Vector3f> normals;
 	std::vector<Eigen::Vector3f> vertices;
-    std::vector<VisualizationFactory::Color> colors;
+	std::vector<VisualizationFactory::Color> colors;
 	std::vector<MathTools::TriangleFace> faces;
     std::vector<VisualizationFactory::PhongMaterial> materials;
 	BoundingBox boundingBox;

@@ -975,6 +975,7 @@ namespace VirtualRobot {
         return res;
 	}
 
+//#define SHOW_TRIMESH_NORMALS
 	SoNode * CoinVisualizationFactory::getCoinVisualization(TriMeshModelPtr model)
 	{
 		SoSeparator *res = new SoSeparator;
@@ -996,7 +997,7 @@ namespace VirtualRobot {
 			myBinding->value = SoMaterialBinding::PER_FACE_INDEXED;
 			res->addChild(myBinding);
 
-			//SbColor *matAmb = new SbColor[model->materials.size()];
+			SbColor *matAmb = new SbColor[model->materials.size()];
 			SbColor *matDif = new SbColor[model->materials.size()];
 			SbColor *matSpec = new SbColor[model->materials.size()];
 			float *transp = new float[model->materials.size()];
@@ -1004,7 +1005,7 @@ namespace VirtualRobot {
 
 			for (size_t i = 0; i < model->materials.size(); i++)
 			{
-				//matAmb[i].setValue(model->materials[i].ambient.r, model->materials[i].ambient.g, model->materials[i].ambient.b);
+				matAmb[i].setValue(model->materials[i].ambient.r, model->materials[i].ambient.g, model->materials[i].ambient.b);
 				matDif[i].setValue(model->materials[i].diffuse.r, model->materials[i].diffuse.g, model->materials[i].diffuse.b);
 				matSpec[i].setValue(model->materials[i].specular.r, model->materials[i].specular.g, model->materials[i].specular.b);
 				transp[i] = model->materials[i].transparency;
@@ -1016,12 +1017,12 @@ namespace VirtualRobot {
 			SoMaterial *myMaterials = new SoMaterial;
 			myMaterials->diffuseColor.setValues(0, model->materials.size(), matDif);
 			myMaterials->specularColor.setValues(0, model->materials.size(), matSpec);
-			//myMaterials->ambientColor.setValues(0, model->materials.size(), matAmb);
+			myMaterials->ambientColor.setValues(0, model->materials.size(), matAmb);
 			myMaterials->transparency.setValues(0, model->materials.size(), transp);
 			myMaterials->shininess.setValues(0, model->materials.size(), shin);
 			res->addChild(myMaterials);
 
-			//delete[] matAmb;
+			delete[] matAmb;
 			delete[] matDif;
 			delete[] matSpec;
 			delete[] shin;
@@ -1070,20 +1071,76 @@ namespace VirtualRobot {
 		res->addChild(myCoords);
 		delete[] vertexPositions;
 
-		// define faces
+		// define nomals array
+		if (model->normals.size() > 0)
+		{
+			// per vertex normals
+			SbVec3f *normalsArray = new SbVec3f[model->normals.size()];
+			for (size_t i = 0; i < model->normals.size(); i++)
+			{
+				normalsArray[i].setValue(model->normals[i](0), model->normals[i](1), model->normals[i](2));
+			}
+			// Define coordinates for vertices
+			SoNormal *normals = new SoNormal;
+			normals->vector.setValues(0, model->normals.size(), normalsArray);
+			res->addChild(normals);
+			delete[] normalsArray;
+		}
+		else
+		{
+			// per face normals
+			SbVec3f *normalsArray = new SbVec3f[model->faces.size()];
+			for (size_t i = 0; i < model->faces.size(); i++)
+			{
+				normalsArray[i].setValue(model->faces[i].normal(0), model->faces[i].normal(1), model->faces[i].normal(2));
+			}
+			// Define coordinates for vertices
+			SoNormal *normals = new SoNormal;
+			normals->vector.setValues(0, model->faces.size(), normalsArray);
+			res->addChild(normals);
+			delete[] normalsArray;
+		}
+		SoNormalBinding *normBinding = new SoNormalBinding;
+		normBinding->value = SoNormalBinding::PER_VERTEX_INDEXED;
+		res->addChild(normBinding);
+
+
+		// define faces and normals
 		int32_t* faces = new int32_t[model->faces.size() * 4];
+		int32_t* normalIndx = new int32_t[model->faces.size() * 4];
 		for (size_t i = 0; i < model->faces.size(); i++)
 		{
 			faces[i * 4] = model->faces[i].id1;
 			faces[i * 4 + 1] = model->faces[i].id2;
 			faces[i * 4 + 2] = model->faces[i].id3;
 			faces[i * 4 + 3] = SO_END_FACE_INDEX;
+			if (model->normals.size() > 0)
+			{
+				normalIndx[i * 4] = model->faces[i].idNormal1;
+				normalIndx[i * 4 + 1] = model->faces[i].idNormal2;
+				normalIndx[i * 4 + 2] = model->faces[i].idNormal3;
+				normalIndx[i * 4 + 3] = SO_END_FACE_INDEX;
+			} else
+			{
+				normalIndx[i * 4] = i;
+				normalIndx[i * 4 + 1] = i;
+				normalIndx[i * 4 + 2] = i;
+				normalIndx[i * 4 + 3] = SO_END_FACE_INDEX;
+			}
 		}
 
-
 		SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
+
+		// add face vector
 		myFaceSet->coordIndex.setValues(0, model->faces.size() * 4, faces);
+
+		// add normals vector
+		myFaceSet->normalIndex.setValues(0, model->faces.size() * 4, normalIndx);
+
 		res->addChild(myFaceSet);
+
+		delete[] faces;
+		delete[] normalIndx;
 
 		if (materialMode)
 		{
@@ -1119,7 +1176,74 @@ namespace VirtualRobot {
 			delete[] matInx;
 		}
 		
+#ifdef SHOW_TRIMESH_NORMALS
+		Eigen::Vector3f z(0, 0, 1.0f);
+		SoSeparator *arrow = CreateArrow(z, 30.0f, 1.5f);
+		arrow->ref();
+		if (model->normals.size() > 0)
+		{
+			for (size_t i = 0; i < model->faces.size(); i++)
+			{
+				unsigned int id1 = model->faces[i].id1;
+				unsigned int id2 = model->faces[i].id2;
+				unsigned int id3 = model->faces[i].id3;
+				Eigen::Vector3f v1 = model->vertices[id1];
+				Eigen::Vector3f v2 = model->vertices[id2];
+				Eigen::Vector3f v3 = model->vertices[id3];
 
+				unsigned int normalIndx1 = model->faces[i].idNormal1;
+				unsigned int normalIndx2 = model->faces[i].idNormal2;
+				unsigned int normalIndx3 = model->faces[i].idNormal3;
+				Eigen::Vector3f normal1 = model->normals[normalIndx1];
+				Eigen::Vector3f normal2 = model->normals[normalIndx2];
+				Eigen::Vector3f normal3 = model->normals[normalIndx3];
+				if (fabs(normal1.norm() - 1.0f) > 1.1)
+				{
+					VR_ERROR << "Wrong normal, norm:" << normal1.norm() << endl;
+				}
+				if (fabs(normal2.norm() - 1.0f) > 1.1)
+				{
+					VR_ERROR << "Wrong normal, norm:" << normal2.norm() << endl;
+				}
+				if (fabs(normal3.norm() - 1.0f) > 1.1)
+				{
+					VR_ERROR << "Wrong normal, norm:" << normal3.norm() << endl;
+				}
+				SoMatrixTransform *mt1 = new SoMatrixTransform;
+				SoMatrixTransform *mt2 = new SoMatrixTransform;
+				SoMatrixTransform *mt3 = new SoMatrixTransform;
+
+				MathTools::Quaternion q1 = MathTools::getRotation(z, normal1);
+				MathTools::Quaternion q2 = MathTools::getRotation(z, normal2);
+				MathTools::Quaternion q3 = MathTools::getRotation(z, normal3);
+				Eigen::Matrix4f mat1 = MathTools::quat2eigen4f(q1);
+				Eigen::Matrix4f mat2 = MathTools::quat2eigen4f(q2);
+				Eigen::Matrix4f mat3 = MathTools::quat2eigen4f(q3);
+				mat1.block(0, 3, 3, 1) = v1;
+				mat2.block(0, 3, 3, 1) = v2;
+				mat3.block(0, 3, 3, 1) = v3;
+				SbMatrix m1(reinterpret_cast<SbMat*>(mat1.data()));
+				SbMatrix m2(reinterpret_cast<SbMat*>(mat2.data()));
+				SbMatrix m3(reinterpret_cast<SbMat*>(mat3.data()));
+				mt1->matrix.setValue(m1);
+				mt2->matrix.setValue(m2);
+				mt3->matrix.setValue(m3);
+				SoSeparator *sn1 = new SoSeparator();
+				sn1->addChild(mt1);
+				sn1->addChild(arrow);
+				res->addChild(sn1);
+				SoSeparator *sn2 = new SoSeparator();
+				sn2->addChild(mt2);
+				sn2->addChild(arrow);
+				res->addChild(sn2);
+				SoSeparator *sn3 = new SoSeparator();
+				sn3->addChild(mt3);
+				sn3->addChild(arrow);
+				res->addChild(sn3);
+			}
+		}
+		arrow->unref();
+#endif
 		res->unrefNoDelete();
 		return res;
 

@@ -126,7 +126,7 @@ public:
 
 		bool isSet()
 		{
-			return (massKg!=0.0f || comLocation!=eCustom || !localCoM.isZero() || !intertiaMatrix.isIdentity() || ignoreCollisions.size()>0);
+			return (massKg != 0.0f || comLocation != eVisuBBoxCenter || !intertiaMatrix.isIdentity() || ignoreCollisions.size()>0);
 		}
 
 		std::string toXML(int tabs)

@@ -688,7 +688,8 @@ std::string RobotNode::toXML( const std::string &modelPath /*= "models"*/, bool 
         ss << "\t\t</Transform>" << endl;
     }
     ss << _toXML(modelPath);
-    ss << physics.toXML(2);
+	if (physics.isSet())
+		ss << physics.toXML(2);
     if (visualizationModel)
 	{
 		std::string visuFile = getFilenameReplacementVisuModel();

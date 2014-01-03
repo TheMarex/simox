@@ -47,7 +47,7 @@ public slots:
 	void closeEvent(QCloseEvent *event);
 
 	void resetSceneryAll();
-	void collisionModel();
+	void rebuildVisualization();
 	void showRobot();
 	void loadRobot();
 	void selectJoint(int nr);
@@ -57,6 +57,7 @@ public slots:
 	void robotStructure();
 	void robotCoordSystems();
 	void robotFullModel();
+	void showSensors();
 	void closeHand();
 	void openHand();
 	void selectEEF(int nr);

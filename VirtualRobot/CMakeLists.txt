@@ -80,6 +80,7 @@ Compression/CompressionRLE.cpp
 Compression/CompressionBZip2.cpp
 LinkedCoordinate.cpp
 SphereApproximator.cpp
+Import/SimoxXMLFactory.cpp
 )
 
 SET(INCLUDES
@@ -161,6 +162,8 @@ RuntimeEnvironment.h
 Compression/CompressionRLE.h
 Compression/CompressionBZip2.h
 SphereApproximator.h
+Import/SimoxXMLFactory.h
+Import/RobotImporterFactory.h
 )
 
 ADD_SUBDIRECTORY(Visualization/tests)

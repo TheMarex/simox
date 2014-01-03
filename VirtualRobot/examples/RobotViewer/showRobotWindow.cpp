@@ -3,6 +3,7 @@
 #include "VirtualRobot/EndEffector/EndEffector.h"
 #include "VirtualRobot/Workspace/Reachability.h"
 #include <VirtualRobot/RuntimeEnvironment.h>
+#include <VirtualRobot/Import/RobotImporterFactory.h>
 
 #include <QFileDialog>
 #include <Eigen/Geometry>
@@ -114,8 +115,8 @@ void showRobotWindow::setupUI()
 	connect(UI.checkBoxPhysicsCoM, SIGNAL(clicked()), this, SLOT(displayPhysics()));
 	connect(UI.checkBoxPhysicsInertia, SIGNAL(clicked()), this, SLOT(displayPhysics()));
 
-	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(collisionModel()));
-	connect(UI.checkBoxRobotSensors, SIGNAL(clicked()), this, SLOT(collisionModel()));
+	connect(UI.checkBoxColModel, SIGNAL(clicked()), this, SLOT(rebuildVisualization()));
+	connect(UI.checkBoxRobotSensors, SIGNAL(clicked()), this, SLOT(showSensors()));
 	connect(UI.checkBoxStructure, SIGNAL(clicked()), this, SLOT(robotStructure()));
 	UI.checkBoxFullModel->setChecked(true);
 	connect(UI.checkBoxFullModel, SIGNAL(clicked()), this, SLOT(robotFullModel()));
@@ -208,14 +209,14 @@ void showRobotWindow::robotFullModel()
 
 }
 
-void showRobotWindow::collisionModel()
+void showRobotWindow::rebuildVisualization()
 {
 	if (!robot)
 		return;
 	robotSep->removeAllChildren();
 	//setRobotModelShape(UI.checkBoxColModel->state() == QCheckBox::On);
 	useColModel = UI.checkBoxColModel->checkState() == Qt::Checked;
-	bool sensors = UI.checkBoxRobotSensors->checkState() == Qt::Checked;
+	//bool sensors = UI.checkBoxRobotSensors->checkState() == Qt::Checked;
 	SceneObject::VisualizationType colModel = (UI.checkBoxColModel->isChecked())?SceneObject::Collision:SceneObject::Full;
 
     visualization = robot->getVisualization<CoinVisualization>(colModel);
@@ -235,6 +236,23 @@ void showRobotWindow::collisionModel()
 
 }
 
+void showRobotWindow::showSensors()
+{
+	if (!robot)
+		return;
+	bool showSensors = UI.checkBoxRobotSensors->isChecked();
+
+	std::vector<SensorPtr> sensors = robot->getSensors();
+	for (size_t i = 0; i < sensors.size(); i++)
+	{
+		sensors[i]->setupVisualization(showSensors, showSensors);
+		sensors[i]->showCoordinateSystem(showSensors);
+	}
+	// rebuild visualization
+	rebuildVisualization();
+}
+
+
 
 void showRobotWindow::displayPhysics()
 {
@@ -246,7 +264,7 @@ void showRobotWindow::displayPhysics()
 	robot->showPhysicsInformation(physicsCoMEnabled,physicsInertiaEnabled);
 
 	// rebuild visualization
-	collisionModel();
+	rebuildVisualization();
 
 }
 void showRobotWindow::showRobot()
@@ -415,7 +433,7 @@ void showRobotWindow::showCoordSystem()
 
 	currentRobotNodes[nr]->showCoordinateSystem(UI.checkBoxShowCoordSystem->checkState() == Qt::Checked, size);
 	// rebuild visualization
-	collisionModel();
+	rebuildVisualization();
 }
 
 
@@ -443,7 +461,13 @@ void showRobotWindow::loadRobot()
 
 	try
 	{
-		robot = RobotIO::loadRobot(m_sRobotFilename,RobotIO::eFull);
+		RobotImporterFactoryPtr importer = RobotImporterFactory::fromName("SimoxXML",NULL);
+		if (!importer)
+		{
+			cout << " ERROR while grabbing importer" << endl;
+			return;
+		}
+		robot = importer->loadFromFile(m_sRobotFilename, RobotIO::eFull);
 	}
 	catch (VirtualRobotException &e)
 	{
@@ -502,7 +526,7 @@ void showRobotWindow::loadRobot()
 #endif
 
 	// build visualization
-	collisionModel();
+	rebuildVisualization();
 	robotStructure();
 	displayPhysics();
 	viewer->viewAll();
@@ -516,7 +540,7 @@ void showRobotWindow::robotStructure()
 	structureEnabled = UI.checkBoxStructure->checkState() == Qt::Checked;
 	robot->showStructure(structureEnabled);
 	// rebuild visualization
-	collisionModel();
+	rebuildVisualization();
 }
 
 void showRobotWindow::robotCoordSystems()
@@ -527,7 +551,7 @@ void showRobotWindow::robotCoordSystems()
 	bool robotAllCoordsEnabled = UI.checkBoxRobotCoordSystems->checkState() == Qt::Checked;
 	robot->showCoordinateSystems(robotAllCoordsEnabled);
 	// rebuild visualization
-	collisionModel();
+	rebuildVisualization();
 }
 
 void showRobotWindow::closeHand()

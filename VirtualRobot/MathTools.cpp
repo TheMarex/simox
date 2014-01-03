@@ -1482,16 +1482,32 @@ int VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::pow_int( int a, int b )
 
 }
 
-Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getPseudoInverse( const Eigen::MatrixXf &m, float tol /*= 1e-5f*/ )
+Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getPseudoInverse(const Eigen::MatrixXf &m, float tol /*= 1e-5f*/)
 {
 	Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
 	Eigen::MatrixXf U = svd.matrixU();
 	Eigen::MatrixXf V = svd.matrixV();
 	Eigen::VectorXf sv = svd.singularValues();
-	for (int i=0;i<sv.rows();i++)
-		if ( sv(i) > tol )
-			sv(i)=1.0f/sv(i);
-		else sv(i)=0;
+	for (int i = 0; i<sv.rows(); i++)
+	if (sv(i) > tol)
+		sv(i) = 1.0f / sv(i);
+	else sv(i) = 0;
+
+	return (V*sv.asDiagonal()*U.transpose());
+}
+
+
+Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::getPseudoInverseDamped(const Eigen::MatrixXf &m, float lambda /*= 1.0f*/)
+{
+	Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
+	Eigen::MatrixXf U = svd.matrixU();
+	Eigen::MatrixXf V = svd.matrixV();
+	Eigen::VectorXf sv = svd.singularValues();
+
+	for (int i = 0; i<sv.rows(); i++)
+	{
+		sv(i) = sv(i) / (sv(i)*sv(i) + lambda*lambda);
+	}
 
 	return (V*sv.asDiagonal()*U.transpose());
 }

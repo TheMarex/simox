@@ -586,6 +586,10 @@ namespace MathTools
 		Returns the Pseudo inverse matrix.
 	*/
 	Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT getPseudoInverse(const Eigen::MatrixXf &m, float tol = 1e-5f);
+	/*!
+		Returns the damped Pseudo inverse matrix.
+	*/
+	Eigen::MatrixXf VIRTUAL_ROBOT_IMPORT_EXPORT getPseudoInverseDamped(const Eigen::MatrixXf &m, float lambda = 1.0f);
 
 	/*!
 		Check if all entries of v are valid numbers (i.e. all entries of v are not NaN and not INF)

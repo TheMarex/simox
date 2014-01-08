@@ -186,7 +186,7 @@ if (VirtualRobot_VISUALIZATION AND VirtualRobot_USE_COIN_VISUALIZATION)
     Visualization/CoinVisualization/CoinVisualization.h
 	)
 	ADD_SUBDIRECTORY(Visualization/CoinVisualization/tests)
-	
+
 elseif (VirtualRobot_VISUALIZATION AND VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION)
 
 	SET(SOURCES
@@ -204,15 +204,33 @@ elseif (VirtualRobot_VISUALIZATION AND VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZA
     Visualization/OSGVisualization/OSGVisualization.h
     Visualization/OSGVisualization/osgQtWidget/osgViewerWidget.h
 	)
-	
+
 	set(GUI_MOC_HDRS
         Visualization/OSGVisualization/osgQtWidget/osgViewerWidget.h
     )
     qt4_wrap_cpp(SOURCES ${GUI_MOC_HDRS})
-    
+
 	ADD_SUBDIRECTORY(Visualization/OSGVisualization/tests)
 	#ADD_SUBDIRECTORY(Visualization/OSGVisualization/osgQtViewer)
 
+endif ()
+
+if (VirtualRobot_USE_COLLADA)
+
+    SET(SOURCES
+    ${SOURCES}
+    Import/SimoxCOLLADAFactory.cpp
+    COLLADA/ColladaIO.cpp
+    COLLADA/ColladaParser.cpp
+    )
+
+    SET(INCLUDES
+    ${INCLUDES}
+    Import/SimoxCOLLADAFactory.h
+    COLLADA/ColladaIO.h
+    COLLADA/ColladaIterators.h
+    COLLADA/ColladaParser.h
+    )
 endif ()
 
 #INCLUDE_DIRECTORIES(${VirtualRobot_VISUALIZATION_INCLUDE_PATHS})
@@ -237,7 +255,7 @@ MESSAGE(STATUS " * VirtualRobot_EXTERNAL_LIBRARY_CMAKE_INCLUDE: ${VirtualRobot_E
 FOREACH(f ${VirtualRobot_EXTERNAL_LIBRARY_CMAKE_INCLUDE})
     MESSAGE(STATUS " ** INCLUDE: ${f}")
     INCLUDE(${f})
-ENDFOREACH(f) 
+ENDFOREACH(f)
 #######################################################################################
 
 # include collision detection
@@ -304,7 +322,7 @@ set(VirtualRobot_EXECUTABLES "")
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
 EXPORT(PACKAGE VirtualRobot)
- 
+
 #get_property(VirtualRobot_external_INCLUDE_DIRS TARGET VirtualRobot PROPERTY EXTERNAL_INCLUDE_DIRS)
 #message(STATUS "VirtualRobot_external_INCLUDE_DIRS: ${VirtualRobot_external_INCLUDE_DIRS}")
 
@@ -350,8 +368,8 @@ configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotMacros.cmake"
 #configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/FindVirtualRobot.cmake"
 #    "${VirtualRobot_CONFIG_INBUILD_DIR}/FindVirtualRobot.cmake" COPYONLY)
 
-    
-    
+
+
 # Create an VirtualRobotConfig.cmake file for the use from the install tree
 # and install it
 SET(VirtualRobot_LIBRARIES_ALL "${VirtualRobot_LIBRARIES}" "${VirtualRobot_EXTERNAL_LIBRARIES}")
@@ -386,7 +404,7 @@ install(FILES
     COMPONENT ApplicationData)
 
 
-INSTALL(TARGETS VirtualRobot 
+INSTALL(TARGETS VirtualRobot
         EXPORT VirtualRobotLibraryDepends
         RUNTIME DESTINATION ${VirtualRobot_INSTALL_BIN_DIR}
         LIBRARY DESTINATION ${VirtualRobot_INSTALL_LIB_DIR}
@@ -396,7 +414,7 @@ INSTALL(TARGETS VirtualRobot
 
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION ${VirtualRobot_INSTALL_HEADER_DIR}
 	COMPONENT Headers
-        FILES_MATCHING 
+        FILES_MATCHING
         PATTERN "*.h"
         PATTERN "*.hpp"
         PATTERN ".svn" EXCLUDE
@@ -409,7 +427,7 @@ INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION ${VirtualRobot_INSTALL_HEADE
 
 INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX}
 	COMPONENT ApplicationData
-        FILES_MATCHING 
+        FILES_MATCHING
         PATTERN "*.xml"
         PATTERN "*.XML"
         PATTERN "*.iv"

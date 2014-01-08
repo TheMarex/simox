@@ -35,21 +35,22 @@ SET(VirtualRobot_EXECUTABLES "@VirtualRobot_EXECUTABLES@")
 SET(VirtualRobot_VISUALIZATION "@VirtualRobot_VISUALIZATION@")
 SET(VirtualRobot_USE_COIN_VISUALIZATION "@VirtualRobot_USE_COIN_VISUALIZATION@")
 SET(VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION "@VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION@")
+SET(VirtualRobot_USE_COLLADA "@VirtualRobot_USE_COLLADA@")
 SET(VirtualRobot_VISUALIZATION_LIBS "@VirtualRobot_VISUALIZATION_LIBS@")
 SET(VirtualRobot_VISUALIZATION_INCLUDE_PATHS "@VirtualRobot_VISUALIZATION_INCLUDE_PATHS@")
 SET(VirtualRobot_VISUALIZATION_COMPILE_FLAGS "@VirtualRobot_VISUALIZATION_COMPILE_FLAGS@")
 
 # Convenient setup: all VirtualRobot-related dependencies are included here.
-# If this causes troubles, disable it by steting VirtualRobot_DISABLE_DEPENDENCIES_INCLUDE. 
+# If this causes troubles, disable it by steting VirtualRobot_DISABLE_DEPENDENCIES_INCLUDE.
 # Then you will need to setup the dependencies on your own, similar to the setup in VirtualRobotExternalLibrarySetup.cmake
 IF(NOT VirtualRobot_DISABLE_DEPENDENCIES_INCLUDE)
 	# include all library dependencies
-	if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY)) 
+	if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY))
 	    MESSAGE (STATUS " * Including ${VirtualRobot_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake")
 	endif()
 	include(${VirtualRobot_CMAKE_DIR}/VirtualRobotExternalLibrarySetup.cmake)
-	
-	if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY)) 
+
+	if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY))
 	    MESSAGE (STATUS " * Including ${VirtualRobot_CMAKE_DIR}/VirtualRobotMacros.cmake")
 	endif()
 	include(${VirtualRobot_CMAKE_DIR}/VirtualRobotMacros.cmake)

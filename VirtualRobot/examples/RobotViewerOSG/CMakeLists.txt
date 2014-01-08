@@ -5,19 +5,19 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
 CMAKE_POLICY(VERSION 2.6)
 
 IF(VirtualRobot_VISUALIZATION AND VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION)
-    
+
     LINK_DIRECTORIES(${VirtualRobot_LIB_DIR})
-    
-	    
+
+
 	# the variable "demo_SRCS" contains all .cpp files of this project
 	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/RobotViewer.cpp ${PROJECT_SOURCE_DIR}/showRobotWindow.cpp)# osgViewerWidget.cpp)
 	FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/showRobotWindow.h)# osgViewerWidget.h)
 
-  
+
     ################################## moc'ing ##############################
     set(GUI_MOC_HDRS
         ${PROJECT_SOURCE_DIR}/showRobotWindow.h
-        
+
     )
 #${PROJECT_SOURCE_DIR}/osgViewerWidget.h
 
@@ -38,6 +38,7 @@ IF(VirtualRobot_VISUALIZATION AND VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION)
 
     TARGET_LINK_LIBRARIES(${PROJECT_NAME} VirtualRobot ${VirtualRobot_VISUALIZATION_LIBS})
     INCLUDE_DIRECTORIES(${VirtualRobot_VISUALIZATION_INCLUDE_PATHS})
+    INCLUDE_DIRECTORIES(${COLLADA_DOM_INCLUDE_DIRS})
     INCLUDE(${QT_USE_FILE})
     ADD_DEFINITIONS(${VirtualRobot_VISUALIZATION_COMPILE_FLAGS})
 
@@ -45,7 +46,7 @@ IF(VirtualRobot_VISUALIZATION AND VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION)
         DESTINATION ${VirtualRobot_INSTALL_BIN_DIR}
 	COMPONENT Applications
 	)
-        
+
     MESSAGE( STATUS ${PROJECT_NAME} " will be placed into " ${VirtualRobot_BIN_DIR})
     MESSAGE( STATUS ${PROJECT_NAME} " will be installed into " ${VirtualRobot_INSTALL_BIN_DIR})
 ENDIF()

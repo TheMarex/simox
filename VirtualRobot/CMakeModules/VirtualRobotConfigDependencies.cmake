@@ -153,7 +153,10 @@
 	        FIND_LIBRARY(COLLADA_LIBRARY ${COLLADA_DOM_LIBRARIES} ${COLLADA_DOM_LIBRARY_DIRS})
 	        MESSAGE (STATUS "Collada Full Collada lib: ${COLLADA_LIBRARY}")
 
-	        include_directories(${COLLADA_DOM_INCLUDE_DIRS})
+	        #include_directories(${COLLADA_DOM_INCLUDE_DIRS})
+
+	        SET (VirtualRobot_EXTERNAL_INCLUDE_DIRS ${VirtualRobot_EXTERNAL_INCLUDE_DIRS} ${COLLADA_DOM_INCLUDE_DIRS})
+			SET (VirtualRobot_EXTERNAL_LIBRARIES ${VirtualRobot_EXTERNAL_LIBRARIES} ${COLLADA_LIBRARY})
 	    ENDIF()
 	endif()
 

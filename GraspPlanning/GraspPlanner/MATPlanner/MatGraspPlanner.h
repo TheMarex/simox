@@ -27,7 +27,7 @@
 #include <GraspPlanning/GraspStudio.h>
 #include <GraspPlanning/GraspPlanner/GraspPlanner.h>
 #include <GraspPlanning/GraspQuality/GraspQualityMeasure.h>
-#include "powercrust.h"
+#include "../../ExternalDependencies/powercrust/powercrust.h"
 
 
 #include "MedialSphere.h"

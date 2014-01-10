@@ -11,3 +11,4 @@ set(PACKAGE_VERSION "@Simox_VERSION@")
       set(PACKAGE_VERSION_EXACT TRUE)
     endif()
 endif()
+

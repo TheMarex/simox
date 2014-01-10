@@ -11,9 +11,9 @@
 #include "VirtualRobot/RobotNodeSet.h"
 #include "VirtualRobot/RuntimeEnvironment.h"
 #include "VirtualRobot/Obstacle.h"
-#include <Planner/Rrt.h>
-#include <Visualization/CoinVisualization/CoinRrtWorkspaceVisualization.h>
-#include <PostProcessing/ShortcutProcessor.h>
+#include <MotionPlanning/Planner/Rrt.h>
+#include <MotionPlanning/Visualization/CoinVisualization/CoinRrtWorkspaceVisualization.h>
+#include <MotionPlanning/PostProcessing/ShortcutProcessor.h>
 #include <VirtualRobot/CollisionDetection/CDManager.h>
 
 #include <Inventor/sensors/SoTimerSensor.h>

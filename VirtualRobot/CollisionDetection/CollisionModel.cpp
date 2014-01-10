@@ -37,7 +37,7 @@ CollisionModel::CollisionModel(VisualizationNodePtr visu, const std::string &nam
 #if defined(VR_COLLISION_DETECTION_PQP)
 	collisionModelImplementation.reset(new CollisionModelPQP(model, colChecker,id));
 #else
-	collisionModelImplementation.reset(new CollisionModelDummy(model, colChecker,id));
+	collisionModelImplementation.reset(new CollisionModelDummy(colChecker));
 #endif
 }
 
@@ -258,7 +258,7 @@ void CollisionModel::scale( Eigen::Vector3f &scaleFactor )
 #if defined(VR_COLLISION_DETECTION_PQP)
         collisionModelImplementation.reset(new CollisionModelPQP(modelScaled, colChecker,id));
 #else
-        collisionModelImplementation.reset(new CollisionModelDummy(modelScaled, colChecker,id));
+        collisionModelImplementation.reset(new CollisionModelDummy(colChecker));
 #endif
     }
     if (visualization)

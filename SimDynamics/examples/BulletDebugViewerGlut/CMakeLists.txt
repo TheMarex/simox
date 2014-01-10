@@ -4,41 +4,24 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
 
 CMAKE_POLICY(VERSION 2.6)
 
-#LINK_LIBRARIES(
-#OpenGLSupport BulletDynamics  BulletCollision LinearMath    ${GLUT_glut_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
-#)
+INCLUDE(${Simox_DIR}/CMakeModules/SimoxMacros.cmake)
 
-LINK_DIRECTORIES(${Simox_LIB_DIR})
+# create the executable
+SimoxApplication(${PROJECT_NAME} "BulletDebugViewerGlut.cpp" "")
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} SimDynamics)
 
-ADD_EXECUTABLE(${PROJECT_NAME} BulletDebugViewerGlut.cpp)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Simox_BIN_DIR})
+  
+#######################################################################################
+############################ Setup for installation ###################################
+#######################################################################################
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} VirtualRobot Saba ${Simox_VISUALIZATION_LIBS})
-TARGET_LINK_LIBRARIES (${PROJECT_NAME} ${COLLISIONDETECTION_LIB} ${VirtualRobot_EXTERNAL_LIBRARIES} VirtualRobot SimDynamics ${SimDynamics_PHYSICS_LIBRARIES})
+install(TARGETS ${PROJECT_NAME}
+  # IMPORTANT: Add the library to the "export-set"
+  EXPORT SimoxTargets
+  RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+  COMPONENT dev)
 
-
-INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${SimDynamics_INSTALL_BIN_DIR})
-    
-MESSAGE( STATUS ${PROJECT_NAME} " will be placed into " ${Simox_BIN_DIR})
-MESSAGE( STATUS ${PROJECT_NAME} " will be installed into " ${SimDynamics_INSTALL_BIN_DIR})
-
-
-
-
-#IF (WIN32)
-#		IF (CMAKE_CL_64)
-#			ADD_CUSTOM_COMMAND(
-#				TARGET AppGenericJointDemo
-#				POST_BUILD
-#				COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${BULLET_PHYSICS_SOURCE_DIR}/glut64.dll ${CMAKE_CURRENT_BINARY_DIR}
-#			)
-#		ELSE(CMAKE_CL_64)
-#			ADD_CUSTOM_COMMAND(
-#				TARGET AppGenericJointDemo
-#				POST_BUILD
-#				COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${BULLET_PHYSICS_SOURCE_DIR}/GLUT32.DLL ${CMAKE_CURRENT_BINARY_DIR}
-#			)
-#		ENDIF(CMAKE_CL_64)
-#ENDIF(WIN32)
-
+MESSAGE( STATUS " ** Simox application ${PROJECT_NAME} will be placed into " ${Simox_BIN_DIR})
+MESSAGE( STATUS " ** Simox application ${PROJECT_NAME} will be installed into " ${INSTALL_BIN_DIR})

@@ -1,49 +1,43 @@
-##  Copyright (c) 2011, Karlsruhe Institute of Technology (Manfred Kroehnert)
+##  Copyright (c) 2014, Karlsruhe Institute of Technology (Nikolaus Vahrenkamp)
+
 
 # - Config file for the Simox package
 # It defines the following variables
-#  Simox_INCLUDE_DIRS  - include directories for Simox
-#  Simox_LIBRARY_DIRS  - library directories for Simox (normally not used!)
-#  Simox_LIBRARIES     - libraries to link against
-#  Simox_EXECUTABLES   - the Simox executable
-#  Simox_COMPILE_FLAGS - compile flags
-#  Simox_CMAKE_INCLUDE - list of includes that may be neccessary for external libraries (e.g. QT_USE_FILE)
-#  Simox_DATA_PATH     - the standard data path
-#  Simox_CMAKE_DIR     - Path to Simox cmake files.
-#  Simox_BASE_DIR      - Path to Simox
+#  Simox_INCLUDE_DIRS       - include directories for Simox
+#  Simox_LIBRARIES          - libraries to link against
+#  Simox_EXECUTABLE         - the executables
+#  Simox_VISUALIZATION      - if visualization is enabled
+#  Simox_USE_COIN_VISUALIZATION   - if Coin3D visualization was selected
 
-SET(Simox_INCLUDE_DIRS "@Simox_INCLUDE_DIRS@")
-SET(Simox_LIBRARY_DIRS "@Simox_LIB_DIRS@")
-SET(Simox_COMPILE_FLAGS "@Simox_LIB_FLAGS@")
-SET(Simox_CMAKE_INCLUDE "@Simox_LIBRARY_CMAKE_INCLUDE@")
-SET(Simox_DATA_PATH "@Simox_DATA_PATH@")
-SET(Simox_CMAKE_DIR "@Simox_CMAKE_DIR@")
-SET(VirtualRobot_CMAKE_DIR "@VirtualRobot_CMAKE_DIR@")
-SET(Simox_BASE_DIR "@Simox_BASE_DIR@")
-
-# These are IMPORTED targets created by SimoxLibraryDepends.cmake
-SET(Simox_LIBRARIES "@Simox_LIBRARIES_ALL@")
-SET(Simox_EXECUTABLES "@Simox_EXECUTABLES@")
+# Compute paths
+get_filename_component(Simox_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(Simox_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+ 
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET Simox AND NOT Simox_BINARY_DIR)
+  include("${Simox_CMAKE_DIR}/SimoxTargets.cmake")
+endif()
+ 
+# These are IMPORTED targets created by SimoxTargets.cmake
+set(Simox_LIBRARIES "@Simox_LIBRARIES@")
+set(Simox_EXECUTABLE "@Simox_EXECUTABLE@")
+set(Simox_DATA_PATH "@Simox_DATA_PATH@")
 
 SET(Simox_VISUALIZATION "@Simox_VISUALIZATION@")
 SET(Simox_USE_COIN_VISUALIZATION "@Simox_USE_COIN_VISUALIZATION@")
 SET(Simox_USE_OPENSCENEGRAPH_VISUALIZATION "@Simox_USE_OPENSCENEGRAPH_VISUALIZATION@")
 SET(Simox_USE_COLLADA "@Simox_USE_COLLADA@")
-SET(Simox_VISUALIZATION_LIBS "@Simox_VISUALIZATION_LIBS@")
-SET(Simox_VISUALIZATION_INCLUDE_PATHS "@Simox_VISUALIZATION_INCLUDE_PATHS@")
-SET(Simox_VISUALIZATION_COMPILE_FLAGS "@Simox_VISUALIZATION_COMPILE_FLAGS@")
 
-# Convenient setup: all simox-related dependencies are included here.
-# If this causes troubles, disable it by steting Simox_DISABLE_DEPENDENCIES_INCLUDE.
-# Then you will need to setup the dependencies on your own, similar to the setup in SimoxExternalLibrarySetup.cmake
-IF(NOT Simox_DISABLE_DEPENDENCIES_INCLUDE)
-    # include all library dependencies
-    if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY))
-        MESSAGE(STATUS " * Including ${Simox_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake")
-    endif()
-    include(${Simox_CMAKE_DIR}/SimoxExternalLibrarySetup.cmake)
-    if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY))
-        MESSAGE(STATUS " * Including ${Simox_CMAKE_DIR}/SimoxMacros.cmake")
-    endif()
-    include(${Simox_CMAKE_DIR}/SimoxMacros.cmake)
-ENDIF()
+
+SET(Simox_EXTERNAL_INCLUDE_DIRS "@Simox_EXTERNAL_INCLUDE_DIRS@")
+SET(Simox_EXTERNAL_LIBRARY_FLAGS "@Simox_EXTERNAL_LIBRARY_FLAGS@")
+SET(Simox_EXTERNAL_LIBRARIES "@Simox_EXTERNAL_LIBRARIES@")
+SET(Simox_EXTERNAL_LIBRARY_DIRS "@Simox_EXTERNAL_LIBRARY_DIRS@")
+SET(Simox_EXTERNAL_CMAKE_INCLUDE "@Simox_EXTERNAL_CMAKE_INCLUDE@")
+
+
+
+if (NOT (Simox_FIND_QUIETLY OR VirtualRobot_FIND_QUIETLY)) 
+    MESSAGE(STATUS " * Including ${Simox_CMAKE_DIR}/SimoxMacros.cmake")
+endif()
+include(@Simox_MACROS_INCLUDE_DIR@/SimoxMacros.cmake)

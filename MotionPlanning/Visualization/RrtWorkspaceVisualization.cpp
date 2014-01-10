@@ -1,6 +1,6 @@
 
 #include "RrtWorkspaceVisualization.h"
-#include "CSpace/CSpace.h"
+#include "MotionPlanning/CSpace/CSpace.h"
 #include "VirtualRobot/Nodes/RobotNode.h"
 
 namespace Saba {

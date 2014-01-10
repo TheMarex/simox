@@ -1405,7 +1405,7 @@ Eigen::VectorXf BulletRobot::getJointForceTorqueGlobal(const BulletRobot::LinkIn
     Eigen::Vector3f torqueBGlobal =  ftB.tail(3);
 
     // the lever from Object B CoM to Joint
-    Eigen::Vector3f leverOnJoint = (comBGlobal-jointGlobal) * 0.001;
+    Eigen::Vector3f leverOnJoint = (comBGlobal-jointGlobal) * 0.001f;
     // Calculate the torque in Joint by taking the torque that presses on the CoM of BodyB and the Torque of BodyB on the joint
     // forceOnBGlobal is inverted in next line because it is the force of A on B to hold it in position
     // torqueBGlobal is inverted in next line because it is the torque on B from A to compensate torque of other objects (which is the torque we would like) to hold it in place and therefore needs to be inverted as well

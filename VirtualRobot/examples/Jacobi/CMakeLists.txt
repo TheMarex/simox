@@ -4,52 +4,39 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
 
 CMAKE_POLICY(VERSION 2.6)
 
+INCLUDE(${Simox_DIR}/CMakeModules/SimoxMacros.cmake)
 
-IF(VirtualRobot_VISUALIZATION AND VirtualRobot_USE_COIN_VISUALIZATION)
-
-    LINK_DIRECTORIES(${VirtualRobot_LIB_DIR})
-    
+IF(Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)   
 	    
 	# the variable "demo_SRCS" contains all .cpp files of this project
 	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/JacobiDemo.cpp ${PROJECT_SOURCE_DIR}/JacobiWindow.cpp)
 	FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/JacobiWindow.h)
 
-  
-    ################################## moc'ing ##############################
-    set(GUI_MOC_HDRS
-        ${PROJECT_SOURCE_DIR}/JacobiWindow.h
-    )
 
-    set(GUI_UIS
-        ${PROJECT_SOURCE_DIR}/Jacobi.ui
-    )
+  ################################## moc'ing ##############################
+  set(GUI_MOC_HDRS
+      ${PROJECT_SOURCE_DIR}/JacobiWindow.h
+  )
 
-	#MESSAGE("GUI_MOC_HDRS: ${GUI_MOC_HDRS}")
-	#MESSAGE("GUI_UIS: ${GUI_UIS}")
-    qt4_wrap_cpp(demo_SRCS ${GUI_MOC_HDRS})
-    qt4_wrap_ui(UI_HEADER ${GUI_UIS})
-    get_filename_component(UI_HEADER_DIR ${UI_HEADER} PATH)
-	#MESSAGE("UI_HEADER: ${UI_HEADER}")
-    list(APPEND demo_INCS ${UI_HEADER})
+  set(GUI_UIS
+      ${PROJECT_SOURCE_DIR}/Jacobi.ui
+  )
 
-    include_directories(${UI_HEADER_DIR})
+ 	# create the executable
+  VirtualRobotQtApplication(${PROJECT_NAME} "${demo_SRCS}" "${demo_INCS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
+  SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Simox_BIN_DIR})
+  SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
+   
+  #######################################################################################
+  ############################ Setup for installation ###################################
+  #######################################################################################
 
+  install(TARGETS ${PROJECT_NAME}
+    # IMPORTANT: Add the library to the "export-set"
+    EXPORT SimoxTargets
+    RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+    COMPONENT dev)
 
-    ADD_EXECUTABLE(${PROJECT_NAME} ${demo_SRCS} ${demo_INCS})
-    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
-    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${VirtualRobot_BIN_DIR})
-
-#MESSAGE("QT_LIBRARIES :" ${QT_LIBRARIES})
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME} VirtualRobot ${VirtualRobot_VISUALIZATION_LIBS})
-    INCLUDE_DIRECTORIES(${VirtualRobot_VISUALIZATION_INCLUDE_PATHS})
-    INCLUDE(${QT_USE_FILE})
-    ADD_DEFINITIONS(${VirtualRobot_VISUALIZATION_COMPILE_FLAGS})
-
-    INSTALL(TARGETS ${PROJECT_NAME}
-        DESTINATION ${VirtualRobot_INSTALL_BIN_DIR}
-	COMPONENT Applications
-	)
-        
-    MESSAGE( STATUS ${PROJECT_NAME} " will be placed into " ${VirtualRobot_BIN_DIR})
-    MESSAGE( STATUS ${PROJECT_NAME} " will be installed into " ${VirtualRobot_INSTALL_BIN_DIR})
+  MESSAGE( STATUS " ** Simox application ${PROJECT_NAME} will be placed into " ${Simox_BIN_DIR})
+  MESSAGE( STATUS " ** Simox application ${PROJECT_NAME} will be installed into " ${INSTALL_BIN_DIR})
 ENDIF()

@@ -1,5 +1,5 @@
 
-#include "DynamicsEngine/BulletEngine/BulletOpenGLViewer.h"
+#include <SimDynamics/DynamicsEngine/BulletEngine/BulletOpenGLViewer.h>
 #include <SimDynamics/DynamicsWorld.h>
 #include <SimDynamics/DynamicsEngine/BulletEngine/BulletEngineFactory.h>
 

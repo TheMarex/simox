@@ -1,20 +1,32 @@
 PROJECT ( VirtualRobot )
 
-MESSAGE (STATUS "\n ***** CONFIGURING Simox project VirtualRobot *****")
+MESSAGE (STATUS "\n***** CONFIGURING Simox project VirtualRobot *****")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 CMAKE_POLICY(VERSION 2.6)
 
 if(NOT ("${CMAKE_VERSION}" VERSION_LESS 2.8.12))
-	cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warninss
+	cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warnings
 ENDIF()
 
 
-INCLUDE(config.cmake)
+########################### TESTING #####################################
+MACRO(ADD_VR_TEST TEST_NAME)  
+  INCLUDE_DIRECTORIES(${Simox_EXTERNAL_INCLUDE_DIRS})
+  INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
+  INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/..")
+  ADD_DEFINITIONS(${Simox_EXTERNAL_LIBRARY_FLAGS})
+  ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
+  ADD_EXECUTABLE(${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}.cpp)
+	TARGET_LINK_LIBRARIES(${TEST_NAME} VirtualRobot ${Simox_EXTERNAL_LIBRARIES})
+	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Simox_TEST_DIR})
+	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES FOLDER "VirtualRobot Tests")
+	ADD_TEST(NAME VirtualRobot_${TEST_NAME}
+	         COMMAND ${Simox_TEST_DIR}/${TEST_NAME} --output_format=XML --log_level=all --report_level=no)
+ENDMACRO()
 
-MESSAGE (STATUS " * VirtualRobot Binary directory: ${VirtualRobot_BIN_DIR}")
-MESSAGE (STATUS " * VirtualRobot Library directory: ${VirtualRobot_LIB_DIR}")
 
+#################################### FILES ##################################
 SET(SOURCES
 CollisionDetection/CollisionChecker.cpp
 CollisionDetection/CollisionModel.cpp
@@ -170,7 +182,7 @@ ADD_SUBDIRECTORY(Visualization/tests)
 ADD_SUBDIRECTORY(Workspace/tests)
 ADD_SUBDIRECTORY(Compression/tests)
 
-if (VirtualRobot_VISUALIZATION AND VirtualRobot_USE_COIN_VISUALIZATION)
+if (Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)
 
 	SET(SOURCES
 	${SOURCES}
@@ -187,7 +199,7 @@ if (VirtualRobot_VISUALIZATION AND VirtualRobot_USE_COIN_VISUALIZATION)
 	)
 	ADD_SUBDIRECTORY(Visualization/CoinVisualization/tests)
 
-elseif (VirtualRobot_VISUALIZATION AND VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZATION)
+elseif (Simox_VISUALIZATION AND Simox_USE_OPENSCENEGRAPH_VISUALIZATION)
 
 	SET(SOURCES
 	${SOURCES}
@@ -215,7 +227,7 @@ elseif (VirtualRobot_VISUALIZATION AND VirtualRobot_USE_OPENSCENEGRAPH_VISUALIZA
 
 endif ()
 
-if (VirtualRobot_USE_COLLADA)
+if (Simox_USE_COLLADA)
 
     SET(SOURCES
     ${SOURCES}
@@ -232,32 +244,6 @@ if (VirtualRobot_USE_COLLADA)
     COLLADA/ColladaParser.h
     )
 endif ()
-
-#INCLUDE_DIRECTORIES(${VirtualRobot_VISUALIZATION_INCLUDE_PATHS})
-#ADD_DEFINITIONS(${VirtualRobot_VISUALIZATION_COMPILE_FLAGS})
-
-
-#######################################################################################
-# don't include -> this is meant for external libs
-#INCLUDE(CMakeModules/VirtualRobotExternalLibrarySetup.cmake)
-
-# manually apply the configuration of external libs
-MESSAGE(STATUS " * VirtualRobot_EXTERNAL_INCLUDE_DIRS: ${VirtualRobot_EXTERNAL_INCLUDE_DIRS}")
-INCLUDE_DIRECTORIES(${VirtualRobot_EXTERNAL_INCLUDE_DIRS})
-
-MESSAGE(STATUS " * VirtualRobot_EXTERNAL_LIBRARY_FLAGS: ${VirtualRobot_EXTERNAL_LIBRARY_FLAGS}")
-ADD_DEFINITIONS(${VirtualRobot_EXTERNAL_LIBRARY_FLAGS})
-
-MESSAGE(STATUS " * VirtualRobot_EXTERNAL_LIBRARY_DIRS: ${VirtualRobot_EXTERNAL_LIBRARY_DIRS}")
-LINK_DIRECTORIES( ${VirtualRobot_EXTERNAL_LIBRARY_DIRS} )
-
-MESSAGE(STATUS " * VirtualRobot_EXTERNAL_LIBRARY_CMAKE_INCLUDE: ${VirtualRobot_EXTERNAL_LIBRARY_CMAKE_INCLUDE}")
-FOREACH(f ${VirtualRobot_EXTERNAL_LIBRARY_CMAKE_INCLUDE})
-    MESSAGE(STATUS " ** INCLUDE: ${f}")
-    INCLUDE(${f})
-ENDFOREACH(f)
-#######################################################################################
-
 # include collision detection
 INCLUDE (CollisionDetection/CMakeLists.txt)
 
@@ -268,153 +254,39 @@ ADD_SUBDIRECTORY(Transformation/tests/)
 # include examples
 ADD_SUBDIRECTORY(examples/)
 
-# create configuration file which contains all compile time defines
-CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/definesVR.h.cmake ${PROJECT_SOURCE_DIR}/definesVR.h)
-
-MESSAGE (STATUS " * Setting standard data path to ${CMAKE_INSTALL_PREFIX}/data")
-ADD_DEFINITIONS(-DVirtualRobot_DATA_PATH="${CMAKE_INSTALL_PREFIX}/data")
-ADD_DEFINITIONS(-DVirtualRobot_SRC_DATA_PATH="${PROJECT_SOURCE_DIR}/data")
 
 ADD_LIBRARY (VirtualRobot SHARED ${SOURCES} ${INCLUDES})
+TARGET_LINK_LIBRARIES(VirtualRobot ColCheckerPQP ${Simox_EXTERNAL_LIBRARIES})
 
-TARGET_LINK_LIBRARIES (VirtualRobot ${COLLISIONDETECTION_LIB} ${VirtualRobot_EXTERNAL_LIBRARIES})
-# need this to let the dependencies show up in VirtualRobotLibraryDepends
-TARGET_LINK_LIBRARIES (VirtualRobot LINK_INTERFACE_LIBRARIES ${COLLISIONDETECTION_LIB} ${VirtualRobot_EXTERNAL_LIBRARIES})
 
 # .DLL path
-SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${VirtualRobot_BIN_DIR})
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Simox_BIN_DIR})
 # .so path
-SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${VirtualRobot_LIB_DIR})
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${Simox_LIB_DIR})
 # .lib path (this is needed for setting the DLL-import library path on windows)
-SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${VirtualRobot_LIB_DIR})
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${Simox_LIB_DIR})
 
 
+#######################################################################################
+############################ Setup for installation ###################################
+#######################################################################################
 
 
+#set_target_properties(${PROJECT_NAME} PROPERTIES
+#  PUBLIC_HEADER "${INCLUDES}")
 
-#######################################################################
-# Setup for installation
-#######################################################################
-
-############################################
-MESSAGE(STATUS " * Generating CMake files")
-
-IF (NOT DEFINED Simox_VERSION)
-	set(VirtualRobot_MAJOR_VERSION 2)
-	set(VirtualRobot_MINOR_VERSION 1)
-	set(VirtualRobot_PATCH_VERSION 12)
-ELSE()
-	set(VirtualRobot_MAJOR_VERSION ${Simox_MAJOR_VERSION})
-	set(VirtualRobot_MINOR_VERSION ${Simox_MINOR_VERSION})
-	set(VirtualRobot_PATCH_VERSION ${Simox_PATCH_VERSION})
-ENDIF()
-set(VirtualRobot_VERSION
-    ${VirtualRobot_MAJOR_VERSION}.${VirtualRobot_MINOR_VERSION}.${VirtualRobot_PATCH_VERSION})
-set_target_properties( VirtualRobot  PROPERTIES
-	VERSION ${VirtualRobot_VERSION}
-	SOVERSION ${VirtualRobot_MAJOR_VERSION}
-	)
-MESSAGE(STATUS " * VirtualRobot Version: ${VirtualRobot_VERSION}")
-
-set(VirtualRobot_LIBRARIES VirtualRobot)
-set(VirtualRobot_EXECUTABLES "")
-
-# Export the package for use from the build-tree
-# (this registers the build-tree with a global CMake-registry)
-EXPORT(PACKAGE VirtualRobot)
-
-#get_property(VirtualRobot_external_INCLUDE_DIRS TARGET VirtualRobot PROPERTY EXTERNAL_INCLUDE_DIRS)
-#message(STATUS "VirtualRobot_external_INCLUDE_DIRS: ${VirtualRobot_external_INCLUDE_DIRS}")
-
-SET (VirtualRobot_CONFIG_INBUILD_DIR ${VirtualRobot_BUILD_DIRECTORY}/share/VirtualRobot/cmake)
-SET (VirtualRobot_CONFIG_INBUILD "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotConfig.cmake")
-SET (VirtualRobot_CONFIG_INSTALL_LOCAL_DIR ${VirtualRobot_BUILD_DIRECTORY}/InstallFiles)
-SET (VirtualRobot_CONFIG_INSTALL_LOCAL "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfig.cmake")
-SET (VirtualRobot_CONFIG_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/VirtualRobot/cmake)
-SET (VirtualRobot_CONFIG_INSTALL "${CMAKE_INSTALL_PREFIX}/VirtualRobotConfig.cmake")
-
-MESSAGE (STATUS " * VirtualRobot: SETTING UP INSTALL FILES")
-MESSAGE (STATUS " ** In-build tree: VirtualRobot_CONFIG_INBUILD = ${VirtualRobot_CONFIG_INBUILD}")
-MESSAGE (STATUS " ** Install tree : (local)   VirtualRobot_CONFIG_INSTALL_LOCAL = ${VirtualRobot_CONFIG_INSTALL_LOCAL}")
-MESSAGE (STATUS " ** Install tree : (install) VirtualRobot_CONFIG_INSTALL = ${VirtualRobot_CONFIG_INSTALL}")
-
-# Install the export set for use with the install-tree
-install(
-    EXPORT VirtualRobotLibraryDepends
-    DESTINATION "${VirtualRobot_CONFIG_INSTALL_DIR}")
-
-
-# Create an VirtualRobotConfig.cmake file for the use from the build tree
-SET(VirtualRobot_LIBRARIES_ALL "${VirtualRobot_LIBRARIES}" "${VirtualRobot_EXTERNAL_LIBRARIES}")
-SET(VirtualRobot_DIR "${PROJECT_SOURCE_DIR}/..")
-SET(VirtualRobot_INCLUDE_DIRS "${VirtualRobot_DIR}" "${VirtualRobot_EXTERNAL_INCLUDE_DIRS}")
-SET(VirtualRobot_LIB_DIRS "${VirtualRobot_BUILD_DIRECTORY}/${LIB_DIR}" "${VirtualRobot_EXTERNAL_LIBRARY_DIRS}")
-SET(VirtualRobot_LIB_FLAGS "${VirtualRobot_EXTERNAL_LIBRARY_FLAGS}")
-SET(VirtualRobot_CMAKE_DIR "${VirtualRobot_CONFIG_INBUILD_DIR}")
-SET(VirtualRobot_LIBRARY_CMAKE_INCLUDE "${VirtualRobot_EXTERNAL_LIBRARY_CMAKE_INCLUDE}")
-SET(VirtualRobot_DATA_PATH "${PROJECT_SOURCE_DIR}/data")
-configure_file(
-    ${VR_DIR}/CMakeModules/VirtualRobotConfig.cmake.in
-    "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotConfig.cmake"
-    @ONLY)
-configure_file(
-    ${VR_DIR}/CMakeModules/VirtualRobotConfigVersion.cmake.in
-    "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotConfigVersion.cmake"
-    @ONLY)
-configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotExternalLibrarySetup.cmake"
-    "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotExternalLibrarySetup.cmake" COPYONLY)
-configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotMacros.cmake"
-    "${VirtualRobot_CONFIG_INBUILD_DIR}/VirtualRobotMacros.cmake" COPYONLY)
-#configure_file("${PROJECT_SOURCE_DIR}/CMakeModules/FindVirtualRobot.cmake"
-#    "${VirtualRobot_CONFIG_INBUILD_DIR}/FindVirtualRobot.cmake" COPYONLY)
-
-
-
-# Create an VirtualRobotConfig.cmake file for the use from the install tree
-# and install it
-SET(VirtualRobot_LIBRARIES_ALL "${VirtualRobot_LIBRARIES}" "${VirtualRobot_EXTERNAL_LIBRARIES}")
-SET(VirtualRobot_DIR "${CMAKE_INSTALL_PREFIX}/include")
-SET(VirtualRobot_INCLUDE_DIRS "${VirtualRobot_DIR}" "${VirtualRobot_EXTERNAL_INCLUDE_DIRS}")
-SET(VirtualRobot_LIB_DIRS "${CMAKE_INSTALL_PREFIX}/${LIB_DIR}" "${VirtualRobot_EXTERNAL_LIBRARY_DIRS}")
-SET(VirtualRobot_CMAKE_DIR "${VirtualRobot_CONFIG_INSTALL_DIR}")
-SET(VirtualRobot_LIB_FLAGS "${VirtualRobot_EXTERNAL_LIBRARY_FLAGS}")
-SET(VirtualRobot_LIBRARY_CMAKE_INCLUDE "${VirtualRobot_EXTERNAL_LIBRARY_CMAKE_INCLUDE}")
-SET(VirtualRobot_DATA_PATH "${CMAKE_INSTALL_PREFIX}/data")
-
-configure_file(
-    ${VR_DIR}/CMakeModules/VirtualRobotConfig.cmake.in
-    "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfig.cmake"
-    @ONLY)
-configure_file(
-    ${VR_DIR}/CMakeModules/VirtualRobotConfigVersion.cmake.in
-    "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfigVersion.cmake"
-    @ONLY)
-
-install(FILES
-    "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfig.cmake"
-    "${VirtualRobot_CONFIG_INSTALL_LOCAL_DIR}/VirtualRobotConfigVersion.cmake"
-    DESTINATION "${VirtualRobot_CMAKE_DIR}"
-    COMPONENT ApplicationData
-    )
-
-install(FILES
-    "${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotExternalLibrarySetup.cmake"
-    "${PROJECT_SOURCE_DIR}/CMakeModules/VirtualRobotMacros.cmake"
-    DESTINATION "${VirtualRobot_CMAKE_DIR}"
-    COMPONENT ApplicationData)
-
-
-INSTALL(TARGETS VirtualRobot
-        EXPORT VirtualRobotLibraryDepends
-        RUNTIME DESTINATION ${VirtualRobot_INSTALL_BIN_DIR}
-        LIBRARY DESTINATION ${VirtualRobot_INSTALL_LIB_DIR}
-        ARCHIVE DESTINATION ${VirtualRobot_INSTALL_LIB_DIR}
-	COMPONENT Libraries
-        )
-
-INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION ${VirtualRobot_INSTALL_HEADER_DIR}
+install(TARGETS ${PROJECT_NAME}
+  # IMPORTANT: Add the library to the "export-set"
+  EXPORT SimoxTargets
+  RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+  LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib
+  ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT library
+  COMPONENT dev)
+#  PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/VirtualRobot"
+ 
+INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION "${Simox_INSTALL_HEADER_DIR}"
 	COMPONENT Headers
-        FILES_MATCHING
+       FILES_MATCHING 
         PATTERN "*.h"
         PATTERN "*.hpp"
         PATTERN ".svn" EXCLUDE
@@ -425,9 +297,9 @@ INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION ${VirtualRobot_INSTALL_HEADE
         PATTERN "examples" EXCLUDE
 	)
 
-INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX}
+INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${Simox_INSTALL_DIR}
 	COMPONENT ApplicationData
-        FILES_MATCHING
+        FILES_MATCHING 
         PATTERN "*.xml"
         PATTERN "*.XML"
         PATTERN "*.iv"
@@ -438,4 +310,5 @@ INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX}
         PATTERN "*.bin"
         PATTERN ".svn" EXCLUDE
 	)
-
+   
+MESSAGE (STATUS "***** Finished CONFIGURING Simox project VirtualRobot *****\n")

@@ -1,7 +1,7 @@
 
 #include "ShortcutProcessor.h"
-#include "CSpace/CSpaceSampled.h"
-#include "CSpace/CSpacePath.h"
+#include "MotionPlanning/CSpace/CSpaceSampled.h"
+#include "MotionPlanning/CSpace/CSpacePath.h"
 #include <vector>
 #include <time.h>
 #include <math.h>

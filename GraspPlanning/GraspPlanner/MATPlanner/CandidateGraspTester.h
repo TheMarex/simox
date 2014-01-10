@@ -28,7 +28,7 @@
 #include <vector>
 #include "MedialSphere.h"
 
-#include "powercrust.h"
+#include "../../ExternalDependencies/powercrust/powercrust.h"
 
 namespace GraspStudio
 {

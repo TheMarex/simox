@@ -13,7 +13,7 @@ using namespace VirtualRobot::MathTools;
 
 extern "C"
 {
-#include <qhull/qhull_a.h>
+#include "ExternalDependencies/qhull-2003.1/include/qhull/qhull_a.h"
 }
 namespace GraspStudio
 {

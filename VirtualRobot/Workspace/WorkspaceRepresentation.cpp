@@ -142,7 +142,8 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		FileIO::readString(tmpString, file);
 		bool fileTypeOK = false;
 		if (tmpString == "WorkspaceRepresentation Binary File" ||
-		    tmpString == "Reachability Binary File" ||
+            tmpString == "Reachability Binary File" ||
+            tmpString == "Reachbaility Binary File" || // typo in old versions
 		    tmpString == "Manipulability Binary File" ||
 		    tmpString == "ReachabilitySpace Binary File" ||
 		    tmpString == tmpStr2)

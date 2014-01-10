@@ -23,9 +23,12 @@
 #ifndef _VirtualRobot_Test_h_
 #define _VirtualRobot_Test_h_
 
+#ifndef BOOST_TEST_DYN_LINK
 #define BOOST_TEST_DYN_LINK
+#endif 
+
 #include "VirtualRobotImportExport.h"
-#include "definesVR.h"
+//#include "definesVR.h"
 #include <boost/test/unit_test.hpp>
 #include <string>
 #include <fstream>
@@ -34,7 +37,10 @@ struct OutputConfiguration
 {
 	OutputConfiguration()
 	{
-		std::string logFileName(VirtualRobot_TEST_DIR);
+        std::string logFileName;
+#ifdef Simox_TEST_DIR
+		logFileName = std::string(Simox_TEST_DIR);
+#endif
 		logFileName.append(boost::unit_test::framework::master_test_suite().p_name);
 		logFileName.append(".xml");
 		logFile.open(logFileName.c_str());

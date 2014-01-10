@@ -5,9 +5,9 @@
 #include <VirtualRobot/Nodes/RobotNode.h>
 #include <iostream>
 #include <sstream>
-#include "GraspQuality/GraspQualityMeasureWrenchSpace.h"
-#include "GraspQuality/GraspQualityMeasure.h"
-#include "ApproachMovementGenerator.h"
+#include "../GraspQuality/GraspQualityMeasureWrenchSpace.h"
+#include "../GraspQuality/GraspQualityMeasure.h"
+#include "../ApproachMovementGenerator.h"
 
 using namespace std;
 

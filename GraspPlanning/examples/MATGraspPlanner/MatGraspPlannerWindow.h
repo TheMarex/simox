@@ -48,13 +48,13 @@
 
 #include "ui_MatGraspPlanner.h"
 
-#include "GraspPlanner/MATPlanner/TestCases.h"
-#include "GraspPlanner/MATPlanner/StrOutHelpers.h"
+#include "GraspPlanning/GraspPlanner/MATPlanner/TestCases.h"
+#include "GraspPlanning/GraspPlanner/MATPlanner/StrOutHelpers.h"
 #include "GraspPlanning/GraspStudio.h"
 #include "GraspPlanning/GraspQuality/GraspQualityMeasureWrenchSpace.h"
-#include "GraspPlanner/MATPlanner/MatGraspPlanner.h"  
-#include "GraspPlanner/MATPlanner/MeshConverter.h"
-#include "GraspPlanner/MATPlanner/GraspPlannerConfiguration.h"
+#include "GraspPlanning/GraspPlanner/MATPlanner/MatGraspPlanner.h"  
+#include "GraspPlanning/GraspPlanner/MATPlanner/MeshConverter.h"
+#include "GraspPlanning/GraspPlanner/MATPlanner/GraspPlannerConfiguration.h"
 
 class MatGraspPlannerWindow : public QMainWindow
 {

@@ -1,8 +1,0 @@
-#ifndef _VIRTUAL_ROBOT_DEFINES_H_
-#define _VIRTUAL_ROBOT_DEFINES_H_
-
-#cmakedefine VR_COLLISION_DETECTION_PQP @VR_COLLISION_DETECTION_PQP@
-#define VirtualRobot_TEST_DIR "@VirtualRobot_TEST_DIR@/"
-
-
-#endif /* _VIRTUAL_ROBOT_DEFINES_H_ */

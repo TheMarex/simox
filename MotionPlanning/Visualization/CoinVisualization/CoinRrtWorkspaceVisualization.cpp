@@ -1,8 +1,8 @@
 
 #include "CoinRrtWorkspaceVisualization.h"
-#include "CSpace/CSpacePath.h"
-#include "CSpace/CSpaceTree.h"
-#include "CSpace/CSpaceNode.h"
+#include "MotionPlanning/CSpace/CSpacePath.h"
+#include "MotionPlanning/CSpace/CSpaceTree.h"
+#include "MotionPlanning/CSpace/CSpaceNode.h"
 
 #include <Inventor/SoPrimitiveVertex.h>
 #include <Inventor/SbLinear.h>

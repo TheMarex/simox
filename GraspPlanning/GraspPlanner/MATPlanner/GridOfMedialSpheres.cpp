@@ -146,7 +146,7 @@ namespace GraspStudio
 		{
 			mainDirection = 'x';
 			//numCells(0) = ceil(ceil(ratio * (numPoints ** (1.0 / 3))) / gridConstant);
-			numCells(0) = (int)ceil(ceil(ratio *pow(numPoints, (1.0f / 3.0f))) / gridConstant);
+			numCells(0) = (int)ceil(ceil(ratio *pow((float)numPoints, (1.0f / 3.0f))) / gridConstant);
 			cellWidth = maxDist / numCells(0);
 			numCells(1) = (int)ceil(diffVect(1) / cellWidth);
 			numCells(2) = (int)ceil(diffVect(2) / cellWidth);
@@ -155,7 +155,7 @@ namespace GraspStudio
 		{
 			mainDirection = 'y';
 			//numCells(1) = ceil(ceil(ratio * (num_points ** (1.0 / 3))) / k_factor);
-			numCells(1) = (int)ceil(ceil(ratio *pow(numPoints, (1.0f / 3.0f))) / gridConstant);
+			numCells(1) = (int)ceil(ceil(ratio *pow((float)numPoints, (1.0f / 3.0f))) / gridConstant);
 			cellWidth = maxDist / numCells(1);
 			numCells(0) = (int)ceil(diffVect(0) / cellWidth);
 			numCells(2) = (int)ceil(diffVect(2) / cellWidth);
@@ -165,7 +165,7 @@ namespace GraspStudio
 		{
 			mainDirection = 'z';
 			//numCells(2) = ceil(ceil(ratio * (numPoints ** (1.0 / 3))) / gridConstant);
-			numCells(2) = (int)ceil(ceil(ratio *pow(numPoints, (1.0f / 3.0f))) / gridConstant);
+			numCells(2) = (int)ceil(ceil(ratio *pow((float)numPoints, (1.0f / 3.0f))) / gridConstant);
 			cellWidth = maxDist / numCells(2);
 			numCells(0) = (int)ceil(diffVect(0) / cellWidth);
 			numCells(1) = (int)ceil(diffVect(1) / cellWidth);

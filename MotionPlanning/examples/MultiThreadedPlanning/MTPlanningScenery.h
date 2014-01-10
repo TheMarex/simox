@@ -5,13 +5,13 @@
 #include <string.h>
 #include <time.h>
 
-#include <Planner/PlanningThread.h>
-#include <PostProcessing/PathProcessingThread.h>
+#include <MotionPlanning/Planner/PlanningThread.h>
+#include <MotionPlanning/PostProcessing/PathProcessingThread.h>
 
-#include <CSpace/CSpaceSampled.h>
-#include <CSpace/CSpaceNode.h>
-#include <Planner/MotionPlanner.h>
-#include <Planner/BiRrt.h>
+#include <MotionPlanning/CSpace/CSpaceSampled.h>
+#include <MotionPlanning/CSpace/CSpaceNode.h>
+#include <MotionPlanning/Planner/MotionPlanner.h>
+#include <MotionPlanning/Planner/BiRrt.h>
 #include <Inventor/Qt/viewers/SoQtExaminerViewer.h>
 
 #define ROBOT_DIM 3

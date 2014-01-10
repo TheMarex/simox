@@ -21,8 +21,8 @@
 *
 */
 #include "CandidateGraspTester.h"
-#include "../GraspQuality/GraspQualityMeasure.h"
-#include "../GraspQuality/GraspQualityMeasureWrenchSpace.h"
+#include "../../GraspQuality/GraspQualityMeasure.h"
+#include "../../GraspQuality/GraspQualityMeasureWrenchSpace.h"
 #include <VirtualRobot/Robot.h>
 #include <VirtualRobot/EndEffector/EndEffector.h>
 

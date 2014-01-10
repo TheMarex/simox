@@ -25,8 +25,8 @@
 
 #include "../GraspStudio.h"
 #include "GraspPlanner.h"
-#include "ApproachMovementGenerator.h"
-#include "GraspQuality/GraspQualityMeasure.h"
+#include "../ApproachMovementGenerator.h"
+#include "../GraspQuality/GraspQualityMeasure.h"
 
 namespace GraspStudio
 {

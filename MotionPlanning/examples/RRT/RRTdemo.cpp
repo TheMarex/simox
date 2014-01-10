@@ -7,10 +7,10 @@
 #include <VirtualRobot/XML/RobotIO.h>
 #include <VirtualRobot/Visualization/VisualizationFactory.h>
 #include <VirtualRobot/Visualization/CoinVisualization/CoinVisualization.h>
-#include <Saba.h>
-#include <Planner/Rrt.h>
-#include <Planner/BiRrt.h>
-#include <Visualization/CoinVisualization/CoinRrtWorkspaceVisualization.h>
+#include <MotionPlanning/Saba.h>
+#include <MotionPlanning/Planner/Rrt.h>
+#include <MotionPlanning/Planner/BiRrt.h>
+#include <MotionPlanning/Visualization/CoinVisualization/CoinRrtWorkspaceVisualization.h>
 #include <Inventor/Qt/viewers/SoQtExaminerViewer.h>
 #include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/Qt/SoQt.h>

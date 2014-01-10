@@ -4,7 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
 
 CMAKE_POLICY(VERSION 2.6)
 
-INCLUDE(${VR_DIR}/CMakeModules/VirtualRobotMacros.cmake)
+INCLUDE(${Simox_DIR}/CMakeModules/SimoxMacros.cmake)
 
 IF(Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)
      
@@ -12,27 +12,30 @@ IF(Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)
 	FILE(GLOB demo_SRCS ${PROJECT_SOURCE_DIR}/ReachabilityMapScene.cpp ${PROJECT_SOURCE_DIR}/ReachabilityMapWindow.cpp)
 	FILE(GLOB demo_INCS ${PROJECT_SOURCE_DIR}/ReachabilityMapWindow.h)
 	
-    set(GUI_MOC_HDRS
-        ${PROJECT_SOURCE_DIR}/ReachabilityMapWindow.h
-    )
-    set(GUI_UIS
-        ${PROJECT_SOURCE_DIR}/ReachabilityMap.ui
-    )
+  set(GUI_MOC_HDRS
+      ${PROJECT_SOURCE_DIR}/ReachabilityMapWindow.h
+  )
+  set(GUI_UIS
+      ${PROJECT_SOURCE_DIR}/ReachabilityMap.ui
+  )
+  
+  # create the executable
+  VirtualRobotQtApplication(${PROJECT_NAME} "${demo_SRCS}" "${demo_INCS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
+  SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Simox_BIN_DIR})
+  SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
+   
+  #######################################################################################
+  ############################ Setup for installation ###################################
+  #######################################################################################
+   
+  install(TARGETS ${PROJECT_NAME}
+    # IMPORTANT: Add the library to the "export-set"
+    EXPORT SimoxTargets
+    RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+    COMPONENT dev)
+          
+  MESSAGE( STATUS " ** Simox application ${PROJECT_NAME} will be placed into " ${Simox_BIN_DIR})
+  MESSAGE( STATUS " ** Simox application ${PROJECT_NAME} will be installed into " ${INSTALL_BIN_DIR})
 
-
-    # create the executable
-    VirtualRobotQtApplication(${PROJECT_NAME} "${demo_SRCS}" "${demo_INCS}" "${GUI_MOC_HDRS}" "${GUI_UIS}")
-      
-    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES FOLDER "Examples")
-    SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${VirtualRobot_BIN_DIR})
-    
-     # install
-    INSTALL(TARGETS ${PROJECT_NAME}
-        DESTINATION ${VirtualRobot_INSTALL_BIN_DIR}
-	COMPONENT Applications
-	)
-        
-    MESSAGE( STATUS ${PROJECT_NAME} " will be placed into " ${VirtualRobot_BIN_DIR})
-    MESSAGE( STATUS ${PROJECT_NAME} " will be installed into " ${VirtualRobot_INSTALL_BIN_DIR})
 ENDIF()
 

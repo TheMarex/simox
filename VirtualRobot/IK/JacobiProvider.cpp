@@ -43,7 +43,9 @@ Eigen::MatrixXf JacobiProvider::getPseudoInverseJacobianMatrix(RobotNodePtr tcp)
 
 Eigen::MatrixXf JacobiProvider::getPseudoInverseJacobianMatrix()
 {
-	return getPseudoInverseJacobianMatrix(rns->getTCP());
+	MatrixXf Jacobian = this->getJacobianMatrix();
+	return computePseudoInverseJacobianMatrix(Jacobian);
+	//return getPseudoInverseJacobianMatrix(rns->getTCP());
 }
 
 Eigen::MatrixXf JacobiProvider::computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m) const
@@ -61,9 +63,15 @@ Eigen::MatrixXf JacobiProvider::computePseudoInverseJacobianMatrix(const Eigen::
 		}
 	case eSVD:
 		{
-			float pinvtoler = 0.00001f;
-			pseudo = MathTools::getPseudoInverse(m,pinvtoler);
-			break;
+				 float pinvtoler = 0.00001f;
+				 pseudo = MathTools::getPseudoInverse(m, pinvtoler);
+				 break;
+		}
+	case eSVDDamped:
+		{
+				 float pinvtoler = 0.00001f;
+				 pseudo = MathTools::getPseudoInverseDamped(m,pinvtoler);
+				 break;
 		}
 	default:
 		THROW_VR_EXCEPTION("Inverse Jacobi Method nyi...");

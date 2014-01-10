@@ -175,7 +175,17 @@ public:
 	Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode);
 	Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp);
 	Eigen::MatrixXf getJacobianMatrix(IKSolver::CartesianSelection mode);
+
+	/*!
+		Computes the complete Jacobian that consideres all defined TCPs and goal poses.
+	*/
 	virtual Eigen::MatrixXf getJacobianMatrix();
+
+	/*!
+		Computes the complete error vector, considering all TCPs and goals.
+	*/
+
+	virtual Eigen::VectorXf getErrorVector(float stepSize = 1.0f);
 
 	/*! @brief Returns the pseudo inverse of the Jacobian matrix for a given tcp of the robot.
 	 * @see getJacobianMatrix
@@ -193,7 +203,7 @@ public:
 		@return The changes \f$\Delta \theta\f$ in the joint angles.
 		\note{Note} This does not affect the joints values of the robot.
 	*/
-	Eigen::VectorXf computeStep(float stepSize=1.0);
+	Eigen::VectorXf computeStep(float stepSize=1.0f);
 
 
 	/*!	@brief Computes the complete inverse kinematics. 
@@ -248,7 +258,7 @@ public:
 		Returns 6D workspace delta that is used for Jacobi calculation.
 	*/
 	Eigen::VectorXf getDeltaToGoal(RobotNodePtr tcp = RobotNodePtr());
-	Eigen::VectorXf getDelta(Eigen::Matrix4f &current, Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode = IKSolver::All);
+	Eigen::VectorXf getDelta(const Eigen::Matrix4f &current, const Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode = IKSolver::All);
 	
 protected:
 	

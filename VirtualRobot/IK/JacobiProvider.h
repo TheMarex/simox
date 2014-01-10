@@ -46,8 +46,9 @@ public:
     */
     enum InverseJacobiMethod
     {
-        eSVD,       //<! Performing SVD and setting very small eigen values to zero results in a quite stable inverting of the Jacobi. (default)
-        eTranspose  //<! The Jacobi Transpose method is faster than SVD and works well for redundant kinematic chains.
+		eSVD,       //<! Performing SVD and setting very small eigen values to zero results in a quite stable inverting of the Jacobi. (default)
+		eSVDDamped, //<!using the damped PseudoInverse algorithm
+		eTranspose  //<! The Jacobi Transpose method is faster than SVD and works well for redundant kinematic chains.
     };
 
 	/*!

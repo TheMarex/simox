@@ -61,7 +61,80 @@ void DifferentialIK::setGoal(const Eigen::Matrix4f &goal, RobotNodePtr tcp, IKSo
 
 MatrixXf DifferentialIK::getJacobianMatrix()
 {
-	return getJacobianMatrix(RobotNodePtr());
+	if (nRows == 0) 
+		this->setNRows();
+	size_t nDoF = nodes.size();
+	MatrixXf Jacobian(nRows, nDoF);
+
+	size_t index = 0;
+	for (size_t i = 0; i<tcp_set.size(); i++)
+	{
+		RobotNodePtr tcp = tcp_set[i];
+		if (this->targets.find(tcp) != this->targets.end())
+		{
+			IKSolver::CartesianSelection mode = this->modes[tcp];
+			MatrixXf partJacobian = this->getJacobianMatrix(tcp, mode);
+			Jacobian.block(index, 0, partJacobian.rows(), nDoF) = partJacobian;
+			if (mode & IKSolver::X)
+				index++;
+			if (mode & IKSolver::Y)
+				index++;
+			if (mode & IKSolver::Z)
+				index++;
+			if (mode & IKSolver::Orientation)
+				index += 3;
+		}
+		else
+			VR_ERROR << "Internal error?!" << endl; // Error
+	}
+	return Jacobian;
+}
+
+VectorXf DifferentialIK::getErrorVector(float stepSize)
+{
+	if (nRows == 0)
+		this->setNRows();
+	size_t nDoF = nodes.size();
+	VectorXf error(nRows);
+
+	// compute error
+	size_t index = 0;
+	for (size_t i = 0; i < tcp_set.size(); i++)
+	{
+		RobotNodePtr tcp = tcp_set[i];
+		if (this->targets.find(tcp) != this->targets.end())
+		{
+			Eigen::VectorXf delta = getDeltaToGoal(tcp);
+			IKSolver::CartesianSelection mode = this->modes[tcp];
+			Vector3f position = delta.head(3);
+			position *= stepSize;
+			if (mode & IKSolver::X)
+			{
+				error(index) = position(0);
+				index++;
+			}
+			if (mode & IKSolver::Y)
+			{
+				error(index) = position(1);
+				index++;
+			}
+			if (mode & IKSolver::Z)
+			{
+				error(index) = position(2);
+				index++;
+			}
+			if (mode & IKSolver::Orientation)
+			{
+				error.segment(index, 3) = delta.tail(3)*stepSize;
+				index += 3;
+			}
+
+		}
+		else
+			VR_ERROR << "Internal error?!" << endl; // Error
+	}
+	return error;
+
 }
 
 MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp)
@@ -275,7 +348,7 @@ Eigen::VectorXf DifferentialIK::getDeltaToGoal(RobotNodePtr tcp)
 }
 
 
-Eigen::VectorXf DifferentialIK::getDelta(Eigen::Matrix4f &current, Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode)
+Eigen::VectorXf DifferentialIK::getDelta(const Eigen::Matrix4f &current, const Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode)
 {
 	Eigen::VectorXf result(6);
 	result.setZero();
@@ -310,48 +383,10 @@ VectorXf DifferentialIK::computeStep(float stepSize )
 	if (nRows==0) this->setNRows();
 	size_t nDoF = nodes.size();
 
-	MatrixXf Jacobian(nRows,nDoF);
-	VectorXf error(nRows);
 
-	size_t index=0;
-	for (size_t i=0; i<tcp_set.size();i++)
-	{
-		RobotNodePtr tcp = tcp_set[i];
-		if (this->targets.find(tcp)!=this->targets.end())
-		{
-			Eigen::VectorXf delta = getDeltaToGoal(tcp);
-			IKSolver::CartesianSelection mode = this->modes[tcp];
-			MatrixXf partJacobian = this->getJacobianMatrix(tcp,mode);
-			Jacobian.block(index,0,partJacobian.rows(),nDoF) = partJacobian;
-			Vector3f position = delta.head(3);
-			position *=stepSize;
-			if (mode & IKSolver::X) 
-			{
-				error(index) = position(0); 
-				index++;
-			}
-			if (mode & IKSolver::Y) 
-			{
-				error(index) = position(1);
-				index++;
-			}
-			if (mode & IKSolver::Z) 
-			{
-				error(index) = position(2);
-				index++;
-			}
-			if (mode & IKSolver::Orientation)
-			{
-				error.segment(index,3) = delta.tail(3)*stepSize;
-				index+=3;
-			}
+	VectorXf error = getErrorVector(stepSize);
+	MatrixXf Jacobian = getJacobianMatrix();
 
-		}
-		else
-			VR_ERROR << "Internal error?!" << endl; // Error
-
-
-	}
 	//cout << "ERROR:" << endl;
 	//cout << error << endl;
 	VectorXf dTheta(nDoF);

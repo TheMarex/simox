@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(testJacobianRevoluteJoint)
 	rob->setJointValues(kc,jV);
 	
 	// Calculate the Jacobi matrix at the given position
-	Eigen::MatrixXf jacobian = ik.getJacobianMatrix();
+	Eigen::MatrixXf jacobian = ik.getJacobianMatrix(kc->getTCP());
 
 	// Calculate the Differences quotient
 	Eigen::Matrix4f a=r3->getGlobalPose();

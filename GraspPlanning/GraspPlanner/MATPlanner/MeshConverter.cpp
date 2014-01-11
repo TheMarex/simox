@@ -21,8 +21,7 @@
 *
 */
 #include "MeshConverter.h"
-
-#include <VirtualRobot/Visualization/CoinVisualization/CoinVisualizationFactory.h>
+#include <VirtualRobot/Visualization/VisualizationFactory.h>
 
 using namespace std;
 using namespace Eigen;
@@ -109,7 +108,9 @@ namespace GraspStudio
 		{
 			checkAndSplitVertex(triMesh2, i, maxDist);
 		}
-		CoinVisualizationFactoryPtr cv(new CoinVisualizationFactory());
+	    VisualizationFactoryPtr cv = VisualizationFactory::first(NULL);
+        if (!cv)
+            return res;
 		Eigen::Matrix4f gp = object->getGlobalPose();
 		VisualizationNodePtr visu = cv->createTriMeshModelVisualization(triMesh2, false, gp);
 		CollisionModelPtr cm(new CollisionModel(visu));

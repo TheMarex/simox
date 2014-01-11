@@ -123,7 +123,7 @@ VisualizationNodePtr OSGVisualizationFactory::createLine(const Eigen::Matrix4f &
 	color->push_back(osg::Vec4(colorR,colorG,colorB,1.0)); 
 	beam->setVertexArray(points.get()); 
 	beam->setColorArray(color.get()); 
-	beam->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE); 
+	beam->setColorBinding(osg::Geometry::BIND_PER_VERTEX); // BIND_PER_PRIMITIVE
 	beam->addPrimitiveSet(new osg::DrawArrays(GL_LINES,0,2));
 
 

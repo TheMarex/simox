@@ -26,7 +26,6 @@
 #include "../../GraspStudio.h"
 #include <vector>
 #include <Eigen/Geometry>
-#include <Inventor/nodes/SoSeparator.h>
 
 #include "StrOutHelpers.h"
 

@@ -332,8 +332,8 @@ namespace MathTools
 	{
 		TriangleFace()
 		:id1(UINT_MAX), id2(UINT_MAX), id3(UINT_MAX),
-		idNormal1(UINT_MAX), idNormal2(UINT_MAX), idNormal3(UINT_MAX),
 		idColor1(UINT_MAX), idColor2(UINT_MAX), idColor3(UINT_MAX),
+		idNormal1(UINT_MAX), idNormal2(UINT_MAX), idNormal3(UINT_MAX),
 		idMaterial(UINT_MAX){}
 
 		/**

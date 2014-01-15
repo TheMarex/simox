@@ -32,6 +32,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/shared_ptr.hpp>
 #include <ostream>
+#include "../VirtualRobotImportExport.h"
 
  namespace VirtualRobot {
 
@@ -41,7 +42,7 @@
  * the OpenGRASP robot editor. Once the file is read, the kinematic and visual structure is
  * stored in a tree shaped data structure for further processing.
  */
-class ColladaParser {
+	 class VIRTUAL_ROBOT_IMPORT_EXPORT ColladaParser {
     public:
 
         /** @brief Class that represents the visual appearance of a robot node

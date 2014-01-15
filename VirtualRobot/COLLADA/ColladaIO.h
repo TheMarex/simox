@@ -15,10 +15,11 @@
 #include <VirtualRobot/Visualization/TriMeshModel.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include "../VirtualRobotImportExport.h"
 
 namespace VirtualRobot {
 
-class ColladaIO {
+	class VIRTUAL_ROBOT_IMPORT_EXPORT ColladaIO {
     public:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 

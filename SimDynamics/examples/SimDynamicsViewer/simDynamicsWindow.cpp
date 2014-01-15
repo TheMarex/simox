@@ -364,7 +364,7 @@ void SimDynamicsWindow::updateJointInfo()
 		rn = robotNodes[n];
 	}
 	SimDynamics::DynamicsObjectPtr dynRN = dynamicsRobot->getDynamicsRobotNode(rn);
-	SimDynamics::BulletObjectPtr bulletRN = boost::shared_dynamic_cast<SimDynamics::BulletObject>(dynRN);
+	SimDynamics::BulletObjectPtr bulletRN = boost::dynamic_pointer_cast<SimDynamics::BulletObject>(dynRN);
 	if (bulletRN)
 	{
 //		cout << "FORCE: " << bulletRN->getRigidBody()->getTotalForce()[0] << ", " << bulletRN->getRigidBody()->getTotalForce()[1] << ", " << bulletRN->getRigidBody()->getTotalForce()[2] << endl;
@@ -373,7 +373,7 @@ void SimDynamicsWindow::updateJointInfo()
 //		cout << "getAngularVelocity: " << bulletRN->getRigidBody()->getAngularVelocity()[0] << ", " << bulletRN->getRigidBody()->getAngularVelocity()[1] << ", " << bulletRN->getRigidBody()->getAngularVelocity()[2] << endl;
 		
 	}
-	BulletRobotPtr bulletRobot = boost::shared_dynamic_cast<SimDynamics::BulletRobot>(dynamicsRobot);
+	BulletRobotPtr bulletRobot = boost::dynamic_pointer_cast<SimDynamics::BulletRobot>(dynamicsRobot);
 	if (rn && bulletRobot && bulletRobot->hasLink(rn))
 	{
 		BulletRobot::LinkInfo linkInfo = bulletRobot->getLink(rn);

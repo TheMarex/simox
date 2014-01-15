@@ -9,6 +9,11 @@
 #  Simox_VISUALIZATION      - if visualization is enabled
 #  Simox_USE_COIN_VISUALIZATION   - if Coin3D visualization was selected
 
+if(Simox_FOUND)
+	return()
+endif()
+set(Simox_FOUND TRUE)
+
 # Compute paths
 get_filename_component(Simox_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 set(Simox_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")

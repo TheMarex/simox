@@ -28,13 +28,13 @@
 #include "../../DynamicsWorld.h"
 #include "BulletEngine.h"
 
-/*#ifdef _WINDOWS
+#ifdef _WINDOWS
 #include <Win32DemoApplication.h>
 #define PlatformDemoApplication Win32DemoApplication
-#else*/
+#else
 #include <GlutDemoApplication.h>
 #define PlatformDemoApplication GlutDemoApplication
-//#endif
+#endif
 
 #include <btBulletDynamicsCommon.h>
 #include <GlutStuff.h>

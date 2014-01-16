@@ -6,6 +6,8 @@ CMAKE_POLICY(VERSION 2.6)
 
 INCLUDE(${Simox_DIR}/CMakeModules/SimoxMacros.cmake)
 
+include_directories(${GLUT_INCLUDE_DIR})
+#message("GLUT_INCLUDE_DIR:${GLUT_INCLUDE_DIR}")
 # create the executable
 SimoxApplication(${PROJECT_NAME} "BulletDebugViewerGlut.cpp" "")
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} SimDynamics)

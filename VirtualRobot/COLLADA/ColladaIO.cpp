@@ -397,7 +397,7 @@ PositionSensorPtr ColladaIO::convertSensor(boost::shared_ptr<ColladaParser::Node
 	Eigen::Matrix4f rnTrafo = getTransformation(colladaNode, scaling);
 	boost::shared_ptr<TriMeshModel> m = getMesh(colladaNode, rnTrafo.inverse(), scaling);
 	VirtualRobot::VisualizationNodePtr visualizationNode;
-	if (m && m->vertices.size()>0)
+	if (m && m->vertices.size() && m->faces.size()>0)
 	{
 		VisualizationFactoryPtr f = VisualizationFactory::first(NULL);
 		if (f)
@@ -444,8 +444,9 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 	boost::shared_ptr<TriMeshModel> m = getMesh(colladaNode, preJointTransform.inverse(), scaling);
 	VirtualRobot::VisualizationNodePtr visualizationNode;
 	VirtualRobot::CollisionModelPtr colModel;
-	if (m && m->vertices.size()>0)
+	if (m && m->vertices.size()>0 && m->faces.size()>0)
 	{
+		cout << "creating visu for " << name << endl;
 		VisualizationFactoryPtr f = VisualizationFactory::first(NULL);
 		if (f)
 		{

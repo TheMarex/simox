@@ -21,6 +21,7 @@ VisualizationNode::VisualizationNode()
 		updateVisualization = true;
 		showVisualization = true;
 		showAttachedVisualizations = true;
+		boundingBox = false;
 		globalPose.setIdentity();
 }
 	

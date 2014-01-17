@@ -3,6 +3,7 @@
 #include "../VirtualRobot.h"
 #include "../VirtualRobotException.h"
 #include "../XML/BaseIO.h"
+#include "../Visualization/TriMeshModel.h"
 #include "RobotNode.h"
 
 #include <Eigen/Core>
@@ -158,7 +159,7 @@ std::string Sensor::toXML(const std::string &modelPath, int tabs)
     ss << pre << "<Transform>" << endl;
     ss << BaseIO::toXML(rnTransformation,pre2);
     ss << pre << "</Transform>" << endl;
-    if (visualizationModel)
+	if (visualizationModel && visualizationModel->getTriMeshModel() && visualizationModel->getTriMeshModel()->faces.size()>0)
         ss << visualizationModel->toXML(modelPath,tabs+1);
     ss << pre << "</Sensor>" << endl;
     return ss.str();

@@ -504,6 +504,43 @@ void showRobotWindow::loadRobot()
 	robotStructure();
 	displayPhysics();
 	viewer->viewAll();
+
+#if 0
+	std::string outFile("robot.xml");
+	//store robot to file
+	boost::filesystem::path relOutFile(outFile);
+	boost::filesystem::path outFilename = relOutFile.filename();
+	boost::filesystem::path relOutDir = relOutFile.parent_path();
+	boost::filesystem::path absOutFile = boost::filesystem::absolute(relOutDir);
+	std::string modelDir;
+	modelDir = outFilename.stem().string();
+	modelDir += "_models";
+	//cout << "Rel Out File: " << relOutFile << endl;
+	//cout << "Rel Out Dir: " << relOutDir << endl;
+	cout << "Storing model to directory: " << absOutFile << endl;
+	cout << "Model filename: " << outFilename << endl;
+	cout << "IV Models directory: " << modelDir << endl;
+
+
+
+	if (!boost::filesystem::is_directory(absOutFile))
+	{
+		cout << "Not a valid directory:" << absOutFile.string() << endl;
+		return;
+	}
+
+	bool saveOK = false;
+	try
+	{
+		saveOK = RobotIO::saveXML(robot, outFilename.string(), absOutFile.string(), modelDir);
+	}
+	catch (VirtualRobotException &e)
+	{
+		cout << " ERROR while creating robot" << endl;
+		cout << e.what();
+		return;
+	}
+#endif
 }
 
 void showRobotWindow::robotStructure()

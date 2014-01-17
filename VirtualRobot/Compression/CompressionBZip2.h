@@ -355,7 +355,7 @@ protected:
 					std::istream *f,
                      //FILE* f, 
                      int   verbosity,
-                     int   small,
+                     int   smallValue,
                      void* unused,
                      int   nUnused );
     void BZ2_bzReadClose( int *bzerror, BZFILE *b );
@@ -367,7 +367,7 @@ protected:
     int BZ2_bzDecompressInit 
                      ( bz_stream* strm, 
                        int        verbosity,
-                       int        small );
+					   int        smallValue);
 
 	typedef 
 	struct {

@@ -38,25 +38,11 @@ int main(int argc, char *argv[])
 	VirtualRobot::RuntimeEnvironment::print();
 	
 	cout << " --- START --- " << endl;
-	// --robot "robots/iCub/iCub.xml"
-	// std::string filename;
-//    std::string filename(DEMO_BASE_DIR "/data/Human_Vicon_legs.dae");
-	//std::string filename(DEMO_BASE_DIR "/data/2dof-collada.dae");
-	//std::string filename(DEMO_BASE_DIR "/data/2dof-collada-revolute-DH.dae");
-	//std::string filename(DEMO_BASE_DIR "/data/mannequin.dae");
-//    std::string filename(DEMO_BASE_DIR "/data/mannequin2.dae");
-//	std::string filename(DEMO_BASE_DIR "/data/MMMWinter.dae");
-//    std::string filename(DEMO_BASE_DIR "/data/3dof-neuerRobotEditor.dae");
-	//std::string filename(DEMO_BASE_DIR "/data/demo.dae");
-	std::string filename(DEMO_BASE_DIR "/data/demo-lint.dae");
-	//std::string filename(DEMO_BASE_DIR "/data/3dof.dae");
-	//std::string filename(DEMO_BASE_DIR "/data/mannequinTest.dae");
-	//std::string filename("robots/ArmarIII/ArmarIII-RightArm.xml");
-	//std::string filename("C:/Projects/IIT_Projects/iCubRobot/robot/iCub.xml");
-	//std::string filename(DEMO_BASE_DIR "/robot/iCub_RightArm.xml");
-	//std::string filename(DEMO_BASE_DIR "/robot/iCub_RightHand.xml");
-	//std::string filename(DEMO_BASE_DIR "/robot/iCub_LeftHand.xml");
 
+	// std::string filename;
+	// std::string filename(DEMO_BASE_DIR "/data/MMMWinter.dae");
+	std::string filename(DEMO_BASE_DIR "/data/demo-lint.dae");
+	
 	if (VirtualRobot::RuntimeEnvironment::hasValue("robot"))
 	{
 		std::string robFile = VirtualRobot::RuntimeEnvironment::getValue("robot");

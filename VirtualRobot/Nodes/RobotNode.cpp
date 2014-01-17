@@ -690,7 +690,7 @@ std::string RobotNode::toXML( const std::string &modelPath /*= "models"*/, bool 
     ss << _toXML(modelPath);
 	if (physics.isSet())
 		ss << physics.toXML(2);
-    if (visualizationModel)
+	if (visualizationModel && visualizationModel->getTriMeshModel() && visualizationModel->getTriMeshModel()->faces.size()>0)
 	{
 		std::string visuFile = getFilenameReplacementVisuModel();
         ss << visualizationModel->toXML(modelPath,visuFile,2);

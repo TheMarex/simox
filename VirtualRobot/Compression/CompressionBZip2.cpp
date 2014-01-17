@@ -3232,7 +3232,7 @@ CompressionBZip2::BZFILE* CompressionBZip2::BZ2_bzReadOpen
                    ( int*  bzerror, 
 					 std::istream *f,
                      int   verbosity,
-                     int   small,
+					 int   smallValue,
                      void* unused,
                      int   nUnused )
 {
@@ -3242,7 +3242,7 @@ CompressionBZip2::BZFILE* CompressionBZip2::BZ2_bzReadOpen
    BZ_SETERR(BZ_OK);
 
    if (f == NULL || 
-       (small != 0 && small != 1) ||
+	   (smallValue != 0 && smallValue != 1) ||
        (verbosity < 0 || verbosity > 4) ||
        (unused == NULL && nUnused != 0) ||
        (unused != NULL && (nUnused < 0 || nUnused > BZ_MAX_UNUSED)))
@@ -3273,7 +3273,7 @@ CompressionBZip2::BZFILE* CompressionBZip2::BZ2_bzReadOpen
       nUnused--;
    }
 
-   ret = BZ2_bzDecompressInit ( &(bzf->strm), verbosity, small );
+   ret = BZ2_bzDecompressInit(&(bzf->strm), verbosity, smallValue);
    if (ret != BZ_OK)
       { BZ_SETERR(ret); free(bzf); return NULL; };
 
@@ -3720,14 +3720,14 @@ CompressionBZip2::Bool CompressionBZip2::unRLE_obuf_to_output_SMALL ( Compressio
 int CompressionBZip2::BZ2_bzDecompressInit 
                      ( bz_stream* strm, 
                        int        verbosity,
-                       int        small )
+					   int        smallValue)
 {
    DState* s;
 
    if (!bz_config_ok()) return BZ_CONFIG_ERROR;
 
    if (strm == NULL) return BZ_PARAM_ERROR;
-   if (small != 0 && small != 1) return BZ_PARAM_ERROR;
+   if (smallValue != 0 && smallValue != 1) return BZ_PARAM_ERROR;
    if (verbosity < 0 || verbosity > 4) return BZ_PARAM_ERROR;
 
    if (strm->bzalloc == NULL) strm->bzalloc = default_bzalloc;
@@ -3745,7 +3745,7 @@ int CompressionBZip2::BZ2_bzDecompressInit
    strm->total_in_hi32      = 0;
    strm->total_out_lo32     = 0;
    strm->total_out_hi32     = 0;
-   s->smallDecompress       = (Bool)small;
+   s->smallDecompress = (Bool)smallValue;
    s->ll4                   = NULL;
    s->ll16                  = NULL;
    s->tt                    = NULL;

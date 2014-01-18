@@ -179,8 +179,8 @@ if (SimDynamics_DYNAMICSENGINE)
   endif ()
     
   # this var is considered for generating Simox_INCLUDE_DIRS_
-  #SET(SimDynamics_INCLUDE_DIRS "${SimDynamics_SimoxDir}" "${SimDynamics_DIR}" PARENT_SCOPE)
-  #SET(SimDynamics_EXTERNAL_LIBRARIES "${SimDynamics_PHYSICS_LIBRARIES}" PARENT_SCOPE)
+  SET(Simox_SimDynamics_INCLUDE_DIRS "${SIMDYNAMICS_INCLUDE_DIRS}" PARENT_SCOPE)
+  SET(Simox_SimDynamics_EXTERNAL_LIBRARIES "${SimDynamics_PHYSICS_LIBRARIES}" PARENT_SCOPE)
   #INCLUDE_DIRECTORIES(${SimDynamics_SimoxDir})
   #INCLUDE_DIRECTORIES(${SimDynamics_DIR})
    

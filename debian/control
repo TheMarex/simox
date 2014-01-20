@@ -7,5 +7,5 @@ Homepage: http://simox.sourceforge.net/
 
 Package: simox
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-system1.46.1, libboost-filesystem1.46.1, libboost-test1.46.1, libboost-program-options1.46.1, libboost-thread1.46.1, libsoqt4-20
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev (>= 1.42), libqt4-dev (>= 4.6), libsoqt4-dev
 Description: Simox package

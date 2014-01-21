@@ -55,7 +55,7 @@
          <x>0</x>
          <y>360</y>
          <width>201</width>
-         <height>311</height>
+         <height>251</height>
         </rect>
        </property>
        <property name="title">
@@ -176,7 +176,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Select Robot File</string>
+        <string>Select Collada File</string>
        </property>
       </widget>
       <widget class="QGroupBox" name="groupBox_3">
@@ -391,6 +391,19 @@
          <string>TextLabel</string>
         </property>
        </widget>
+      </widget>
+      <widget class="QPushButton" name="pushButtonSave">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>630</y>
+         <width>111</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Save XML</string>
+       </property>
       </widget>
      </widget>
     </item>

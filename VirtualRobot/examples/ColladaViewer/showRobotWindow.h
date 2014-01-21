@@ -61,6 +61,7 @@ public slots:
 	//void closeHand();
 	//void openHand();
 	//void selectEEF(int nr);
+	void saveRobot();
 	void selectRobot();
 	void displayPhysics();
 

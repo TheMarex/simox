@@ -695,7 +695,7 @@ std::string RobotNode::toXML( const std::string &modelPath /*= "models"*/, bool 
 		std::string visuFile = getFilenameReplacementVisuModel();
         ss << visualizationModel->toXML(modelPath,visuFile,2);
 	}
-    if (collisionModel)
+	if (collisionModel && collisionModel->getTriMeshModel() && collisionModel->getTriMeshModel()->faces.size()>0)
 	{
 		std::string colFile = getFilenameReplacementColModel();
         ss << collisionModel->toXML(modelPath,colFile,2);

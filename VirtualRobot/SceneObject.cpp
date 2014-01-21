@@ -885,7 +885,7 @@ std::vector<std::string> SceneObject::getIgnoredCollisionModels()
 bool SceneObject::saveModelFiles( const std::string &modelPath, bool replaceFilenames )
 {
     bool res = true;
-    if (visualizationModel)
+	if (visualizationModel && visualizationModel->getTriMeshModel() && visualizationModel->getTriMeshModel()->faces.size()>0)
 	{
 		std::string newFilename;
 		if (replaceFilenames)
@@ -900,7 +900,7 @@ bool SceneObject::saveModelFiles( const std::string &modelPath, bool replaceFile
 		}
         res = res & visualizationModel->saveModel(modelPath,newFilename);
 	}
-    if (collisionModel)
+	if (collisionModel && collisionModel->getTriMeshModel() && collisionModel->getTriMeshModel()->faces.size()>0)
 	{
 		// check if we need to replace the filename (also in case the trimesh model is stored!)
 		std::string newFilename;

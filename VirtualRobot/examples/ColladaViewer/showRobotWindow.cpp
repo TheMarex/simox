@@ -105,6 +105,7 @@ void showRobotWindow::setupUI()
 
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));
 	connect(UI.pushButtonLoad, SIGNAL(clicked()), this, SLOT(selectRobot()));
+	connect(UI.pushButtonSave, SIGNAL(clicked()), this, SLOT(saveRobot()));
 
 	/*connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeHand()));
 	connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openHand()));
@@ -504,9 +505,29 @@ void showRobotWindow::loadRobot()
 	robotStructure();
 	displayPhysics();
 	viewer->viewAll();
+}
 
-#if 0
-	std::string outFile("robot.xml");
+void showRobotWindow::robotStructure()
+{
+	if (!robot)
+		return;
+
+	structureEnabled = UI.checkBoxStructure->checkState() == Qt::Checked;
+	robot->showStructure(structureEnabled);
+	// rebuild visualization
+	rebuildVisualization();
+}
+
+void showRobotWindow::saveRobot()
+{
+
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+		"",
+		tr("Simox XML (*.xml)"));
+	if (fileName.isEmpty())
+		return;
+	std::string outFile = fileName.toLocal8Bit().constData();
+	//std::string outFile("robot.xml");
 	//store robot to file
 	boost::filesystem::path relOutFile(outFile);
 	boost::filesystem::path outFilename = relOutFile.filename();
@@ -540,18 +561,6 @@ void showRobotWindow::loadRobot()
 		cout << e.what();
 		return;
 	}
-#endif
-}
-
-void showRobotWindow::robotStructure()
-{
-	if (!robot)
-		return;
-
-	structureEnabled = UI.checkBoxStructure->checkState() == Qt::Checked;
-	robot->showStructure(structureEnabled);
-	// rebuild visualization
-	rebuildVisualization();
 }
 
 void showRobotWindow::robotCoordSystems()

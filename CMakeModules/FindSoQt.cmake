@@ -8,7 +8,7 @@
 #  SoQt_INCLUDE_DIRS  - where the SoQt include directory can be found
 #  SoQt_LIBRARIES     - Link to this to use SoQt
 #
- 
+
 
 IF (WIN32)
   IF (CYGWIN)
@@ -38,22 +38,22 @@ IF (WIN32)
 ELSE (WIN32)
   IF(APPLE)
     FIND_PATH(SoQt_INCLUDE_DIRS Inventor/Qt/SoQt.h
-     /Library/Frameworks/Inventor.framework/Headers 
+     /Library/Frameworks/Inventor.framework/Headers
     )
     FIND_LIBRARY(SoQt_LIBRARIES SoQt
       /Library/Frameworks/Inventor.framework/Libraries
-    )   
+    )
     SET(SoQt_LIBRARIES "-framework SoQt" CACHE STRING "SoQt library for OSX")
   ELSE(APPLE)
 
     FIND_PATH(SoQt_INCLUDE_DIRS NAMES Inventor/Qt/SoQt.h PATHS "$ENV{SoQt_DIR}/include" "$ENV{COIN3D_DIR}/include" "$ENV{Coin3D_DIR}/include" /usr/include /usr/local/include NO_DEFAULT_PATH)
-    FIND_LIBRARY(SoQt_LIBRARIES NAMES SoQt PATHS "$ENV{SoQt_DIR}/lib" "$ENV{COIN3D_DIR}/lib" "$ENV{Coin3D_DIR}/lib" /usr/lib /usr/local/lib NO_DEFAULT_PATH)
+    FIND_LIBRARY(SoQt_LIBRARIES NAMES SoQt PATHS "$ENV{SoQt_DIR}/lib" "$ENV{COIN3D_DIR}/lib" "$ENV{Coin3D_DIR}/lib" ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES} /usr/local/lib NO_DEFAULT_PATH)
 
   ENDIF(APPLE)
 
 ENDIF (WIN32)
 
-# handle the QUIETLY and REQUIRED arguments and set SoQt_FOUND to TRUE if 
+# handle the QUIETLY and REQUIRED arguments and set SoQt_FOUND to TRUE if
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(SoQt DEFAULT_MSG SoQt_LIBRARIES SoQt_INCLUDE_DIRS)

@@ -1,6 +1,6 @@
 PROJECT(Simox)
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.3)
 if(NOT ("${CMAKE_VERSION}" VERSION_LESS 2.8.12))
 	cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warnings
 ENDIF()
@@ -38,9 +38,9 @@ if (Simox_BUILD_SimDynamics)
 	list (APPEND Simox_LIBRARIES SimDynamics)
 	list (APPEND Simox_EXTERNAL_LIBRARIES ${Simox_SimDynamics_EXTERNAL_LIBRARIES})
 	list (APPEND Simox_EXTERNAL_INCLUDE_DIRS ${Simox_SimDynamics_INCLUDE_DIRS})
-	
-	
-	
+
+
+
 endif()
 
   MESSAGE(STATUS "** Simox_EXTERNAL_INCLUDE_DIRS:${Simox_EXTERNAL_INCLUDE_DIRS}")
@@ -48,7 +48,7 @@ endif()
   MESSAGE(STATUS "** Simox_EXTERNAL_LIBRARIES:${Simox_EXTERNAL_LIBRARIES}")
   MESSAGE(STATUS "** Simox_EXTERNAL_LIBRARY_FLAGS:${Simox_EXTERNAL_LIBRARY_FLAGS}")
   MESSAGE(STATUS "** Simox_EXTERNAL_CMAKE_INCLUDE:${Simox_EXTERNAL_CMAKE_INCLUDE}")
-  
+
 add_subdirectory(doc)
 
 
@@ -64,11 +64,11 @@ MESSAGE (STATUS "** Simox: Generating CMake files for build and install setup")
 
 export(TARGETS ${SIMOX_EXPORT_TARGET_LIST}
   FILE "${PROJECT_BINARY_DIR}/SimoxTargets.cmake")
- 
+
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
 export(PACKAGE Simox)
- 
+
 # Create the SimoxConfig.cmake and SimoxVersion files
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
    "${INSTALL_INCLUDE_DIR}")
@@ -87,20 +87,20 @@ configure_file(CMakeModules/SimoxConfig.cmake.in
 # ... for both
 configure_file(CMakeModules/SimoxConfigVersion.cmake.in
   "${PROJECT_BINARY_DIR}/SimoxConfigVersion.cmake" @ONLY)
- 
+
 # Install the SimoxConfig.cmake and SimoxConfigVersion.cmake
 install(FILES
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/SimoxConfig.cmake"
   "${PROJECT_BINARY_DIR}/SimoxConfigVersion.cmake"
   DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
- 
+
 install(FILES
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxMacros.cmake"
     DESTINATION "${INSTALL_CMAKE_DIR}"
     COMPONENT ApplicationData
     )
 
- 
+
 # Install the export set for use with the install-tree
 install(EXPORT SimoxTargets DESTINATION
   "${INSTALL_CMAKE_DIR}" COMPONENT dev)
@@ -123,7 +123,7 @@ SET(CPACK_PACKAGE_VERSION_MINOR "${Simox_MINOR_VERSION}")
 SET(CPACK_PACKAGE_VERSION_PATCH "${Simox_PATCH_VERSION}")
 SET(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION}")
 SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION}")
- 
+
 #SET(CPACK_DEBIAN_PACKAGE_DEPENDS "kdebase-runtime (>= 4:4.2.1), kdelibs5 (>= 4:4.2.1), libc6 (>= 2.1.3), libgcc1 (>= 1:4.1.1), libplasma3, libqt4-dbus (>= 4.5.0), libqtcore4 (>= 4.5.0), libqtgui4 (>= 4.5.0), libstdc++6 (>= 4.2.1)")
 #SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 #SET(CPACK_DEBIAN_PACKAGE_SECTION "kde")

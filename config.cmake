@@ -25,7 +25,7 @@ IF (NOT Simox_CONFIGURED)
   if(WIN32 AND NOT CYGWIN)
     set(DEF_INSTALL_CMAKE_DIR CMake)
   else()
-    set(DEF_INSTALL_CMAKE_DIR lib/CMake/Simox)
+    set(DEF_INSTALL_CMAKE_DIR share/Simox/cmake)
   endif()
   set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
     "Installation directory for CMake files")

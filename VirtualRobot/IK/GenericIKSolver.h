@@ -37,11 +37,11 @@ class VIRTUAL_ROBOT_IMPORT_EXPORT GenericIKSolver : public IKSolver
 public:
 
 	/*!
-		@brief Initialize a IK solver without collision detection.
+		@brief Initialize an IK solver without collision detection.
 		\param rns The robotNodes (i.e., joints) for which the Jacobians should be calculated.
 		\param invJacMethod The method that should be used to compute the inverse of the Jacobian.
 	*/
-	GenericIKSolver(RobotNodeSetPtr rns, JacobiProvider::InverseJacobiMethod invJacMethod = JacobiProvider::InverseJacobiMethod::eSVD);
+	GenericIKSolver(RobotNodeSetPtr rns, JacobiProvider::InverseJacobiMethod invJacMethod = JacobiProvider::eSVD);
 
 	/*!
 	    This method solves the IK up to the specified max error. On success, the joints of the the corresponding RobotNodeSet are set to the IK solution.

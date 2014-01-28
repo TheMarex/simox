@@ -135,6 +135,8 @@ protected:
 
 };
 
+typedef boost::shared_ptr<RobotNodePrismatic> RobotNodePrismaticPtr;
+
 } // namespace VirtualRobot
 
 #endif // _VirtualRobot_RobotNodePrismatic_h_

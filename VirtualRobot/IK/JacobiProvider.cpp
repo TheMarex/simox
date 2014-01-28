@@ -15,6 +15,7 @@ namespace VirtualRobot
 JacobiProvider::JacobiProvider(RobotNodeSetPtr rns, InverseJacobiMethod invJacMethod) : 
 	rns(rns), inverseMethod(invJacMethod)
 {	
+
 }
 
 JacobiProvider::~JacobiProvider()
@@ -58,7 +59,16 @@ Eigen::MatrixXf JacobiProvider::computePseudoInverseJacobianMatrix(const Eigen::
 	{
 	case eTranspose:
 		{
-			pseudo = m.transpose() * (m*m.transpose()).inverse();
+			if (jointWeights.rows() == m.cols())
+			{
+				Eigen::MatrixXf W = jointWeights.asDiagonal();
+				Eigen::MatrixXf W_1 = W.inverse();
+				pseudo = W_1 * m.transpose() * (m*W_1*m.transpose()).inverse();
+			}
+			else
+			{
+				pseudo = m.transpose() * (m*m.transpose()).inverse();
+			}
 			break;
 		}
 	case eSVD:
@@ -88,6 +98,11 @@ Eigen::MatrixXf JacobiProvider::computePseudoInverseJacobianMatrix(const Eigen::
 VirtualRobot::RobotNodeSetPtr JacobiProvider::getRobotNodeSet()
 {
 	return rns;
+}
+
+void JacobiProvider::setJointWeights(const Eigen::VectorXf &jointWeights)
+{
+	this->jointWeights = jointWeights;
 }
 
 } // namespace VirtualRobot

@@ -36,6 +36,7 @@ DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem, 
 	}
 	convertMMtoM = false;
 	verbose = false;
+	positionMaxStep = -1.0f;
 }
 
 
@@ -108,6 +109,11 @@ VectorXf DifferentialIK::getErrorVector(float stepSize)
 			IKSolver::CartesianSelection mode = this->modes[tcp];
 			Vector3f position = delta.head(3);
 			position *= stepSize;
+			if (positionMaxStep>0)
+			{
+				if (position.norm() > positionMaxStep)
+					position *= positionMaxStep / position.norm();
+			}
 			if (mode & IKSolver::X)
 			{
 				error(index) = position(0);
@@ -223,7 +229,8 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 				THROW_VR_EXCEPTION_IF(!prismatic,"Internal error: expecting prismatic joint");
 				// todo: find a better way of handling different joint types
                 Eigen::Vector3f axis = prismatic->getJointTranslationDirection(coordSystem);
-
+				//if (!convertMMtoM)
+				//	axis *= 1000.0f; // we have a mm jacobian -> no, we say how much the joint moves when applying 1 'unit', this can be mm or m and depends only on the error vector
 				// if necessary calculate the position part of the Jacobian
 				if (mode & IKSolver::Position)
 					position.block(0,i,3,1) = axis;
@@ -279,6 +286,14 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
         if (diffClock>1.0f)
             cout << "Jacobirest time:" << diffClock << endl;
 #endif
+
+	/*if (jointWeights.rows() == nDoF)
+	{
+		Eigen::MatrixXf W = jointWeights.asDiagonal();
+		//Eigen::MatrixXf W_1 = W.inverse();
+		result = result * W;
+	}*/
+
 	return result;
 };
 
@@ -386,20 +401,26 @@ VectorXf DifferentialIK::computeStep(float stepSize )
 
 	VectorXf error = getErrorVector(stepSize);
 	MatrixXf Jacobian = getJacobianMatrix();
-
-	//cout << "ERROR:" << endl;
-	//cout << error << endl;
 	VectorXf dTheta(nDoF);
 
 	//MatrixXf pseudo = (Jacobian.transpose() * Jacobian).inverse() * Jacobian.transpose();
 	//MatrixXf pseudo = Jacobian.transpose() * (Jacobian*Jacobian.transpose()).inverse();
 	MatrixXf pseudo = computePseudoInverseJacobianMatrix(Jacobian);
-	//cout << "PSEUDO:" << endl;
-	//cout << pseudo << endl;
 
 	dTheta = pseudo * error;
-	//cout << "THETA:" << endl;
-	//cout << dTheta << endl;
+	/*if (jointWeights.rows() == dTheta.rows())
+	{
+		for (size_t i = 0; i < jointWeights.rows(); i++)
+			dTheta(i) *= jointWeights(i);
+	}*/
+	if (verbose)
+	{
+		VR_INFO << "ERROR (TASK):" << endl << error << endl;
+		VR_INFO << "JACOBIAN:" << endl << Jacobian << endl;
+		VR_INFO << "PSEUDOINVERSE JACOBIAN:" << endl << pseudo << endl;
+		VR_INFO << "THETA (JOINT):" << endl << dTheta << endl;
+	}
+
 	return dTheta;
 	
 }
@@ -512,6 +533,7 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 		{
 			if (verbose)
 				VR_INFO << "Could not improve result any more (dTheta.norm()=" << d << "), loop:" << step << endl;
+			robot->setJointValues(rns, jvBest);
 			return false;
 		}
 		float posDist = getMeanErrorPosition();
@@ -532,6 +554,7 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 		VR_INFO << "pos error:" << getErrorPosition() << endl;
 		VR_INFO << "rot error:" << getErrorRotation() << endl;
 	}
+	robot->setJointValues(rns, jvBest);
 	return false;
 }
 
@@ -545,9 +568,13 @@ void DifferentialIK::convertModelScalingtoM( bool enable )
 	convertMMtoM = enable;
 }
 
-void DifferentialIK::setVerbose( bool enable )
+void DifferentialIK::setVerbose(bool enable)
 {
 	verbose = enable;
 }
 
+void DifferentialIK::setMaxPositionStep(float s)
+{
+	positionMaxStep = s;
+}
 } // namespace VirtualRobot

@@ -240,7 +240,7 @@ void GenericIKWindow::selectKC(int nr)
 		tcp->showCoordinateSystem(true);
 	}
 
-	float d = kc->getSize();
+	unsigned int d = kc->getSize();
 	QString qd = "Nr of joints: ";
 	qd += QString::number(d);
 
@@ -253,7 +253,14 @@ void GenericIKWindow::selectKC(int nr)
 	}*/
 	box2TCP();
 
-	ikSolver.reset(new GenericIKSolver(kc));
+	ikSolver.reset(new GenericIKSolver(kc,JacobiProvider::eSVDDamped));
+	//ikSolver->getDifferentialIK()->setVerbose(true);
+	/*Eigen::VectorXf js(d);
+	js.setConstant(1.0f);
+	js(js.rows() - 1) = 10.0f;
+	ikSolver->getDifferentialIK()->setJointWeights(js);*/
+	ikSolver->getDifferentialIK()->setMaxPositionStep(20.0f);
+	ikSolver->setupJacobian(0.3f, 100);
 
 	// since it may be that a tcp coord system was created in this method we must re-build the visualization in order to show it
 	collisionModel();
@@ -283,10 +290,22 @@ void GenericIKWindow::solve()
 		s = IKSolver::Position;
 	//if (UI.radioButton_Ori->isChecked())
 	//	s = IKSolver::Orientation;
-
+	//ikSolver->setVerbose(true);
 	Eigen::Matrix4f targetPose = box->getGlobalPose();
+
+
+	if (kc && kc->getNode(kc->getSize() - 1)->isTranslationalJoint() && kc->getNode(kc->getSize() - 1)->getParent())
+	{
+		// setup gaze IK
+		float v = (kc->getNode(kc->getSize() - 1)->getParent()->getGlobalPose().block(0, 3, 3, 1) - targetPose.block(0, 3, 3, 1)).norm();
+		cout << "Setting initial value of translation joint to :" << v << endl;
+		ikSolver->setupTranslationalJoint(kc->getNode(kc->getSize() - 1), v);
+		kc->getNode(kc->getSize() - 1)->setJointValue(v);
+	}
+
+
 	clock_t startT = clock();
-	ikSolver->solve(targetPose,s,300);
+	ikSolver->solve(targetPose,s,50);
 	clock_t endT = clock();
 
 	Eigen::Matrix4f actPose = tcp->getGlobalPose();

@@ -46,8 +46,8 @@ public:
     */
     enum InverseJacobiMethod
     {
-		eSVD,       //<! Performing SVD and setting very small eigen values to zero results in a quite stable inverting of the Jacobi. (default)
-		eSVDDamped, //<!using the damped PseudoInverse algorithm
+		eSVD,       //<! PseudoInverse Jacobian. Performing SVD and setting very small eigen values to zero results in a quite stable inverting of the Jacobi. (default)
+		eSVDDamped, //<! Using the damped PseudoInverse algorithm
 		eTranspose  //<! The Jacobi Transpose method is faster than SVD and works well for redundant kinematic chains.
     };
 
@@ -65,10 +65,19 @@ public:
 	virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix(RobotNodePtr tcp);
 
 	VirtualRobot::RobotNodeSetPtr getRobotNodeSet();
+
+	/*
+		If set, a weigthed inverse Jacobian is computed. The weighting is only applied in eTranspose mode!
+		jointScaling.rows() must be nDoF
+		Large entries result in small joint deltas.
+	*/
+	void setJointWeights(const Eigen::VectorXf &jointWeights);
 protected:
     
 	RobotNodeSetPtr rns; 
 	InverseJacobiMethod inverseMethod;
+
+	Eigen::VectorXf jointWeights; // only used in eTranspose mode
 	
 };
 

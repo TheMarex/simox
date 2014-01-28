@@ -260,6 +260,9 @@ public:
 	Eigen::VectorXf getDeltaToGoal(RobotNodePtr tcp = RobotNodePtr());
 	Eigen::VectorXf getDelta(const Eigen::Matrix4f &current, const Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode = IKSolver::All);
 	
+
+	//! When considering large errors, the translational part can be cut to this length. Set to <= 0 to ignore cutting (standard)
+	void setMaxPositionStep(float s);
 protected:
 	
 	void setNRows();
@@ -282,6 +285,7 @@ protected:
 	std::vector <RobotNodePtr> nodes;
 	std::map< RobotNodePtr, std::vector<RobotNodePtr> > parents;
 
+	float positionMaxStep;
 	bool verbose;
 
 };

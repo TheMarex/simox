@@ -18,9 +18,10 @@ using namespace Eigen;
 namespace VirtualRobot
 {
 
-GenericIKSolver::GenericIKSolver(RobotNodeSetPtr rns) : 
+	GenericIKSolver::GenericIKSolver(RobotNodeSetPtr rns, JacobiProvider::InverseJacobiMethod invJacMethod) :
 	IKSolver(rns)
 {
+	this->invJacMethod = invJacMethod;
 	_init();
 }
 
@@ -69,7 +70,21 @@ void GenericIKSolver::setJointsRandom()
 		jv.push_back(v);
 	}
 	RobotPtr rob = rns->getRobot();
-	rob->setJointValues(rns,jv);  
+	rob->setJointValues(rns,jv); 
+	if (translationalJoint)
+	{
+		translationalJoint->setJointValue(initialTranslationalJointValue);
+	}
+}
+void GenericIKSolver::setupTranslationalJoint(RobotNodePtr rn, float initialValue)
+{
+	translationalJoint = rn;
+	initialTranslationalJointValue = initialValue;
+}
+
+DifferentialIKPtr GenericIKSolver::getDifferentialIK()
+{
+	return jacobian;
 }
 
 bool GenericIKSolver::trySolve()
@@ -89,7 +104,7 @@ bool GenericIKSolver::trySolve()
 
 void GenericIKSolver::_init()
 {
-	 jacobian.reset(new DifferentialIK(rns));
+	 jacobian.reset(new DifferentialIK(rns,coordSystem,invJacMethod));
 	 jacobianStepSize = 0.3f;
 	 jacobianMaxLoops = 50;
 

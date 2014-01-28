@@ -39,8 +39,9 @@ public:
 	/*!
 		@brief Initialize a IK solver without collision detection.
 		\param rns The robotNodes (i.e., joints) for which the Jacobians should be calculated.
+		\param invJacMethod The method that should be used to compute the inverse of the Jacobian.
 	*/
-	GenericIKSolver(RobotNodeSetPtr rns);
+	GenericIKSolver(RobotNodeSetPtr rns, JacobiProvider::InverseJacobiMethod invJacMethod = JacobiProvider::InverseJacobiMethod::eSVD);
 
 	/*!
 	    This method solves the IK up to the specified max error. On success, the joints of the the corresponding RobotNodeSet are set to the IK solution.
@@ -65,6 +66,11 @@ public:
 
 	void setVerbose(bool enable);
 
+	DifferentialIKPtr getDifferentialIK();
+
+	void setupTranslationalJoint(RobotNodePtr rn, float initialValue);
+
+
 protected:
     
     //! This method is called by the constructor and can be used in derived classes for initialization.
@@ -72,13 +78,17 @@ protected:
 
 	virtual bool _sampleSolution (const Eigen::Matrix4f &globalPose, CartesianSelection selection, int maxLoops = 1 );
 
-
+	RobotNodePtr coordSystem;
+	JacobiProvider::InverseJacobiMethod invJacMethod;
 	bool trySolve();
 	void setJointsRandom();
 	
 	DifferentialIKPtr jacobian;
 	float jacobianStepSize;
 	int jacobianMaxLoops;
+
+	RobotNodePtr translationalJoint;
+	float initialTranslationalJointValue;
 };
 
 typedef boost::shared_ptr<GenericIKSolver> GenericIKSolverPtr;

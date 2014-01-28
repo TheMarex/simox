@@ -65,6 +65,9 @@ IK/JacobiProvider.cpp
 IK/PoseQualityMeasurement.cpp
 IK/PoseQualityManipulability.cpp
 IK/PoseQualityExtendedManipulability.cpp
+IK/HierarchicalIK.cpp
+IK/JointLimitAvoidanceJacobi.cpp
+IK/GazeIK.cpp
 Workspace/WorkspaceData.cpp
 Workspace/WorkspaceRepresentation.cpp
 Workspace/Reachability.cpp
@@ -140,6 +143,9 @@ IK/JacobiProvider.h
 IK/PoseQualityMeasurement.h
 IK/PoseQualityManipulability.h
 IK/PoseQualityExtendedManipulability.h
+IK/HierarchicalIK.h
+IK/JointLimitAvoidanceJacobi.h
+IK/GazeIK.h
 Workspace/WorkspaceData.h
 Workspace/WorkspaceRepresentation.h
 Workspace/Reachability.h

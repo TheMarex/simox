@@ -16,7 +16,7 @@
 *
 * @package    VirtualRobot
 * @author     Nikolaus Vahrenkamp
-* @copyright  2013 Nikolaus Vahrenkamp
+* @copyright  2014 Nikolaus Vahrenkamp
 *             GNU Lesser General Public License
 *
 */
@@ -37,6 +37,11 @@ namespace VirtualRobot
 	With hierarchical IK methods several tasks/constraints can be considered for IK solving.
     Internally a hierarchical gradient descent is generated where the Nullspace of the preceding task definition 
     is used for the computation of the joint delta in the current task.
+
+	This implementation is based on the following publication:
+	"A general framework for managing multiple tasks in highly redundant robotic systems.", Siciliano, B. ; Slotine, J.-J.E., 
+	Advanced Robotics, 1991. 'Robots in Unstructured Environments', 91 ICAR., Fifth International Conference on 
+	
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT HierarchicalIK : public boost::enable_shared_from_this<HierarchicalIK>
 {
@@ -50,7 +55,7 @@ public:
 	struct JacobiDefinition
 	{
 		JacobiProviderPtr jacProvider; // generates the Jacobi and the PseudoInverse
-		Eigen::VectorXf delta;						 // Specifies the delta for the Jacobi (e.g. in workspace). delta.rows() must be equal to jacobi.rows().
+		Eigen::VectorXf delta;		   // Specifies the delta for the Jacobi (e.g. in workspace). delta.rows() must be equal to jacobi.rows().
 	};
 
 	/*!

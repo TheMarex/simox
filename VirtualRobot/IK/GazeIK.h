@@ -78,6 +78,8 @@ public:
 
     bool solve(Eigen::Vector3f goal, float stepSize = 0.3f);
 
+	float getMaxPosError();
+
 protected:
 
     void setupIK();

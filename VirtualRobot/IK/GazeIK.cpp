@@ -293,4 +293,9 @@ bool GazeIK::trySolve(Eigen::Vector3f goal, float stepSize)
     return false;
 }
 
+float GazeIK::getMaxPosError()
+{
+	return maxPosError;
+}
+
 } // namespace VirtualRobot

@@ -60,9 +60,15 @@ RobotPtr ColladaIO::convertRobot(ColladaParser::ModelType& colladaModel, float s
 		if (jointsAll[i]->getVisualization())
 			rnVisu.push_back(jointsAll[i]);
 	}
-	RobotNodeSetPtr rnAll = RobotNodeSet::createRobotNodeSet(robo, "All", jointsAll, RobotNodePtr(), RobotNodePtr(), true);
-	RobotNodeSetPtr rnRev = RobotNodeSet::createRobotNodeSet(robo, "Joints_Revolute", jointsRevolute, RobotNodePtr(), RobotNodePtr(), true);
-	RobotNodeSetPtr rnPri = RobotNodeSet::createRobotNodeSet(robo, "Joints_Prismatic", jointsPrismatic, RobotNodePtr(), RobotNodePtr(), true);
+    RobotNodeSetPtr rnAll = RobotNodeSet::createRobotNodeSet(robo, "All", jointsAll, RobotNodePtr(), RobotNodePtr(), true);
+    if (!jointsRevolute.empty()) {
+        RobotNodeSetPtr rnRev = RobotNodeSet::createRobotNodeSet(robo, "Joints_Revolute", jointsRevolute, RobotNodePtr(), RobotNodePtr(), true);
+    }
+
+    if (!jointsPrismatic.empty()) {
+        RobotNodeSetPtr rnPri = RobotNodeSet::createRobotNodeSet(robo, "Joints_Prismatic", jointsPrismatic, RobotNodePtr(), RobotNodePtr(), true);
+    }
+
 	RobotNodeSetPtr rnVis = RobotNodeSet::createRobotNodeSet(robo, "Visualization", rnVisu, RobotNodePtr(), RobotNodePtr(), true);
 
 	return robo;

@@ -62,7 +62,8 @@ public:
     {
         eDisabled,
         ePosition,
-        eVelocity
+        eVelocity,
+        eTorque
     };
 
 	/*!
@@ -70,8 +71,10 @@ public:
 	*/
     virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue);
     virtual void actuateNodeVel(VirtualRobot::RobotNodePtr node, float jointVelocity);
+    virtual void actuateNodeTorque(VirtualRobot::RobotNodePtr node, float jointTorque);
     virtual void actuateNode(std::string &node, float jointValue);
     virtual void actuateNodeVel(std::string &node, float jointVelocity);
+    virtual void actuateNodeTorque(std::string &node, float jointTorque);
     virtual void disableNodeActuation(VirtualRobot::RobotNodePtr node);
 	virtual bool isNodeActuated(VirtualRobot::RobotNodePtr node);
 	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
@@ -114,6 +117,7 @@ protected:
 	{
         float jointValueTarget;
         float jointVelocityTarget;
+        float jointTorqueTarget;
         VirtualRobot::RobotNodePtr node;
 		//DynamicsObjectPtr dynNode; // if node is a joint without model, there is no dyn node!
         JointActuation actuation;

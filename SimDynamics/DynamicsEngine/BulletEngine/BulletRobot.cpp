@@ -27,7 +27,8 @@ namespace SimDynamics {
 BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
 	: DynamicsRobot(rob)
 {
-	bulletMaxMotorImulse = 50.0f; 
+    bulletMaxMotorImulse = 50.0f;
+
     bulletMotorVelFactor = 10.0f;
 	buildBulletModels(enableJointMotors);
 
@@ -892,7 +893,11 @@ void BulletRobot::ensureKinematicConstraints()
 
 void BulletRobot::actuateJoints(float dt)
 {
-	std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget>::iterator it = actuationTargets.begin();
+    //cout << "=== === BulletRobot: actuateJoints() 1 === " << endl;
+
+    std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget>::iterator it = actuationTargets.begin();
+
+    int jointCounter = 0;
 
 	while (it!=actuationTargets.end())
 	{
@@ -900,14 +905,16 @@ void BulletRobot::actuateJoints(float dt)
 		//if (it->second.dynNode)
 		//	drn = boost::dynamic_pointer_cast<BulletObject>(it->second.dynNode);
 		//VR_ASSERT(drn);
+
 		if (it->second.node->isRotationalJoint())
-		{
-			LinkInfo link = getLink(it->second.node);
+        {
+            LinkInfo link = getLink(it->second.node);
 #ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
             boost::shared_ptr<btGeneric6DofConstraint> dof = boost::dynamic_pointer_cast<btGeneric6DofConstraint>(link.joint);
             VR_ASSERT(dof);
             btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
             VR_ASSERT(m);
+
             switch (it->second.actuation)
             {
                 case ePosition:
@@ -923,6 +930,13 @@ void BulletRobot::actuateJoints(float dt)
                 {
                     m->m_enableMotor = true;
                     m->m_targetVelocity = it->second.jointVelocityTarget;
+                    break;
+                }
+                case eTorque:
+                {
+                     m->m_enableMotor = true;
+                    m->m_targetVelocity = it->second.jointVelocityTarget;
+                    break;
                 }
                 default:
                     m->m_enableMotor = false;
@@ -956,12 +970,18 @@ void BulletRobot::actuateJoints(float dt)
                     }
                     break;
 
-                    case eVelocity:
-                    {
-                        m->m_enableMotor = true;
-                        m->m_targetVelocity = it->second.jointVelocityTarget;
-                    }
+                case eVelocity:
+                {
+                    m->m_enableMotor = true;
+                    m->m_targetVelocity = it->second.jointVelocityTarget;
                     break;
+                }
+                case eTorque:
+                {
+                    m->m_enableMotor = true;
+                    m->m_targetVelocity = it->second.jointVelocityTarget;
+                    break;
+                }
 
                 default:
                     m->m_enableMotor = false;
@@ -983,8 +1003,79 @@ void BulletRobot::actuateJoints(float dt)
                     case eVelocity:
                     {
                         hinge->enableAngularMotor(true,it->second.jointVelocityTarget,bulletMaxMotorImulse);
+
+                        jointCounter++;
+                        //cout << "jointVelocityTarget for joint " << it->second.node->getName() << " :" << it->second.jointVelocityTarget << endl;
+
+
                     }
                     break;
+                    case eTorque:
+                    {
+
+                        //Only first try (using torques as velocity targets...)
+                        hinge->enableAngularMotor(true,it->second.jointTorqueTarget,bulletMaxMotorImulse);
+                        //cout << "jointTorqueTarget for joint " << it->second.node->getName() << " :" << it->second.jointTorqueTarget << endl;
+
+                        /*
+
+                        //=======
+                        //Here is some code that sets torques directly to the finger joints (bypassing the Bullet motors).
+                        //Unfortunately, this does not seem to work, so far.
+                        //1. With hinge->enableAngularMotor(true,...), the fingers do not move at all.
+                        //2. Wtih hinge->enableAngularMotor(false,...), the fingers are simply actuated by gravity...
+                        //=======
+
+                        //cout << " === == === === === > BulletRobot (hinge !): eTorque NEW!!! ====" << endl;
+
+                        cout << "Disabling Angular Motor... " << endl;
+                        hinge->enableAngularMotor(false,0,bulletMaxMotorImulse);
+
+
+                        cout << "=== === === jointCounter: " << jointCounter << " === === ===" << endl;
+
+                        //get the links that are connected by the hinge.
+                        btRigidBody rbA = hinge->getRigidBodyA();
+                        btRigidBody rbB = hinge->getRigidBodyB();
+
+                        //get joint axis from the hinge ...
+                        btMatrix3x3 rbAFrameBasis = hinge->getAFrame().getBasis();
+                        //z-Achse ist Gelenkachse? (das steht in btHingeConstraint.h; setAxis() bzw. struct btHingeConstraintDoubleData)
+                        btVector3 hingeAxis = rbAFrameBasis.getColumn(2);
+
+                        //calc 3dim torque by multiplication with joint axis!
+                        btVector3 resTorqueA = hingeAxis * it->second.jointTorqueTarget;
+
+
+                        //TODO (maybe): calc "realistic" torque to be applied (using dt)
+
+                        //apply torques to the bodies connected by the joint
+                        rbA.applyTorqueImpulse(resTorqueA);
+                        rbB.applyTorqueImpulse(-resTorqueA);
+
+                        //DEBUG OUT:
+                        //--> TODO!
+                        //cout << "==== ==== ==== DEBUG OUT: ==== ==== ==== " << endl;
+                        cout << "rbAFrameBasis:" << endl;
+                        btVector3 row0 = rbAFrameBasis.getRow(0);
+                        btVector3 row1 = rbAFrameBasis.getRow(1);
+                        btVector3 row2 = rbAFrameBasis.getRow(2);
+                        cout << row0.getX() << " " << row0.getY() << " " << row0.getZ() << endl;
+                        cout << row1.getX() << " " << row1.getY() << " " << row1.getZ() << endl;
+                        cout << row2.getX() << " " << row2.getY() << " " << row2.getZ() << endl;
+
+                        cout << "hingeAxis: " << hingeAxis.getX() << " " << hingeAxis.getY() << " " << hingeAxis.getZ() << endl;
+                        cout << "resTorqueA: " << resTorqueA.getX() << " " << resTorqueA.getY() << " " << resTorqueA.getZ() << endl;
+
+
+
+                        jointCounter++;
+
+                        */
+
+                    }
+                    break;
+
                     default:
                         hinge->enableMotor(false);
                 }
@@ -994,7 +1085,6 @@ void BulletRobot::actuateJoints(float dt)
 
 		it++;
 	}
-
     setPoseNonActuatedRobotNodes();
 }
 

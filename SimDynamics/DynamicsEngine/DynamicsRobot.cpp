@@ -94,6 +94,7 @@ void DynamicsRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointVal
     target.node = node;
     target.jointValueTarget = jointValue;
     target.jointVelocityTarget = 0.0f;
+    target.jointTorqueTarget = 0.0f;
     //target.dynNode = dnyRN;
 
     actuationTargets[node] = target;
@@ -122,6 +123,36 @@ void DynamicsRobot::actuateNodeVel( VirtualRobot::RobotNodePtr node, float joint
     target.node = node;
     target.jointValueTarget = 0.0f;
     target.jointVelocityTarget = jointVelocity;
+    target.jointTorqueTarget = 0.0f;
+    //target.dynNode = dnyRN;
+
+    actuationTargets[node] = target;
+}
+
+void DynamicsRobot::actuateNodeTorque( std::string &node, float jointTorque )
+{
+    VR_ASSERT(robot);
+    VR_ASSERT(robot->hasRobotNode(node));
+    actuateNodeTorque(robot->getRobotNode(node),jointTorque);
+}
+
+void DynamicsRobot::actuateNodeTorque( VirtualRobot::RobotNodePtr node, float jointTorque )
+{
+    VR_ASSERT(robot);
+    VR_ASSERT(node);
+    VR_ASSERT(robot->hasRobotNode(node));
+
+    //if (!hasDynamicsRobotNode(node))
+    //    createDynamicsNode(node);
+
+    //DynamicsObjectPtr dnyRN = getDynamicsRobotNode(node);
+
+    robotNodeActuationTarget target;
+    target.actuation = eTorque;
+    target.node = node;
+    target.jointValueTarget = 0.0f;
+    target.jointVelocityTarget = 0.0f;
+    target.jointTorqueTarget = jointTorque;
     //target.dynNode = dnyRN;
 
     actuationTargets[node] = target;

@@ -1,6 +1,6 @@
 /**
 * @package    VirtualRobot
-* @author     Manfred Kroehnert 
+* @author     Manfred Kroehnert
 * @copyright  2010 Manfred Kroehnert
 */
 
@@ -11,9 +11,13 @@
 #include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/nodes/SoMatrixTransform.h>
 #include <Inventor/nodes/SoUnits.h>
-
 #include <boost/foreach.hpp>
 #include <algorithm>
+
+// For the VRML2.0 export
+#include <Inventor/actions/SoWriteAction.h>
+#include <Inventor/actions/SoToVRML2Action.h>
+#include <Inventor/VRMLnodes/SoVRMLGroup.h>
 
 namespace VirtualRobot {
 
@@ -28,7 +32,7 @@ Visualization(visualizationNodes)
 {
     selection = NULL;
 }
-	
+
 CoinVisualization::~CoinVisualization()
 {
     if (selection)
@@ -145,8 +149,33 @@ VirtualRobot::VisualizationPtr CoinVisualization::clone()
 			SbMatrix m(reinterpret_cast<SbMat*>(globalPose.data()));
 			mTr->matrix.setValue(m);
 		}
-		
+
 	}
 }*/
+
+void CoinVisualization::exportToVRML2(std::string filename){
+
+    SoSeparator *root = new SoSeparator;
+    root->ref();
+    root->addChild(this->getCoinVisualization());
+
+    printf("Converting...\n");
+    SoToVRML2Action tovrml2;
+    tovrml2.apply(root);
+    SoVRMLGroup *newroot = tovrml2.getVRML2SceneGraph();
+    newroot->ref();
+    root->unref();
+
+    printf("Writing...\n");
+
+    SoOutput out;
+    out.openFile(filename.c_str());
+    out.setHeaderString("#VRML V2.0 utf8");
+    SoWriteAction wra(&out);
+    wra.apply(newroot);
+    out.closeFile();
+    newroot->unref();
+}
+
 
 } // namespace VirtualRobot

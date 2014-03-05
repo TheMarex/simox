@@ -63,7 +63,7 @@ public slots:
 	void selectEEF(int nr);
 	void selectRobot();
 	void displayPhysics();
-
+    void exportVRML();
 
 	SoQtExaminerViewer* getExaminerViewer(){return viewer;};
 

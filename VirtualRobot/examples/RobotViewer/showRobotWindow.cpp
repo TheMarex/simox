@@ -50,7 +50,7 @@ showRobotWindow::showRobotWindow(std::string &sRobotFilename, Qt::WFlags flags)
 	sceneSep->addChild(robotSep);
 
 	setupUI();
-	
+
 	loadRobot();
 
 	viewer->viewAll();
@@ -108,8 +108,9 @@ void showRobotWindow::setupUI()
 	connect(UI.pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSceneryAll()));
 	connect(UI.pushButtonLoad, SIGNAL(clicked()), this, SLOT(selectRobot()));
 
-	connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeHand()));
-	connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openHand()));
+    connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeHand()));
+    connect(UI.ExportVRML20, SIGNAL(clicked()), this, SLOT(exportVRML()));
+    connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openHand()));
 	connect(UI.comboBoxEndEffector, SIGNAL(activated(int)), this, SLOT(selectEEF(int)));
 
 	connect(UI.checkBoxPhysicsCoM, SIGNAL(clicked()), this, SLOT(displayPhysics()));
@@ -124,7 +125,7 @@ void showRobotWindow::setupUI()
 	connect(UI.checkBoxShowCoordSystem, SIGNAL(clicked()), this, SLOT(showCoordSystem()));
 	connect(UI.comboBoxRobotNodeSet, SIGNAL(activated(int)), this, SLOT(selectRNS(int)));
 	connect(UI.comboBoxJoint, SIGNAL(activated(int)), this, SLOT(selectJoint(int)));
-	connect(UI.horizontalSliderPos, SIGNAL(valueChanged(int)), this, SLOT(jointValueChanged(int)));
+    connect(UI.horizontalSliderPos, SIGNAL(valueChanged(int)), this, SLOT(jointValueChanged(int)));
 
 }
 
@@ -188,7 +189,7 @@ void showRobotWindow::displayTriangles()
 		text2 = tr("RobotNodeSet:\t") + QString::number(trisRNSCol);
 		text3 = tr("Joint:\t") + QString::number(trisJointCol);
 	} else
-	{		
+	{
 		text1 = tr("Total:\t") + QString::number(trisAllFull);
 		text2 = tr("RobotNodeSet:\t") + QString::number(trisRNSFull);
 		text3 = tr("Joint:\t") + QString::number(trisJointFull);
@@ -264,9 +265,24 @@ void showRobotWindow::displayPhysics()
 	robot->showPhysicsInformation(physicsCoMEnabled,physicsInertiaEnabled);
 
 	// rebuild visualization
-	rebuildVisualization();
+    rebuildVisualization();
 
 }
+
+void showRobotWindow::exportVRML()
+{
+    if (!robot) return;
+
+    QString fi = QFileDialog::getSaveFileName(this, tr("VRML 2.0 File"), QString(), tr("VRML Files (*.wrl)"));
+    std::string s = std::string(fi.toAscii());
+    if (!s.empty())
+    {
+        SceneObject::VisualizationType colModel = (UI.checkBoxColModel->isChecked())?SceneObject::Collision:SceneObject::Full;
+        visualization = robot->getVisualization<CoinVisualization>(colModel);
+        visualization->exportToVRML2(s);
+    }
+}
+
 void showRobotWindow::showRobot()
 {
 	//m_pGraspScenery->showRobot(m_pShowRobot->state() == QCheckBox::On);
@@ -335,11 +351,11 @@ void showRobotWindow::selectRNS(int nr)
 		/*cout << "HIGHLIGHTING rns " << currentRobotNodeSet->getName() << endl;
 		if (visualization)
 		{
-			
+
 			robot->highlight(visualization,false);
 			currentRobotNodeSet->highlight(visualization,true);
 		}*/
- 
+
 	}
 	updateJointBox();
 	selectJoint(0);
@@ -391,7 +407,7 @@ void showRobotWindow::selectJoint(int nr)
 }
 
 void showRobotWindow::jointValueChanged(int pos)
-{	
+{
 	int nr = UI.comboBoxJoint->currentIndex();
 	if (nr<0 || nr>=(int)currentRobotNodes.size())
 		return;
@@ -413,13 +429,13 @@ void showRobotWindow::jointValueChanged(int pos)
 }
 
 void showRobotWindow::showCoordSystem()
-{	
+{
 	float size = 0.75f;
 	int nr = UI.comboBoxJoint->currentIndex();
 	if (nr<0 || nr>=(int)currentRobotNodes.size())
 		return;
 
-	// first check if robot node has a visualization 
+	// first check if robot node has a visualization
 	/*VisualizationNodePtr visu = robotNodes[nr]->getVisualization();
 	if (!visu)
 	{
@@ -468,6 +484,8 @@ void showRobotWindow::loadRobot()
 			return;
 		}
 		robot = importer->loadFromFile(m_sRobotFilename, RobotIO::eFull);
+
+
 	}
 	catch (VirtualRobotException &e)
 	{
@@ -475,7 +493,7 @@ void showRobotWindow::loadRobot()
 		cout << e.what();
 		return;
 	}
-	
+
 	if (!robot)
 	{
 		cout << " ERROR while creating robot" << endl;

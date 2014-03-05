@@ -51,12 +51,14 @@ public:
 	*/
 	virtual bool highlight(VisualizationNodePtr visualizationNode, bool enable);
 	virtual bool highlight(unsigned int which, bool enable);
-	virtual bool highlight(bool enable);	
+	virtual bool highlight(bool enable);
 	virtual bool highlight(SoNode* visu, bool enable);
 
 	virtual VisualizationPtr clone();
 
 	SoNode* getCoinVisualization();
+
+    void exportToVRML2(std::string filename);
 
 	static std::string getFactoryName(){return "inventor";}
 

@@ -33,7 +33,7 @@ namespace VirtualRobot
 void CoMIK::setGoal(const Eigen::Vector2f &goal, float tolerance)
 {
 	target = goal;
-	tolerance = tolerance;
+	this->tolerance = tolerance;
 }
 
 Eigen::MatrixXf CoMIK::getJacobianOfCoM(RobotNodePtr node)

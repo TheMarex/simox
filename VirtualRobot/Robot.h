@@ -215,9 +215,13 @@ public:
 	//virtual Eigen::Matrix4f getGlobalPose() = 0;
 
 	/*!
-		Return center of mass of this robot
+		Return center of mass of this robot in local coordinate frame. All RobotNodes of this robot are considered according to their mass.
 	*/
-	Eigen::Vector3f getCoM();
+	virtual Eigen::Vector3f getCoMLocal();
+	/*!
+		Return Center of Mass of this robot in global coordinates. All RobotNodes of this robot are considered according to their mass.
+	*/
+	virtual Eigen::Vector3f getCoMGlobal();
 
 	/*!
 		Return accumulated mass of this robot.

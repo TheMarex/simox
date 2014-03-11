@@ -321,10 +321,13 @@ public:
 	virtual int getNumFaces(bool collisionModel = false);
 
 	/*!
-		Return Center of Mass.
+		Return Center of Mass in local coordinate frame. This method does not consider children.
 	*/
-	Eigen::Vector3f getCoMLocal();
-	Eigen::Vector3f getCoMGlobal();
+	virtual Eigen::Vector3f getCoMLocal();
+	/*!
+		Return Center of Mass in global coordinates. This method does not consider children.
+	*/
+	virtual Eigen::Vector3f getCoMGlobal();
 
 	/*!
 		Mass in Kg

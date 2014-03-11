@@ -245,7 +245,7 @@ void stabilityWindow::updateCoM()
 		globalPoseCoM.block(0,3,3,1) = currentRobotNodeSet->getCoM();
 	} else if (robot)
 	{
-		globalPoseCoM.block(0,3,3,1) = robot->getCoM();
+		globalPoseCoM.block(0,3,3,1) = robot->getCoMGlobal();
 	}
 	SoMatrixTransform *m = dynamic_cast<SoMatrixTransform *>(comVisu->getChild(0));
 	if (m)

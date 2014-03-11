@@ -535,7 +535,14 @@ Eigen::Matrix4f LocalRobot::getGlobalPose()
 	return globalPose;
 }
 
-Eigen::Vector3f Robot::getCoM()
+
+Eigen::Vector3f Robot::getCoMLocal()
+{
+    Eigen::Vector3f com = getCoMGlobal();
+    return toLocalCoordinateSystemVec(com);
+}
+
+Eigen::Vector3f Robot::getCoMGlobal()
 {
 	Eigen::Vector3f res;
 	res.setZero();

@@ -81,17 +81,8 @@ if (SimDynamics_USE_BULLET)
 		#SET (SimDynamics_BULLET_OpenGL TRUE)
       ENDIF(SimDynamics_USE_BULLET_USE_GLUT)
 
-	 ADD_SUBDIRECTORY(DynamicsEngine/BulletEngine/BulletOpenGL)
-	  
-      #MESSAGE (STATUS " ** BULLET_OpenGLSupport_LIBRARY: ${BULLET_OpenGLSupport_LIBRARY}")
-      #if (SimDynamics_USE_BULLET_USE_GLUT AND GLUT_glut_LIBRARY AND BULLET_OpenGLSupport_LIBRARY)
-      #    MESSAGE (STATUS " ** Enabling OpenGL / Glut support")
-      #    SET (SimDynamics_BULLET_OpenGL TRUE)
-      #else()
-      #    MESSAGE (STATUS " ** Disabling OpenGL / Glut support")
-      #    SET (SimDynamics_BULLET_OpenGL FALSE)
-      #endif()
-          
+      ADD_SUBDIRECTORY(DynamicsEngine/BulletEngine/BulletOpenGL)
+
     else()
         MESSAGE (STATUS " ** Could not find Bullet")
     endif()
@@ -164,38 +155,12 @@ if (SimDynamics_DYNAMICSENGINE)
         	${SOURCES}
 			DynamicsEngine/BulletEngine/BulletOpenGLViewer.cpp
 			)
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GLDebugFont.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_DialogDynamicsWorld.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_DialogWindow.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_ShapeDrawer.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_Simplex1to4.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GLDebugDrawer.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/RenderTexture.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/DemoApplication.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GlutDemoApplication.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GlutStuff.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/stb_image.cpp
-#			DynamicsEngine/BulletEngine/BulletOpenGL/Win32DemoApplication.cpp  	
-  #    	)
-      
+
       	SET(INCLUDES
         	${INCLUDES}
 			DynamicsEngine/BulletEngine/BulletOpenGLViewer.h
 			)
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GLDebugFont.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_DialogDynamicsWorld.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_DialogWindow.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_ShapeDrawer.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_Simplex1to4.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GLDebugDrawer.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/RenderTexture.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/DemoApplication.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GlutDemoApplication.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/GlutStuff.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/stb_image.h
-#			DynamicsEngine/BulletEngine/BulletOpenGL/Win32DemoApplication.h        	
 
-#      	)
       else()
           MESSAGE (STATUS " ** Bullet's OpenGLSupport library not found: Skipping BulletOpenGLViewer")
       endif()

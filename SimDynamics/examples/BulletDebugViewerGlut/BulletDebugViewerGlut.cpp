@@ -13,17 +13,18 @@ using namespace VirtualRobot;
 using namespace SimDynamics;
 
 
+/*
 #ifdef WIN32
 
 #include <GL/gl.h>
 #include <GL/glut.h>
-#include "DemoApplication.h"
+#include "SimDynamics/DynamicsEngine/BulletEngine/BulletOpenGL/DemoApplication.h"
 
 //glut is C code, this global gDemoApplication links glut to the C++ demo
 static DemoApplication* gDemoApplication = 0;
 
 
-#include "GlutStuff.h"
+#include "SimDynamics/DynamicsEngine/BulletEngine/BulletOpenGL/GlutStuff.h"
 
 static	void glutKeyboardCallback(unsigned char key, int x, int y)
 {
@@ -119,7 +120,7 @@ int glutmain(int argc, char **argv, int width, int height, const char* title, De
 }
 #endif
 
-
+*/
 
 
 

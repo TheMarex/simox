@@ -36,6 +36,10 @@ if (Simox_BUILD_SimDynamics)
     add_subdirectory(SimDynamics)
     list(APPEND SIMOX_EXPORT_TARGET_LIST SimDynamics)
 	list (APPEND Simox_LIBRARIES SimDynamics)
+	if (SimDynamics_BULLET_OpenGL)
+		list(APPEND SIMOX_EXPORT_TARGET_LIST BulletOpenGLSupport)
+	endif()
+
 	list (APPEND Simox_EXTERNAL_LIBRARIES ${Simox_SimDynamics_EXTERNAL_LIBRARIES})
 	list (APPEND Simox_EXTERNAL_INCLUDE_DIRS ${Simox_SimDynamics_INCLUDE_DIRS})
 

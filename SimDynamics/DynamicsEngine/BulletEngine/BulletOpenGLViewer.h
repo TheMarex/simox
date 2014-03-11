@@ -29,18 +29,18 @@
 #include "BulletEngine.h"
 
 #ifdef _WINDOWS
-#include <Win32DemoApplication.h>
+#include "BulletOpenGL/Win32DemoApplication.h"
 #define PlatformDemoApplication Win32DemoApplication
 #else
-#include <GlutDemoApplication.h>
+#include "BulletOpenGL/GlutDemoApplication.h"
 #define PlatformDemoApplication GlutDemoApplication
 #endif
 
 #include <btBulletDynamicsCommon.h>
-#include <GlutStuff.h>
-#include <GL_ShapeDrawer.h>
+#include "BulletOpenGL/GlutStuff.h"
+#include "BulletOpenGL/GL_ShapeDrawer.h"
 #include <LinearMath/btIDebugDraw.h>
-#include <GLDebugDrawer.h>
+#include "BulletOpenGL/GLDebugDrawer.h"
 
 #ifdef _WIN32
 #pragma warning(disable: 4275)
@@ -70,6 +70,14 @@ protected:
 		Move all joints which are actuated by motors.
 	*/
 	void updateMotors(float dt);
+
+	/*static DemoApplication* Create()
+	{
+		BulletOpenGLViewer* demo = new BulletOpenGLViewer;
+		demo->myinit();
+		demo->initPhysics();
+		return demo;
+	}*/
 
 	void updateRobotConstraints();
 	GLDebugDrawer debugDrawer;

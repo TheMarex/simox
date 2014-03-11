@@ -29,16 +29,21 @@ if (SimDynamics_USE_BULLET)
       #MESSAGE (STATUS "BULLET_LIBRARIES: ${BULLET_LIBRARIES}")
       #MESSAGE (STATUS "BULLET_OPENGL_INCLUDE_DIR: ${BULLET_OPENGL_INCLUDE_DIR}")
       #MESSAGE (STATUS "BULLET_OpenGLSupport_LIBRARY_debug: ${BULLET_OpenGLSupport_LIBRARY_debug}")
-      SET(SIMDYNAMICS_INCLUDE_DIRS "${BULLET_INCLUDE_DIR}" "${BULLET_INCLUDE_DIR}/bullet" "${BULLET_DEMOS_INCLUDE_DIR}" "${BULLET_OPENGL_INCLUDE_DIR}")# PARENT_SCOPE)
+      SET(SIMDYNAMICS_INCLUDE_DIRS "${BULLET_INCLUDE_DIR}" "${BULLET_INCLUDE_DIR}/bullet") # "${BULLET_DEMOS_INCLUDE_DIR}" "${BULLET_OPENGL_INCLUDE_DIR}")# PARENT_SCOPE)
      	
      	INCLUDE_DIRECTORIES( 
           ${BULLET_INCLUDE_DIR}
           ${BULLET_INCLUDE_DIR}/bullet
-          ${BULLET_DEMOS_INCLUDE_DIR}
-          ${BULLET_OPENGL_INCLUDE_DIR}
-      )
+		  )
+      #   ${BULLET_DEMOS_INCLUDE_DIR}
+      #   ${BULLET_OPENGL_INCLUDE_DIR}
+
       OPTION( SimDynamics_USE_BULLET_DOUBLE_PRECISION "Use Bullet Engine built with double precision" OFF )
-      OPTION(SimDynamics_USE_BULLET_USE_GLUT "Use Glut"	ON)
+	  IF (WIN32)
+		OPTION(SimDynamics_USE_BULLET_USE_GLUT "Use Glut"	OFF)
+	  else()
+		OPTION(SimDynamics_USE_BULLET_USE_GLUT "Use Glut"	ON)
+	  endif()
       IF( SimDynamics_USE_BULLET_DOUBLE_PRECISION )
           ADD_DEFINITIONS( -DBT_USE_DOUBLE_PRECISION)
           SET(SIMDYNAMICS_COMPILE_FLAGS "${SIMDYNAMICS_COMPILE_FLAGS}" "-DBT_USE_DOUBLE_PRECISION" PARENT_SCOPE)
@@ -46,41 +51,46 @@ if (SimDynamics_USE_BULLET)
       SET (SimDynamics_PHYSICS_LIBRARIES "${BULLET_LIBRARIES}")
       SET (SimDynamics_DYNAMICSENGINE TRUE)
       
-      IF (SimDynamics_USE_BULLET_USE_GLUT)
-        FIND_PACKAGE(OpenGL)
-        IF (OPENGL_FOUND)
-          MESSAGE (STATUS " ** OPENGL FOUND lib:${OPENGL_gl_LIBRARY}")
-        ENDIF()
-        IF (OPENGL_GLU_FOUND)
-          MESSAGE (STATUS " ** OPENGL_GLU FOUND lib:${OPENGL_glu_LIBRARY}")
-        ENDIF()
+	  FIND_PACKAGE(OpenGL)
+	  IF (OPENGL_FOUND)
+	  	MESSAGE (STATUS " ** OPENGL FOUND lib:${OPENGL_gl_LIBRARY}")
+		SET(SimDynamics_PHYSICS_LIBRARIES ${SimDynamics_PHYSICS_LIBRARIES} ${OPENGL_gl_LIBRARY})
+	  ENDIF()
+	  IF (OPENGL_GLU_FOUND)
+		  MESSAGE (STATUS " ** OPENGL_GLU FOUND lib:${OPENGL_glu_LIBRARY}")
+		  SET(SimDynamics_PHYSICS_LIBRARIES ${SimDynamics_PHYSICS_LIBRARIES} ${OPENGL_glu_LIBRARY})
+	  ENDIF()
 
+      IF (SimDynamics_USE_BULLET_USE_GLUT)
         FIND_PACKAGE(GLUT)
         IF (GLUT_FOUND)
             MESSAGE(STATUS " ** GLUT FOUND: ${GLUT_glut_LIBRARY}")
-            SET(SimDynamics_PHYSICS_LIBRARIES ${SimDynamics_PHYSICS_LIBRARIES} ${GLUT_glut_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})        
-        ELSE (GLUT_FOUND)
+            SET(SimDynamics_PHYSICS_LIBRARIES ${SimDynamics_PHYSICS_LIBRARIES} ${GLUT_glut_LIBRARY})        
+        
+      		IF (WIN32)
+      			INCLUDE_DIRECTORIES(${GLUT_INCLUDE_DIR})
+      			SET(SIMDYNAMICS_INCLUDE_DIRS "${SIMDYNAMICS_INCLUDE_DIRS}" "${GLUT_INCLUDE_DIR}")# PARENT_SCOPE)
+      		ELSE (WIN32)
+      			# This is the lines for linux.  This should always work if everything is installed and working fine.
+      			INCLUDE_DIRECTORIES(/usr/include /usr/local/include ${GLUT_INCLUDE_DIR}) 
+      			SET(SIMDYNAMICS_INCLUDE_DIRS "${SIMDYNAMICS_INCLUDE_DIRS}" "/usr/include" "/usr/local/include" "${GLUT_INCLUDE_DIR}")
+      		ENDIF (WIN32)
+		ELSE (GLUT_FOUND)
           SET( GLUT_glut_LIBRARY "" CACHE PATH "Glut library." )
         ENDIF (GLUT_FOUND)
-
-      	IF (WIN32)
-      	    INCLUDE_DIRECTORIES(${GLUT_INCLUDE_DIR})
-      	    SET(SIMDYNAMICS_INCLUDE_DIRS "${SIMDYNAMICS_INCLUDE_DIRS}" "${GLUT_INCLUDE_DIR}")# PARENT_SCOPE)
-      	ELSE (WIN32)
-      	    # This is the lines for linux.  This should always work if everything is installed and working fine.
-      	    INCLUDE_DIRECTORIES(/usr/include /usr/local/include ${GLUT_INCLUDE_DIR}) 
-      	    SET(SIMDYNAMICS_INCLUDE_DIRS "${SIMDYNAMICS_INCLUDE_DIRS}" "/usr/include" "/usr/local/include" "${GLUT_INCLUDE_DIR}")
-      	ENDIF (WIN32)
-
+		#SET (SimDynamics_BULLET_OpenGL TRUE)
       ENDIF(SimDynamics_USE_BULLET_USE_GLUT)
-      MESSAGE (STATUS " ** BULLET_OpenGLSupport_LIBRARY: ${BULLET_OpenGLSupport_LIBRARY}")
-      if (SimDynamics_USE_BULLET_USE_GLUT AND GLUT_glut_LIBRARY AND BULLET_OpenGLSupport_LIBRARY)
-          MESSAGE (STATUS " ** Enabling OpenGL / Glut support")
-          SET (SimDynamics_BULLET_OpenGL TRUE)
-      else()
-          MESSAGE (STATUS " ** Disabling OpenGL / Glut support")
-          SET (SimDynamics_BULLET_OpenGL FALSE)
-      endif()
+
+	 ADD_SUBDIRECTORY(DynamicsEngine/BulletEngine/BulletOpenGL)
+	  
+      #MESSAGE (STATUS " ** BULLET_OpenGLSupport_LIBRARY: ${BULLET_OpenGLSupport_LIBRARY}")
+      #if (SimDynamics_USE_BULLET_USE_GLUT AND GLUT_glut_LIBRARY AND BULLET_OpenGLSupport_LIBRARY)
+      #    MESSAGE (STATUS " ** Enabling OpenGL / Glut support")
+      #    SET (SimDynamics_BULLET_OpenGL TRUE)
+      #else()
+      #    MESSAGE (STATUS " ** Disabling OpenGL / Glut support")
+      #    SET (SimDynamics_BULLET_OpenGL FALSE)
+      #endif()
           
     else()
         MESSAGE (STATUS " ** Could not find Bullet")
@@ -152,13 +162,40 @@ if (SimDynamics_DYNAMICSENGINE)
   	if (SimDynamics_BULLET_OpenGL)
       	SET(SOURCES
         	${SOURCES}
-        	DynamicsEngine/BulletEngine/BulletOpenGLViewer.cpp
-      	)
+			DynamicsEngine/BulletEngine/BulletOpenGLViewer.cpp
+			)
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GLDebugFont.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_DialogDynamicsWorld.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_DialogWindow.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_ShapeDrawer.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_Simplex1to4.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GLDebugDrawer.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/RenderTexture.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/DemoApplication.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GlutDemoApplication.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GlutStuff.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/stb_image.cpp
+#			DynamicsEngine/BulletEngine/BulletOpenGL/Win32DemoApplication.cpp  	
+  #    	)
       
       	SET(INCLUDES
         	${INCLUDES}
-        	DynamicsEngine/BulletEngine/BulletOpenGLViewer.h
-      	)
+			DynamicsEngine/BulletEngine/BulletOpenGLViewer.h
+			)
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GLDebugFont.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_DialogDynamicsWorld.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_DialogWindow.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_ShapeDrawer.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GL_Simplex1to4.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GLDebugDrawer.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/RenderTexture.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/DemoApplication.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GlutDemoApplication.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/GlutStuff.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/stb_image.h
+#			DynamicsEngine/BulletEngine/BulletOpenGL/Win32DemoApplication.h        	
+
+#      	)
       else()
           MESSAGE (STATUS " ** Bullet's OpenGLSupport library not found: Skipping BulletOpenGLViewer")
       endif()
@@ -189,9 +226,11 @@ if (SimDynamics_DYNAMICSENGINE)
   ADD_DEFINITIONS(${Simox_EXTERNAL_LIBRARY_FLAGS})
 
   ADD_LIBRARY (SimDynamics SHARED ${SOURCES} ${INCLUDES})
-
   TARGET_LINK_LIBRARIES (SimDynamics ${Simox_EXTERNAL_LIBRARIES} VirtualRobot ${SimDynamics_PHYSICS_LIBRARIES})
-  
+  if (SimDynamics_BULLET_OpenGL)
+	TARGET_LINK_LIBRARIES (SimDynamics BulletOpenGLSupport)
+	SET (SimDynamics_BULLET_OpenGL TRUE PARENT_SCOPE) # inform parent scope about BulletOpenGLSupport
+  ENDIF(SimDynamics_BULLET_OpenGL)
   # .DLL path
   SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Simox_BIN_DIR})
   # .so path

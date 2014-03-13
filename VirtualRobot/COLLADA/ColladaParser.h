@@ -81,9 +81,16 @@
                     //material index of each triangle
                     std::vector<unsigned int> triangleMaterial;
                 };
-                /// Transformations before the mesh (4 floats represent rotations, 3 floats transformations, 16 floats transformation matrices).
+                struct RigidBodyType{
+                    std::vector<std::vector<float> > mass_frame;
+                    float mass;
+                    std::vector<float> inertia;
+                };
+
+                /// Transformations before the mesh (4 floats represent rotations, 3 floats transformations).
                 std::vector<std::vector<float> > transformations;
                 std::vector<GeometryType> geometries;
+                std::vector<RigidBodyType> rigidBodies;
                 /// The visual appearance may be shaped as tree.
                 std::vector<boost::shared_ptr<SceneGraph> > children;
                 unsigned int level;
@@ -132,6 +139,7 @@
         void extractSensors(ColladaDOM150::domJoint* actualJoint, boost::shared_ptr<NodeData> jointNode, ColladaDOM150::domArticulated_system* motion_articulated_system);
         bool parseLink(ColladaDOM150::domLinkRef,boost::shared_ptr<NodeData>,ColladaDOM150::domKinematics_model*,NodeDataMap &);
         boost::shared_ptr<SceneGraph> parseVisualScene(ColladaDOM150::domNode *node,std::vector<daeElement*> delimiters,daeElement* start=NULL);
+        std::map<ColladaDOM150::domNode *, ColladaParser::SceneGraph::RigidBodyType> rigid_body_map;
 };
 
 template<class T>

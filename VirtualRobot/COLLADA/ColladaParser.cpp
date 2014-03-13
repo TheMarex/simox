@@ -22,6 +22,7 @@
 
 #include "ColladaParser.h"
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 #include <sstream>
 
 using namespace std;
@@ -189,7 +190,11 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
                     sceneGraph->transformations.push_back(transformation);
             }
             else if (ID == domNode::ID()){
-                sceneGraph->children.push_back(parseVisualScene(dynamic_cast<domNode*> (elt.cast()), delimiters));
+                domNode *childNode = dynamic_cast<domNode*> (elt.cast());
+                if (rigid_body_map.find(childNode)!=rigid_body_map.end()){
+                    sceneGraph->rigidBodies.push_back(rigid_body_map.at(childNode));
+                }
+                sceneGraph->children.push_back(parseVisualScene(childNode, delimiters));
             }
             else if (ID == domScale::ID()) {
                     vector<float> scales(3);
@@ -555,6 +560,47 @@ void ColladaParser::parse(){
     // Get the visual scene
     domVisual_scene* visual_scene = dynamic_cast<domVisual_scene*> (instance_visual_scene->getUrl().getElement().cast());
     assert(visual_scene && "Dynamic cast failed");
+
+    // Parse all defined rigid body definitions and store them in relation to their associated node.
+
+    BOOST_FOREACH(domInstance_with_extra *instance, scene->getInstance_physics_scene_array()){
+                domPhysics_scene* physics_scene = dynamic_cast<domPhysics_scene*> (instance->getUrl().getElement().cast());
+                BOOST_FOREACH(domInstance_physics_model *instance_physics_model, physics_scene->getInstance_physics_model_array()){
+                    domPhysics_model* physics_model = dynamic_cast<domPhysics_model*>(instance_physics_model->getUrl().getElement().cast());
+                    std::map<std::string, domRigid_body*> rigid_body_name_map;
+                    BOOST_FOREACH(domRigid_body* rigid_body, physics_model->getRigid_body_array()){
+                        rigid_body_name_map[rigid_body->getID()] = rigid_body;
+                    }
+
+                    BOOST_FOREACH(domInstance_rigid_body *instance_rigid_body, instance_physics_model->getInstance_rigid_body_array()){
+                        ColladaParser::SceneGraph::RigidBodyType rigidBodyType;
+
+                        domRigid_body *rigid_body = rigid_body_name_map[instance_rigid_body->getBody()];
+                        std::vector<float> inertia;
+                        istringstream charData(rigid_body->getTechnique_common()->getInertia()->getCharData());
+                        std::copy(std::istream_iterator<float>(charData),std::istream_iterator<float>(),  std::back_inserter(rigidBodyType.inertia));
+                        std::cout << rigidBodyType.inertia <<std::endl;
+                        rigidBodyType.mass = boost::lexical_cast<double>(rigid_body->getTechnique_common()->getMass()->getCharData());
+                        std::cout <<  rigidBodyType.mass << std::endl;
+                        BOOST_FOREACH(daeElement* child, rigid_body->getTechnique_common()->getMass_frame()->getContents()){
+                            std::vector<float> trafo;
+                            istringstream charData(child->getCharData());
+                            if (strcmp(child->getElementName(),"translate")| strcmp(child->getElementName(),"rotate")){
+                                std::copy(std::istream_iterator<float>(charData),std::istream_iterator<float>(),  std::back_inserter(trafo));
+                            }
+                            std::cout << child->getElementName() << " " << trafo << std::endl;
+                            rigidBodyType.mass_frame.push_back(trafo);
+                        }
+                       domNode* node = dynamic_cast<domNode*>(instance_rigid_body->getTarget().getElement().cast());
+                       if (node)
+                           std::cout << "Node associated\n";
+                       rigid_body_map[node]=rigidBodyType;
+                    }
+
+                }
+
+    }
+
 
     // get the kinematics scenes
     BOOST_FOREACH(domInstance_kinematics_scene *instance_kinematics_scene, scene->getInstance_kinematics_scene_array()){

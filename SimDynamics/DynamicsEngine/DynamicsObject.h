@@ -64,8 +64,11 @@ public:
 
 	VirtualRobot::SceneObjectPtr getSceneObject();
 
-	virtual Eigen::Vector3f getLinearVelocity();
-	virtual Eigen::Vector3f getAngularVelocity();
+    virtual Eigen::Vector3f getLinearVelocity();
+    virtual Eigen::Vector3f getAngularVelocity();
+
+    virtual void setLinearVelocity(const Eigen::Vector3f &vel);
+    virtual void setAngularVelocity(const Eigen::Vector3f &vel);
 
     /*!
      * \brief applyForce Applies an external force on this object. The force is applied at the CoM position.

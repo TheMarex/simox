@@ -56,6 +56,16 @@ Eigen::Vector3f DynamicsObject::getAngularVelocity()
     return Eigen::Vector3f::Zero();
 }
 
+void DynamicsObject::setLinearVelocity(const Eigen::Vector3f &vel)
+{
+
+}
+
+void DynamicsObject::setAngularVelocity(const Eigen::Vector3f &vel)
+{
+
+}
+
 void DynamicsObject::applyForce(const Eigen::Vector3f &force)
 {
 

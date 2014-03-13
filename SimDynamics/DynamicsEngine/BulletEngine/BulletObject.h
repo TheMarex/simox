@@ -63,8 +63,8 @@ public:
 	virtual Eigen::Vector3f getLinearVelocity();
 	virtual Eigen::Vector3f getAngularVelocity();
 
-	void setLinearVelocity(const Eigen::Vector3f &vel);
-	void setAngularVelocity(const Eigen::Vector3f &vel);
+    virtual void setLinearVelocity(const Eigen::Vector3f &vel);
+    virtual void setAngularVelocity(const Eigen::Vector3f &vel);
 
     //! This is the world pose which is set by bullet
     Eigen::Matrix4f getComGlobal();

@@ -123,14 +123,14 @@ Eigen::MatrixXf CoMIK::getJacobianMatrix()
 
 Eigen::VectorXf CoMIK::computeStep(float stepSize )
 {
-	Eigen::Vector2f error = (target - rns->getCoM().head(2)) * stepSize;
+	Eigen::Vector2f error = (target - rnsBodies->getCoM().head(2)) * stepSize;
 	return getPseudoInverseJacobianMatrix() * error;
 
 }
 
 bool CoMIK::checkTolerances() const
 {
-	float error = (target - rns->getCoM().head(2)).norm();
+	float error = (target - rnsBodies->getCoM().head(2)).norm();
 	return error < tolerance;
 }
 

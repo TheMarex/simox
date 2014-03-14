@@ -284,16 +284,16 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
                                     domSource* source = dynamic_cast<domSource*> (input->getSource().getElement().cast());
                                     assert(source);
                                     domAccessorRef accessor = source->getTechnique_common()->getAccessor();
-                                    daeUInt count = accessor->getCount();
+									daeUInt count = daeUInt(accessor->getCount());
                                     assert(source->getFloat_array()->getValue().getCount());
-                                    daeUInt stride = accessor->getStride();
+									daeUInt stride = daeUInt(accessor->getStride());
                                     cout << "#Points: " << count /*/ stride*/ << endl;
                                     assert(stride==3);
-                                    for (int i=0; i<count/*/stride*/;i++){
+                                    for (unsigned int i=0; i<count/*/stride*/;i++){
                                         vector<float> point(stride);
-                                        for (int j=0; j<stride; j++){
+										for (unsigned int j = 0; j<stride; j++){
                                             //assert(i*stride+j < count);
-                                            point[j] = source->getFloat_array()->getValue()[i*stride+j];
+                                            point[j] = float(source->getFloat_array()->getValue()[i*stride+j]);
                                         }
                                         sg_geometry.vertices.push_back(point);
                                     }
@@ -301,37 +301,37 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
                             }
                         }
                         else if (strcmp(input->getSemantic(),"NORMAL")==0) {
-                            normalOffset = input->getOffset();
+							normalOffset = daeUInt(input->getOffset());
                             domSource* source = dynamic_cast<domSource*> (input->getSource().getElement().cast());
                             assert(source);
                             domAccessorRef accessor = source->getTechnique_common()->getAccessor();
-                            daeUInt count = accessor->getCount();
+							daeUInt count = daeUInt(accessor->getCount());
                             assert(source->getFloat_array()->getValue().getCount());
-                            daeUInt stride = accessor->getStride();
+							daeUInt stride = daeUInt(accessor->getStride());
                             cout << "#Normals: " << count << endl;
                             assert(stride==3);
-                            for (int i=0; i<count;i++){
+                            for (unsigned int i=0; i<count;i++){
                                 vector<float> point(stride);
-                                for (int j=0; j<stride; j++){
-                                    point[j] = source->getFloat_array()->getValue()[i*stride+j];
+								for (unsigned int j = 0; j<stride; j++){
+                                    point[j] = float(source->getFloat_array()->getValue()[i*stride+j]);
                                 }
                                 sg_geometry.normals.push_back(point);
                             }
                         }
                         else if (strcmp(input->getSemantic(),"COLOR")==0) {
-                            colorOffset = input->getOffset();
+                            colorOffset = daeUInt(input->getOffset());
                             domSource* source = dynamic_cast<domSource*> (input->getSource().getElement().cast());
                             assert(source);
                             domAccessorRef accessor = source->getTechnique_common()->getAccessor();
-                            daeUInt count = accessor->getCount();
+							daeUInt count = daeUInt(accessor->getCount());
                             assert(source->getFloat_array()->getValue().getCount());
-                            daeUInt stride = accessor->getStride();
+							daeUInt stride = daeUInt(accessor->getStride());
                             cout << "#Colors: " << count << endl;
                             assert(stride==3);
-                            for (int i=0; i<count;i++){
+							for (unsigned int i = 0; i<count; i++){
                                 vector<float> point(stride);
-                                for (int j=0; j<stride; j++){
-                                    point[j] = source->getFloat_array()->getValue()[i*stride+j];
+								for (unsigned int j = 0; j<stride; j++){
+                                    point[j] = float(source->getFloat_array()->getValue()[i*stride+j]);
                                 }
                                 sg_geometry.colors.push_back(point);
                             }
@@ -416,10 +416,10 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
                             daeUInt stride = accessor->getStride();
                             cout << "#Normals: " << count << endl;
                             assert(stride==3);
-                            for (int i=0; i<count;i++){
+							for (unsigned int i = 0; i<count; i++){
                                 vector<float> point(stride);
-                                for (int j=0; j<stride; j++){
-                                    point[j] = source->getFloat_array()->getValue()[i*stride+j];
+                                for (unsigned int j=0; j<stride; j++){
+                                    point[j] = float(source->getFloat_array()->getValue()[i*stride+j]);
                                 }
                                 sg_geometry.normals.push_back(point);
                             }
@@ -434,9 +434,9 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
                             daeUInt stride = accessor->getStride();
                             cout << "#Colors: " << count << endl;
                             assert(stride==3);
-                            for (int i=0; i<count;i++){
+							for (unsigned int i = 0; i<count; i++){
                                 vector<float> point(stride);
-                                for (int j=0; j<stride; j++){
+								for (unsigned int j = 0; j<stride; j++){
                                     point[j] = source->getFloat_array()->getValue()[i*stride+j];
                                 }
                                 sg_geometry.colors.push_back(point);
@@ -580,7 +580,7 @@ void ColladaParser::parse(){
                         istringstream charData(rigid_body->getTechnique_common()->getInertia()->getCharData());
                         std::copy(std::istream_iterator<float>(charData),std::istream_iterator<float>(),  std::back_inserter(rigidBodyType.inertia));
                         std::cout << rigidBodyType.inertia <<std::endl;
-                        rigidBodyType.mass = boost::lexical_cast<double>(rigid_body->getTechnique_common()->getMass()->getCharData());
+                        rigidBodyType.mass = float(boost::lexical_cast<double>(rigid_body->getTechnique_common()->getMass()->getCharData()));
                         std::cout <<  rigidBodyType.mass << std::endl;
                         BOOST_FOREACH(daeElement* child, rigid_body->getTechnique_common()->getMass_frame()->getContents()){
                             std::vector<float> trafo;
@@ -674,9 +674,9 @@ void ColladaParser::parse(){
 									else
 										jointMap[joint]->jointType = eNone;
 									domFloat3 f = a->getValue();
-									jointMap[joint]->axis[0] = f[0];
-									jointMap[joint]->axis[1] = f[1];
-									jointMap[joint]->axis[2] = f[2];
+									jointMap[joint]->axis[0] = float(f[0]);
+									jointMap[joint]->axis[1] = float(f[1]);
+									jointMap[joint]->axis[2] = float(f[2]);
 								}
 								else
 								{

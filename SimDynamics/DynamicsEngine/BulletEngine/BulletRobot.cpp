@@ -1120,6 +1120,17 @@ BulletRobot::LinkInfo BulletRobot::getLink( VirtualRobot::RobotNodePtr node )
 	return LinkInfo();
 }
 
+std::vector<BulletRobot::LinkInfo> BulletRobot::getLinks( VirtualRobot::RobotNodePtr node )
+{
+    std::vector<BulletRobot::LinkInfo> result;
+	for (size_t i=0;i<links.size();i++)
+	{
+		if (links[i].nodeJoint == node || links[i].nodeJoint2 == node || links[i].nodeA == node || links[i].nodeB == node)
+			result.push_back(links[i]);
+	}
+	return result;
+}
+
 bool BulletRobot::hasLink( VirtualRobot::RobotNodePtr node )
 {
 	for (size_t i=0;i<links.size();i++)

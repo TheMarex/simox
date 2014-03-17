@@ -23,6 +23,11 @@ void RobotNodeActuator::updateVisualizationPose( const Eigen::Matrix4f& pose, fl
 	robotNode->updateVisualizationPose(pose, jointValue, updateChildren);
 }
 
+void RobotNodeActuator::updateJointAngle(float jointValue)
+{
+    robotNode->setJointValueNoUpdate(jointValue);
+}
+
 VirtualRobot::RobotNodePtr RobotNodeActuator::getRobotNode()
 {
     return robotNode;

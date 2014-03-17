@@ -115,12 +115,22 @@ void SimoxMotionState::setGlobalPoseSimox( const Eigen::Matrix4f& worldPose )
         BulletRobotPtr bdr = boost::dynamic_pointer_cast<BulletRobot>(dr);
         if (bdr)
         {
-            float ja = 0;
-            if (bdr->hasLink(rn))
-                ja = bdr->getJointAngle(rn);
+            // check if robotnode is connected with a joint
+            std::vector<BulletRobot::LinkInfo> links = bdr->getLinks(rn);
+            // update all involved joint values
+            for (size_t i=0;i<links.size();i++)
+            {
+                if (links[i].nodeJoint)
+                {
+                    float ja = bdr->getJointAngle(links[i].nodeJoint);
+                    // we can update the joint value via an RobotNodeActuator
+                    RobotNodeActuatorPtr rna (new RobotNodeActuator(links[i].nodeJoint));
+                    rna->updateJointAngle(ja);
+                }
+            }
 
 		    // we assume that all models are handled by Bullet, so we do not need to update children
-		    robotNodeActuator->updateVisualizationPose(resPose, ja, false); 
+		    robotNodeActuator->updateVisualizationPose(resPose, false); 
 #if 0
             if (rn->getName() == "Shoulder 1 L")
             {

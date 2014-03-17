@@ -133,10 +133,14 @@ public:
 	virtual void ensureKinematicConstraints();
 
 	/*!
-		Returns link where the given node is the second connected node. 
-		There could only one link with this setup, since on VirtualRobot side node2 is the actuated one.
+		Returns link where the given node is the joint node.
 	*/
 	LinkInfo getLink(VirtualRobot::RobotNodePtr node);
+
+	/*!
+		Returns all links where the given node is involved (bodyA, bodyB or joint)
+	*/
+	std::vector<LinkInfo> getLinks(VirtualRobot::RobotNodePtr node);
 
 
 protected:

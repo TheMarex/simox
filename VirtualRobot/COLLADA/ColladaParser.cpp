@@ -620,7 +620,7 @@ void ColladaParser::parse(){
                 domArticulated_system* motion_articulated_system = dynamic_cast<domArticulated_system*> (instance_articulated_system->getUrl().getElement().cast());
 
 
-
+                domJoint* joint; // the joint we are looking for
 
                 domArticulated_system* kinematics_articulated_system = dynamic_cast<domArticulated_system*>(motion_articulated_system->getMotion()->getInstance_articulated_system()->getUrl().getElement().cast());
 //                domKinematics_model* kinematics_model = dynamic_cast<domKinematics_model*>
@@ -630,7 +630,7 @@ void ColladaParser::parse(){
                     if (strcmp(bind->getSymbol(),bind_joint_axis->getAxis()->getParam()->getValue())==0){
                         daeSidRef sidref(std::string(bind->getParam()->getRef()), motion_articulated_system);
                         daeElement* joint_axis  = sidref.resolve().elt;
-                        domJoint* joint  = dynamic_cast<domJoint*>(joint_axis->getParent());
+                        joint  = dynamic_cast<domJoint*>(joint_axis->getParent());
                         assert(joint);
                         BOOST_FOREACH(domMotion_axis_infoRef motion_axis_info, motion_articulated_system->getMotion()->getTechnique_common()->getAxis_info_array()){
                             domKinematics_axis_info *kinematics_axis_info;
@@ -687,8 +687,23 @@ void ColladaParser::parse(){
                                 this->extractSensors(joint,jointMap[joint],motion_articulated_system);
                             }
                         }
-                    }
-                }
+                        continue;
+                    } // if
+                } // FOREACH
+
+                assert(joint);
+                BOOST_FOREACH(domKinematics_bindRef bind, instance_articulated_system->getBind_array()){
+
+                    if (strcmp(bind->getSymbol(),bind_joint_axis->getValue()->getParam()->getValue())==0){
+                            daeSidRef sidref(std::string(bind->getParam()->getRef()), motion_articulated_system);
+                            daeElement* element = sidref.resolve().elt;
+                            domKinematics_newparam* newparam  = dynamic_cast<domKinematics_newparam*>(element);
+                            jointMap[joint]->value = newparam->getFloat()->getValue();
+                            //std::cout << "initial value for: " << joint->getID() << " is " << newparam->getFloat()->getValue() << std::endl;
+                        continue;
+                    } // if
+
+               } // FOREACH
             }
         }
         BOOST_FOREACH(domBind_kinematics_modelRef bind_kinematics_model,

@@ -474,7 +474,8 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 			float jointOffset = 0;
 			Eigen::Vector3f axis = getAxis(colladaNode);
 			robotNodeJoint = revoluteNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
-				jointLimitLow, jointLimitHigh, jointOffset, idMatrix, axis, idVec3);
+                jointLimitLow, jointLimitHigh, jointOffset, idMatrix, axis, idVec3);
+            robotNodeJoint->setJointValue(colladaNode->value /180.0f * (float)M_PI);
 			robo->registerRobotNode(robotNodeJoint);
 			allNodes.push_back(robotNodeJoint);
 		}
@@ -487,7 +488,8 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 			Eigen::Vector3f axis = getAxis(colladaNode);
 			robotNodeJoint = prismaticNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
 				jointLimitLow, jointLimitHigh, jointOffset, idMatrix, idVec3, axis);
-			robo->registerRobotNode(robotNodeJoint);
+            robotNodeJoint->setJointValue(colladaNode->value /180.0f * (float)M_PI);
+            robo->registerRobotNode(robotNodeJoint);
 			allNodes.push_back(robotNodeJoint);
 
 			// setup model scaling

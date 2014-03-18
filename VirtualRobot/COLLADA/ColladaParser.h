@@ -112,7 +112,7 @@
             unsigned int level;
             float speed, jerk, acceleration, deceleration;
             bool locked, active;
-            float min, max;
+            float min, max, value;
             daeElement* transformation_visual_scene;
             std::string name;
             friend std::ostream& operator<<(std::ostream& os, const NodeData& dt);

@@ -38,10 +38,20 @@ RobotPtr ColladaIO::convertRobot(ColladaParser::ModelType& colladaModel, float s
 	boost::shared_ptr<ColladaParser::NodeData> root = colladaModel.begin()->second;
 
 	std::vector<VirtualRobot::RobotNodePtr> allNodes;
-	std::map< VirtualRobot::RobotNodePtr, std::vector<std::string> > childrenMap;
-    VirtualRobot::RobotNodePtr rootVR = convertNode(root, allNodes, childrenMap, robo, scaling);
+    std::map< VirtualRobot::RobotNodePtr, std::vector<std::string> > childrenMap;
+    std::map< VirtualRobot::RobotNodePtr, float> valueMap;
+
+    VirtualRobot::RobotNodePtr rootVR = convertNode(root, allNodes, childrenMap, robo, scaling,valueMap);
+
+
 
 	VirtualRobot::RobotFactory::initializeRobot(robo, allNodes, childrenMap, rootVR);
+
+    std::cout << "updating joint values\n";
+    for (std::map< VirtualRobot::RobotNodePtr, float>::iterator it=valueMap.begin(); it!=valueMap.end();it++){
+        it->first->setJointValue(it->second);
+        std::cout << it->second << std::endl;
+    }
 
 	// setup standard RNS
 	std::vector<RobotNodePtr> jointsAll = robo->getRobotNodes();
@@ -400,7 +410,7 @@ PositionSensorPtr ColladaIO::convertSensor(boost::shared_ptr<ColladaParser::Node
 		name = rn->getName();
 		name += std::string("_sensor");
 	}
-	Eigen::Matrix4f rnTrafo = getTransformation(colladaNode, scaling);
+    Eigen::Matrix4f rnTrafo = getTransformation(colladaNode, scaling);
 	boost::shared_ptr<TriMeshModel> m = getMesh(colladaNode, rnTrafo.inverse(), scaling);
 	VirtualRobot::VisualizationNodePtr visualizationNode;
 	if (m && m->vertices.size() && m->faces.size()>0)
@@ -418,7 +428,7 @@ PositionSensorPtr ColladaIO::convertSensor(boost::shared_ptr<ColladaParser::Node
 }
 
 
-RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> colladaNode, std::vector<VirtualRobot::RobotNodePtr>& allNodes, std::map< VirtualRobot::RobotNodePtr, std::vector<std::string> > &childrenMap, RobotPtr robo, float scaling )
+RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> colladaNode, std::vector<VirtualRobot::RobotNodePtr>& allNodes, std::map< VirtualRobot::RobotNodePtr, std::vector<std::string> > &childrenMap, RobotPtr robo, float scaling, std::map<VirtualRobot::RobotNodePtr,float> &valueMap )
 {
 	THROW_VR_EXCEPTION_IF(!colladaNode,"NULL collada node");
 	VirtualRobot::RobotNodeFactoryPtr revoluteNodeFactory = VirtualRobot::RobotNodeFactory::fromName(VirtualRobot::RobotNodeRevoluteFactory::getName(), NULL);
@@ -438,7 +448,11 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 	}
 	// TRANSFORMATION
 	std::string robotNodeTrafoName = name + "_Transformation";
-    Eigen::Matrix4f preJointTransform = getTransformation(colladaNode, scaling);
+
+    // PrejointTransform is not required --> if the ColladaSceneGraph is correct)
+    //Eigen::Matrix4f preJointTransform = getTransformation(colladaNode, scaling);
+    Eigen::Matrix4f preJointTransform = idMatrix;
+
 	VirtualRobot::RobotNodePtr robotNodeTrafo = fixedNodeFactory->createRobotNode(robo, robotNodeTrafoName, VirtualRobot::VisualizationNodePtr(), VirtualRobot::CollisionModelPtr(), 0,
 		0, 0, preJointTransform, idVec3, idVec3);
 	robo->registerRobotNode(robotNodeTrafo);
@@ -447,7 +461,7 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 
 
 	// create visu model
-	boost::shared_ptr<TriMeshModel> m = getMesh(colladaNode, preJointTransform.inverse(), scaling);
+    boost::shared_ptr<TriMeshModel> m = getMesh(colladaNode, preJointTransform.inverse(), scaling);
 	VirtualRobot::VisualizationNodePtr visualizationNode;
 	VirtualRobot::CollisionModelPtr colModel;
 	if (m && m->vertices.size()>0 && m->faces.size()>0)
@@ -456,14 +470,15 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 		VisualizationFactoryPtr f = VisualizationFactory::first(NULL);
 		if (f)
 		{
-			Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
+            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
 			visualizationNode = f->createTriMeshModelVisualization(m, pose);
 			colModel.reset(new CollisionModel(visualizationNode));
 		}
 	}
 
-	// check for joint info
-	VirtualRobot::RobotNodePtr robotNodeJoint;
+    // check for joint info
+    VirtualRobot::RobotNodePtr robotNodeJoint;
+    float jointOffset = 0.0;
 	if (colladaNode->active)
 	{
 		if (colladaNode->jointType == ColladaParser::eRevolute)
@@ -471,38 +486,41 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 			// Revolute JOINT
 			float jointLimitLow = colladaNode->min / 180.0f * (float)M_PI;
 			float jointLimitHigh = colladaNode->max / 180.0f * (float)M_PI;
-            float jointOffset = colladaNode->value /180.0f * (float)M_PI;
             std::cout << "###### " << jointOffset << std::endl;
-			Eigen::Vector3f axis = getAxis(colladaNode);
+            Eigen::Vector3f axis = getAxis(colladaNode);
+            //jointOffset=(-1)*colladaNode->value /180.0f * (float)M_PI;
 			robotNodeJoint = revoluteNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
                 jointLimitLow, jointLimitHigh, jointOffset, idMatrix, axis, idVec3);
-			robo->registerRobotNode(robotNodeJoint);
+            valueMap[robotNodeJoint] = colladaNode->value /180.0f * (float)M_PI;
+            robo->registerRobotNode(robotNodeJoint);
             allNodes.push_back(robotNodeJoint);
 		}
 		else if (colladaNode->jointType == ColladaParser::ePrismatic)
 		{
 			// Prismatic JOINT
-			float jointLimitLow = colladaNode->min;
-			float jointLimitHigh = colladaNode->max;
-            float jointOffset = colladaNode->value;
-            std::cout << "###### " << jointOffset << std::endl;
+            float jointLimitLow = colladaNode->min*scaling;
+            float jointLimitHigh = colladaNode->max*scaling;
+            //jointOffset=(-1)*colladaNode->value *1000;
             Eigen::Vector3f axis = getAxis(colladaNode);
 			robotNodeJoint = prismaticNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
 				jointLimitLow, jointLimitHigh, jointOffset, idMatrix, idVec3, axis);
+            valueMap[robotNodeJoint] = colladaNode->value*scaling;
             robo->registerRobotNode(robotNodeJoint);
             allNodes.push_back(robotNodeJoint);
 
 			// setup model scaling
 			if (visualizationNode)
 			{
-				boost::shared_ptr<VirtualRobot::RobotNodePrismatic> rnPr = boost::dynamic_pointer_cast<RobotNodePrismatic>(robotNodeJoint);
+                /*
+                boost::shared_ptr<VirtualRobot::RobotNodePrismatic> rnPr = boost::dynamic_pointer_cast<RobotNodePrismatic>(robotNodeJoint);
 				Eigen::Vector3f one = Eigen::Vector3f::Ones();
-				float l = preJointTransform.block(0, 3, 3, 1).norm();
-				if (l > 0)
-					one /= l;
-				rnPr->setVisuScaleFactor(one);
+                float l = preJointTransform.block(0, 3, 3, 1).norm();
+                if (l > 0)
+                    one /= l;
+                rnPr->setVisuScaleFactor(one);
+                */
 			}
-		}
+        }
 	}
 
 	if (!robotNodeJoint && visualizationNode)
@@ -586,7 +604,7 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 	}
 
 	BOOST_FOREACH(boost::shared_ptr<ColladaParser::NodeData> child, colladaNode->children) {
-        convertNode(child, allNodes, childrenMap, robo, scaling);
+        convertNode(child, allNodes, childrenMap, robo, scaling, valueMap);
 	}
 
 	return robotNodeTrafo;

@@ -31,7 +31,7 @@ namespace VirtualRobot {
 
 		static VirtualRobot::PositionSensorPtr convertSensor(boost::shared_ptr<ColladaParser::NodeData> colladaNode, VirtualRobot::RobotNodePtr rn, float scaling);
 		static VirtualRobot::RobotPtr convertRobot(ColladaParser::ModelType &colladaModel, float scaling);
-        static VirtualRobot::RobotNodePtr convertNode(boost::shared_ptr<ColladaParser::NodeData> colladaNode, std::vector<VirtualRobot::RobotNodePtr>& allNodes, std::map< VirtualRobot::RobotNodePtr, std::vector<std::string> > &childrenMap, VirtualRobot::RobotPtr robo, float scaling);
+        static VirtualRobot::RobotNodePtr convertNode(boost::shared_ptr<ColladaParser::NodeData> colladaNode, std::vector<VirtualRobot::RobotNodePtr>& allNodes, std::map< VirtualRobot::RobotNodePtr, std::vector<std::string> > &childrenMap, VirtualRobot::RobotPtr robo, float scaling,std::map<VirtualRobot::RobotNodePtr,float> &valueMap);
         static std::vector<std::string> getChildrenList(boost::shared_ptr<ColladaParser::NodeData> colladaNode);
         static Eigen::Matrix4f getTransformation(boost::shared_ptr<ColladaParser::NodeData> colladaNode, float scaling);
 		static Eigen::Matrix4f getTransformation(std::vector<float> &trafo, float scaling);

@@ -534,6 +534,20 @@ bool ColladaParser::parseLink(domLinkRef link, boost::shared_ptr<ColladaParser::
                     jointMap[joint]->transformations.push_back(transformation);
             }
         }
+
+        /*
+        if (jointMap[joint]->jointType==eRevolute){
+            std::vector<float> dof = jointMap[joint]->axis;
+            dof.push_back(jointMap[joint]->value);
+            jointMap[joint]->transformations.push_back(dof);
+        }
+        else{
+            std::vector<float> dof = jointMap[joint]->axis;
+            for (int i =0; i < 3; i++)
+                dof[i]*=jointMap[joint]->value;
+            jointMap[joint]->transformations.push_back(dof);
+        }*/
+
         node->children.push_back(jointMap[joint]);
         delimiters.push_back(jointMap[joint]->transformation_visual_scene);
         this->parseLink(attachment_full->getLink(), jointMap[joint], kinematics_model,jointMap);
@@ -541,11 +555,12 @@ bool ColladaParser::parseLink(domLinkRef link, boost::shared_ptr<ColladaParser::
     }
     //Now parse the visual scene!
     domNode * visual_parent_node;
-    if (node->transformation_visual_scene->typeID() != domNode::ID())
+    if (node->transformation_visual_scene->typeID() != domNode::ID()){
          visual_parent_node = dynamic_cast<domNode*>(node->transformation_visual_scene->getParent());
+    }
     else
         visual_parent_node = dynamic_cast<domNode*>(node->transformation_visual_scene); // Only for the root element (links to a node and not a transformation)
-
+    std::cout <<"visual_parent_node" <<     visual_parent_node->getID() << std::endl;
     node->sceneGraph = this->parseVisualScene(visual_parent_node,delimiters,node->transformation_visual_scene);
 	return true;
 };

@@ -410,7 +410,7 @@ PositionSensorPtr ColladaIO::convertSensor(boost::shared_ptr<ColladaParser::Node
 		name = rn->getName();
 		name += std::string("_sensor");
 	}
-    Eigen::Matrix4f rnTrafo = getTransformation(colladaNode, scaling);
+    Eigen::Matrix4f rnTrafo = Eigen::Matrix4f::Identity(); // Not necessary any more? "getTransformation(colladaNode, scaling);"
 	boost::shared_ptr<TriMeshModel> m = getMesh(colladaNode, rnTrafo.inverse(), scaling);
 	VirtualRobot::VisualizationNodePtr visualizationNode;
 	if (m && m->vertices.size() && m->faces.size()>0)

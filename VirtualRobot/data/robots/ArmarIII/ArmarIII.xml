@@ -12,14 +12,14 @@
 	
 	<RobotNode name="Dummy_Platform">
 		<Transform>
-			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="0" alpha="-90" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 		<Child name="X_Platform"/>
 	</RobotNode>
 	
 	<RobotNode name="X_Platform">
 		<Transform>
-			<DH a="0" d="0" theta="90" alpha="-90" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="-90" unitsangle="degree" unitslength="mm"/>
             <!--Limits unit="mm" lo="-10000" hi="10000"/-->
 		</Transform>
 		<Visualization enable="true">
@@ -30,7 +30,7 @@
 	
 	<RobotNode name="Y_Platform">
 		<Transform>
-			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="90" unitsangle="degree" unitslength="mm"/>
             <!--Limits unit="mm" lo="-10000" hi="10000"/-->
 		</Transform>
 		<Visualization enable="true">
@@ -41,7 +41,7 @@
 	
 	<RobotNode name="Yaw_Platform">
 	    <Transform>
-			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="0" unitsangle="degree" unitslength="mm"/>
             <!--Limits unit="mm" lo="-10000" hi="10000"/-->
 		</Transform>
 		<Joint type="revolute">
@@ -71,7 +71,7 @@
 
 	<RobotNode name="Hip Pitch">
 			<Transform>
-				<Translation x="0" y="158" z="890"/>
+				<Translation x="0" y="158" z="890" units='mm'/>
 			</Transform>
 			<Joint type="revolute">
 			<Axis x="1" y="0" z="0"/>
@@ -134,7 +134,7 @@
 	
 	<RobotNode name="Center of Arms">
 		<Transform>
-			<Translation x="0" y="-35" z="485"/>
+			<Translation x="0" y="-35" z="485" units='mm'/>
 		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -147,7 +147,7 @@
 	
 	<RobotNode name="TrafoToHead">
 		<Transform>
-			<Translation x="0" y="0" z="118"/>
+			<Translation x="0" y="0" z="118" units='mm'/>
 		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -160,7 +160,7 @@
 	
 	<RobotNode name="TrafoToLeftArm">
 		<Transform>
-			<Translation x="-232" y="0" z="0"/>
+			<Translation x="-232" y="0" z="0" units='mm'/>
 		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -173,7 +173,7 @@
 	
 	<RobotNode name="TrafoToRightArm">
 		<Transform>
-			<Translation x="232" y="0" z="0"/>
+			<Translation x="232" y="0" z="0" units='mm'/>
 		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>

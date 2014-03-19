@@ -4,7 +4,7 @@
 
     <RobotNode name="Right Arm Base">
 		<Transform>
-			<DH a="0" d="0" theta="-90" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="-90" alpha="90" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -14,10 +14,10 @@
 	
 	<RobotNode name="Shoulder 1 R">
 		<Transform>
-			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+			<DH a="0" d="0" theta="90" alpha="0" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 		<Joint type="revolute">
-			<!--DH a="0" d="0" theta="90" alpha="90" units="degree"/-->
+			<!--DH a="0" d="0" theta="90" alpha="90" unitsangle="degree" unitslength="mm"/-->
 			<Limits unit="degree" lo="-106.94" hi="41.67"/>
 		</Joint>
 		<Physics>
@@ -35,11 +35,11 @@
 	
 	<RobotNode name="Shoulder 2 R">
 		<Transform>
-			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
-			<DH a="0" d="0" theta="105" alpha="0" units="degree"/>
+			<DH a="0" d="0" theta="0" alpha="90" unitsangle="degree" unitslength="mm"/>
+			<DH a="0" d="0" theta="105" alpha="0" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 		<Joint type="revolute">
-			<!--DH a="0" d="0" theta="105" alpha="90" units="degree"/-->
+			<!--DH a="0" d="0" theta="105" alpha="90" unitsangle="degree" unitslength="mm"/-->
 			<Limits unit="degree" lo="-13.85" hi="94.62"/>  <!-- ?! -->
 		</Joint>
         <Physics>
@@ -57,11 +57,11 @@
 	
 	<RobotNode name="Upperarm R">
 		<Transform>
-			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
-			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+			<DH a="0" d="0" theta="0" alpha="90" unitsangle="degree" unitslength="mm"/>
+			<DH a="0" d="0" theta="-90" alpha="0" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 		<Joint type="revolute">
-			<!--DH a="20" d="-310" theta="-90" alpha="90" units="degree"/-->
+			<!--DH a="20" d="-310" theta="-90" alpha="90" unitsangle="degree" unitslength="mm"/-->
 			<Limits unit="degree" lo="-108.11" hi="73.94"/>
 		</Joint>
 		<Physics>
@@ -80,11 +80,11 @@
 	
 	<RobotNode name="Elbow R">
 		<Transform>
-			<DH a="20" d="-310" theta="0" alpha="90" units="degree"/>
-			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+			<DH a="20" d="-310" theta="0" alpha="90" unitsangle="degree" unitslength="mm"/>
+			<DH a="0" d="0" theta="90" alpha="0" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 		<Joint type="revolute">
-			<!--DH a="0" d="7.5" theta="90" alpha="-90" units="degree"/-->
+			<!--DH a="0" d="7.5" theta="90" alpha="-90" unitsangle="degree" unitslength="mm"/-->
 			<Limits unit="degree" lo="-114.58" hi="39.7"/> <!-- ?! -->
 		</Joint>
 		<Visualization enable="true">
@@ -103,11 +103,11 @@
 	
 	<RobotNode name="Underarm R">
 		<Transform>
-			<DH a="0" d="7.5" theta="0" alpha="-90" units="degree"/>
-			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+			<DH a="0" d="7.5" theta="0" alpha="-90" unitsangle="degree" unitslength="mm"/>
+			<DH a="0" d="0" theta="90" alpha="0" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 		<Joint type="revolute">
-			<!--DH a="0" d="-240" theta="90" alpha="-90" units="degree"/-->
+			<!--DH a="0" d="-240" theta="90" alpha="-90" unitsangle="degree" unitslength="mm"/-->
 			
 			<Limits unit="degree" lo="-69.65" hi="108.25"/>
 		</Joint>
@@ -126,11 +126,11 @@
 	
 	<RobotNode name="Wrist 1 R">
 		<Transform>
-			<DH a="0" d="-240" theta="0" alpha="-90" units="degree"/>
-			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+			<DH a="0" d="-240" theta="0" alpha="-90" unitsangle="degree" unitslength="mm"/>
+			<DH a="0" d="0" theta="-90" alpha="0" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 		<Joint type="revolute">
-			<!--DH a="0" d="0" theta="-90" alpha="-90" units="degree"/-->
+			<!--DH a="0" d="0" theta="-90" alpha="-90" unitsangle="degree" unitslength="mm"/-->
 			<Limits unit="degree" lo="-29.18" hi="29.88"/>
 		</Joint>
 		<Physics>
@@ -149,11 +149,11 @@
 	
 	<RobotNode name="Wrist 2 R">
 		<Transform>
-			<DH a="0" d="0" theta="0" alpha="-90" units="degree"/>
-			<DH a="0" d="0" theta="-90" alpha="0" units="degree"/>
+			<DH a="0" d="0" theta="0" alpha="-90" unitsangle="degree" unitslength="mm"/>
+			<DH a="0" d="0" theta="-90" alpha="0" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 		<Joint type="revolute">
-			<!--DH a="0" d="0" theta="-90" alpha="90" units="degree"/-->
+			<!--DH a="0" d="0" theta="-90" alpha="90" unitsangle="degree" unitslength="mm"/-->
 			<Limits unit="degree" lo="-30.9" hi="50.87"/>
 		</Joint>
 
@@ -176,7 +176,7 @@
 	
 	<RobotNode name="EndArmR">
 		<Transform>
-			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
+			<DH a="0" d="0" theta="0" alpha="90" unitsangle="degree" unitslength="mm"/>
 		</Transform>
 	    <ChildFromRobot>
 			<File importEEF="true">ArmarIII-RightHand.xml</File>

@@ -4,7 +4,7 @@
     
     <RobotNode name="Head Base">
         <Transform>
-            <DH theta="90" d="0" a="0" alpha="0" units="degree"/>
+            <DH theta="90" d="0" a="0" alpha="0" unitsangle="degree" unitslength="mm"/>
         </Transform>
                 
         <Visualization>
@@ -25,13 +25,13 @@
 
     <RobotNode name="Neck_1_Pitch">
         <Transform>
-            <DH theta="0" d="0" a="0" alpha="90" units="degree"/>
-            <DH theta="90" d="0" a="0" alpha="0" units="degree"/>
+            <DH theta="0" d="0" a="0" alpha="90" unitsangle="degree" unitslength="mm"/>
+            <DH theta="90" d="0" a="0" alpha="0" unitsangle="degree" unitslength="mm"/>
         </Transform>
                 
 
         <Joint type="revolute">
-            <!--DH theta="90" d="0" a="0" alpha="90" units="degree"/-->
+            <!--DH theta="90" d="0" a="0" alpha="90" unitsangle="degree" unitslength="mm"/-->
             <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
@@ -55,11 +55,11 @@
         
     <RobotNode name="Neck_2_Roll">
         <Transform>
-			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
-			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+			<DH a="0" d="0" theta="0" alpha="90" unitsangle="degree" unitslength="mm"/>
+			<DH a="0" d="0" theta="90" alpha="0" unitsangle="degree" unitslength="mm"/>
 		</Transform>
         <Joint type="revolute">
-            <!--DH theta="90" d="0" a="0" alpha="90" units="degree"/-->
+            <!--DH theta="90" d="0" a="0" alpha="90" unitsangle="degree" unitslength="mm"/-->
             <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
@@ -84,11 +84,11 @@
     
     <RobotNode name="Neck_3_Yaw">
        <Transform>
-			<DH a="0" d="0" theta="0" alpha="90" units="degree"/>
-			<DH a="0" d="0" theta="90" alpha="0" units="degree"/>
+			<DH a="0" d="0" theta="0" alpha="90" unitsangle="degree" unitslength="mm"/>
+			<DH a="0" d="0" theta="90" alpha="0" unitsangle="degree" unitslength="mm"/>
 		</Transform>
         <Joint type="revolute">
-            <!--DH theta="90" d="120" a="0"  alpha="90" units="degree"/-->
+            <!--DH theta="90" d="120" a="0"  alpha="90" unitsangle="degree" unitslength="mm"/-->
             <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
@@ -111,10 +111,10 @@
 
     <RobotNode name="Head_Tilt">
         <Transform>
-			<DH theta="0" d="120" a="0" alpha="90" units="degree"/>
+			<DH theta="0" d="120" a="0" alpha="90" unitsangle="degree" unitslength="mm"/>
 		</Transform>
         <Joint type="revolute">
-            <!--DH theta="0" d="0" a="0"  alpha="-90" units="degree"/-->
+            <!--DH theta="0" d="0" a="0"  alpha="-90" unitsangle="degree" unitslength="mm"/-->
             <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
         </Joint>
@@ -139,7 +139,7 @@
     
     <RobotNode name="Head Center1">
         <Transform>
-			<DH theta="0" d="0" a="0" alpha="-90" units="degree"/>
+			<DH theta="0" d="0" a="0" alpha="-90" unitsangle="degree" unitslength="mm"/>
 		</Transform>
         <Child name="Head Center"/>
     </RobotNode>
@@ -147,7 +147,7 @@
  
     <RobotNode name="Head Center">
         <Transform>
-			<DH theta="0" d="54.5" a="0" alpha="-90" units="degree"/>
+			<DH theta="0" d="54.5" a="0" alpha="-90" unitsangle="degree" unitslength="mm"/>
 		</Transform>
         <Child name="Cameras"/>
         <Child name="Jaw"/>
@@ -166,7 +166,7 @@
     <RobotNode name="Cameras">
         <!-- TODO: this was an AlphaJoint: but rotations around alpha axis are not supported by DH!! -->
         <Transform>
-            <Translation x="100" y="0" z="0"/>
+            <Translation x="100" y="0" z="0" units='mm'/>
         </Transform>
         <Joint type="revolute">
             <Axis x="0" y="0" z="1"/>
@@ -189,14 +189,14 @@
 
     <RobotNode name="Eye_Left_Dummy">
         <Transform>
-          <DH a="0" d="46.5" theta="0" alpha="-90" units="degree"/>
+          <DH a="0" d="46.5" theta="0" alpha="-90" unitsangle="degree" unitslength="mm"/>
         </Transform>
         <Child name="Eye_Left"/>
     </RobotNode>
 
     <RobotNode name="Eye_Right_Dummy">
         <Transform>
-          <DH a="0" d="-46.5" theta="0" alpha="-90" units="degree"/>
+          <DH a="0" d="-46.5" theta="0" alpha="-90" unitsangle="degree" unitslength="mm"/>
         </Transform>
         <Child name="Eye_Right"/>
       </RobotNode>
@@ -229,8 +229,8 @@
 
     <RobotNode name="EyeLeftCamera">
         <Transform>
-            <translation x="20" y="0" z="0"/>
-            <RollPitchYaw roll="0" pitch="90" yaw ="0" units="degree"/>
+            <translation x="20" y="0" z="0" units='mm'/>
+            <RollPitchYaw roll="0" pitch="90" yaw ="0" unitsangle="degree" unitslength="mm"/>
         </Transform>
         <!--Sensor type="Camera" name="LeftEyeCam">
         </Sensor-->
@@ -256,8 +256,8 @@
 
     <RobotNode name="EyeRightCamera">
         <Transform>
-            <translation x="20" y="0" z="0"/>
-            <RollPitchYaw roll="0" pitch="90" yaw ="0" units="degree"/>
+            <translation x="20" y="0" z="0" units='mm'/>
+            <RollPitchYaw roll="0" pitch="90" yaw ="0" unitsangle="degree" unitslength="mm"/>
         </Transform>
         <!--Sensor type="Camera" name="RightEyeCam">
         </Sensor-->

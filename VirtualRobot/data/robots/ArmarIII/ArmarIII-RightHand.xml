@@ -10,13 +10,13 @@
 	
 	<RobotNode name="TCP R">
 		<Transform>
-			<Translation x="0" y="0" z="130"/>
+			<Translation x="0" y="0" z="130" units='mm'/>
 		</Transform>
 	</RobotNode>
 	
 	<RobotNode name="GCP R">
 		<Transform>
-			<Translation X="-40" Y="20" Z="90"/>
+			<Translation X="-40" Y="20" Z="90" units='mm'/>
 			<rollpitchyaw roll="0" pitch="-45" yaw="0" units="degree"/>
 		</Transform>
 	</RobotNode>
@@ -24,7 +24,7 @@
 	<RobotNode name="Hand Palm 1 R">
 
 		<Transform>
-			<Translation x="0" y="0" z="36"/>
+			<Translation x="0" y="0" z="36" units='mm'/>
 		</Transform>
 		
 		<Visualization enable="true">
@@ -46,7 +46,7 @@
 	
 	<RobotNode name="Hand Palm 2 R">
 		<Transform>
-			<Translation x="-8.7" y="-13.5" z="29.25"/>
+			<Translation x="-8.7" y="-13.5" z="29.25" units='mm'/>
 		</Transform>
 		<Joint type="revolute">
 			<Axis x="0" y="-1" z="0"/>
@@ -74,7 +74,7 @@
 	
 	<RobotNode name="Thumb R">
 		<Transform>
-			<Translation x="-48.9" y="0" z="29.25"/>
+			<Translation x="-48.9" y="0" z="29.25" units='mm'/>
 		</Transform>
 		<Child name="Thumb R J0"/>
 	</RobotNode>
@@ -103,7 +103,7 @@
 	
 	<RobotNode name="Thumb R J1">
         <Transform>
-			<Translation x="-40.2" y="0" z="0"/>
+			<Translation x="-40.2" y="0" z="0" units='mm'/>
 		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
@@ -126,7 +126,7 @@
 	
 	<RobotNode name="Pinky R">
 		<Transform>
-			<Translation x="0" y="73" z="40.4"/>
+			<Translation x="0" y="73" z="40.4" units='mm'/>
 		</Transform>
 		
 		<Child name="Pinky R J0"/>
@@ -156,7 +156,7 @@
 	
 	<RobotNode name="Pinky R J1">
 		<Transform>
-			<Translation x="0" y="0" z="40.2"/>
+			<Translation x="0" y="0" z="40.2" units='mm'/>
 		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
@@ -180,7 +180,7 @@
 	<RobotNode name="Ring R">
 
 		<Transform>
-			<Translation x="0" y="51" z="40.4"/>
+			<Translation x="0" y="51" z="40.4" units='mm'/>
 		</Transform>
 		
 		<Child name="Ring R J0"/>
@@ -210,7 +210,7 @@
 	
 	<RobotNode name="Ring R J1">
     	<Transform>
-    		<Translation x="0" y="0" z="40.2"/>
+    		<Translation x="0" y="0" z="40.2" units='mm'/>
     	</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
@@ -233,7 +233,7 @@
 	
 	<RobotNode name="Middle R">
 		<Transform>
-			<Translation x="0" y="27" z="40.4"/>
+			<Translation x="0" y="27" z="40.4" units='mm'/>
 		</Transform>
 
 		<Child name="Middle R J0"/>
@@ -263,7 +263,7 @@
 	
 	<RobotNode name="Middle R J1">
 		<Transform>
-			<Translation x="0" y="0" z="40.2"/>
+			<Translation x="0" y="0" z="40.2" units='mm'/>
 		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
@@ -286,7 +286,7 @@
 	
 	<RobotNode name="Index R">
 		<Transform>
-			<Translation x="0" y="0" z="40.2"/>
+			<Translation x="0" y="0" z="40.2" units='mm'/>
 		</Transform>
 		
 		<Child name="Index R J0"/>
@@ -316,7 +316,7 @@
 	
 	<RobotNode name="Index R J1">
 		<Transform>
-			<Translation x="0" y="0" z="40.2"/>
+			<Translation x="0" y="0" z="40.2" units='mm'/>
 		</Transform>
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>

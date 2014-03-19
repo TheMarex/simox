@@ -471,12 +471,11 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 			// Revolute JOINT
 			float jointLimitLow = colladaNode->min / 180.0f * (float)M_PI;
 			float jointLimitHigh = colladaNode->max / 180.0f * (float)M_PI;
-			float jointOffset = 0;
+            float jointOffset = colladaNode->value /180.0f * (float)M_PI;
 			Eigen::Vector3f axis = getAxis(colladaNode);
 			robotNodeJoint = revoluteNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
                 jointLimitLow, jointLimitHigh, jointOffset, idMatrix, axis, idVec3);
 			robo->registerRobotNode(robotNodeJoint);
-            robotNodeJoint->setJointValueNotInitialized(colladaNode->value /180.0f * (float)M_PI);
             allNodes.push_back(robotNodeJoint);
 		}
 		else if (colladaNode->jointType == ColladaParser::ePrismatic)
@@ -484,12 +483,11 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 			// Prismatic JOINT
 			float jointLimitLow = colladaNode->min;
 			float jointLimitHigh = colladaNode->max;
-			float jointOffset = 0;
+            float jointOffset = colladaNode->value;
 			Eigen::Vector3f axis = getAxis(colladaNode);
 			robotNodeJoint = prismaticNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
 				jointLimitLow, jointLimitHigh, jointOffset, idMatrix, idVec3, axis);
             robo->registerRobotNode(robotNodeJoint);
-            robotNodeJoint->setJointValueNotInitialized(colladaNode->value /180.0f * (float)M_PI);
             allNodes.push_back(robotNodeJoint);
 
 			// setup model scaling

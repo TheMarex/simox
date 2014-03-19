@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
 
 	// std::string filename;
 	// std::string filename(DEMO_BASE_DIR "/data/MMMWinter.dae");
-	std::string filename(DEMO_BASE_DIR "/data/demo-lint.dae");
-	
+    std::string filename(DEMO_BASE_DIR "/data/demo-lint.dae");
+
 	if (VirtualRobot::RuntimeEnvironment::hasValue("robot"))
 	{
 		std::string robFile = VirtualRobot::RuntimeEnvironment::getValue("robot");

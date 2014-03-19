@@ -21,7 +21,7 @@ RobotPtr ColladaIO::loadRobot(const std::string &filename, float scaling)
 		VR_ERROR << "No model loaded..." << endl;
 		return RobotPtr();
 	}
-	//cout << *(parser.getModel().begin()->second.get());
+    //cout << *(parser.getModel().begin()->second.get());
 	//parser.print();
 	ColladaParser::ModelType colladaModel = parser.getModel();
     VirtualRobot::RobotPtr robo = convertRobot(colladaModel,scaling);
@@ -472,6 +472,7 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 			float jointLimitLow = colladaNode->min / 180.0f * (float)M_PI;
 			float jointLimitHigh = colladaNode->max / 180.0f * (float)M_PI;
             float jointOffset = colladaNode->value /180.0f * (float)M_PI;
+            std::cout << "###### " << jointOffset << std::endl;
 			Eigen::Vector3f axis = getAxis(colladaNode);
 			robotNodeJoint = revoluteNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
                 jointLimitLow, jointLimitHigh, jointOffset, idMatrix, axis, idVec3);
@@ -484,7 +485,8 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 			float jointLimitLow = colladaNode->min;
 			float jointLimitHigh = colladaNode->max;
             float jointOffset = colladaNode->value;
-			Eigen::Vector3f axis = getAxis(colladaNode);
+            std::cout << "###### " << jointOffset << std::endl;
+            Eigen::Vector3f axis = getAxis(colladaNode);
 			robotNodeJoint = prismaticNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
 				jointLimitLow, jointLimitHigh, jointOffset, idMatrix, idVec3, axis);
             robo->registerRobotNode(robotNodeJoint);

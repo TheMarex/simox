@@ -724,7 +724,7 @@
             <SIDREF>kinematics_kinematics/inst_kinematics_kinematics_model/inst_SJ1toJ2_joint/axis0</SIDREF>
           </newparam>
           <newparam sid="kinematics_kinematics@inst_kinematics_kinematics_model@inst_SJ1toJ2_joint_value">
-            <float>2.0</float>
+            <float>6,6</float>
           </newparam>
           <newparam sid="kinematics_kinematics@inst_kinematics_kinematics_model@inst_J2x_joint@axis0">
             <SIDREF>kinematics_kinematics/inst_kinematics_kinematics_model/inst_J2x_joint/axis0</SIDREF>

@@ -96,7 +96,7 @@ void ColladaParser::extractSensors(domJoint* actualJoint, boost::shared_ptr<Coll
     BOOST_FOREACH(domExtraRef extra, motion_articulated_system->getExtra_array()){
         if (strcmp(extra->getType(),"attach_sensor")==0){
             string name(extra->getName());
-            cout << name ;
+            //cout << name ;
             boost::shared_ptr<ColladaParser::NodeData> node(new ColladaParser::NodeData());
             node->name = name;
             domJoint *joint;
@@ -109,23 +109,23 @@ void ColladaParser::extractSensors(domJoint* actualJoint, boost::shared_ptr<Coll
                                 daeSidRef sidref(std::string(elt->getAttribute("link")), motion_articulated_system);
                                 assert(sidref.resolve().elt);
                                 daeElement* parent = sidref.resolve().elt->getParentElement();
-                                cout << parent->getElementName() << endl;
+                                //cout << parent->getElementName() << endl;
                                 daeSidRef sidref2(std::string(parent->getAttribute("joint")), motion_articulated_system);
                                 assert(sidref2.resolve().elt);
-                                cout << dynamic_cast<domInstance_joint*>(sidref2.resolve().elt)->getUrl().getElement()->getElementName() << endl;
+                                //cout << dynamic_cast<domInstance_joint*>(sidref2.resolve().elt)->getUrl().getElement()->getElementName() << endl;
                                 joint  = dynamic_cast<domJoint*>(dynamic_cast<domInstance_joint*>(sidref2.resolve().elt)->getUrl().getElement().cast());
                                 assert(joint);
                             }
-                            cout << elt->getAttribute("link") << endl;
+                            //cout << elt->getAttribute("link") << endl;
                             BOOST_FOREACH(daeElementRef child, elt->getChildren()){
                                 std::vector<float> trafo;
                                 istringstream charData(child->getCharData());
-                                cout << child->getElementName() << ": " << endl;
+                                //cout << child->getElementName() << ": " << endl;
                                 if (strcmp(child->getElementName(),"translate")| strcmp(child->getElementName(),"rotate")){
                                     std::copy(std::istream_iterator<float>(charData),std::istream_iterator<float>(),  std::back_inserter(trafo));
                                 }
                                 node->transformations.push_back(trafo);
-                                cout << trafo << trafo.size() << endl;
+                                //cout << trafo << trafo.size() << endl;
                             }
                         }
                     }
@@ -153,7 +153,7 @@ ColladaParser::ColladaParser(string filename){
 
 boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(domNode *node,std::vector<daeElement*> delimiters,daeElement* start){
     assert(node);
-    cout << node->getID() << endl;
+    //cout << node->getID() << endl;
     bool found=false;
     if (!start) found=true;
     boost::shared_ptr<ColladaParser::SceneGraph> sceneGraph(new ColladaParser::SceneGraph);
@@ -287,7 +287,7 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
 									daeUInt count = daeUInt(accessor->getCount());
                                     assert(source->getFloat_array()->getValue().getCount());
 									daeUInt stride = daeUInt(accessor->getStride());
-                                    cout << "#Points: " << count /*/ stride*/ << endl;
+                                    //cout << "#Points: " << count /*/ stride*/ << endl;
                                     assert(stride==3);
                                     for (unsigned int i=0; i<count/*/stride*/;i++){
                                         vector<float> point(stride);
@@ -308,7 +308,7 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
 							daeUInt count = daeUInt(accessor->getCount());
                             assert(source->getFloat_array()->getValue().getCount());
 							daeUInt stride = daeUInt(accessor->getStride());
-                            cout << "#Normals: " << count << endl;
+                            //cout << "#Normals: " << count << endl;
                             assert(stride==3);
                             for (unsigned int i=0; i<count;i++){
                                 vector<float> point(stride);
@@ -326,7 +326,7 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
 							daeUInt count = daeUInt(accessor->getCount());
                             assert(source->getFloat_array()->getValue().getCount());
 							daeUInt stride = daeUInt(accessor->getStride());
-                            cout << "#Colors: " << count << endl;
+                            //cout << "#Colors: " << count << endl;
                             assert(stride==3);
 							for (unsigned int i = 0; i<count; i++){
                                 vector<float> point(stride);
@@ -393,7 +393,7 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
 									daeUInt count = accessor->getCount();
 									assert(source->getFloat_array()->getValue().getCount());
 									daeUInt stride = accessor->getStride();
-									cout << "#Points: " << count /*/ stride*/ << endl;
+                                    //cout << "#Points: " << count /*/ stride*/ << endl;
 									assert(stride==3);
 									for (int i=0; i<count/*/stride*/;i++){
 										vector<float> point(stride);
@@ -414,7 +414,7 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
                             daeUInt count = accessor->getCount();
                             assert(source->getFloat_array()->getValue().getCount());
                             daeUInt stride = accessor->getStride();
-                            cout << "#Normals: " << count << endl;
+                            //cout << "#Normals: " << count << endl;
                             assert(stride==3);
 							for (unsigned int i = 0; i<count; i++){
                                 vector<float> point(stride);
@@ -432,7 +432,7 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
                             daeUInt count = accessor->getCount();
                             assert(source->getFloat_array()->getValue().getCount());
                             daeUInt stride = accessor->getStride();
-                            cout << "#Colors: " << count << endl;
+                            //cout << "#Colors: " << count << endl;
                             assert(stride==3);
 							for (unsigned int i = 0; i<count; i++){
                                 vector<float> point(stride);
@@ -447,7 +447,7 @@ boost::shared_ptr<ColladaParser::SceneGraph> ColladaParser::parseVisualScene(dom
 
 						} else
 						{
-							cout << "NYI: Collada polyLists Semantics =" << input->getSemantic() << endl;
+                            //cout << "NYI: Collada polyLists Semantics =" << input->getSemantic() << endl;
 						}
 					}
                     if (vertexOffset != -1) {
@@ -579,21 +579,21 @@ void ColladaParser::parse(){
                         std::vector<float> inertia;
                         istringstream charData(rigid_body->getTechnique_common()->getInertia()->getCharData());
                         std::copy(std::istream_iterator<float>(charData),std::istream_iterator<float>(),  std::back_inserter(rigidBodyType.inertia));
-                        std::cout << rigidBodyType.inertia <<std::endl;
+//                        std::cout << rigidBodyType.inertia <<std::endl;
                         rigidBodyType.mass = float(boost::lexical_cast<double>(rigid_body->getTechnique_common()->getMass()->getCharData()));
-                        std::cout <<  rigidBodyType.mass << std::endl;
+//                        std::cout <<  rigidBodyType.mass << std::endl;
                         BOOST_FOREACH(daeElement* child, rigid_body->getTechnique_common()->getMass_frame()->getContents()){
                             std::vector<float> trafo;
                             istringstream charData(child->getCharData());
                             if (strcmp(child->getElementName(),"translate")| strcmp(child->getElementName(),"rotate")){
                                 std::copy(std::istream_iterator<float>(charData),std::istream_iterator<float>(),  std::back_inserter(trafo));
                             }
-                            std::cout << child->getElementName() << " " << trafo << std::endl;
+//                            std::cout << child->getElementName() << " " << trafo << std::endl;
                             rigidBodyType.mass_frame.push_back(trafo);
                         }
                        domNode* node = dynamic_cast<domNode*>(instance_rigid_body->getTarget().getElement().cast());
                        if (node)
-                           std::cout << "Node associated\n";
+//                           std::cout << "Node associated\n";
                        rigid_body_map[node]=rigidBodyType;
                     }
 
@@ -697,9 +697,10 @@ void ColladaParser::parse(){
                     if (strcmp(bind->getSymbol(),bind_joint_axis->getValue()->getParam()->getValue())==0){
                             daeSidRef sidref(std::string(bind->getParam()->getRef()), motion_articulated_system);
                             daeElement* element = sidref.resolve().elt;
+                            std::cout <<  element->getChildren()[0]->getCharData();
                             domKinematics_newparam* newparam  = dynamic_cast<domKinematics_newparam*>(element);
                             jointMap[joint]->value = newparam->getFloat()->getValue();
-                            //std::cout << "initial value for: " << joint->getID() << " is " << newparam->getFloat()->getValue() << std::endl;
+                            std::cout << "initial value for: " << joint->getID() << " is " << newparam->getFloat()->getValue() << std::endl;
                         continue;
                     } // if
 

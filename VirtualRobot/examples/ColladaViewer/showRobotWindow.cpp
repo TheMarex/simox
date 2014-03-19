@@ -334,9 +334,10 @@ void showRobotWindow::selectJoint(int nr)
 	cout << "Selecting Joint nr " << nr << endl;
 	if (nr<0 || nr>=(int)currentRobotNodes.size())
 		return;
-	currentRobotNode = currentRobotNodes[nr];
+    currentRobotNode = currentRobotNodes[nr];
 	currentRobotNode->showBoundingBox(true,true);
-	currentRobotNode->print();
+    currentRobotNode->print();
+    std::cout << "Offset: "  << currentRobotNode->getJointValueOffset() << std::endl;
 	float mi = currentRobotNode->getJointLimitLo();
 	float ma = currentRobotNode->getJointLimitHi();
 	QString qMin = QString::number(mi);

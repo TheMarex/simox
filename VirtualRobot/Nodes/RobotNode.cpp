@@ -137,9 +137,25 @@ void RobotNode::setJointValue(float q)
 	updatePose();
 }
 
+void RobotNode::setJointValueNotInitialized(float q)
+{
+    VR_ASSERT_MESSAGE( (!boost::math::isnan(q) && !boost::math::isinf(q)) ,"Not a valid number...");
+
+    //std::cout << "######## Setting Joint to: " << q << " degrees" << std::endl;
+
+    if (q < jointLimitLo)
+    {
+        q = jointLimitLo;
+    }
+    if (q > jointLimitHi)
+    {
+        q = jointLimitHi;
+    }
+    jointValue = q;
+}
 void RobotNode::setJointValueNoUpdate(float q)
 {
-	VR_ASSERT_MESSAGE( initialized, "Not initialized");
+    VR_ASSERT_MESSAGE( initialized, "Not initialized");
 	VR_ASSERT_MESSAGE( (!boost::math::isnan(q) && !boost::math::isinf(q)) ,"Not a valid number...");
 	
 	//std::cout << "######## Setting Joint to: " << q << " degrees" << std::endl;

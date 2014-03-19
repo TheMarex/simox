@@ -64,7 +64,9 @@ public:
 	friend class RobotNodeSet;
 	friend class RobotConfig;
 	friend class RobotFactory;
-	friend class RobotNodeActuator;
+    friend class RobotNodeActuator;
+    friend class ColladaIO;
+
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     enum RobotNodeType
@@ -359,6 +361,7 @@ protected:
     */
     virtual std::string _toXML(const std::string &modelPath) = 0;
 
+    void setJointValueNotInitialized(float q);
 };
 
 } // namespace VirtualRobot

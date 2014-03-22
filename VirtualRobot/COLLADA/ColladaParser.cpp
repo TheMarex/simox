@@ -502,14 +502,14 @@ bool ColladaParser::parseLink(domLinkRef link, boost::shared_ptr<ColladaParser::
             vector<float> transformation;
             if (ID == domMatrix::ID()) {
                     domFloat3 values = dynamic_cast<domMatrix*>(elt.cast())->getValue();
-                    //cout << "Translation: " << values << endl;
+                    cout << "Translation: " << values << endl;
                     // Convert daeTArray to std::vector
                     transformation.resize(16);
                     boost::copy(values,transformation.begin());
                     jointMap[joint]->transformations.push_back(transformation);
             } else if (ID == domTranslate::ID()){
                     domFloat3 values = dynamic_cast<domTranslate*>(elt.cast())->getValue();
-                    //cout << "Translation: " << values << endl;
+                    cout << "Translation: " << values << endl;
                     // Convert daeTArray to std::vector
                     transformation.resize(3);
                     boost::copy(values,transformation.begin());

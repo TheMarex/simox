@@ -119,6 +119,7 @@ Eigen::Matrix4f ColladaIO::getTransformation(std::vector<float> &trafo, float sc
 //            transform(i) = trafo[i];
 //        }
     }
+    cout << transform << endl;
 	return transform;
 }
 
@@ -355,6 +356,8 @@ bool ColladaIO::addGeometry(boost::shared_ptr<VirtualRobot::TriMeshModel> triMes
 	return true;
 }
 
+
+//TODO: This fails when several meshes are connected to the same node!!
 bool ColladaIO::addSceneGraph(boost::shared_ptr<VirtualRobot::TriMeshModel> triMesh,  boost::shared_ptr<ColladaParser::SceneGraph> sceneGraph, const Eigen::Matrix4f &modelTrafo, float scaling)
 {
 	if (!triMesh || !sceneGraph)
@@ -363,6 +366,7 @@ bool ColladaIO::addSceneGraph(boost::shared_ptr<VirtualRobot::TriMeshModel> triM
 		return false;
 	}
     Eigen::Matrix4f preModelTrafo = modelTrafo * getTransformation(sceneGraph->transformations,scaling);
+    cout<<"pMT: " << preModelTrafo << endl;
 	for (size_t g=0;g<sceneGraph->geometries.size();g++)
 	{
 		addGeometry(triMesh,preModelTrafo,sceneGraph->geometries[g], scaling);
@@ -450,17 +454,17 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
 	std::string robotNodeTrafoName = name + "_Transformation";
 
     // PrejointTransform is not required --> if the ColladaSceneGraph is correct)
-    //Eigen::Matrix4f preJointTransform = getTransformation(colladaNode, scaling);
-    Eigen::Matrix4f preJointTransform = idMatrix;
+    Eigen::Matrix4f preJointTransform = getTransformation(colladaNode, scaling);
 
-	VirtualRobot::RobotNodePtr robotNodeTrafo = fixedNodeFactory->createRobotNode(robo, robotNodeTrafoName, VirtualRobot::VisualizationNodePtr(), VirtualRobot::CollisionModelPtr(), 0,
+    VirtualRobot::RobotNodePtr robotNodeTrafo = fixedNodeFactory->createRobotNode(robo, robotNodeTrafoName, VirtualRobot::VisualizationNodePtr(), VirtualRobot::CollisionModelPtr(), 0,
 		0, 0, preJointTransform, idVec3, idVec3);
 	robo->registerRobotNode(robotNodeTrafo);
 	allNodes.push_back(robotNodeTrafo);
 
 
 
-	// create visu model
+    // create visu model
+    cout << "Reading visual scene\npJT: " << preJointTransform << endl;
     boost::shared_ptr<TriMeshModel> m = getMesh(colladaNode, preJointTransform.inverse(), scaling);
 	VirtualRobot::VisualizationNodePtr visualizationNode;
 	VirtualRobot::CollisionModelPtr colModel;

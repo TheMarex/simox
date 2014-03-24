@@ -35,8 +35,6 @@ if (SimDynamics_USE_BULLET)
           ${BULLET_INCLUDE_DIR}
           ${BULLET_INCLUDE_DIR}/bullet
 		  )
-      #   ${BULLET_DEMOS_INCLUDE_DIR}
-      #   ${BULLET_OPENGL_INCLUDE_DIR}
 
       OPTION( SimDynamics_USE_BULLET_DOUBLE_PRECISION "Use Bullet Engine built with double precision" OFF )
 	  IF (WIN32)
@@ -48,26 +46,41 @@ if (SimDynamics_USE_BULLET)
           ADD_DEFINITIONS( -DBT_USE_DOUBLE_PRECISION)
           SET(SIMDYNAMICS_COMPILE_FLAGS "${SIMDYNAMICS_COMPILE_FLAGS}" "-DBT_USE_DOUBLE_PRECISION" PARENT_SCOPE)
       ENDIF( SimDynamics_USE_BULLET_DOUBLE_PRECISION )
+      #MESSAGE("BULLET_LIBRARIES:${BULLET_LIBRARIES}")
       SET (SimDynamics_PHYSICS_LIBRARIES "${BULLET_LIBRARIES}")
       SET (SimDynamics_DYNAMICSENGINE TRUE)
       
 	  FIND_PACKAGE(OpenGL)
 	  IF (OPENGL_FOUND)
 	  	MESSAGE (STATUS " ** OPENGL FOUND lib:${OPENGL_gl_LIBRARY}")
-		LIST(APPEND SimDynamics_PHYSICS_LIBRARIES ";debug;${OPENGL_gl_LIBRARY};optimized;${OPENGL_gl_LIBRARY}")
+		#check if there was a distuingish between optimized and debug libs:
+      	IF (SimDynamics_PHYSICS_LIBRARIES MATCHES "optimized;")
+			LIST(APPEND SimDynamics_PHYSICS_LIBRARIES optimized ${OPENGL_gl_LIBRARY} debug ${OPENGL_gl_LIBRARY})
+		ELSE()
+			LIST(APPEND SimDynamics_PHYSICS_LIBRARIES ${OPENGL_gl_LIBRARY})
+		ENDIF()
 	  ENDIF()
 	  IF (OPENGL_GLU_FOUND)
 		  MESSAGE (STATUS " ** OPENGL_GLU FOUND lib:${OPENGL_glu_LIBRARY}")
-		  LIST(APPEND SimDynamics_PHYSICS_LIBRARIES ";debug;${OPENGL_glu_LIBRARY};optimized;${OPENGL_glu_LIBRARY}")
-		  #SET(SimDynamics_PHYSICS_LIBRARIES ${SimDynamics_PHYSICS_LIBRARIES} ${OPENGL_glu_LIBRARY})
+		  #check if there was a distuingish between optimized and debug libs:
+      	  IF (SimDynamics_PHYSICS_LIBRARIES MATCHES "optimized;")
+		    LIST(APPEND SimDynamics_PHYSICS_LIBRARIES optimized ${OPENGL_glu_LIBRARY} debug ${OPENGL_glu_LIBRARY})
+		  ELSE()
+		    LIST(APPEND SimDynamics_PHYSICS_LIBRARIES ${OPENGL_glu_LIBRARY})
+		  ENDIF()
 	  ENDIF()
 
       IF (SimDynamics_USE_BULLET_USE_GLUT)
         FIND_PACKAGE(GLUT)
         IF (GLUT_FOUND)
             MESSAGE(STATUS " ** GLUT FOUND: ${GLUT_glut_LIBRARY}")
-            SET(SimDynamics_PHYSICS_LIBRARIES ${SimDynamics_PHYSICS_LIBRARIES} ${GLUT_glut_LIBRARY})        
-        
+		    #check if there was a distuingish between optimized and debug libs:
+      	    IF (SimDynamics_PHYSICS_LIBRARIES MATCHES "optimized;")
+				LIST(APPEND SimDynamics_PHYSICS_LIBRARIES optimized ${GLUT_glut_LIBRARY} debug ${GLUT_glut_LIBRARY})
+			ELSE()
+				LIST(APPEND SimDynamics_PHYSICS_LIBRARIES ${GLUT_glut_LIBRARY} )
+			ENDIF()
+
       		IF (WIN32)
       			INCLUDE_DIRECTORIES(${GLUT_INCLUDE_DIR})
       			SET(SIMDYNAMICS_INCLUDE_DIRS "${SIMDYNAMICS_INCLUDE_DIRS}" "${GLUT_INCLUDE_DIR}")# PARENT_SCOPE)
@@ -79,6 +92,7 @@ if (SimDynamics_USE_BULLET)
 		ELSE (GLUT_FOUND)
           SET( GLUT_glut_LIBRARY "" CACHE PATH "Glut library." )
         ENDIF (GLUT_FOUND)
+        
 		#SET (SimDynamics_BULLET_OpenGL TRUE)
       ENDIF(SimDynamics_USE_BULLET_USE_GLUT)
 
@@ -94,6 +108,7 @@ endif()
 
 
 MESSAGE (STATUS " ** SIMDYNAMICS_INCLUDE_DIRS: ${SIMDYNAMICS_INCLUDE_DIRS}")
+
 MESSAGE (STATUS " ** SimDynamics_PHYSICS_LIBRARIES: ${SimDynamics_PHYSICS_LIBRARIES}")
 
 

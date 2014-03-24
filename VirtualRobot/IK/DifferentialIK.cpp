@@ -58,6 +58,7 @@ void DifferentialIK::setGoal(const Eigen::Matrix4f &goal, RobotNodePtr tcp, IKSo
 	parents[tcp] = p;
 	
 	this->setNRows();
+	initialized = true;
 }	
 
 MatrixXf DifferentialIK::getJacobianMatrix()
@@ -91,7 +92,7 @@ MatrixXf DifferentialIK::getJacobianMatrix()
 	return Jacobian;
 }
 
-VectorXf DifferentialIK::getErrorVector(float stepSize)
+VectorXf DifferentialIK::getError(float stepSize)
 {
 	if (nRows == 0)
 		this->setNRows();
@@ -399,7 +400,7 @@ VectorXf DifferentialIK::computeStep(float stepSize )
 	size_t nDoF = nodes.size();
 
 
-	VectorXf error = getErrorVector(stepSize);
+	VectorXf error = getError(stepSize);
 	MatrixXf Jacobian = getJacobianMatrix();
 	VectorXf dTheta(nDoF);
 
@@ -577,4 +578,5 @@ void DifferentialIK::setMaxPositionStep(float s)
 {
 	positionMaxStep = s;
 }
+
 } // namespace VirtualRobot

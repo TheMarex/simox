@@ -116,7 +116,6 @@ public:
 	*/
     DifferentialIK(RobotNodeSetPtr rns, RobotNodePtr coordSystem = RobotNodePtr(), JacobiProvider::InverseJacobiMethod invJacMethod = eSVD);
 	
-
 	/*!	@brief Sets the target position for (one of) the tcp(s).  
 		\param goal Target pose of the tcp. 	
 		\param tcp The tcp joint that should be considered. By default the tcp joint that is defined in rns  in the constructor is used.
@@ -184,8 +183,7 @@ public:
 	/*!
 		Computes the complete error vector, considering all TCPs and goals.
 	*/
-
-	virtual Eigen::VectorXf getErrorVector(float stepSize = 1.0f);
+	virtual Eigen::VectorXf getError(float stepSize = 1.0f);
 
 	/*! @brief Returns the pseudo inverse of the Jacobian matrix for a given tcp of the robot.
 	 * @see getJacobianMatrix

@@ -37,6 +37,7 @@ Eigen::VectorXf HierarchicalIK::computeStep( std::vector<JacobiDefinition> jacDe
 	std::vector<Eigen::MatrixXf> invJacobies;
 	for (size_t i=0;i<jacDefs.size();i++)
 	{
+		THROW_VR_EXCEPTION_IF(!jacDefs[i].jacProvider->isInitialized(), "JacobiProvider is not initialized...");
 		Eigen::MatrixXf j = jacDefs[i].jacProvider->getJacobianMatrix();// jacDefs[i].tcp);
 		jacobies.push_back(j);
 		if (verbose)
@@ -50,9 +51,9 @@ Eigen::VectorXf HierarchicalIK::computeStep( std::vector<JacobiDefinition> jacDe
 		{
 			THROW_VR_EXCEPTION ("Expecting " << ndof << " DOFs, but Jacobi " << i << " has " << jacobies[i].cols() << " columns ");
 		}
-		if (jacobies[i].rows() != jacDefs[i].delta.rows())
+		if (jacobies[i].rows() != jacDefs[i].jacProvider->getError().rows())
 		{
-			THROW_VR_EXCEPTION ("Jacobi " << i << " has " << jacobies[i].rows() << " rows, but delta has " << jacDefs[i].delta.rows() << " rows ");
+			THROW_VR_EXCEPTION("Jacobi " << i << " has " << jacobies[i].rows() << " rows, but delta has " << jacDefs[i].jacProvider->getError().rows() << " rows ");
 		}
 	}
 
@@ -64,7 +65,7 @@ Eigen::VectorXf HierarchicalIK::computeStep( std::vector<JacobiDefinition> jacDe
 	
 	
 	Eigen::MatrixXf Jinv_i_min1;
-	Eigen::VectorXf result_i = Jinv_i * jacDefs[0].delta * stepSize;
+	Eigen::VectorXf result_i = Jinv_i * jacDefs[0].jacProvider->getError() * stepSize;
 	if (verbose)
 		VR_INFO << "result_i 0:\n" << result_i << endl;
 
@@ -99,7 +100,7 @@ Eigen::VectorXf HierarchicalIK::computeStep( std::vector<JacobiDefinition> jacDe
 		Eigen::MatrixXf J_tilde_i = J_i*PA_i_min1;
 		Eigen::MatrixXf Jinv_tilde_i = MathTools::getPseudoInverse(J_tilde_i,pinvtoler);
 
-		result_i = result_i_min1 + Jinv_tilde_i*(jacDefs[i].delta*stepSize-J_i*result_i_min1);
+		result_i = result_i_min1 + Jinv_tilde_i*(jacDefs[i].jacProvider->getError()*stepSize - J_i*result_i_min1);
 		if (verbose)
 			VR_INFO << "result_i " << i << ":\n" << result_i << endl;
 		accRowCount += J_i.rows();

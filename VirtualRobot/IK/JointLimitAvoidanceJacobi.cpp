@@ -15,6 +15,7 @@ JointLimitAvoidanceJacobi::JointLimitAvoidanceJacobi(RobotNodeSetPtr rns, Jacobi
 : JacobiProvider(rns, invJacMethod)
 {
 	nodes = rns->getAllRobotNodes();
+	initialized = true; // no need of spiecial initialization
 	VR_ASSERT(nodes.size() > 0);
 }
 
@@ -27,7 +28,7 @@ Eigen::MatrixXf JointLimitAvoidanceJacobi::getJacobianMatrix()
 	return Jacobian;
 }
 
-Eigen::VectorXf JointLimitAvoidanceJacobi::getErrorVector(float stepSize)
+Eigen::VectorXf JointLimitAvoidanceJacobi::getError(float stepSize)
 {
 	size_t nDoF = nodes.size();
 	Eigen::VectorXf error(nDoF);

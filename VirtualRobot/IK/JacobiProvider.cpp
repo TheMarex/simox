@@ -15,7 +15,7 @@ namespace VirtualRobot
 JacobiProvider::JacobiProvider(RobotNodeSetPtr rns, InverseJacobiMethod invJacMethod) : 
 	rns(rns), inverseMethod(invJacMethod)
 {	
-
+	initialized = false;
 }
 
 JacobiProvider::~JacobiProvider()
@@ -103,6 +103,11 @@ VirtualRobot::RobotNodeSetPtr JacobiProvider::getRobotNodeSet()
 void JacobiProvider::setJointWeights(const Eigen::VectorXf &jointWeights)
 {
 	this->jointWeights = jointWeights;
+}
+
+bool JacobiProvider::isInitialized()
+{
+	return initialized;
 }
 
 } // namespace VirtualRobot

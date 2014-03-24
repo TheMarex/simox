@@ -34,6 +34,7 @@ void CoMIK::setGoal(const Eigen::Vector2f &goal, float tolerance)
 {
 	target = goal;
 	this->tolerance = tolerance;
+	initialized = true;
 }
 
 Eigen::MatrixXf CoMIK::getJacobianOfCoM(RobotNodePtr node)
@@ -121,9 +122,14 @@ Eigen::MatrixXf CoMIK::getJacobianMatrix()
 	return Jsum;
 }
 
+Eigen::VectorXf CoMIK::getError(float stepsize)
+{
+	return (target - rnsBodies->getCoM().head(2));
+}
+
 Eigen::VectorXf CoMIK::computeStep(float stepSize )
 {
-	Eigen::Vector2f error = (target - rnsBodies->getCoM().head(2)) * stepSize;
+	Eigen::Vector2f error = getError(stepSize);
 	return getPseudoInverseJacobianMatrix() * error;
 
 }

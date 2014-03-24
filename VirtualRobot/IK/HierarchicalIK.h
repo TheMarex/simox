@@ -55,7 +55,8 @@ public:
 	struct JacobiDefinition
 	{
 		JacobiProviderPtr jacProvider; // generates the Jacobi and the PseudoInverse
-		Eigen::VectorXf delta;		   // Specifies the delta for the Jacobi (e.g. in workspace). delta.rows() must be equal to jacobi.rows().
+		// not needed any more, we use the getError method
+//		Eigen::VectorXf delta;		   // Specifies the delta for the Jacobi (e.g. in workspace). delta.rows() must be equal to jacobi.rows().
 	};
 
 	/*!

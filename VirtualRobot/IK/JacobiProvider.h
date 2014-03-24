@@ -66,6 +66,13 @@ public:
 
 	VirtualRobot::RobotNodeSetPtr getRobotNodeSet();
 
+
+	/*!
+		The error vector. the value depends on the implementation.
+	*/
+	virtual Eigen::VectorXf getError(float stepSize = 1.0f) = 0;
+
+	bool isInitialized();
 	/*
 		If set, a weigthed inverse Jacobian is computed. The weighting is only applied in eTranspose mode!
 		jointScaling.rows() must be nDoF
@@ -76,7 +83,7 @@ protected:
     
 	RobotNodeSetPtr rns; 
 	InverseJacobiMethod inverseMethod;
-
+	bool initialized;
 	Eigen::VectorXf jointWeights; // only used in eTranspose mode
 	
 };

@@ -69,6 +69,7 @@ public:
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+	//! Experimental: Additional information about the node
     enum RobotNodeType
     {
         Generic,        //! No constraints

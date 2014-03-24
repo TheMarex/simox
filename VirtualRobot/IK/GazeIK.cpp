@@ -83,12 +83,12 @@ Eigen::VectorXf GazeIK::computeStep(Eigen::Vector3f goal, float stepSize)
 	g.block(0,3,3,1) = goal;
 	ikGaze->setGoal(g, rns->getTCP(), IKSolver::Position);
 	ikGaze->setMaxPositionStep(20.0f);
-	Eigen::VectorXf deltaGaze = ikGaze->getDelta(currentPose, g);
+	Eigen::VectorXf deltaGaze = ikGaze->getError();// getDelta(currentPose, g);
 	if (verbose)
 		VR_INFO << "ikGaze delta:\n" << deltaGaze.head(3) << endl;
 	HierarchicalIK::JacobiDefinition jd;
 	jd.jacProvider = ikGaze;
-	jd.delta = deltaGaze.head(3);
+	//jd.delta = deltaGaze.head(3);
 	jacobies.push_back(jd);
 
 	// 2. jl avoidance
@@ -96,7 +96,7 @@ Eigen::VectorXf GazeIK::computeStep(Eigen::Vector3f goal, float stepSize)
 	{
 		HierarchicalIK::JacobiDefinition jd2;
 		jd2.jacProvider = ikJointLimits;
-		jd2.delta = ikJointLimits->getErrorVector();
+		//jd2.delta = ikJointLimits->getError();
 		jacobies.push_back(jd2);
 	}
 

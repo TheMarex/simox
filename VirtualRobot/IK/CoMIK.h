@@ -50,6 +50,11 @@ public:
 	virtual Eigen::MatrixXf getJacobianMatrix();
 	virtual Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp); // ignored for CoM IK but needed for interface
 
+	/*!
+		Computes the 2d error vector
+	*/
+	virtual Eigen::VectorXf getError(float stepSize = 1.0f);
+
 	Eigen::VectorXf computeStep(float stepSize );
 	bool computeSteps(float stepSize, float minumChange, int maxNStep);
 

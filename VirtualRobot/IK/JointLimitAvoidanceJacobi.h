@@ -50,7 +50,7 @@ public:
         Translational Joints are ignored (error = 0)
         \param stepSize The error can be reduced by this factor.
 	*/
-	virtual Eigen::VectorXf getErrorVector(float stepSize = 1.0f);
+	virtual Eigen::VectorXf getError(float stepSize = 1.0f);
 
 protected:
 	std::vector<RobotNodePtr> nodes;

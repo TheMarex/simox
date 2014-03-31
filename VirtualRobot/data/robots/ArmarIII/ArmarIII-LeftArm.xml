@@ -16,7 +16,8 @@
 		<Joint type="revolute">
 			<!--DH a="0" d="0" theta="90" alpha="90" unitsangle="degree" unitslength="mm"/-->
 			<axis x="0" y="0" z="1"/>
-			<Limits unit="degree" lo="-106.91" hi="42.8"/>
+			<Limits unit="degree" lo="-106.91" hi="80"/>
+      <!--42.8-->
 		</Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
@@ -86,7 +87,8 @@
 		<Joint type="revolute">
 			<!--DH a="0" d="-7.5" theta="90" alpha="-90" unitsangle="degree" unitslength="mm"/-->
 			<axis x="0" y="0" z="1"/>
-			<Limits unit="degree" lo="-122.96" hi="19.14"/>
+			<Limits unit="degree" lo="-122.96" hi="55"/>
+        <!--19.14-->
 		</Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>

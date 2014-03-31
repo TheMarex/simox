@@ -36,13 +36,13 @@ int main (int argc, char** argv)
 	std::string goalObject("Can");
 	std::string rnsName("Planning Left");
 	std::string colModel1("ColModel Robot Moving Left");
-	std::string colModel2("ColModel Robot Body");
+	std::string colModel2("ColModel Robot Body1");
 	std::string colModel3("ColModel Obstacles");
 	std::string eefName("Hand L");
 
 	std::string rnsNameB("Planning Right");
 	std::string colModel1B("ColModel Robot Moving Right");
-	std::string colModel2B("ColModel Robot Body");
+	std::string colModel2B("ColModel Robot Body2");
 	std::string eefNameB("Hand R");
 
 	VirtualRobot::RuntimeEnvironment::considerKey("scene");

@@ -18,8 +18,9 @@
 		</Transform>
 		<Joint type="revolute">
 			<!--DH a="0" d="0" theta="90" alpha="90" unitsangle="degree" unitslength="mm"/-->
-			<Limits unit="degree" lo="-106.94" hi="41.67"/>
-		</Joint>
+			<Limits unit="degree" lo="-106.94" hi="80"/>
+      <!--41.67-->
+    </Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="3.65" units="kg" />
@@ -85,7 +86,7 @@
 		</Transform>
 		<Joint type="revolute">
 			<!--DH a="0" d="7.5" theta="90" alpha="-90" unitsangle="degree" unitslength="mm"/-->
-			<Limits unit="degree" lo="-114.58" hi="39.7"/> <!-- ?! -->
+			<Limits unit="degree" lo="-114.58" hi="55"/> <!-- 39.7 -->
 		</Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>

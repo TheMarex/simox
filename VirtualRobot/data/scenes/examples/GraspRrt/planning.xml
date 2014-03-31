@@ -8,17 +8,19 @@
 		    <Node name="Hip Pitch" unit="radian" value="0"/>
 		    <Node name="Hip Roll" unit="radian" value="0"/>
 		    <Node name="Hip Yaw" unit="radian" value="0"/>
-		    <Node name="Shoulder 1 L" unit="radian" value="0.26"/>
-    		<Node name="Shoulder 2 L" unit="radian" value="0"/>
-    		<Node name="Upperarm L" unit="radian" value="0.46"/>
-    		<Node name="Elbow L" unit="radian" value="0.2"/>
-    		<Node name="Underarm L" unit="radian" value="0"/>
+      <!--Node name="Shoulder 1 L" unit="radian" value="0.26"/-->
+      <Node name="Shoulder 1 L" unit="radian" value="0.85"/>
+      <Node name="Shoulder 2 L" unit="radian" value="0"/>
+    		<Node name="Upperarm L" unit="radian" value="0.16"/>
+      <!--Node name="Elbow L" unit="radian" value="0.2"/-->
+      <Node name="Elbow L" unit="radian" value="0.55"/>
+      <Node name="Underarm L" unit="radian" value="0"/>
     		<Node name="Wrist 1 L" unit="radian" value="0"/>
     		<Node name="Wrist 2 L" unit="radian" value="0"/>
-		    <Node name="Shoulder 1 R" unit="radian" value="0.26"/>
+		    <Node name="Shoulder 1 R" unit="radian" value="0.85"/>
     		<Node name="Shoulder 2 R" unit="radian" value="0"/>
-    		<Node name="Upperarm R" unit="radian" value="-0.46"/>
-    		<Node name="Elbow R" unit="radian" value="0.2"/>
+    		<Node name="Upperarm R" unit="radian" value="-0.16"/>
+    		<Node name="Elbow R" unit="radian" value="0.55"/>
     		<Node name="Underarm R" unit="radian" value="0"/>
     		<Node name="Wrist 1 R" unit="radian" value="0"/>
     		<Node name="Wrist 2 R" unit="radian" value="0"/>
@@ -87,13 +89,47 @@
     	</RobotNodeSet>
     	
     	<!-- The second collision model (torso, head and platform)-->
-    	<RobotNodeSet name="ColModel Robot Body">
-			<Node name="Platform"/>
-    		<Node name="Hip Yaw"/>
-    		<Node name="Head_Tilt"/>
-    	</RobotNodeSet>
+    <RobotNodeSet name="ColModel Robot Body1">
+      <Node name="Platform"/>
+      <Node name="Hip Yaw"/>
+      <Node name="Head_Tilt"/>
+      <Node name="Upperarm R"/>
+      <Node name="Underarm R"/>
+      <Node name="Hand Palm 1 R"/>
+      <Node name="Hand Palm 2 R"/>
+      <Node name="Thumb R J0"/>
+      <Node name="Thumb R J1"/>
+      <Node name="Index R J0"/>
+      <Node name="Index R J1"/>
+      <Node name="Middle R J0"/>
+      <Node name="Middle R J1"/>
+      <Node name="Ring R J0"/>
+      <Node name="Ring R J1"/>
+      <Node name="Pinky R J0"/>
+      <Node name="Pinky R J1"/>
+    </RobotNodeSet>
 
-        <GlobalPose>
+    <RobotNodeSet name="ColModel Robot Body2">
+      <Node name="Platform"/>
+      <Node name="Hip Yaw"/>
+      <Node name="Head_Tilt"/>
+      <Node name="Upperarm L"/>
+      <Node name="Underarm L"/>
+      <Node name="Hand Palm 1 L"/>
+      <Node name="Hand Palm 2 L"/>
+      <Node name="Thumb L J0"/>
+      <Node name="Thumb L J1"/>
+      <Node name="Index L J0"/>
+      <Node name="Index L J1"/>
+      <Node name="Middle L J0"/>
+      <Node name="Middle L J1"/>
+      <Node name="Ring L J0"/>
+      <Node name="Ring L J1"/>
+      <Node name="Pinky L J0"/>
+      <Node name="Pinky L J1"/>
+    </RobotNodeSet>
+
+    <GlobalPose>
 			<Transform>
 				<Translation x="-6115.0" y="3580.0" z="0"/>
 				<rollpitchyaw units="degree" roll="0" pitch="0" yaw="0"/>

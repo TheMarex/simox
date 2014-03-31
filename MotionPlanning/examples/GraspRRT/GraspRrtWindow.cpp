@@ -610,7 +610,7 @@ void GraspRrtWindow::testInit()
 		if (colModelEnv)
 			cdm->addCollisionModel(colModelEnv);
 
-		test_cspace.reset(new Saba::CSpaceSampled(robot,cdm,rns));
+		test_cspace.reset(new Saba::CSpaceSampled(robot,cdm,rns,500000));
 	}
 	float sampl = (float)UI.doubleSpinBoxCSpaceSampling->value();
 	float samplDCD = (float)UI.doubleSpinBoxColChecking->value();
@@ -685,7 +685,7 @@ void GraspRrtWindow::plan()
 	if (colModelEnv)
 		cdm->addCollisionModel(colModelEnv);
 	cdm->addCollisionModel(targetObject);
-	cspace.reset(new Saba::CSpaceSampled(robot,cdm,rns));
+    cspace.reset(new Saba::CSpaceSampled(robot, cdm, rns, 500000));
 	float sampl = (float)UI.doubleSpinBoxCSpaceSampling->value();
 	float samplDCD = (float)UI.doubleSpinBoxColChecking->value();
 	cspace->setSamplingSize(sampl);

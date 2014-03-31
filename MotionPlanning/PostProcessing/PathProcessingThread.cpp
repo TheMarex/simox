@@ -100,6 +100,9 @@ void PathProcessingThread::workingMethod()
 		processingFinished = false;
 
 	resultPath = res;
+
+    // the thread ends here
+    threadStarted = false;
 	mutex.unlock();
 }
 

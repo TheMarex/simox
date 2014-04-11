@@ -1,6 +1,6 @@
 /**
 * @package    VirtualRobot
-* @author     Manfred Kroehnert 
+* @author     Manfred Kroehnert
 * @author     Nikolaus Vahrenkamp
 * @copyright  2010 Manfred Kroehnert
 */
@@ -24,7 +24,7 @@ VisualizationNode::VisualizationNode()
 		boundingBox = false;
 		globalPose.setIdentity();
 }
-	
+
 VisualizationNode::~VisualizationNode()
 {
 	attachedVisualizations.clear();
@@ -208,7 +208,7 @@ bool VisualizationNode::saveModel(const std::string &modelPath, const std::strin
 
 void VisualizationNode::scale( Eigen::Vector3f &scaleFactor )
 {
-    VR_WARNING << "not implemented..." << endl;
+	VR_WARNING << "not implemented..." << endl;
 }
 
 

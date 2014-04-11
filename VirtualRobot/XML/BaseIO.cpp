@@ -96,9 +96,9 @@ float BaseIO::getFloatByAttributeName(rapidxml::xml_node<char>* xmlNode, const s
 
 /**
  * This method gets an optional attribute \p attributeName from xml_node \p xmlNode and
- * returns its value as float. 
+ * returns its value as float.
  * When no attribute \p attributeName is present the \p standardValue is returned.
- * 
+ *
  */
 float BaseIO::getOptionalFloatByAttributeName(rapidxml::xml_node<char>* xmlNode, const std::string& attributeName, float standardValue)
 {
@@ -173,8 +173,8 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 	while (node)
 	{
 		std::string nodeName = getLowerCase(node->name());
-		
-	
+
+
 		// Homogeneous Matrix 4x4
 		//rapidxml::xml_node<> *matrixXMLNode = trXMLNode->first_node("matrix4x4",0,false);
 		if (nodeName=="matrix4x4")
@@ -317,33 +317,33 @@ void BaseIO::processTransformNode(rapidxml::xml_node<char> *transformXMLNode, co
 
 void BaseIO::processDHNode(rapidxml::xml_node<char> *dhXMLNode, DHParameter &dh)
 {
-    rapidxml::xml_attribute<> *attr;
-    std::vector< Units > unitsAttr = getUnitsAttributes(dhXMLNode);
-    Units uAngle("rad");
-    Units uLength("mm");
-    for (size_t i=0;i<unitsAttr.size();i++)
-    {
-        if (unitsAttr[i].isAngle())
-            uAngle = unitsAttr[i];
-        if (unitsAttr[i].isLength())
-            uLength = unitsAttr[i];
-    }
+	rapidxml::xml_attribute<> *attr;
+	std::vector< Units > unitsAttr = getUnitsAttributes(dhXMLNode);
+	Units uAngle("rad");
+	Units uLength("mm");
+	for (size_t i=0;i<unitsAttr.size();i++)
+	{
+		if (unitsAttr[i].isAngle())
+			uAngle = unitsAttr[i];
+		if (unitsAttr[i].isLength())
+			uLength = unitsAttr[i];
+	}
 
-    dh.isSet = true;
-    bool isRadian = uAngle.isRadian();
+	dh.isSet = true;
+	bool isRadian = uAngle.isRadian();
 
-    attr = dhXMLNode->first_attribute("a", 0, false);
-    if (attr)
-        dh.setAInMM(uLength.toMillimeter(convertToFloat(attr->value())));
-    attr = dhXMLNode->first_attribute("d", 0, false);
-    if (attr)
-        dh.setDInMM(uLength.toMillimeter(convertToFloat(attr->value())));
-    attr = dhXMLNode->first_attribute("alpha", 0, false);
-    if (attr)
-        dh.setAlphaRadian(convertToFloat(attr->value()), isRadian);
-    attr = dhXMLNode->first_attribute("theta", 0, false);
-    if (attr)
-        dh.setThetaRadian(convertToFloat(attr->value()), isRadian);
+	attr = dhXMLNode->first_attribute("a", 0, false);
+	if (attr)
+		dh.setAInMM(uLength.toMillimeter(convertToFloat(attr->value())));
+	attr = dhXMLNode->first_attribute("d", 0, false);
+	if (attr)
+		dh.setDInMM(uLength.toMillimeter(convertToFloat(attr->value())));
+	attr = dhXMLNode->first_attribute("alpha", 0, false);
+	if (attr)
+		dh.setAlphaRadian(convertToFloat(attr->value()), isRadian);
+	attr = dhXMLNode->first_attribute("theta", 0, false);
+	if (attr)
+		dh.setThetaRadian(convertToFloat(attr->value()), isRadian);
 }
 
 bool BaseIO::hasUnitsAttribute(rapidxml::xml_node<char> *node)
@@ -369,7 +369,7 @@ void BaseIO::getAllAttributes(rapidxml::xml_node<char> *node, const std::string 
 	{
 		std::string s(attr->value());
 		storeValues.push_back(s);
-		
+
 		attr = attr->next_attribute(attrString.c_str(), 0, false);
 	}
 }
@@ -389,7 +389,7 @@ std::vector< Units > BaseIO::getUnitsAttributes(rapidxml::xml_node<char> *node)
 		Units unitsAttribute(getLowerCase(attrStr[i].c_str()));
 		result.push_back(unitsAttribute);
 	}
-	
+
 	return result;
 }
 
@@ -618,21 +618,21 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
 	if (filename.empty())
 		return;
 
-    boost::filesystem::path diffpath;
-    boost::filesystem::path tmppath = filename;
-    while(tmppath != basePath)
-    {
-        diffpath = tmppath.filename() / diffpath;
-        tmppath = tmppath.parent_path();
-        if (tmppath.empty())
-        {
-            // no relative path found, take complete path
-            diffpath = filename;
-            break;
-        }
-    }
+	boost::filesystem::path diffpath;
+	boost::filesystem::path tmppath = filename;
+	while(tmppath != basePath)
+	{
+		diffpath = tmppath.filename() / diffpath;
+		tmppath = tmppath.parent_path();
+		if (tmppath.empty())
+		{
+			// no relative path found, take complete path
+			diffpath = filename;
+			break;
+		}
+	}
 
-    filename = diffpath.string();
+	filename = diffpath.string();
 
 /*
 	bool found = true;
@@ -775,7 +775,7 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 						VR_WARNING << "No visualization present..." << endl;
 				} else
 					visuCoordType = attr->value();
-				
+
 				getLowerCase(visuCoordType);
 				VisualizationFactoryPtr visualizationFactory = VisualizationFactory::fromName(visuCoordType, NULL);
 
@@ -842,7 +842,7 @@ CollisionModelPtr BaseIO::processCollisionTag(rapidxml::xml_node<char> *colXMLNo
 				collisionFileType = attr->value();
 			getLowerCase(collisionFileType);
 			collisionFile = processFileNode(colFileXMLNode,basePath);
-		
+
 			attr = colFileXMLNode->first_attribute("boundingbox", 0, false);
 			if (attr)
 			{
@@ -929,8 +929,8 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 
 			}
 		}
-		
-	} 
+
+	}
 	rapidxml::xml_node<> *inMatXMLNode = physicsXMLNode->first_node("inertiamatrix",0,false);
 	if (inMatXMLNode)
 	{
@@ -960,29 +960,29 @@ void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const s
 		physics.intertiaMatrix.setZero(); // this will trigger an automatically determination of the inertia matrix during initialization
 	}
 	rapidxml::xml_node<> *ignoreColXMLNode = physicsXMLNode->first_node("ignorecollision",0,false);
-    while (ignoreColXMLNode)
-    {
-        rapidxml::xml_attribute<> *attr = ignoreColXMLNode->first_attribute("name", 0, false);
-        THROW_VR_EXCEPTION_IF(!attr, "Expecting 'name' attribute in <IgnoreCollision> tag..." << endl)
-        std::string s(attr->value());
-        physics.ignoreCollisions.push_back(s);
-        ignoreColXMLNode = ignoreColXMLNode->next_sibling("ignorecollision",0,false);
-	} 	
-    rapidxml::xml_node<> *simulationtype = physicsXMLNode->first_node("simulationtype",0,false);
-    if (simulationtype)
-    {
-        rapidxml::xml_attribute<> *attr = simulationtype->first_attribute("value", 0, false);
-        THROW_VR_EXCEPTION_IF(!attr, "Expecting 'value' attribute in <SimulationType> tag..." << endl)
-        std::string s(attr->value());
-        getLowerCase(s);
-        if (s=="dynamic" || s=="dynamics")
-            physics.simType = VirtualRobot::SceneObject::Physics::eDynamic;
-        else if (s=="static")
-            physics.simType = VirtualRobot::SceneObject::Physics::eStatic;
-        else if (s=="kinematic")
-            physics.simType = VirtualRobot::SceneObject::Physics::eKinematic;
-        // otherwise eUnknown remains
-    }
+	while (ignoreColXMLNode)
+	{
+		rapidxml::xml_attribute<> *attr = ignoreColXMLNode->first_attribute("name", 0, false);
+		THROW_VR_EXCEPTION_IF(!attr, "Expecting 'name' attribute in <IgnoreCollision> tag..." << endl)
+		std::string s(attr->value());
+		physics.ignoreCollisions.push_back(s);
+		ignoreColXMLNode = ignoreColXMLNode->next_sibling("ignorecollision",0,false);
+	}
+	rapidxml::xml_node<> *simulationtype = physicsXMLNode->first_node("simulationtype",0,false);
+	if (simulationtype)
+	{
+		rapidxml::xml_attribute<> *attr = simulationtype->first_attribute("value", 0, false);
+		THROW_VR_EXCEPTION_IF(!attr, "Expecting 'value' attribute in <SimulationType> tag..." << endl)
+		std::string s(attr->value());
+		getLowerCase(s);
+		if (s=="dynamic" || s=="dynamics")
+			physics.simType = VirtualRobot::SceneObject::Physics::eDynamic;
+		else if (s=="static")
+			physics.simType = VirtualRobot::SceneObject::Physics::eStatic;
+		else if (s=="kinematic")
+			physics.simType = VirtualRobot::SceneObject::Physics::eKinematic;
+		// otherwise eUnknown remains
+	}
 }
 
 std::string BaseIO::processFileNode( rapidxml::xml_node<char> *fileNode, const std::string &basePath )
@@ -1004,26 +1004,26 @@ std::string BaseIO::processFileNode( rapidxml::xml_node<char> *fileNode, const s
 		}
 	} else
 	{
-		
+
 		// check file absolute
 		boost::filesystem::path fn(fileName);
-        try {
-            if (boost::filesystem::exists(fn))
-                return fileName;
-        } catch (...){}
+		try {
+			if (boost::filesystem::exists(fn))
+				return fileName;
+		} catch (...){}
 		// check file relative
 		std::string absFileName = fileName;
 		makeAbsolutePath(basePath,absFileName);
 		fn = absFileName;
-        try {
+		try {
 		if (boost::filesystem::exists(fn))
 			return absFileName;
-        } catch (...){}
+		} catch (...){}
 		// check file in data paths
 		absFileName = fileName;
 		if (RuntimeEnvironment::getDataFileAbsolute(absFileName))
 			return absFileName;
-		
+
 		VR_ERROR << "Could not determine valid filename from " << fileName << endl;
 	}
 	return fileName;
@@ -1252,10 +1252,10 @@ TrajectoryPtr BaseIO::processTrajectory(rapidxml::xml_node<char> *trajectoryXMLN
 
 bool BaseIO::writeXMLFile(const std::string &filename, const std::string &content, bool overwrite)
 {
-    try {
+	try {
 	if (!overwrite && boost::filesystem::exists(filename))
 		return false;
-    } catch (...){}
+	} catch (...){}
 
 	// save file
 	std::ofstream out(filename.c_str(),std::ios::out|std::ios::trunc);
@@ -1270,18 +1270,18 @@ bool BaseIO::writeXMLFile(const std::string &filename, const std::string &conten
 
 std::string BaseIO::toXML( const Eigen::Matrix4f &m, std::string ident /*= "\t"*/ )
 {
-    std::stringstream ss;
-    ss << ident << "<Matrix4x4 units='mm'>"<< endl;
-    for (int r=1;r<=4;r++)
-    {
-        ss << ident << "\t<row" << r << " ";
+	std::stringstream ss;
+	ss << ident << "<Matrix4x4 units='mm'>"<< endl;
+	for (int r=1;r<=4;r++)
+	{
+		ss << ident << "\t<row" << r << " ";
 
-        for (int i=1;i<=4;i++)
-            ss << "c" << i << "='" << m(r-1,i-1) <<"' ";
-        ss << "/>"<< endl;
-    }
-    ss << ident << "</Matrix4x4>"<< endl;
-    return ss.str();
+		for (int i=1;i<=4;i++)
+			ss << "c" << i << "='" << m(r-1,i-1) <<"' ";
+		ss << "/>"<< endl;
+	}
+	ss << ident << "</Matrix4x4>"<< endl;
+	return ss.str();
 }
 
 

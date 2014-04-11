@@ -2,7 +2,7 @@ PROJECT(Simox)
 
 cmake_minimum_required(VERSION 2.8.3)
 if(NOT ("${CMAKE_VERSION}" VERSION_LESS 2.8.12))
-	cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warnings
+    cmake_policy(SET CMP0022 OLD) # avoid INTERFACE_LINK_LIBRARIES warnings
 ENDIF()
 
 MESSAGE(STATUS "******************** Configuring Simox ************************")
@@ -30,18 +30,18 @@ if (Simox_BUILD_GraspStudio)
     list(APPEND SIMOX_EXPORT_TARGET_LIST GraspStudio)
     list(APPEND SIMOX_EXPORT_TARGET_LIST qhull)
     list(APPEND SIMOX_EXPORT_TARGET_LIST powercrust)
-	list (APPEND Simox_LIBRARIES GraspStudio)
+    list (APPEND Simox_LIBRARIES GraspStudio)
 endif()
 if (Simox_BUILD_SimDynamics)
     add_subdirectory(SimDynamics)
     list(APPEND SIMOX_EXPORT_TARGET_LIST SimDynamics)
-	list (APPEND Simox_LIBRARIES SimDynamics)
-	if (SimDynamics_BULLET_OpenGL)
-		list(APPEND SIMOX_EXPORT_TARGET_LIST BulletOpenGLSupport)
-	endif()
+    list (APPEND Simox_LIBRARIES SimDynamics)
+    if (SimDynamics_BULLET_OpenGL)
+        list(APPEND SIMOX_EXPORT_TARGET_LIST BulletOpenGLSupport)
+    endif()
 
-	list (APPEND Simox_EXTERNAL_LIBRARIES ${Simox_SimDynamics_EXTERNAL_LIBRARIES})
-	list (APPEND Simox_EXTERNAL_INCLUDE_DIRS ${Simox_SimDynamics_INCLUDE_DIRS})
+    list (APPEND Simox_EXTERNAL_LIBRARIES ${Simox_SimDynamics_EXTERNAL_LIBRARIES})
+    list (APPEND Simox_EXTERNAL_INCLUDE_DIRS ${Simox_SimDynamics_INCLUDE_DIRS})
 
 
 

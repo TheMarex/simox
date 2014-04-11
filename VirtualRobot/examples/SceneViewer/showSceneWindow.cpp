@@ -39,7 +39,7 @@ showSceneWindow::showSceneWindow(std::string &sSceneFile, Qt::WFlags flags)
 	sceneSep->addChild(graspVisu);
 
 	setupUI();
-	
+
 	loadScene();
 
 	viewer->viewAll();
@@ -160,7 +160,7 @@ void showSceneWindow::updateGraspVisu()
 
 		std::string t = currentGrasp->getName();
 		SoSeparator* visu = CoinVisualizationFactory::CreateCoordSystemVisualization(1.0f,&t);
-		
+
 		if (visu)
 			graspVisu->addChild(visu);
 	}
@@ -183,7 +183,7 @@ void showSceneWindow::quit()
 
 
 void showSceneWindow::sliderMoved(int pos)
-{	
+{
 	if (!currentTrajectory)
 		return;
 
@@ -215,7 +215,7 @@ void showSceneWindow::loadScene()
 		cout << e.what();
 		return;
 	}
-	
+
 	if (!scene)
 	{
 		cout << " ERROR while creating scene" << endl;
@@ -262,7 +262,7 @@ void showSceneWindow::loadScene()
 	else
 		selectJoint(0);
 
-	
+
 
 	displayTriangles();
 
@@ -303,7 +303,7 @@ void showSceneWindow::selectRobot(int nr)
 	if (tr.size()>0)
 		UI.comboBoxTrajectory->setCurrentIndex(0);
 
-	
+
 	std::vector<VirtualRobot::EndEffectorPtr> eefs = currentRobot->getEndEffectors();
 	for (size_t i=0;i<eefs.size();i++)
 	{
@@ -469,7 +469,7 @@ void showSceneWindow::closeHand()
 }
 
 void showSceneWindow::openHand()
-{	
+{
 	if (!currentEEF)
 		return;
 	currentEEF->openActors();

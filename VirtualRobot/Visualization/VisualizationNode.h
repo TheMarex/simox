@@ -61,7 +61,7 @@ public:
 
 	/*!
 		Clone this visualization.
-		\param deepCopy When true, the underlying visualization is copied, otherwise a reference to the existing visualization is passed. 
+		\param deepCopy When true, the underlying visualization is copied, otherwise a reference to the existing visualization is passed.
 		\param scaling Scale Can be set to create a scaled version of this visual data.
 		Since the underlying implementation may be able to re-use the visualization data, a deep copy may not be necessary in some cases.
 	*/
@@ -96,7 +96,7 @@ public:
 	virtual void setupVisualization(bool showVisualization, bool showAttachedVisualizations);
 
 	/*!
-		Enables/Disables the visualization updates. 
+		Enables/Disables the visualization updates.
 		Usually if a SceneObject or a RobotNode changes its state, the visualization is automatically updated.
 		This behavior can be changed here.
 	*/
@@ -127,7 +127,7 @@ public:
 	std::string toXML(const std::string &basePath, const std::string &filename, int tabs);
 
 	/*!
-		Create a united visualization. Behavior depends on the derived implementation, 
+		Create a united visualization. Behavior depends on the derived implementation,
 		but usually the visualizations are copied and united to one object.
 	*/
 	static VisualizationNodePtr CreateUnitedVisualization(const std::vector<VisualizationNodePtr> &visualizations);
@@ -137,13 +137,13 @@ public:
 	*/
 	BoundingBox getBoundingBox();
 
-    /*!
-        Saves model file to model path.
+	/*!
+		Saves model file to model path.
 		\param modelPath The directory.
-    */
+	*/
 	virtual bool saveModel(const std::string &modelPath, const std::string &filename);
 
-    virtual void scale(Eigen::Vector3f &scaleFactor);
+	virtual void scale(Eigen::Vector3f &scaleFactor);
 
 protected:
 	bool boundingBox; //!< Indicates, if the bounding box model was used

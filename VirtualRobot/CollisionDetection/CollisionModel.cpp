@@ -193,10 +193,12 @@ std::string CollisionModel::toXML(const std::string &basePath, const std::string
 
 	if (!filename.empty())
 	{
-		boost::filesystem::path localPath(basePath);
-		boost::filesystem::path fn(filename);
-		boost::filesystem::path completeFile = boost::filesystem::operator/(localPath,fn);
-		ss << pre << t << "<File type='" << fileType << "'>" << completeFile.string() << "</File>\n";
+		namespace fs = boost::filesystem;
+		fs::path completeFile = fs::path(basePath) / fs::path(filename);
+		ss << pre << t
+		   << "<File type='" << fileType << "'>"
+		   << completeFile.string()
+		   << "</File>\n";
 	}
 	ss << pre << "</CollisionModel>\n";
 	return ss.str();

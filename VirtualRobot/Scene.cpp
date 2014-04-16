@@ -6,7 +6,7 @@
 #include "Trajectory.h"
 #include "XML/BaseIO.h"
 
-namespace VirtualRobot 
+namespace VirtualRobot
 {
 
 

@@ -5,7 +5,7 @@
 #include "Grasping/GraspSet.h"
 #include "XML/BaseIO.h"
 
-namespace VirtualRobot 
+namespace VirtualRobot
 {
 
 
@@ -66,7 +66,7 @@ VirtualRobot::GraspSetPtr ManipulationObject::getGraspSet( EndEffectorPtr eef )
 
 	return getGraspSet(eef->getRobotType(),eef->getName());
 
-	 
+
 }
 
 VirtualRobot::GraspSetPtr ManipulationObject::getGraspSet( const std::string &robotType,const std::string &eefName )
@@ -100,7 +100,7 @@ std::string ManipulationObject::toXML(const std::string &basePath, int tabs, boo
 		std::string relFile = filename;
 		if (!basePath.empty())
 		{
-			BaseIO::makeRelativePath(basePath,relFile);
+			BaseIO::makeRelativePath(basePath, relFile);
 		}
 		ss << pre << t << "<File>" << relFile << "</File>\n";
 		Eigen::Matrix4f gp = getGlobalPose();
@@ -116,7 +116,7 @@ std::string ManipulationObject::toXML(const std::string &basePath, int tabs, boo
 	{
 
 		ss << getSceneObjectXMLString(basePath,tabs+1);
-	
+
 		for (size_t i=0;i<graspSets.size();i++)
 		{
 			ss << graspSets[i]->getXMLString(tabs+1) << "\n";

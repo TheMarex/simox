@@ -56,8 +56,14 @@ public:
 	/*!
 		Sets the position of the internal data structure.
 	*/
-	virtual void setGlobalPose (const Eigen::Matrix4f &m){globalPose = m;}
-	inline const Eigen::Matrix4f& getGlobalPose() const {return globalPose;}
+	virtual void setGlobalPose (const Eigen::Matrix4f &m)
+	{
+		globalPose = m;
+	}
+	inline const Eigen::Matrix4f& getGlobalPose() const
+	{
+		return globalPose;
+	}
 
 	/*!
 		Clone this visualization.

@@ -166,11 +166,15 @@ namespace VirtualRobot {
 	{
 		// read the contents of the file
 		SoNode* coinVisualization = SoDB::readAll(&soInput);
-		coinVisualization->ref();
 
 		// check if the visualization was read
 		if (NULL == coinVisualization)
-			std::cerr <<  "Problem reading model from SoInput" << std::endl;
+		{
+			std::cerr <<  "Problem reading model from SoInput: "  << soInput.getCurFileName() << std::endl;
+			return;
+		}
+
+		coinVisualization->ref();
 
 		if (boundingBox)
 		{

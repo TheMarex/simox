@@ -218,7 +218,7 @@ std::string CollisionModel::toXML(const std::string &basePath, int tabs)
 		BaseIO::makeRelativePath(basePath, collisionFilename);
 	}*/
 	boost::filesystem::path fn(collisionFilename);
-	return toXML(basePath, fn.filename.string(),tabs);
+	return toXML(basePath, fn.filename().string(),tabs);
 
 }
 

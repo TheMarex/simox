@@ -206,20 +206,19 @@ std::string CollisionModel::toXML(const std::string &basePath, const std::string
 
 std::string CollisionModel::toXML(const std::string &basePath, int tabs)
 {
-	std::string fnC;
+	std::string collisionFilename;
 	if (visualization)
-		fnC = visualization->getFilename();
+		collisionFilename = visualization->getFilename();
 	else if (modelVisualization)
-		fnC = modelVisualization->getFilename();
+		collisionFilename = modelVisualization->getFilename();
 
 	/*
-	if (!fnC.empty())
+	if (!collisionFilename.empty() && !basePath.empty())
 	{
-		if (!basePath.empty())
-			BaseIO::makeRelativePath(basePath,fnC);
+		BaseIO::makeRelativePath(basePath, collisionFilename);
 	}*/
-	boost::filesystem::path fn(fnC);
-	return toXML(basePath,fn.filename().string(),tabs);
+	boost::filesystem::path fn(collisionFilename);
+	return toXML(basePath, fn.filename.string(),tabs);
 
 }
 

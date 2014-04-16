@@ -242,27 +242,27 @@ VirtualRobot::CollisionModelPtr CollisionModel::CreateUnitedCollisionModel( cons
 
 bool CollisionModel::saveModel( const std::string &modelPath, const std::string &filename )
 {
-    if (visualization)
-        return visualization->saveModel(modelPath,filename);
-    if (modelVisualization)
-        return modelVisualization->saveModel(modelPath,filename);
-    return true; // no model given
+	if (visualization)
+		return visualization->saveModel(modelPath,filename);
+	if (modelVisualization)
+		return modelVisualization->saveModel(modelPath,filename);
+	return true; // no model given
 }
 
 void CollisionModel::scale( Eigen::Vector3f &scaleFactor )
 {
-    if (model)
-    {
-        TriMeshModelPtr modelScaled = model->clone(scaleFactor);
-        bbox = modelScaled->boundingBox;
+	if (model)
+	{
+		TriMeshModelPtr modelScaled = model->clone(scaleFactor);
+		bbox = modelScaled->boundingBox;
 #if defined(VR_COLLISION_DETECTION_PQP)
-        collisionModelImplementation.reset(new CollisionModelPQP(modelScaled, colChecker,id));
+		collisionModelImplementation.reset(new CollisionModelPQP(modelScaled, colChecker,id));
 #else
-        collisionModelImplementation.reset(new CollisionModelDummy(colChecker));
+		collisionModelImplementation.reset(new CollisionModelDummy(colChecker));
 #endif
-    }
-    if (visualization)
-        visualization->scale(scaleFactor);
+	}
+	if (visualization)
+		visualization->scale(scaleFactor);
 }
 
 /*

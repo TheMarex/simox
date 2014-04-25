@@ -212,13 +212,12 @@ std::string CollisionModel::toXML(const std::string &basePath, int tabs)
 	else if (modelVisualization)
 		collisionFilename = modelVisualization->getFilename();
 
-	/*
 	if (!collisionFilename.empty() && !basePath.empty())
 	{
 		BaseIO::makeRelativePath(basePath, collisionFilename);
-	}*/
+	}
 	boost::filesystem::path fn(collisionFilename);
-	return toXML(basePath, fn.filename().string(),tabs);
+	return toXML(basePath, fn.string(),tabs);
 
 }
 

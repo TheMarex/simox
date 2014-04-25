@@ -153,12 +153,12 @@ std::string VisualizationNode::toXML(const std::string &basePath, const std::str
 std::string VisualizationNode::toXML(const std::string &basePath, int tabs)
 {
 	std::string visualizationFilename = getFilename();
-	/*if (!visualizationFilename.empty() && !basePath.empty())
+	if (!visualizationFilename.empty() && !basePath.empty())
 	{
 		BaseIO::makeRelativePath(basePath, visualizationFilename);
-	}*/
+	}
 	boost::filesystem::path fn(visualizationFilename);
-	return toXML(basePath, fn.filename().string(), tabs);
+	return toXML(basePath, fn.string(), tabs);
 }
 
 VirtualRobot::VisualizationNodePtr VisualizationNode::CreateUnitedVisualization( const std::vector<VisualizationNodePtr> &visualizations )

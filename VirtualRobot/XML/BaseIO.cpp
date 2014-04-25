@@ -618,9 +618,13 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
 	if (filename.empty())
 		return;
 
-	boost::filesystem::path diffpath;
-	boost::filesystem::path tmppath = filename;
-	while(tmppath != basePath)
+	namespace fs = boost::filesystem;
+
+	fs::path diffpath;
+	fs::path tmppath = fs::canonical(fs::path(filename));
+	fs::path basePathDir = fs::canonical(fs::path(basePath));
+
+	while(tmppath != basePathDir)
 	{
 		diffpath = tmppath.filename() / diffpath;
 		tmppath = tmppath.parent_path();
@@ -633,37 +637,6 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
 	}
 
 	filename = diffpath.string();
-
-/*
-	bool found = true;
-	boost::filesystem::path diffpath;
-	boost::filesystem::path tmppath = filename;
-	while(tmppath != basePath) {
-		diffpath = tmppath.stem() / diffpath;
-		tmppath = tmppath.parent_path();
-		if (tmppath.empty())
-		{
-			// no relative path found, take complete path
-			diffpath = filename;
-			found = false;
-			break;
-		}
-	}
-
-	boost::filesystem::path origPath = filename;
-	std::string res = diffpath.string();
-	if (found && origPath.extension()!="")
-	{
-#if (BOOST_VERSION>=105000)
-		std::string ext = origPath.extension().generic_string().c_str(); // should work with with V3 and V2
-#else
-		std::string ext = origPath.extension().c_str(); // should work with with V3 and V2
-#endif
-		res += ext;
-	}
-
-	filename = res;
-*/
 }
 
 

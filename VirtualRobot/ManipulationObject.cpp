@@ -94,8 +94,8 @@ std::string ManipulationObject::toXML(const std::string &basePath, int tabs, boo
 		pre += "\t";
 
 	ss << pre << "<ManipulationObject name='" << name << "'>\n";
-	
-	if (storeLinkToFile)
+
+	if (storeLinkToFile && !filename.empty())
 	{
 		std::string relFile = filename;
 		if (!basePath.empty())

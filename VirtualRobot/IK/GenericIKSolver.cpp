@@ -30,6 +30,10 @@ bool GenericIKSolver::solve(const Eigen::Matrix4f &globalPose, CartesianSelectio
 	jacobian->setGoal(globalPose,tcp,selection,maxErrorPositionMM,maxErrorOrientationRad);
 	jacobian->checkImprovements(true);
 
+    RobotConfigPtr bestConfig(new RobotConfig(rns->getRobot(),"bestConfig"));
+    rns->getJointValues(bestConfig);
+    float bestError = jacobian->getMeanErrorPosition();
+
 	// first check reachability
 	if (!checkReachable(globalPose))
 		return false;
@@ -44,7 +48,15 @@ bool GenericIKSolver::solve(const Eigen::Matrix4f &globalPose, CartesianSelectio
 		setJointsRandom();		
 		if (trySolve())
 			return true;
+        float currentError = jacobian->getMeanErrorPosition();
+        if (currentError < bestError)
+        {
+            rns->getJointValues(bestConfig);
+            bestError = jacobian->getMeanErrorPosition();
+        }
 	}
+    // set best config
+    rns->setJointValues(bestConfig);
 	return false;
 }
 

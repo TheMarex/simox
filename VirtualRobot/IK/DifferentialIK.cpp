@@ -496,10 +496,11 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 {
 	VR_ASSERT(rns);
 	VR_ASSERT(nodes.size() == rns->getSize());
-	//std::vector<RobotNodePtr> rn = this->nodes;
-	RobotPtr robot = rns->getRobot();
+
+    RobotPtr robot = rns->getRobot();
 	VR_ASSERT(robot);
-	std::vector<float> jv(nodes.size(),0.0f);
+	
+    std::vector<float> jv(nodes.size(),0.0f);
 	std::vector<float> jvBest = rns->getJointValues();
 	int step = 0;
 	checkTolerances();

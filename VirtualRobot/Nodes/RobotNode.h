@@ -317,7 +317,7 @@ protected:
 		the pose of the visualization can be set directly.
 		This is useful, if the node is actuated externally, i.e. via a physics engine. 
 		todo: Protect such updates by a mutex.
-		\param globalPose The new global pose. The joint value is determined from this pose (implemented in derived RobtoNodes).
+		\param globalPose The new global pose. The joint value is *not* determined from this pose. The RobotNodeActuator is responsible for setting the corresponding joint value
 		\param updateChildren Usually it is assumed that all RobotNodes are updated this way (updateChildren=false). If not, the children poses can be updated according to this node.
 	*/
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, bool updateChildren = false);

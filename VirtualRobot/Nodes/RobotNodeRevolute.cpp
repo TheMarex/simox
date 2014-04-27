@@ -153,10 +153,11 @@ void RobotNodeRevolute::updateVisualizationPose( const Eigen::Matrix4f &globalPo
 	RobotNode::updateVisualizationPose(globalPose,updateChildren);
 
 	// compute the jointValue from pose
+    // -> Not done any more, the RobotNdoeActuator sets the joint angle
 
 	// jointRotationAxis is given in local joint coord system
 	// -> we need the pose in joint coord system
-
+    /*
 	Eigen::Matrix4f initFrame;
 	if (this->getParent())
 		initFrame = this->getParent()->getGlobalPose() * getLocalTransformation();
@@ -177,7 +178,7 @@ void RobotNodeRevolute::updateVisualizationPose( const Eigen::Matrix4f &globalPo
 	}
 
 	// consider offset
-	jointValue = angle - jointValueOffset;
+	jointValue = angle - jointValueOffset;*/
 }
 
 Eigen::Vector3f RobotNodeRevolute::getJointRotationAxisInJointCoordSystem() const

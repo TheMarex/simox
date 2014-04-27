@@ -100,7 +100,7 @@ protected:
 	/*!
 		Can be called by a RobotNodeActuator in order to set the pose of this node.
 		This is useful, if the node is actuated externally, i.e. via a physics engine. 
-		\param globalPose The new global pose. The joint value is determined from this pose (implemented in derived RobtoNodes).
+        \param globalPose The new global pose. The joint value is *not* determined from this pose. The RobotNodeActuator is responsible for setting the corresponding joint value
 		\param updateChildren Usually it is assumed that all RobotNodes are updated this way (updateChildren=false). If not, the children poses can be updated according to this node (updateCHildren=true).
 	*/
 	virtual void updateVisualizationPose(const Eigen::Matrix4f &globalPose, bool updateChildren = false);

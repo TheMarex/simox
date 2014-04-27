@@ -183,6 +183,8 @@ void RobotNodePrismatic::updateVisualizationPose( const Eigen::Matrix4f &globalP
 	RobotNode::updateVisualizationPose(globalPose,updateChildren);
 
 	// compute the jointValue from pose
+    // not done here any more: the RobotNdoeActuator is responsible for setting the jointValues
+    /*
     Eigen::Matrix4f initFrame;
     if (this->getParent())
         initFrame = this->getParent()->getGlobalPose() * getLocalTransformation();
@@ -207,6 +209,7 @@ void RobotNodePrismatic::updateVisualizationPose( const Eigen::Matrix4f &globalP
 
 	// consider offset
 	jointValue = dist - jointValueOffset;
+    */
 }
 
 Eigen::Vector3f RobotNodePrismatic::getJointTranslationDirectionJointCoordSystem() const

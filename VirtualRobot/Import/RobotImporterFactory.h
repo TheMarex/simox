@@ -45,6 +45,8 @@ namespace VirtualRobot
 	 
 	 Other importers (e.g. collada) have to be selected during project setup.
 */
+class RobotImporterFactory;
+typedef boost::shared_ptr<RobotImporterFactory> RobotImporterFactoryPtr;
 class VIRTUAL_ROBOT_IMPORT_EXPORT RobotImporterFactory  : public AbstractFactoryMethod<RobotImporterFactory, void*>
 {
 public:
@@ -53,9 +55,13 @@ public:
 	
 	virtual RobotPtr loadFromFile(const std::string &filename, RobotIO::RobotDescription loadMode = RobotIO::eFull) = 0;
 
+    virtual std::string getFileExtension() = 0;
+    virtual std::string getFileFilter()=0;
+
+    static std::string getAllFileFilters();
+    static RobotImporterFactoryPtr fromFileExtension(std::string type, void *params);
 };
 
-typedef boost::shared_ptr<RobotImporterFactory> RobotImporterFactoryPtr;
 
 } // namespace VirtualRobot
 

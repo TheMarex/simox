@@ -33,7 +33,7 @@ RobotPtr ColladaIO::convertRobot(ColladaParser::ModelType& colladaModel, float s
     THROW_VR_EXCEPTION_IF(colladaModel.empty(),"No data in collada file");
     std::string robotType = colladaModel.begin()->first;
 	std::string robotName = robotType;
-	VirtualRobot::RobotPtr robo(new VirtualRobot::LocalRobot(robotName,robotType));
+    VirtualRobot::RobotPtr robo(new VirtualRobot::LocalRobot(robotName,robotType));
 
 	boost::shared_ptr<ColladaParser::NodeData> root = colladaModel.begin()->second;
 
@@ -506,7 +506,7 @@ RobotNodePtr ColladaIO::convertNode(boost::shared_ptr<ColladaParser::NodeData> c
             float jointLimitHigh = colladaNode->max*scaling;
             //jointOffset=(-1)*colladaNode->value *1000;
             Eigen::Vector3f axis = getAxis(colladaNode);
-			robotNodeJoint = prismaticNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
+            robotNodeJoint = prismaticNodeFactory->createRobotNode(robo, name, visualizationNode, colModel,
 				jointLimitLow, jointLimitHigh, jointOffset, idMatrix, idVec3, axis);
             valueMap[robotNodeJoint] = colladaNode->value*scaling;
             robo->registerRobotNode(robotNodeJoint);

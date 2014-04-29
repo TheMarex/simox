@@ -2869,38 +2869,44 @@ void CoinVisualizationFactory::applyDisplacement( VisualizationNodePtr o, Eigen:
 
 SoGroup* CoinVisualizationFactory::convertSoFileChildren(SoGroup* orig)
 {
-	SoGroup *storeResult = new SoGroup;
-	if (!orig)
-		return storeResult;
-	storeResult->ref();
-	if (orig->getTypeId().isDerivedFrom(SoGroup::getClassTypeId()))
-	{
-		// process group node
-		for (int i=0;i<orig->getNumChildren();i++)
-		{
-			SoNode* n1 = orig->getChild(i);
-			if (n1->getTypeId().isDerivedFrom(SoGroup::getClassTypeId()))
-			{
-				// convert group
-				SoGroup *n2 = (SoGroup*)n1;
-				SoGroup *gr1 = convertSoFileChildren(n2);
-				storeResult->addChild(gr1);
-			} else if (n1->getTypeId() == SoFile::getClassTypeId())
-			{
-				// really load file!!
-				SoFile *fn = (SoFile*)n1;
-				SoGroup *fileChildren;
-				fileChildren = fn->copyChildren();
-				storeResult->addChild(fileChildren);
-			} else
-			{
-				// just copy child node
-				storeResult->addChild(n1);
-			}
-		}
-	}
-	storeResult->unrefNoDelete();
-	return storeResult;
+    if (!orig)
+        return new SoGroup;
+
+    SoGroup *storeResult;
+    if (orig->getTypeId() == SoSeparator::getClassTypeId())
+        storeResult = new SoSeparator;
+    else
+        storeResult = new SoGroup;
+
+    storeResult->ref();
+    if (orig->getTypeId().isDerivedFrom(SoGroup::getClassTypeId()))
+    {
+        // process group node
+        for (int i=0;i<orig->getNumChildren();i++)
+        {
+            SoNode* n1 = orig->getChild(i);
+            if (n1->getTypeId().isDerivedFrom(SoGroup::getClassTypeId()))
+            {
+                // convert group
+                SoGroup *n2 = (SoGroup*)n1;
+                SoGroup *gr1 = convertSoFileChildren(n2);
+                storeResult->addChild(gr1);
+            } else if (n1->getTypeId() == SoFile::getClassTypeId())
+            {
+                // really load file!!
+                SoFile *fn = (SoFile*)n1;
+                SoGroup *fileChildren;
+                fileChildren = fn->copyChildren();
+                storeResult->addChild(fileChildren);
+            } else
+            {
+                // just copy child node
+                storeResult->addChild(n1);
+            }
+        }
+    }
+    storeResult->unrefNoDelete();
+    return storeResult;
 }
 
 

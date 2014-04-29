@@ -60,7 +60,7 @@ public:
 	virtual ~CoinVisualizationFactory();
 
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false);
-	virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false);
+    virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromString(const std::string& modelString, bool boundingBox = false);
 	virtual VisualizationNodePtr createBox(float width, float height, float depth, float colorR, float colorG, float colorB);
 	virtual VisualizationNodePtr createLine(const Eigen::Vector3f &from, const Eigen::Vector3f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
@@ -299,14 +299,14 @@ public:
 	*/
 	virtual void cleanup();
 protected:
-	static void GetVisualizationFromSoInput(SoInput& soInput, VisualizationNodePtr& visualizationNode, bool bbox = false);
+    static void GetVisualizationFromSoInput(SoInput& soInput, VisualizationNodePtr& visualizationNode, bool bbox = false);
 
 	static inline char IVToolsHelper_ReplaceSpaceWithUnderscore(char input) { if ( ' ' == input ) return '_'; else return input; }
 
 // AbstractFactoryMethod
 public:
 	static std::string getName();
-	static boost::shared_ptr<VisualizationFactory> createInstance(void*);
+    static boost::shared_ptr<VisualizationFactory> createInstance(void*);
 private:
 	static SubClassRegistry registry;
 };

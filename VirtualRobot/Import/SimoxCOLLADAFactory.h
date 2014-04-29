@@ -48,6 +48,12 @@ public:
 	static boost::shared_ptr<RobotImporterFactory> createInstance(void*);
 private:
 	static SubClassRegistry registry;
+
+
+    // RobotImporterFactory interface
+public:
+    virtual std::string getFileExtension();
+    virtual std::string getFileFilter();
 };
 
 } // namespace VirtualRobot

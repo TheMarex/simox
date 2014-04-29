@@ -18,7 +18,7 @@ MACRO(ADD_VR_TEST TEST_NAME)
   ADD_DEFINITIONS(${Simox_EXTERNAL_LIBRARY_FLAGS})
   ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
   ADD_EXECUTABLE(${TEST_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}.cpp)
-	TARGET_LINK_LIBRARIES(${TEST_NAME} VirtualRobot ${Simox_EXTERNAL_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${TEST_NAME} VirtualRobot ${Simox_EXTERNAL_LIBRARIES})
 	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${Simox_TEST_DIR})
 	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES FOLDER "VirtualRobot Tests")
 	ADD_TEST(NAME VirtualRobot_${TEST_NAME}
@@ -96,6 +96,7 @@ Compression/CompressionBZip2.cpp
 LinkedCoordinate.cpp
 SphereApproximator.cpp
 Import/SimoxXMLFactory.cpp
+Import/RobotImporterFactory.cpp
 )
 
 SET(INCLUDES
@@ -195,13 +196,24 @@ if (Simox_VISUALIZATION AND Simox_USE_COIN_VISUALIZATION)
 	Visualization/CoinVisualization/CoinVisualizationFactory.cpp
 	Visualization/CoinVisualization/CoinVisualizationNode.cpp
     Visualization/CoinVisualization/CoinVisualization.cpp
-	)
+    Import/COLLADA-light/ColladaSimox.cpp
+    Import/COLLADA-light/collada.cpp
+    Import/COLLADA-light/inventor.cpp
+    Import/COLLADA-light/pugixml/pugixml.cpp
+    Import/SimoxCOLLADAFactory.cpp
+    )
 
 	SET(INCLUDES
 	${INCLUDES}
 	Visualization/CoinVisualization/CoinVisualizationFactory.h
 	Visualization/CoinVisualization/CoinVisualizationNode.h
     Visualization/CoinVisualization/CoinVisualization.h
+    Import/COLLADA-light/ColladaSimox.h
+    Import/COLLADA-light/collada.h
+    Import/COLLADA-light/pugixml/pugixml.hpp
+    Import/SimoxCOLLADAFactory.cpp
+    Import/COLLADA-light/inventor.h
+    Import/SimoxCOLLADAFactory.h
 	)
 	ADD_SUBDIRECTORY(Visualization/CoinVisualization/tests)
 
@@ -233,23 +245,23 @@ elseif (Simox_VISUALIZATION AND Simox_USE_OPENSCENEGRAPH_VISUALIZATION)
 
 endif ()
 
-if (Simox_USE_COLLADA)
-
-    SET(SOURCES
-    ${SOURCES}
-    Import/SimoxCOLLADAFactory.cpp
-    COLLADA/ColladaIO.cpp
-    COLLADA/ColladaParser.cpp
-    )
-
-    SET(INCLUDES
-    ${INCLUDES}
-    Import/SimoxCOLLADAFactory.h
-    COLLADA/ColladaIO.h
-    COLLADA/ColladaIterators.h
-    COLLADA/ColladaParser.h
-    )
-endif ()
+#if (Simox_USE_COLLADA)
+#
+#    SET(SOURCES
+#    ${SOURCES}
+#    Import/SimoxCOLLADAFactory.cpp
+#    COLLADA/ColladaIO.cpp
+#    COLLADA/ColladaParser.cpp
+#    )
+#
+#    SET(INCLUDES
+#    ${INCLUDES}
+#    Import/SimoxCOLLADAFactory.h
+#    COLLADA/ColladaIO.h
+#    COLLADA/ColladaIterators.h
+#    COLLADA/ColladaParser.h
+#    )
+#endif ()
 # include collision detection
 INCLUDE (CollisionDetection/CMakeLists.txt)
 

@@ -17,6 +17,8 @@
 #include <Inventor/nodes/SoShapeHints.h>
 #include <Inventor/nodes/SoLightModel.h>
 
+//#include <boost/foreach.hpp>
+//#include <boost/algorithm/string.hpp>
 #include <sstream>
 using namespace std;
 using namespace VirtualRobot;
@@ -456,7 +458,8 @@ void showRobotWindow::showCoordSystem()
 
 void showRobotWindow::selectRobot()
 {
-	QString fi = QFileDialog::getOpenFileName(this, tr("Open Robot File"), QString(), tr("XML Files (*.xml)"));
+    string filter = RobotImporterFactory::getAllFileFilters();
+    QString fi = QFileDialog::getOpenFileName(this, tr("Open Robot File"), QString(), tr(filter.c_str()));
 	std::string s = m_sRobotFilename = std::string(fi.toAscii());
 	if (!s.empty())
 	{
@@ -476,8 +479,10 @@ void showRobotWindow::loadRobot()
     robot.reset();
 
 	try
-	{
-		RobotImporterFactoryPtr importer = RobotImporterFactory::fromName("SimoxXML",NULL);
+    {
+        QFileInfo fileInfo(m_sRobotFilename.c_str());
+        std::string suffix(fileInfo.suffix().toAscii());
+        RobotImporterFactoryPtr importer = RobotImporterFactory::fromFileExtension(suffix,NULL);
 		if (!importer)
 		{
 			cout << " ERROR while grabbing importer" << endl;

@@ -44,8 +44,10 @@ CoinVisualizationNode::CoinVisualizationNode(SoNode* visualizationNode) :
 	visualizationAtGlobalPose->addChild(attachedVisualizationsSeparator);
 
 	
-	if (!visualization)
-		visualization = new SoSeparator(); // create dummy node
+    if (!visualization){
+        cout << "dummy node created" << endl;
+        visualization = new SoSeparator(); // create dummy node
+    }
 
 	visualization->ref();
     scaledVisualization = new SoSeparator;

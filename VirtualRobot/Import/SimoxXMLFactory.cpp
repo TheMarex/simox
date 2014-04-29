@@ -60,4 +60,14 @@ boost::shared_ptr<RobotImporterFactory> SimoxXMLFactory::createInstance(void*)
     return xmlFactory;
 }
 
+std::string SimoxXMLFactory::getFileFilter()
+{
+   return std::string("Simox XML (*.xml)");
+}
+
+std::string VirtualRobot::SimoxXMLFactory::getFileExtension()
+{
+   return std::string("xml");
+}
+
 } // namespace VirtualRobot

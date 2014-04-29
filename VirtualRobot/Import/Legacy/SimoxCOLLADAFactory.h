@@ -20,8 +20,8 @@
 *             GNU Lesser General Public License
 *
 */
-#ifndef _VirtualRobot_SimoxXMLFactory_h_
-#define _VirtualRobot_SimoxXMLFactory_h_
+#ifndef _VirtualRobot_SimoxCOLLADAFactory_h_
+#define _VirtualRobot_SimoxCOLLADAFactory_h_
 
 #include "../VirtualRobotImportExport.h"
 #include "../Robot.h"
@@ -34,11 +34,11 @@ namespace VirtualRobot
 {
 class Robot;
 
-class VIRTUAL_ROBOT_IMPORT_EXPORT SimoxXMLFactory  : public RobotImporterFactory
+class VIRTUAL_ROBOT_IMPORT_EXPORT SimoxCOLLADAFactory  : public RobotImporterFactory
 {
 public:
-	SimoxXMLFactory();
-	virtual ~SimoxXMLFactory();
+	SimoxCOLLADAFactory();
+	virtual ~SimoxCOLLADAFactory();
 
 	virtual RobotPtr loadFromFile(const std::string &filename, RobotIO::RobotDescription loadMode = RobotIO::eFull);
 
@@ -48,14 +48,8 @@ public:
 	static boost::shared_ptr<RobotImporterFactory> createInstance(void*);
 private:
 	static SubClassRegistry registry;
-
-
-    // RobotImporterFactory interface
-public:
-    virtual std::string getFileFilter();
-    virtual std::string getFileExtension();
 };
 
 } // namespace VirtualRobot
 
-#endif // _VirtualRobot_SimoxXMLFactory_h_
+#endif // _VirtualRobot_SimoxCOLLADAFactory_h_

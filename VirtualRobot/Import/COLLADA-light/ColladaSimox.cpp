@@ -134,6 +134,8 @@ void ColladaSimoxRobotNode::initialize(){
     VirtualRobot::CollisionModelPtr collisionModel; //(new VirtualRobot::CollisionModel(visualizationNode));
 
     // Check for rigid body dynamics and collision models.
+    VirtualRobot::SceneObject::Physics physics;
+
     if (!rigidBodies.empty()){
         //assert(rigidBodies.size()==1);
         pugi::xml_node technique = rigidBodies[0].child("technique_common");
@@ -149,20 +151,24 @@ void ColladaSimoxRobotNode::initialize(){
         VirtualRobot::VisualizationNodePtr collisionNode(new VirtualRobot::CoinVisualizationNode(this->collisionModel));
         collisionModel.reset(new VirtualRobot::CollisionModel(collisionNode));
 
-        cout << "Found Rigid Body in " << name << endl << massFrameTransformation.block<3,3>(0,0)*inertia << endl << mass << endl << com << endl;
+        //cout << "Found Rigid Body in " << name << endl << massFrameTransformation.block<3,3>(0,0)*inertia << endl << mass << endl << com << endl;
+        physics.comLocation = VirtualRobot::SceneObject::Physics::eCustom;
+        physics.localCoM = com;
+        physics.massKg = mass;
+        physics.intertiaMatrix = massFrameTransformation.block<3,3>(0,0)*inertia;
     }
 
     if (this->type == ColladaRobotNode::eREVOLUTE){
         jointLimitLow = jointLimitLow/180.0*M_PI;
         jointLimitHigh= jointLimitHigh/180.0*M_PI;
             this->simoxRobotNode = revoluteNodeFactory->createRobotNode(simoxRobot,this-> name, visualizationNode, collisionModel,
-                jointLimitLow, jointLimitHigh, jointOffset, preJointTransformation, axis, Eigen::Vector3f::Zero());
+                jointLimitLow, jointLimitHigh, jointOffset, preJointTransformation, axis, Eigen::Vector3f::Zero(), physics);
     }else if (this->type == ColladaRobotNode::ePRISMATIC){
         jointLimitLow = jointLimitLow*scaleFactor;
         jointLimitHigh= jointLimitHigh*scaleFactor;
         this->value *= scaleFactor;
             this->simoxRobotNode = prismaticNodeFactory->createRobotNode(simoxRobot, this->name, visualizationNode, collisionModel,
-                jointLimitLow, jointLimitHigh, jointOffset, preJointTransformation, Eigen::Vector3f::Zero(), axis);
+                jointLimitLow, jointLimitHigh, jointOffset, preJointTransformation, Eigen::Vector3f::Zero(), axis, physics);
     }
     if (!this->simoxRobotNode){
         cout << "Node " << this->name << " not Created" << endl;

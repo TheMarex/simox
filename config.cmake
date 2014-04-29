@@ -193,7 +193,7 @@ IF (NOT Simox_CONFIGURED)
 	
 	OPTION(Simox_USE_COIN_VISUALIZATION "Use Coin3D for visualization" ON)
 	OPTION(Simox_USE_OPENSCENEGRAPH_VISUALIZATION "Use OpenSceneGraph for visualization" OFF)
-	OPTION(Simox_USE_COLLADA "Enable the loading of robots from collada files" OFF)
+    #	OPTION(Simox_USE_COLLADA "Enable the loading of robots from collada files" OFF)
 	
 	if (Simox_USE_COIN_VISUALIZATION)
 	  MESSAGE(STATUS "Searching Coin3D, Qt and SoQt...")

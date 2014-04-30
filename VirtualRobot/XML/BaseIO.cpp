@@ -1154,11 +1154,11 @@ TrajectoryPtr BaseIO::processTrajectory(rapidxml::xml_node<char> *trajectoryXMLN
 		{
 			THROW_VR_EXCEPTION_IF(!trajName.empty(), "Trajectory contains multiple definitions of attribute name. First value  is: " << trajName);
 			trajName = attr->value();
-		} else if (name=="robot")
+        } else if (name == "robot" || name == "model")
 		{
 			THROW_VR_EXCEPTION_IF(!robotName.empty(), "Trajectory contains multiple definitions of attribute Robot. First value is: " << robotName);
 			robotName = attr->value();
-		} else if (name=="robotnodeset")
+		} else if (name=="robotnodeset" || name=="modelnodeset")
 		{
 			THROW_VR_EXCEPTION_IF(!nodeSetName.empty(), "Trajectory contains multiple definitions of attribute RobotNodeSet. First value is: " << nodeSetName);
 			nodeSetName = attr->value();

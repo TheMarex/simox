@@ -327,12 +327,12 @@ void CoinVisualizationNode::setVisualization( SoNode* newVisu )
 	if (!newVisu)
 		return;
 
-	if (visualizationAtGlobalPose)
+    if (scaledVisualization)
 	{
-		int indx = visualizationAtGlobalPose->findChild(visualization);
+        int indx = scaledVisualization->findChild(visualization);
 
 		if (indx>=0)
-			visualizationAtGlobalPose->removeChild(indx);
+            scaledVisualization->removeChild(indx);
 
 	}
 	visualization->unref();
@@ -341,8 +341,8 @@ void CoinVisualizationNode::setVisualization( SoNode* newVisu )
 
 	visualization->ref();
 
-	if (visualizationAtGlobalPose)
-		visualizationAtGlobalPose->addChild(visualization);
+    if (scaledVisualization)
+        scaledVisualization->addChild(visualization);
 }
 
    

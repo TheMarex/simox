@@ -32,6 +32,10 @@
  * (Especially how to access text elements, children, and a rough idea how XPATH works). Further, this library relies heavily on the [boost](http://boost.org) libraries.
  */
 
+#ifdef WIN32
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
 
 #include "collada.h"
 
@@ -64,7 +68,9 @@ using namespace std;
 namespace Collada {
 
 std::ostream& operator<<(std::ostream& os, const ColladaRobotNode& node){
-    std::cout << "ColladaRobotNode: " << node.name  << std::endl;
+    //std::cout 
+    os << "ColladaRobotNode: " << node.name  << std::endl;
+    return os;
 }
 
 pugi::xml_node resolveURL(pugi::xml_node node,std::string root){
@@ -108,10 +114,10 @@ struct ModelWalker : ColladaWalker {
 #endif
     bool for_each(pugi::xml_node &node)
     {
-        if (depth()+1>stack.size()){
+        if (depth()+1>(int)stack.size()){
             stack.push_back(XmlNodeVector());
         }
-        while (depth()+1<stack.size()){
+        while (depth()+1<(int)stack.size()){
             stack.pop_back();
         }
         // The parent stack gets updated only even values of depth(). So it is half the size of stack:
@@ -331,6 +337,7 @@ ColladaRobotNodePtr ColladaRobot::getRoot()
     BOOST_FOREACH(ColladaRobotNodePtr node, robotNodeSet )
             if (!node->parent)
                 return node;
+   return ColladaRobotNodePtr();
 }
 
 ColladaRobotNodePtr ColladaRobot::getNode(string name)
@@ -338,10 +345,14 @@ ColladaRobotNodePtr ColladaRobot::getNode(string name)
     BOOST_FOREACH(ColladaRobotNodePtr node, robotNodeSet )
             if (name.compare(node->name)==0)
                 return node;
+    return ColladaRobotNodePtr();
 }
 
 ColladaRobotNodeSet ColladaRobot::getNodeSet()
 {
     return this->robotNodeSet;
 }
+#ifdef WIN32
+#pragma warning(pop)
+#endif
 }//namespace

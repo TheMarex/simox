@@ -795,7 +795,7 @@ void RobotIO::processRobotChildNodes(rapidxml::xml_node<char>* robotXMLNode,
 	{
 		std::string nodeName_ = XMLNode->name();
 		std::string nodeName = getLowerCase(XMLNode->name());
-		if (nodeName == "robotnode" || nodeName == "jointnode" || nodeName == "transformationnode" || nodeName == "bodynode")
+        if (nodeName == "robotnode" || nodeName == "jointnode" || nodeName == "transformationnode" || nodeName == "bodynode" || nodeName == "modelnode")
 		{
 			std::vector< ChildFromRobotDef > childrenFromRobot;
 			std::vector< std::string > childrenNames;
@@ -829,7 +829,7 @@ void RobotIO::processRobotChildNodes(rapidxml::xml_node<char>* robotXMLNode,
 					childrenFromRobotFilesMap[n] = childrenFromRobot;
 			}
 			robotNodeCounter++;
-		} else if (nodeName=="robotnodeset")
+		} else if (nodeName=="robotnodeset" || nodeName=="modelnodeset")
 		{
 			robotNodeSetNodes.push_back(XMLNode);
 		} else if ("endeffector" == nodeName)
@@ -1087,7 +1087,9 @@ VirtualRobot::RobotPtr RobotIO::createRobotFromString( const std::string &xmlStr
 	{
 		rapidxml::xml_document<char> doc;    // character type defaults to char
 		doc.parse<0>(y);    // 0 means default parse flags
-		rapidxml::xml_node<char>* robotXMLNode = doc.first_node("Robot");
+		rapidxml::xml_node<char>* robotXMLNode = doc.first_node("robot",0,false);
+        if (!robotXMLNode)
+            robotXMLNode = doc.first_node("model", 0, false);
         robot = processRobot(robotXMLNode, basePath, loadMode);
 	}
 	catch (rapidxml::parse_error& e)

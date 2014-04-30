@@ -181,8 +181,14 @@ void BulletObject::setPosition( const Eigen::Vector3f &posMM )
 
 void BulletObject::setPoseIntern( const Eigen::Matrix4f &pose )
 {
-    // notify motionState
-    motionState->setGlobalPose(pose);
+    /* convert to local coord system, apply comoffset and convert back*/
+    Eigen::Matrix4f poseLocal = sceneObject->getGlobalPose().inverse() * pose;
+    poseLocal.block(0, 3, 3, 1) += com;
+    Eigen::Matrix4f poseGlobal = sceneObject->getGlobalPose() * poseLocal;
+    this->rigidBody->setWorldTransform(BulletEngine::getPoseBullet(poseGlobal));
+
+    // notify motionState -> not needed, automatically done
+    //motionState->setGlobalPose(pose);
 }
 
 void BulletObject::setPose( const Eigen::Matrix4f &pose )

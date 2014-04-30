@@ -63,7 +63,7 @@ SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags fla
     o->setMass(1.0f); // 1kg
 
 	dynamicsObject = dynamicsWorld->CreateDynamicsObject(o);
-    dynamicsObject->setPosition(Eigen::Vector3f(3000,3000,10000.0f));
+    dynamicsObject->setPosition(Eigen::Vector3f(1000,2000,1000.0f));
 	dynamicsWorld->addObject(dynamicsObject);
 
 #if 0

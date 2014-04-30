@@ -120,6 +120,38 @@ bool BulletEngine::cleanup()
 	return true;
 }
 
+void BulletEngine::updateConfig(BulletEngineConfigPtr newConfig)
+{
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+
+    bulletConfig = newConfig;
+
+    dynamicsWorld->setGravity(btVector3(btScalar(newConfig->gravity[0]),btScalar(newConfig->gravity[1]),btScalar(newConfig->gravity[2])));
+
+    btContactSolverInfo& solverInfo = dynamicsWorld->getSolverInfo();
+    solverInfo.m_numIterations = newConfig->bulletSolverIterations;
+    solverInfo.m_globalCfm = newConfig->bulletSolverGlobalContactForceMixing;
+    solverInfo.m_erp = newConfig->bulletSolverGlobalErrorReductionParameter;
+
+    std::vector<DynamicsObjectPtr> objects = getObjects();
+
+    for (std::vector<DynamicsObjectPtr>::const_iterator i = objects.begin(); i != objects.end(); ++i)
+    {
+        BulletObjectPtr btObject = boost::dynamic_pointer_cast<BulletObject>(*i);
+        if (!btObject)
+        {
+            VR_ERROR << "Skipping non-BULLET object " << (*i)->getName() << "!" << endl;
+            continue;
+        }
+
+        btObject->getRigidBody()->setRestitution(bulletConfig->bulletObjectRestitution);
+        btObject->getRigidBody()->setFriction(bulletConfig->bulletObjectFriction);
+        btObject->getRigidBody()->setDamping(bulletConfig->bulletObjectDampingLinear, bulletConfig->bulletObjectDampingAngular);
+        btObject->getRigidBody()->setDeactivationTime(bulletConfig->bulletObjectDeactivation);
+        btObject->getRigidBody()->setSleepingThresholds(bulletConfig->bulletObjectSleepingThresholdLinear, bulletConfig->bulletObjectSleepingThresholdAngular);
+    }
+}
+
 bool BulletEngine::addObject( DynamicsObjectPtr o )
 {
     boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);

@@ -18,10 +18,11 @@ namespace SimDynamics
 
 BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 {
+	bulletTimestepMsec = 0;
 	bulletMaxSubSteps = 50;
-    enablePhysicsUpdates = true;
+	enablePhysicsUpdates = true;
 
-    const float TIMER_MS = 30.0f;
+	const float TIMER_MS = 30.0f;
 
 	SIMDYNAMICS_ASSERT(world);
 
@@ -64,9 +65,9 @@ void BulletCoinQtViewer::selectionCB( void *userdata, SoPath *path )
 	BulletCoinQtViewer *bulletViewer = static_cast<BulletCoinQtViewer*>(userdata);
 	VR_ASSERT(bulletViewer);
 
-    VR_INFO << "Selected object" << endl;
+	VR_INFO << "Selected object" << endl;
 
-    bulletViewer->customSelection(path);
+	bulletViewer->customSelection(path);
 
 	bulletViewer->scheduleRedraw();
 }
@@ -75,7 +76,7 @@ void BulletCoinQtViewer::deselectionCB( void *userdata, SoPath *path )
 	BulletCoinQtViewer *bulletViewer = static_cast<BulletCoinQtViewer*>(userdata);
 	VR_ASSERT(bulletViewer);
 
-    VR_INFO << "Deselected object" << endl;
+	VR_INFO << "Deselected object" << endl;
 
 	bulletViewer->customDeselection(path);
 
@@ -92,7 +93,7 @@ void BulletCoinQtViewer::timerCB(void * data, SoSensor * sensor)
 
 	// perform some custom updates if needed
 	bulletViewer->customUpdate();
-	
+
 	bulletViewer->scheduleRedraw();
 
 }
@@ -108,28 +109,28 @@ void BulletCoinQtViewer::initSceneGraph( QFrame* embedViewer, SoNode* scene )
 	viewer->setAntialiasing(true, 4);
 
 	viewer->setGLRenderAction(new SoBoxHighlightRenderAction);
-    viewer->setTransparencyType(SoGLRenderAction::SORTED_OBJECT_BLEND);
+	viewer->setTransparencyType(SoGLRenderAction::SORTED_OBJECT_BLEND);
 	viewer->setFeedbackVisibility(true);
 	if (bulletEngine->getFloor())
 	{
-        // standard box visu:
-        /*
+		// standard box visu:
+		/*
 		SceneObjectPtr so = bulletEngine->getFloor()->getSceneObject();
 		SoNode * n = CoinVisualizationFactory::getCoinVisualization(so,SceneObject::Full);
-        */
+		*/
 
-        // better grid visu
-        Eigen::Vector3f floorPos;
-        Eigen::Vector3f floorUp;
-        float floorExtendMM;
-        float floorDepthMM;
-        bulletEngine->getFloorInfo(floorPos,floorUp,floorExtendMM,floorDepthMM);
-        SoNode * n = (SoNode*)CoinVisualizationFactory::CreatePlaneVisualization(floorPos,floorUp,floorExtendMM,0.0f);
+		// better grid visu
+		Eigen::Vector3f floorPos;
+		Eigen::Vector3f floorUp;
+		float floorExtendMM;
+		float floorDepthMM;
+		bulletEngine->getFloorInfo(floorPos,floorUp,floorExtendMM,floorDepthMM);
+		SoNode * n = (SoNode*)CoinVisualizationFactory::CreatePlaneVisualization(floorPos,floorUp,floorExtendMM,0.0f);
 		if (n)
-        {
+		{
 			floor->addChild(n);
-            addedVisualizations[bulletEngine->getFloor()] = n;
-        }
+			addedVisualizations[bulletEngine->getFloor()] = n;
+		}
 		//addVisualization(bulletEngine->getFloor());
 	}
 	if (scene)
@@ -146,23 +147,30 @@ void BulletCoinQtViewer::scheduleRedraw()
 
 void BulletCoinQtViewer::stepPhysics()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 
 	//simple dynamics world doesn't handle fixed-time-stepping
 	float ms = getDeltaTimeMicroseconds();
 
-	float minFPS = 1000000.f/60.f;
-	if (ms > minFPS)
-		ms = minFPS;
-
 	if (bulletEngine)
 	{
-		btScalar dt1 = btScalar(ms / 1000000.0f);
-
 		bulletEngine->activateAllObjects(); // avoid sleeping objects
-		updateMotors(dt1);
 
-		bulletEngine->stepSimulation(dt1,bulletMaxSubSteps);
+		if (bulletTimestepMsec) {
+			btScalar dt1 = btScalar(bulletTimestepMsec / 1000.0f);
+
+			updateMotors(dt1);
+			bulletEngine->stepSimulation(dt1, 0);
+		} else {
+			float minFPS = 1000000.f/60.f;
+			if (ms > minFPS)
+				ms = minFPS;
+
+			btScalar dt1 = btScalar(ms / 1000000.0f);
+
+			updateMotors(dt1);
+			bulletEngine->stepSimulation(dt1,bulletMaxSubSteps);
+		}
 
 		//optional but useful: debug drawing
 		//m_dynamicsWorld->debugDrawWorld();
@@ -176,7 +184,7 @@ void BulletCoinQtViewer::updateMotors(float dt)
 	for (size_t i=0;i<robots.size();i++)
 	{
 		robots[i]->actuateJoints(dt);
-        robots[i]->updateSensors();
+		robots[i]->updateSensors();
 	}
 }
 
@@ -197,7 +205,7 @@ void BulletCoinQtViewer::viewAll()
 
 void BulletCoinQtViewer::addVisualization(DynamicsObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType)
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	VR_ASSERT(o);
 	SceneObjectPtr so = o->getSceneObject();
 	VR_ASSERT(so);
@@ -206,15 +214,15 @@ void BulletCoinQtViewer::addVisualization(DynamicsObjectPtr o, VirtualRobot::Sce
 	if (n)
 	{
 		sceneGraph->addChild(n);
-        sceneGraph->addSelectionCallback( selectionCB, this );
-        sceneGraph->addDeselectionCallback( deselectionCB, this );
+		sceneGraph->addSelectionCallback( selectionCB, this );
+		sceneGraph->addDeselectionCallback( deselectionCB, this );
 		addedVisualizations[o] = n;
 	}
 }
 
 void BulletCoinQtViewer::addVisualization(DynamicsRobotPtr r, VirtualRobot::SceneObject::VisualizationType visuType)
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	VR_ASSERT(r);
 	RobotPtr ro = r->getRobot();
 	VR_ASSERT(ro);
@@ -227,12 +235,12 @@ void BulletCoinQtViewer::addVisualization(DynamicsRobotPtr r, VirtualRobot::Scen
 		collectedVisualizationNodes[i] = collectedRobotNodes[i]->getVisualization(visuType);
 
 	SoSeparator* n = new SoSeparator();
-    BOOST_FOREACH(VisualizationNodePtr visualizationNode, collectedVisualizationNodes)
-    {
-            boost::shared_ptr<CoinVisualizationNode> coinVisualizationNode = boost::dynamic_pointer_cast<CoinVisualizationNode>(visualizationNode);
-            if (coinVisualizationNode && coinVisualizationNode->getCoinVisualization())
-                    n->addChild(coinVisualizationNode->getCoinVisualization());
-    }
+	BOOST_FOREACH(VisualizationNodePtr visualizationNode, collectedVisualizationNodes)
+	{
+			boost::shared_ptr<CoinVisualizationNode> coinVisualizationNode = boost::dynamic_pointer_cast<CoinVisualizationNode>(visualizationNode);
+			if (coinVisualizationNode && coinVisualizationNode->getCoinVisualization())
+					n->addChild(coinVisualizationNode->getCoinVisualization());
+	}
 	sceneGraph->addChild(n);
 	addedRobotVisualizations[r] = n;
 
@@ -246,18 +254,18 @@ void BulletCoinQtViewer::addVisualization(DynamicsRobotPtr r, VirtualRobot::Scen
 
 void BulletCoinQtViewer::removeVisualization( DynamicsObjectPtr o )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	VR_ASSERT(o);
 	if (addedVisualizations.find(o) != addedVisualizations.end())
 	{
 		sceneGraph->removeChild(addedVisualizations[o]);
-        addedVisualizations.erase(o);
+		addedVisualizations.erase(o);
 	}
 }
 
 void BulletCoinQtViewer::removeVisualization( DynamicsRobotPtr r )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	VR_ASSERT(r);
 	if (addedRobotVisualizations.find(r) != addedRobotVisualizations.end())
 	{
@@ -268,8 +276,8 @@ void BulletCoinQtViewer::removeVisualization( DynamicsRobotPtr r )
 
 void BulletCoinQtViewer::stopCB()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-    if (timerSensor)
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	if (timerSensor)
 	{
 		SoSensorManager *sensor_mgr = SoDB::getSensorManager();
 		sensor_mgr->removeTimerSensor(timerSensor);
@@ -283,36 +291,43 @@ void BulletCoinQtViewer::stopCB()
 	}
 }
 
+void BulletCoinQtViewer::setBulletSimTimestepMsec(int msec)
+{
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	VR_ASSERT(msec>=0);
+	bulletTimestepMsec = msec;
+}
+
 void BulletCoinQtViewer::setBulletSimMaxSubSteps(int n)
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	VR_ASSERT(n>=0);
 	bulletMaxSubSteps = n;
 }
 
 bool BulletCoinQtViewer::engineRunning()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-    return enablePhysicsUpdates;
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	return enablePhysicsUpdates;
 }
 
 void BulletCoinQtViewer::stopEngine()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-    enablePhysicsUpdates = false;
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	enablePhysicsUpdates = false;
 }
 void BulletCoinQtViewer::startEngine()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-    enablePhysicsUpdates = true;
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	enablePhysicsUpdates = true;
 }
 
 void BulletCoinQtViewer::updatePhysics()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 
-    if (enablePhysicsUpdates)
-        stepPhysics();
+	if (enablePhysicsUpdates)
+		stepPhysics();
 }
 
 }

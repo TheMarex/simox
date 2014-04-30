@@ -33,7 +33,7 @@
 namespace SimDynamics
 {
 
-	class BulletEngineConfig : public DynamicsEngineConfig 
+	class BulletEngineConfig : public DynamicsEngineConfig
 	{
 	public:
 		BulletEngineConfig() : DynamicsEngineConfig()
@@ -70,7 +70,7 @@ namespace SimDynamics
 	typedef boost::shared_ptr<BulletEngineConfig> BulletEngineConfigPtr;
 
 /*!
-	This class encapsulates all calls to the bullet physics engine. 
+	This class encapsulates all calls to the bullet physics engine.
 	Usually there is no need to instantiate this object by your own, it is automatically created when calling DynamicsWorld::Init().
 */
 class SIMDYNAMICS_IMPORT_EXPORT BulletEngine : public DynamicsEngine, public boost::enable_shared_from_this<BulletEngine>
@@ -104,19 +104,21 @@ public:
 
 	virtual bool cleanup();
 
+	void updateConfig(BulletEngineConfigPtr newConfig);  /* Currently not available for DynamicsEngine */
+
 	/*!
 		Set floor
 	*/
 	virtual void createFloorPlane(const Eigen::Vector3f &pos, const Eigen::Vector3f &up);
 
 
-    virtual void stepSimulation(float dt, int subSteps);
+	virtual void stepSimulation(float dt, int subSteps);
 
 	btDynamicsWorld* getBulletWorld();
 
 	/*!
-		Wake up all objects. 
-		Bullet sends objects to sleeping state when no interaction is detected. 
+		Wake up all objects.
+		Bullet sends objects to sleeping state when no interaction is detected.
 		But this might be unwanted, e.g. robots should be active all the time.
 	*/
 	void activateAllObjects();
@@ -134,8 +136,8 @@ public:
 	static Eigen::Matrix4f getPoseEigen( const btTransform &pose, bool scaling = true );
 	static btVector3 getVecBullet( const Eigen::Vector3f &vec, bool scaling = true );
 	static Eigen::Vector3f getVecEigen( const btVector3 &vec, bool scaling = true );
-    static btMatrix3x3 getRotMatrix(const Eigen::Matrix4f &pose);
-    static Eigen::Matrix4f getRotMatrix(const btMatrix3x3 &pose);
+	static btMatrix3x3 getRotMatrix(const Eigen::Matrix4f &pose);
+	static Eigen::Matrix4f getRotMatrix(const btMatrix3x3 &pose);
 protected:
 
 	class CustomCollisionCallback : public btOverlapFilterCallback
@@ -164,7 +166,7 @@ protected:
 
 	virtual bool addLink(BulletRobot::LinkInfo &l);
 	virtual bool removeLink(BulletRobot::LinkInfo &l);
-    
+
 	btDynamicsWorld *dynamicsWorld;
 
 	btBroadphaseInterface* overlappingPairCache;

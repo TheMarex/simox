@@ -72,20 +72,33 @@ public:
 	void removeVisualization(DynamicsObjectPtr o);
 	void removeVisualization(DynamicsRobotPtr r);
 
-    //! Returns true, if physics engine is running. False, if paused.
-    bool engineRunning();
+	//! Returns true, if physics engine is running. False, if paused.
+	bool engineRunning();
 
-    //! Pauses the physics engine.
-    void stopEngine();
+	//! Pauses the physics engine.
+	void stopEngine();
 
-    //! Restarts the engine
-    void startEngine();
+	//! Restarts the engine
+	void startEngine();
 
-    //! Only allowed when engine is paused.
-    virtual void stepPhysics();
+	//! Only allowed when engine is paused.
+	virtual void stepPhysics();
 
 	//! Stop callbacks which update the dynamics engine. Shuts down automatic physics engine functionality!
 	void stopCB();
+
+	/*!
+		Length of a simuation timestep in milliseconds.
+		When msec is 0 (the default), the simulation is done in realtime. Then, a fixed timestep of 1/60s (the Bullet default) is used to
+		ensure framerate-independence. This timestep is applied multiple times depending on the elapsed time since the last frame (e.g. if
+		50ms elapsed, 3 timesteps are performed).
+		When msec is not 0, the simulation is advanced by the value of the parameter each frame.
+		Additional information: http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World
+		TODO: We shouldn't really the timeStep, but change fixedTimestep (default 1/60s) instead. This way, we can achieve the same level
+			  of simulation accuracy, but won't lose realtime simulation (or be faster than realtime), given sufficient computational
+			  capacity.
+	*/
+	void setBulletSimTimestepMsec(int msec);
 
 	/*!
 		Parameter that is passed to bulletstepSimulation.
@@ -95,15 +108,15 @@ public:
 
 protected:
 
-    //checks if physics engine is enabled and performes a time step.
-    virtual void updatePhysics();
-	
+	//checks if physics engine is enabled and performes a time step.
+	virtual void updatePhysics();
+
 	/*!
 		This method is called periodically, triggered by a timer callback.
 		It can be overwritten in order to perform custom updates.
 		It is safe to access the scene graph.
 	*/
-    virtual void customUpdate(){}
+	virtual void customUpdate(){}
 
 	/*!
 		This method is called when a node has been selected by the user.
@@ -114,12 +127,12 @@ protected:
 	virtual void customSelection(SoPath *path)
 	{
 		std::cout << "Selecting node " <<  path->getTail()->getTypeId().getName().getString() << endl;
-    }
+	}
 
 	virtual void customDeselection(SoPath *path)
 	{
 		std::cout << "Deselecting node " <<  path->getTail()->getTypeId().getName().getString() << endl;
-    }
+	}
 
 	//! Redraw
 	virtual void scheduleRedraw();
@@ -127,7 +140,7 @@ protected:
 	btScalar getDeltaTimeMicroseconds();
 
 	void updateMotors(float dt);
-	
+
 
 	static void timerCB(void * data, SoSensor * sensor);
 	static void selectionCB( void *userdata, SoPath *path );
@@ -145,11 +158,12 @@ protected:
 	SoSeparator* floor;
 	SoSelection* sceneGraph;
 
-	int bulletMaxSubSteps; 
+	int bulletTimestepMsec;
+	int bulletMaxSubSteps;
 
-    bool enablePhysicsUpdates;
+	bool enablePhysicsUpdates;
 
-    boost::recursive_mutex engineMutex;
+	boost::recursive_mutex engineMutex;
 };
 
 

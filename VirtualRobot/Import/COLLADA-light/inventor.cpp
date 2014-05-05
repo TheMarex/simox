@@ -153,7 +153,7 @@ void addGeometry(SoSeparator * separator,const pugi::xml_node &node){
         int nPolylist = mesh.select_nodes(".//polylist").size();
         if (nPolylist>5){
                 cout << "More than five ("<< nPolylist <<") seperated meshes .. skipping (" << geometry.attribute("id").value() << ")\n";
-                return;
+//                return;
         }
 
         BOOST_FOREACH(pugi::xpath_node polylist, mesh.select_nodes(".//polylist")){
@@ -247,15 +247,18 @@ bool InventorWalker::for_each(pugi::xml_node &node)
     return true;
 }
 
-void InventorRobot::addCollisionModel(ColladaRobotNodePtr robotNode, pugi::xml_node shapeNode){
-   BOOST_FOREACH(pugi::xpath_node shape, shapeNode.select_nodes(".//shape")){
-       SoSeparator * separator  = new SoSeparator;
-       boost::shared_ptr<InventorRobotNode> inventorRobotNode = boost::dynamic_pointer_cast<InventorRobotNode>(robotNode);
-       inventorRobotNode->collisionModel->addChild(separator);
-       BOOST_FOREACH(pugi::xpath_node transformation, shape.node().select_nodes(".//translate|.//rotate"))
-               addTransform(separator,transformation.node());
-       addGeometry(separator,shape.node().child("instance_geometry"));
-   }
+void InventorRobot::addCollisionModel(ColladaRobotNodePtr robotNode, pugi::xml_node RigidBodyNode){
+    boost::shared_ptr<InventorRobotNode> inventorRobotNode = boost::dynamic_pointer_cast<InventorRobotNode>(robotNode);
+    BOOST_FOREACH(pugi::xpath_node transformation, RigidBodyNode.select_nodes(".//mass_frame/translate|.//mass_frame/rotate"))
+            addTransform(inventorRobotNode->collisionModel,transformation.node());
+
+    BOOST_FOREACH(pugi::xpath_node shape, RigidBodyNode.select_nodes(".//shape")){
+        SoSeparator * separator  = new SoSeparator;
+        inventorRobotNode->collisionModel->addChild(separator);
+        BOOST_FOREACH(pugi::xpath_node transformation, shape.node().select_nodes(".//translate|.//rotate"))
+                addTransform(separator,transformation.node());
+        addGeometry(separator,shape.node().child("instance_geometry"));
+    }
 }
 
 

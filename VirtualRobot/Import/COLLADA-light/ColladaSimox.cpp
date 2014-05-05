@@ -13,6 +13,8 @@ using namespace std;
 using namespace boost;
 //using namespace VirtualRobot;
 
+#define DBG_NODE(NAME) (this->name.compare(NAME)==0)
+
 namespace Collada {
 
 Eigen::Matrix4f getTransform (pugi::xml_node node,float scaleFactor=1.0){
@@ -114,7 +116,7 @@ void ColladaSimoxRobotNode::initialize(){
     BOOST_FOREACH(pugi::xml_node node,this->preJoint){
         preJointTransformation = preJointTransformation*getTransform(node,scaleFactor);
     }
-    if (this->name.compare("RRKnee_joint")==0){
+    if (DBG_NODE("RRKnee_Joint")){
         cout << "Node: " << this->name;
         cout << jointLimitLow << "," << jointLimitHigh << "," << acceleration << "," << deceleration << "," << velocity << "," << torque << endl;
         cout << this->joint_axis.name() << endl;
@@ -142,7 +144,7 @@ void ColladaSimoxRobotNode::initialize(){
         float mass = lexical_cast<float>(technique.child("mass").child_value());
         Eigen::Matrix4f massFrameTransformation=Eigen::Matrix4f::Identity();
         BOOST_FOREACH(pugi::xpath_node trafo, technique.select_nodes(".//mass_frame/*") ){
-            massFrameTransformation = massFrameTransformation * getTransform(trafo.node(),scaleFactor);
+            massFrameTransformation = massFrameTransformation * getTransform(trafo.node(),1000.0f);
         }
         Eigen::Matrix3f inertia = Eigen::Matrix3f::Identity();
         inertia./*block(0,0,3,3).*/diagonal() = getVector3f(technique.child("inertia"));
@@ -150,12 +152,16 @@ void ColladaSimoxRobotNode::initialize(){
 
         VirtualRobot::VisualizationNodePtr collisionNode(new VirtualRobot::CoinVisualizationNode(this->collisionModel));
         collisionModel.reset(new VirtualRobot::CollisionModel(collisionNode));
+//            cout << "Physics : " << name << endl << massFrameTransformation << endl << scaleFactor << massFrameTransformation.block<3,3>(0,0)*inertia << endl << mass << endl << com << endl;
 
-        //cout << "Found Rigid Body in " << name << endl << massFrameTransformation.block<3,3>(0,0)*inertia << endl << mass << endl << com << endl;
         physics.comLocation = VirtualRobot::SceneObject::Physics::eCustom;
         physics.localCoM = com;
         physics.massKg = mass;
         physics.intertiaMatrix = massFrameTransformation.block<3,3>(0,0)*inertia;
+        if (this->name.compare("RRKnee_joint")==0){
+            cout << "Physics RRKnee_Joint: " << massFrameTransformation << endl << scaleFactor << massFrameTransformation.block<3,3>(0,0)*inertia << endl << mass << endl << com << endl;
+
+        }
     }
 
     if (this->type == ColladaRobotNode::eREVOLUTE){

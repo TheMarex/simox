@@ -248,13 +248,19 @@ bool InventorWalker::for_each(pugi::xml_node &node)
 }
 
 void InventorRobot::addCollisionModel(ColladaRobotNodePtr robotNode, pugi::xml_node RigidBodyNode){
+
     boost::shared_ptr<InventorRobotNode> inventorRobotNode = boost::dynamic_pointer_cast<InventorRobotNode>(robotNode);
+    SoSeparator * rigidBodySep = new SoSeparator;
+    inventorRobotNode->collisionModel->addChild(rigidBodySep);
+    // An additional Separator is necessary if there are multiple rigid bodies attached to the same joint
+
+
     BOOST_FOREACH(pugi::xpath_node transformation, RigidBodyNode.select_nodes(".//mass_frame/translate|.//mass_frame/rotate"))
-            addTransform(inventorRobotNode->collisionModel,transformation.node());
+            addTransform(rigidBodySep,transformation.node());
 
     BOOST_FOREACH(pugi::xpath_node shape, RigidBodyNode.select_nodes(".//shape")){
         SoSeparator * separator  = new SoSeparator;
-        inventorRobotNode->collisionModel->addChild(separator);
+        rigidBodySep->addChild(separator);
         BOOST_FOREACH(pugi::xpath_node transformation, shape.node().select_nodes(".//translate|.//rotate"))
                 addTransform(separator,transformation.node());
         addGeometry(separator,shape.node().child("instance_geometry"));

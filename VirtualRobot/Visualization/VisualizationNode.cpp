@@ -139,11 +139,9 @@ std::string VisualizationNode::toXML(const std::string &basePath, const std::str
 	ss << ">\n";
 	if (!filename.empty())
 	{
-		boost::filesystem::path localPath(basePath);
-		boost::filesystem::path fn(filename);
-		boost::filesystem::path completeFile = boost::filesystem::operator/(localPath,fn);
-
-		ss << pre << t << "<File type='" << getType() << "'>" << completeFile.string() << "</File>\n";
+        std::string tmpFilename = filename;
+        BaseIO::makeRelativePath(basePath, tmpFilename);
+        ss << pre << t << "<File type='" << getType() << "'>" << tmpFilename << "</File>\n";
 	}
 	ss << pre << "</Visualization>\n";
 
@@ -153,10 +151,6 @@ std::string VisualizationNode::toXML(const std::string &basePath, const std::str
 std::string VisualizationNode::toXML(const std::string &basePath, int tabs)
 {
 	std::string visualizationFilename = getFilename();
-	if (!visualizationFilename.empty() && !basePath.empty())
-	{
-		BaseIO::makeRelativePath(basePath, visualizationFilename);
-	}
 	boost::filesystem::path fn(visualizationFilename);
 	return toXML(basePath, fn.string(), tabs);
 }

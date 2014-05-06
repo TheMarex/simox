@@ -193,12 +193,12 @@ std::string CollisionModel::toXML(const std::string &basePath, const std::string
 
 	if (!filename.empty())
 	{
-		namespace fs = boost::filesystem;
-		fs::path completeFile = fs::path(basePath) / fs::path(filename);
+        std::string tmpFilename = filename;
+        BaseIO::makeRelativePath(basePath, tmpFilename);
 		ss << pre << t
-		   << "<File type='" << fileType << "'>"
-		   << completeFile.string()
-		   << "</File>\n";
+           << "<File type='" << fileType << "'>"
+           << tmpFilename
+           << "</File>\n";
 	}
 	ss << pre << "</CollisionModel>\n";
 	return ss.str();
@@ -212,10 +212,6 @@ std::string CollisionModel::toXML(const std::string &basePath, int tabs)
 	else if (modelVisualization)
 		collisionFilename = modelVisualization->getFilename();
 
-	if (!collisionFilename.empty() && !basePath.empty())
-	{
-		BaseIO::makeRelativePath(basePath, collisionFilename);
-	}
 	boost::filesystem::path fn(collisionFilename);
 	return toXML(basePath, fn.string(),tabs);
 

@@ -618,25 +618,41 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
 	if (filename.empty())
 		return;
 
-	namespace fs = boost::filesystem;
+    namespace fs = boost::filesystem;    
 
-	fs::path diffpath;
-	fs::path tmppath = fs::canonical(fs::path(filename));
+    fs::path filepath;
+    if(boost::filesystem::exists(fs::path(basePath) / fs::path(filename)))
+    {        
+        return;
+    }
+    else if(fs::path(filename).is_absolute() && boost::filesystem::exists(fs::path(filename)))
+    {
+        filepath = fs::canonical(fs::path(filename));
+    }
+    else
+        THROW_VR_EXCEPTION("Could not make path " + filename + " relative to " + basePath);
+
 	fs::path basePathDir = fs::canonical(fs::path(basePath));
+    fs::path::iterator itBasePath = basePathDir.begin();
+    fs::path::iterator itFile = filepath.begin();
+    fs::path newPath;
+    while(*itBasePath == *itFile)
+    {
+        itFile++;
+        itBasePath++;
+    }
 
-	while(tmppath != basePathDir)
-	{
-		diffpath = tmppath.filename() / diffpath;
-		tmppath = tmppath.parent_path();
-		if (tmppath.empty())
-		{
-			// no relative path found, take complete path
-			diffpath = filename;
-			break;
-		}
-	}
+    for( ; itBasePath != basePathDir.end(); itBasePath++)
+    {
+        newPath /= "..";
+    }
 
-	filename = diffpath.string();
+    for( ; itFile != filepath.end(); itFile++)
+    {
+        newPath /= *itFile;
+    }
+
+    filename = newPath.generic_string();
 }
 
 

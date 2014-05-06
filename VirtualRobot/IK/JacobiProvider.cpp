@@ -22,7 +22,7 @@ JacobiProvider::~JacobiProvider()
 {	
 }
 
-Eigen::MatrixXf JacobiProvider::getPseudoInverseJacobianMatrix(RobotNodePtr tcp)
+Eigen::MatrixXf JacobiProvider::getPseudoInverseJacobianMatrix(SceneObjectPtr tcp)
 {
 #ifdef CHECK_PERFORMANCE
 	clock_t startT = clock();

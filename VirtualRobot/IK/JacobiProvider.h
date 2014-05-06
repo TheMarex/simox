@@ -59,10 +59,10 @@ public:
 	virtual ~JacobiProvider();
 
 	virtual Eigen::MatrixXf getJacobianMatrix() = 0;
-	virtual Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp) = 0;
+    virtual Eigen::MatrixXf getJacobianMatrix(SceneObjectPtr tcp) = 0;
 	virtual Eigen::MatrixXf computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m) const;
 	virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix();
-	virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix(RobotNodePtr tcp);
+    virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix(SceneObjectPtr tcp);
 
 	VirtualRobot::RobotNodeSetPtr getRobotNodeSet();
 

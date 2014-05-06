@@ -93,7 +93,7 @@ Eigen::MatrixXf CoMIK::getJacobianOfCoM(RobotNodePtr node)
 	return result;
 }
 
-Eigen::MatrixXf CoMIK::getJacobianMatrix(RobotNodePtr tcp)
+Eigen::MatrixXf CoMIK::getJacobianMatrix(SceneObjectPtr tcp)
 {
 	// ignoring tcp
 	return getJacobianMatrix();

@@ -48,7 +48,7 @@ Eigen::VectorXf JointLimitAvoidanceJacobi::getError(float stepSize)
 	return error;
 }
 
-Eigen::MatrixXf JointLimitAvoidanceJacobi::getJacobianMatrix(RobotNodePtr tcp)
+Eigen::MatrixXf JointLimitAvoidanceJacobi::getJacobianMatrix(SceneObjectPtr tcp)
 {
 	return getJacobianMatrix();
 }

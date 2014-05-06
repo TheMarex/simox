@@ -123,7 +123,7 @@ public:
 		@param tolerancePosition The threshold when to accept a solution.
 		@param toleranceRotation The threshold when to accept a solution in radians.
 	*/
-	void setGoal(const Eigen::Matrix4f &goal, RobotNodePtr tcp = RobotNodePtr(), IKSolver::CartesianSelection mode = IKSolver::All, float tolerancePosition= 5.0f, float toleranceRotation = 3.0f/180.0f*M_PI);
+    virtual void setGoal(const Eigen::Matrix4f &goal, SceneObjectPtr tcp = SceneObjectPtr(), IKSolver::CartesianSelection mode = IKSolver::All, float tolerancePosition = 5.0f, float toleranceRotation = 3.0f / 180.0f*M_PI);
 
 
 	/*!	@brief Sets the target position for (one of) the tcp(s).  
@@ -133,7 +133,7 @@ public:
 		@param tolerancePosition The threshold when to accept a solution.
 		@param toleranceRotation The threshold when to accept a solution in radians.
 	*/
-	void setGoal(const Eigen::Vector3f &goal, RobotNodePtr tcp = RobotNodePtr(), IKSolver::CartesianSelection mode = IKSolver::Position, float tolerancePosition = 5.0f, float toleranceRotation = 3.0f/180.0f*M_PI);
+    virtual void setGoal(const Eigen::Vector3f &goal, SceneObjectPtr tcp = SceneObjectPtr(), IKSolver::CartesianSelection mode = IKSolver::Position, float tolerancePosition = 5.0f, float toleranceRotation = 3.0f / 180.0f*M_PI);
 	
 
 	/*!	@brief Returns the Jacobian matrix for a given tcp.
@@ -171,9 +171,9 @@ public:
 		All this is done within computeSteps(). For more information regarding the differential inverse kinematics, 
 		see <a href="http://graphics.ucsd.edu/courses/cse169_w05/CSE169_13.ppt">this lecture</a>.
 	*/
-	Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode);
-	Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp);
-	Eigen::MatrixXf getJacobianMatrix(IKSolver::CartesianSelection mode);
+    virtual Eigen::MatrixXf getJacobianMatrix(SceneObjectPtr tcp, IKSolver::CartesianSelection mode);
+    virtual Eigen::MatrixXf getJacobianMatrix(SceneObjectPtr tcp);
+    virtual Eigen::MatrixXf getJacobianMatrix(IKSolver::CartesianSelection mode);
 
 	/*!
 		Computes the complete Jacobian that consideres all defined TCPs and goal poses.
@@ -190,9 +190,9 @@ public:
 	 * @details The pseudo inverse \f$J^{+}\f$ can be calculated from the Jacobian matrix \f$ J \f$ using the following formula:
      * \f[ J^t \cdot \left( J \cdot J^t \right)^{-1}.\f]. Update: In order to improve stability, we are now using singular value decomposition (SVD).
 	 */
-	Eigen::MatrixXf getPseudoInverseJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode=IKSolver::All);
+    virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix(SceneObjectPtr tcp, IKSolver::CartesianSelection mode = IKSolver::All);
 	virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix();
-	Eigen::MatrixXf getPseudoInverseJacobianMatrix(IKSolver::CartesianSelection mode);
+    virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix(IKSolver::CartesianSelection mode);
     //Eigen::MatrixXf computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m);
 
 
@@ -201,7 +201,7 @@ public:
 		@return The changes \f$\Delta \theta\f$ in the joint angles.
 		\note{Note} This does not affect the joints values of the robot.
 	*/
-	Eigen::VectorXf computeStep(float stepSize=1.0f);
+    virtual Eigen::VectorXf computeStep(float stepSize = 1.0f);
 
 
 	/*!	@brief Computes the complete inverse kinematics. 
@@ -210,7 +210,7 @@ public:
 		@param minChange The minimal change in joint angles (euclidean distance in radians)
 	 	@note{Note}  Sets the node's joint angles automatically.
 	*/
-	bool computeSteps(float stepSize,float minChange, int maxSteps);
+    virtual bool computeSteps(float stepSize, float minChange, int maxSteps);
 
 	/*!	@brief Computes the complete inverse kinematics. 
 	 	@param stepSize Controls the amount of error to be reduced in each step: \f$ 0 < \beta \leq 1 \f$
@@ -218,26 +218,26 @@ public:
 		@param minChange The minimal change in joint angles (euclidean distance in radians)
 	 	@note{Note}  Sets the node's joint angles automatically.
 	*/
-	bool solveIK(float stepSize = 0.2f, float minChange = 0.0f , int maxSteps = 50);
+    virtual bool solveIK(float stepSize = 0.2f, float minChange = 0.0f, int maxSteps = 50);
 	
 
 	//! Returns the default tcp of the robot.
-	RobotNodePtr getDefaultTCP();
+    virtual RobotNodePtr getDefaultTCP();
 
 
 	//! Returns the translation error for a given tcp (i.e., the distance to the target).
-	float getErrorPosition(RobotNodePtr tcp = RobotNodePtr());
+    virtual float getErrorPosition(SceneObjectPtr tcp = SceneObjectPtr());
 
 
 	//! Returns the error metric for a given tcp (i.e., the angle between the target pose).
-	float getErrorRotation(RobotNodePtr tcp = RobotNodePtr());
+    virtual float getErrorRotation(SceneObjectPtr tcp = SceneObjectPtr());
 
 	/*!
 		Enable or disable the check for improvements during computeSteps loop.
 		If enabled and the delta to the goal does not gets smaller, the loop is canceled.
 		Standard: disabled
 	*/
-	void checkImprovements(bool enable);
+    virtual void checkImprovements(bool enable);
 
 	/*!
 		If enabled, the Jacobian is computed for [m] while assuming the kinematic definitions are given in [mm].
@@ -250,22 +250,22 @@ public:
 	/*!
 		Returns distance to goal. If multiple goals/TCPs are defined the mean distance is returned.
 	*/
-	float getMeanErrorPosition();
+    virtual float getMeanErrorPosition();
 
 	/*!
 		Returns 6D workspace delta that is used for Jacobi calculation.
 	*/
-	Eigen::VectorXf getDeltaToGoal(RobotNodePtr tcp = RobotNodePtr());
-	Eigen::VectorXf getDelta(const Eigen::Matrix4f &current, const Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode = IKSolver::All);
+    virtual Eigen::VectorXf getDeltaToGoal(SceneObjectPtr tcp = SceneObjectPtr());
+    virtual Eigen::VectorXf getDelta(const Eigen::Matrix4f &current, const Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode = IKSolver::All);
 	
 
 	//! When considering large errors, the translational part can be cut to this length. Set to <= 0 to ignore cutting (standard)
-	void setMaxPositionStep(float s);
+    virtual void setMaxPositionStep(float s);
 protected:
 	
 	void setNRows();
 	bool checkTolerances();
-	std::vector<RobotNodePtr> tcp_set;
+    std::vector<SceneObjectPtr> tcp_set;
 	RobotNodePtr coordSystem;
 
 	bool checkImprovement; //!< Indicates if the jacobian steps must improve the result, otherwise the loop is cancled.
@@ -273,14 +273,14 @@ protected:
 	std::size_t nRows;
 
 	// need a specialized Eigen allocator here, see http://eigen.tuxfamily.org/dox/TopicStlContainers.html
-	std::map<RobotNodePtr,Eigen::Matrix4f, std::less<RobotNodePtr>, Eigen::aligned_allocator<std::pair<const RobotNodePtr, Eigen::Matrix4f> > > targets;	
-	std::map<RobotNodePtr,IKSolver::CartesianSelection> modes;	
-	std::map<RobotNodePtr,float> tolerancePosition;	
-	std::map<RobotNodePtr,float> toleranceRotation;	
+    std::map<SceneObjectPtr, Eigen::Matrix4f, std::less<SceneObjectPtr>, Eigen::aligned_allocator<std::pair<const SceneObjectPtr, Eigen::Matrix4f> > > targets;
+    std::map<SceneObjectPtr, IKSolver::CartesianSelection> modes;
+    std::map<SceneObjectPtr, float> tolerancePosition;
+    std::map<SceneObjectPtr, float> toleranceRotation;
 
 	bool convertMMtoM; // if set, the distances for Jacobian computations are scaled with 1/1000, otherwise the scaling of the model is used (which usually is mm)
 
-	std::vector <RobotNodePtr> nodes;
+    std::vector <RobotNodePtr> nodes;
 	std::map< RobotNodePtr, std::vector<RobotNodePtr> > parents;
 
 	float positionMaxStep;

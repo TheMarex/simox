@@ -48,7 +48,7 @@ public:
 
 	Eigen::MatrixXf getJacobianOfCoM(RobotNodePtr node);
 	virtual Eigen::MatrixXf getJacobianMatrix();
-	virtual Eigen::MatrixXf getJacobianMatrix(RobotNodePtr tcp); // ignored for CoM IK but needed for interface
+    virtual Eigen::MatrixXf getJacobianMatrix(SceneObjectPtr tcp); // ignored for CoM IK but needed for interface
 
 	/*!
 		Computes the 2d error vector

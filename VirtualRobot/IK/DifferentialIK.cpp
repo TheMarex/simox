@@ -40,7 +40,7 @@ DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem, 
 }
 
 
-void DifferentialIK::setGoal(const Eigen::Matrix4f &goal, RobotNodePtr tcp, IKSolver::CartesianSelection mode, float tolerancePosition, float toleranceRotation)
+void DifferentialIK::setGoal(const Eigen::Matrix4f &goal, SceneObjectPtr tcp, IKSolver::CartesianSelection mode, float tolerancePosition, float toleranceRotation)
 {
 	if (!tcp) tcp = this->getDefaultTCP();
 
@@ -53,11 +53,35 @@ void DifferentialIK::setGoal(const Eigen::Matrix4f &goal, RobotNodePtr tcp, IKSo
 	this->tolerancePosition[tcp] = tolerancePosition;	
 	this->toleranceRotation[tcp] = toleranceRotation;	
 
-	std::vector<RobotNodePtr> p = tcp->getAllParents(rns);
-	p.push_back(tcp);
-	parents[tcp] = p;
-	
-	this->setNRows();
+    RobotNodePtr tcpRN = boost::dynamic_pointer_cast<RobotNode>(tcp);
+    if (!tcpRN)
+    {
+        if (!tcp->getParent())
+        {
+            VR_ERROR << "tcp not linked to a parent!!!" << endl;
+            return;
+        }
+
+        tcpRN = boost::dynamic_pointer_cast<RobotNode>(tcp->getParent());
+        if (!tcpRN)
+        {
+            VR_ERROR << "tcp not linked to robotNode!!!" << endl;
+            return;
+        }
+    }
+
+    // check if we already computed the parents for tcp
+    if (parents.find(tcpRN) == parents.end())
+    {
+        parents[tcpRN] = tcpRN->getAllParents(rns);
+        parents[tcpRN].push_back(tcpRN);
+    }
+
+    // tcp not in list yet?
+    if (find(tcp_set.begin(), tcp_set.end(), tcp) == tcp_set.end())
+        tcp_set.push_back(tcp);
+
+    this->setNRows();
 	initialized = true;
 }	
 
@@ -71,7 +95,7 @@ MatrixXf DifferentialIK::getJacobianMatrix()
 	size_t index = 0;
 	for (size_t i = 0; i<tcp_set.size(); i++)
 	{
-		RobotNodePtr tcp = tcp_set[i];
+        SceneObjectPtr tcp = tcp_set[i];
 		if (this->targets.find(tcp) != this->targets.end())
 		{
 			IKSolver::CartesianSelection mode = this->modes[tcp];
@@ -103,7 +127,7 @@ VectorXf DifferentialIK::getError(float stepSize)
 	size_t index = 0;
 	for (size_t i = 0; i < tcp_set.size(); i++)
 	{
-		RobotNodePtr tcp = tcp_set[i];
+		SceneObjectPtr tcp = tcp_set[i];
 		if (this->targets.find(tcp) != this->targets.end())
 		{
 			Eigen::VectorXf delta = getDeltaToGoal(tcp);
@@ -144,17 +168,17 @@ VectorXf DifferentialIK::getError(float stepSize)
 
 }
 
-MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp)
+MatrixXf DifferentialIK::getJacobianMatrix(SceneObjectPtr tcp)
 {
 	return getJacobianMatrix(tcp,IKSolver::All);
 }
 
 MatrixXf DifferentialIK::getJacobianMatrix(IKSolver::CartesianSelection mode)
 {
-	return getJacobianMatrix(RobotNodePtr(),mode);
+    return getJacobianMatrix(SceneObjectPtr(), mode);
 }
 
-MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode)
+MatrixXf DifferentialIK::getJacobianMatrix(SceneObjectPtr tcp, IKSolver::CartesianSelection mode)
 {
 	// Get number of degrees of freedom
 	size_t nDoF = nodes.size();
@@ -166,13 +190,28 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 	if (!tcp) tcp = this->getDefaultTCP();
 //	THROW_VR_EXCEPTION_IF(!tcp,boost::format("No tcp defined in node set \"%1%\" of robot %2% (DifferentialIK::%3% )") % this->rns->getName() % this->rns->getRobot()->getName() % BOOST_CURRENT_FUNCTION);
 		
+    RobotNodePtr tcpRN = boost::dynamic_pointer_cast<RobotNode>(tcp);
+    if (!tcpRN)
+    {
+        if (!tcp->getParent())
+        {
+            VR_ERROR << "tcp not linked to a parent!!!" << endl;
+            return Eigen::MatrixXf();
+        }
 
+        tcpRN = boost::dynamic_pointer_cast<RobotNode>(tcp->getParent());
+        if (!tcpRN)
+        {
+            VR_ERROR << "tcp not linked to robotNode!!!" << endl;
+            return Eigen::MatrixXf();
+        }
+    }
 
 	// check if we already computed the parents for tcp
-	if (parents.find(tcp) == parents.end())
+	if (parents.find(tcpRN) == parents.end())
 	{
-		parents[tcp] = tcp->getAllParents(rns);
-		parents[tcp].push_back(tcp);
+		parents[tcpRN] = tcpRN->getAllParents(rns);
+		parents[tcpRN].push_back(tcpRN);
 	}
 
 	// Iterate over all degrees of freedom
@@ -186,7 +225,7 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 		//std::vector<RobotNodePtr> parents = parents[tcp];//tcp->getAllParents(this->rns);
 
 		//check if the tcp is affected by this DOF
-		if ( find(parents[tcp].begin(),parents[tcp].end(),dof)  != parents[tcp].end() )
+        if (find(parents[tcpRN].begin(), parents[tcpRN].end(), dof) != parents[tcpRN].end())
 		{
 
 			// Calculus for rotational joints is different as for prismatic joints.
@@ -301,14 +340,15 @@ MatrixXf DifferentialIK::getJacobianMatrix(RobotNodePtr tcp, IKSolver::Cartesian
 
 Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix()
 {
-	return getPseudoInverseJacobianMatrix(RobotNodePtr());
-}
-Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(IKSolver::CartesianSelection mode)
-{
-	return getPseudoInverseJacobianMatrix(RobotNodePtr(),mode);
+	return getPseudoInverseJacobianMatrix(SceneObjectPtr());
 }
 
-Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(RobotNodePtr tcp, IKSolver::CartesianSelection mode)
+Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(IKSolver::CartesianSelection mode)
+{
+    return getPseudoInverseJacobianMatrix(SceneObjectPtr(), mode);
+}
+
+Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(SceneObjectPtr tcp, IKSolver::CartesianSelection mode)
 {
 #ifdef CHECK_PERFORMANCE
         clock_t startT = clock();
@@ -332,7 +372,7 @@ void DifferentialIK::setNRows()
 {
 	this->nRows=0;
 	for (size_t i=0; i<tcp_set.size();i++){
-		RobotNodePtr tcp = tcp_set[i];
+        SceneObjectPtr tcp = tcp_set[i];
 		if (this->modes[tcp] & IKSolver::X) this->nRows++;
 		if (this->modes[tcp] & IKSolver::Y) this->nRows++;
 		if (this->modes[tcp] & IKSolver::Z) this->nRows++;
@@ -340,7 +380,7 @@ void DifferentialIK::setNRows()
 	}
 };
 
-void DifferentialIK::setGoal(const Eigen::Vector3f &goal, RobotNodePtr tcp, IKSolver::CartesianSelection mode, float tolerancePosition, float toleranceRotation){
+void DifferentialIK::setGoal(const Eigen::Vector3f &goal, SceneObjectPtr tcp, IKSolver::CartesianSelection mode, float tolerancePosition, float toleranceRotation){
 	Matrix4f trafo;
 	trafo.setIdentity();
 	trafo.block(0,3,3,1)=goal;
@@ -352,7 +392,7 @@ RobotNodePtr DifferentialIK::getDefaultTCP()
 	return rns->getTCP();
 }
 
-Eigen::VectorXf DifferentialIK::getDeltaToGoal(RobotNodePtr tcp)
+Eigen::VectorXf DifferentialIK::getDeltaToGoal(SceneObjectPtr tcp)
 {	
 	if (!tcp)
 		tcp = getDefaultTCP();
@@ -362,7 +402,6 @@ Eigen::VectorXf DifferentialIK::getDeltaToGoal(RobotNodePtr tcp)
 	Eigen::Matrix4f goal = this->targets[tcp];
 	return getDelta(current,goal,this->modes[tcp]);
 }
-
 
 Eigen::VectorXf DifferentialIK::getDelta(const Eigen::Matrix4f &current, const Eigen::Matrix4f &goal, IKSolver::CartesianSelection mode)
 {
@@ -404,8 +443,6 @@ VectorXf DifferentialIK::computeStep(float stepSize )
 	MatrixXf Jacobian = getJacobianMatrix();
 	VectorXf dTheta(nDoF);
 
-	//MatrixXf pseudo = (Jacobian.transpose() * Jacobian).inverse() * Jacobian.transpose();
-	//MatrixXf pseudo = Jacobian.transpose() * (Jacobian*Jacobian.transpose()).inverse();
 	MatrixXf pseudo = computePseudoInverseJacobianMatrix(Jacobian);
 
 	dTheta = pseudo * error;
@@ -423,10 +460,9 @@ VectorXf DifferentialIK::computeStep(float stepSize )
 	}
 
 	return dTheta;
-	
 }
 
-float DifferentialIK::getErrorPosition(RobotNodePtr tcp)
+float DifferentialIK::getErrorPosition(SceneObjectPtr tcp)
 {
 	if (modes[tcp] == IKSolver::Orientation)
 		return 0.0f; // ignoring position
@@ -434,8 +470,6 @@ float DifferentialIK::getErrorPosition(RobotNodePtr tcp)
 	if (!tcp)
 		tcp = getDefaultTCP();
 	Vector3f position = targets[tcp].block(0,3,3,1) - tcp->getGlobalPose().block(0,3,3,1);
-	//cout << "Error Position <" << tcp->getName() << ">: " << position.norm() << endl;
-	//cout << boost::format("Error Position < %1% >: %2%") % tcp->getName() % position.norm()  << std::endl;
 	float result = 0.0f;
 
 	if (modes[tcp] & IKSolver::X)
@@ -448,7 +482,7 @@ float DifferentialIK::getErrorPosition(RobotNodePtr tcp)
 	return sqrtf(result);
 }
 
-float DifferentialIK::getErrorRotation(RobotNodePtr tcp)
+float DifferentialIK::getErrorRotation(SceneObjectPtr tcp)
 {
 	if (!(modes[tcp] & IKSolver::Orientation))
 		return 0.0f; // no error in this dimensions
@@ -465,19 +499,18 @@ float DifferentialIK::getMeanErrorPosition()
 		return 0.0f;
 	float res = 0;
 	for (size_t i=0; i<tcp_set.size();i++){
-		RobotNodePtr tcp = tcp_set[i];
+        SceneObjectPtr tcp = tcp_set[i];
 		res += getErrorPosition(tcp);
 	}
 	res /= float(tcp_set.size());
 	return res;
 }
 
-
 bool DifferentialIK::checkTolerances()
 {
 	bool result = true;
 	for (size_t i=0; i<tcp_set.size();i++){
-		RobotNodePtr tcp = tcp_set[i];
+        SceneObjectPtr tcp = tcp_set[i];
 		if (getErrorPosition(tcp) > tolerancePosition[tcp] || getErrorRotation(tcp)>toleranceRotation[tcp])
 		{
 			result = false;
@@ -518,7 +551,6 @@ bool DifferentialIK::computeSteps(float stepSize, float minumChange, int maxNSte
 				VR_WARNING << "Aborting, invalid joint value (nan)" << endl;
 				return false;
 			}
-            //nodes[i]->setJointValue(nodes[i]->getJointValue() + dTheta[i]);
 		}
 		
 		robot->setJointValues(rns,jv);

@@ -121,33 +121,33 @@ install(EXPORT SimoxTargets DESTINATION
 
 #############################################################
 # PACKAGING (DEB)
-
-FIND_PACKAGE(Subversion)
-IF(Subversion_FOUND)
-    Subversion_WC_INFO(${CMAKE_HOME_DIRECTORY} Project)
-    MESSAGE("Current revision is ${Project_WC_REVISION}")
-ENDIF(Subversion_FOUND)
-
-IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-    SET(CPACK_DEBIAN_ARCHITECTURE "amd64")
-ELSE()
-    SET(CPACK_DEBIAN_ARCHITECTURE "i386")
-ENDIF()
-
-INCLUDE(InstallRequiredSystemLibraries)
-SET(CPACK_SET_DESTDIR "on")
-SET(CPACK_PACKAGING_INSTALL_PREFIX "/tmp")
-SET(CPACK_DEBIAN_PACKAGE_NAME "simox")
-SET(CPACK_GENERATOR "DEB")
-SET(CPACK_PACKAGE_DESCRIPTION "Simox - A Robot Simulation, Motion and Grasp Planning Toolbox")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Simox - A Robot Simulation, Motion and Grasp Planning Toolbox")
-SET(CPACK_PACKAGE_VENDOR "KIT")
-SET(CPACK_PACKAGE_CONTACT "Nikolaus Vahrenkamp, <vahrenkamp at kit dot edu>")
-SET(CPACK_PACKAGE_VERSION_MAJOR "${Simox_MAJOR_VERSION}")
-SET(CPACK_PACKAGE_VERSION_MINOR "${Simox_MINOR_VERSION}")
-SET(CPACK_PACKAGE_VERSION_PATCH "${Simox_PATCH_VERSION}-r${Project_WC_REVISION}")
-SET(CPACK_PACKAGE_FILE_NAME "simox_${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION}-r${Project_WC_REVISION}_${CPACK_DEBIAN_ARCHITECTURE}")
-SET(CPACK_SOURCE_PACKAGE_FILE_NAME "simox_${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION}-r${Project_WC_REVISION}")
+#
+#FIND_PACKAGE(Subversion)
+#IF(Subversion_FOUND)
+#    Subversion_WC_INFO(${CMAKE_HOME_DIRECTORY} Project)
+#    MESSAGE("Current revision is ${Project_WC_REVISION}")
+#ENDIF(Subversion_FOUND)
+#
+#IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+#    SET(CPACK_DEBIAN_ARCHITECTURE "amd64")
+#ELSE()
+#    SET(CPACK_DEBIAN_ARCHITECTURE "i386")
+#ENDIF()
+#
+#INCLUDE(InstallRequiredSystemLibraries)
+#SET(CPACK_SET_DESTDIR "on")
+#SET(CPACK_PACKAGING_INSTALL_PREFIX "/tmp")
+#SET(CPACK_DEBIAN_PACKAGE_NAME "simox")
+#SET(CPACK_GENERATOR "DEB")
+#SET(CPACK_PACKAGE_DESCRIPTION "Simox - A Robot Simulation, Motion and Grasp Planning Toolbox")
+#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Simox - A Robot Simulation, Motion and Grasp Planning Toolbox")
+#SET(CPACK_PACKAGE_VENDOR "KIT")
+#SET(CPACK_PACKAGE_CONTACT "Nikolaus Vahrenkamp, <vahrenkamp at kit dot edu>")
+#SET(CPACK_PACKAGE_VERSION_MAJOR "${Simox_MAJOR_VERSION}")
+#SET(CPACK_PACKAGE_VERSION_MINOR "${Simox_MINOR_VERSION}")
+#SET(CPACK_PACKAGE_VERSION_PATCH "${Simox_PATCH_VERSION}-r${Project_WC_REVISION}")
+#SET(CPACK_PACKAGE_FILE_NAME "simox_${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION}-r${Project_WC_REVISION}_${CPACK_DEBIAN_ARCHITECTURE}")
+#SET(CPACK_SOURCE_PACKAGE_FILE_NAME "simox_${Simox_MAJOR_VERSION}.${Simox_MINOR_VERSION}.${Simox_PATCH_VERSION}-r${Project_WC_REVISION}")
 
 # Debian specific
 #SET(CPACK_DEBIAN_PACKAGE_DEPENDS "kdebase-runtime (>= 4:4.2.1), kdelibs5 (>= 4:4.2.1), libc6 (>= 2.1.3), libgcc1 (>= 1:4.1.1), libplasma3, libqt4-dbus (>= 4.5.0), libqtcore4 (>= 4.5.0), libqtgui4 (>= 4.5.0), libstdc++6 (>= 4.2.1)")
@@ -156,13 +156,13 @@ SET(CPACK_SOURCE_PACKAGE_FILE_NAME "simox_${Simox_MAJOR_VERSION}.${Simox_MINOR_V
 
 #GET_PROPERTY(result GLOBAL ENABLED_FEATURES)
 #message(" enabled features: ${result}")
-set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "Simox Examples")
-set(CPACK_COMPONENT_APPLICATIONDATA_DISPLAY_NAME "Simox Data")
-set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Simox Libraries")
-set(CPACK_COMPONENT_HEADERS_DISPLAY_NAME "Simox C++ Headers")
-
-SET(CPACK_COMPONENTS_ALL Applications Headers Libraries ApplicationData)
-INCLUDE(CPack)
+#set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "Simox Examples")
+#set(CPACK_COMPONENT_APPLICATIONDATA_DISPLAY_NAME "Simox Data")
+#set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Simox Libraries")
+#set(CPACK_COMPONENT_HEADERS_DISPLAY_NAME "Simox C++ Headers")
+#
+#SET(CPACK_COMPONENTS_ALL Applications Headers Libraries ApplicationData)
+#INCLUDE(CPack)
 
 
 

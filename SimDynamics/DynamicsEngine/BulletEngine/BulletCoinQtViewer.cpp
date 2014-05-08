@@ -22,7 +22,7 @@ BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 	bulletMaxSubSteps = 1;
 	enablePhysicsUpdates = true;
 
-	const float TIMER_MS = 30.0f;
+	const float TIMER_MS = 5.0f;
 
 	SIMDYNAMICS_ASSERT(world);
 

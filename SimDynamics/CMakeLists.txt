@@ -152,6 +152,7 @@ if (SimDynamics_DYNAMICSENGINE)
     	DynamicsEngine/BulletEngine/BulletEngine.cpp
     	DynamicsEngine/BulletEngine/BulletObject.cpp
     	DynamicsEngine/BulletEngine/BulletRobot.cpp
+    	DynamicsEngine/BulletEngine/BulletRobotLogger.cpp
     	DynamicsEngine/BulletEngine/SimoxMotionState.cpp
      	DynamicsEngine/BulletEngine/SimoxCollisionDispatcher.cpp
   	)
@@ -162,6 +163,7 @@ if (SimDynamics_DYNAMICSENGINE)
     	DynamicsEngine/BulletEngine/BulletEngine.h
     	DynamicsEngine/BulletEngine/BulletObject.h
     	DynamicsEngine/BulletEngine/BulletRobot.h
+    	DynamicsEngine/BulletEngine/BulletRobotLogger.h
     	DynamicsEngine/BulletEngine/SimoxMotionState.h
      	DynamicsEngine/BulletEngine/SimoxCollisionDispatcher.h
   	)

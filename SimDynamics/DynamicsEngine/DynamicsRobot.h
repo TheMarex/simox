@@ -63,18 +63,20 @@ public:
         eDisabled,
         ePosition,
         eVelocity,
+        ePositionVelocity,
         eTorque
     };
 
 	/*!
 		Enable joint actuation for given node.
 	*/
+    virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue, float jointVelocity);
     virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue);
     virtual void actuateNodeVel(VirtualRobot::RobotNodePtr node, float jointVelocity);
     virtual void actuateNodeTorque(VirtualRobot::RobotNodePtr node, float jointTorque);
-    virtual void actuateNode(std::string &node, float jointValue);
-    virtual void actuateNodeVel(std::string &node, float jointVelocity);
-    virtual void actuateNodeTorque(std::string &node, float jointTorque);
+    virtual void actuateNode(const std::string &node, float jointValue);
+    virtual void actuateNodeVel(const std::string &node, float jointVelocity);
+    virtual void actuateNodeTorque(const std::string &node, float jointTorque);
     virtual void disableNodeActuation(VirtualRobot::RobotNodePtr node);
 	virtual bool isNodeActuated(VirtualRobot::RobotNodePtr node);
 	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);

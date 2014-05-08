@@ -938,6 +938,12 @@ void BulletRobot::actuateJoints(float dt)
                     m->m_targetVelocity = it->second.jointVelocityTarget;
                     break;
                 }
+                case ePositionVelocity:
+                {
+                    btScalar pos = btScalar(getJointAngle(it->first));
+					float gain = 0.5;
+                    m->m_targetVelocity = it->second.jointVelocityTarget + gain*(it->second.jointPositionTarget - pos) / dt;
+                }
                 default:
                     m->m_enableMotor = false;
             }
@@ -982,6 +988,13 @@ void BulletRobot::actuateJoints(float dt)
                     m->m_targetVelocity = it->second.jointVelocityTarget;
                     break;
                 }
+                case ePositionVelocity:
+                {
+                    btScalar pos = btScalar(getJointAngle(it->first));
+					float gain = 0.5;
+                    m->m_targetVelocity = it->second.jointVelocityTarget + gain*(it->second.jointValueTarget - pos) / dt;
+					break;
+                }
 
                 default:
                     m->m_enableMotor = false;
@@ -998,8 +1011,8 @@ void BulletRobot::actuateJoints(float dt)
                         hinge->enableAngularMotor(true,(targ-act)*bulletMotorVelFactor,bulletMaxMotorImulse);
                         //hinge->enableMotor(true);
                         //hinge->setMotorTarget(it->second.jointValueTarget+link.jointValueOffset,dt);
+						break;
                     }
-                    break;
                     case eVelocity:
                     {
                         hinge->enableAngularMotor(true,it->second.jointVelocityTarget,bulletMaxMotorImulse);
@@ -1008,8 +1021,8 @@ void BulletRobot::actuateJoints(float dt)
                         //cout << "jointVelocityTarget for joint " << it->second.node->getName() << " :" << it->second.jointVelocityTarget << endl;
 
 
+						break;
                     }
-                    break;
                     case eTorque:
                     {
 
@@ -1072,9 +1085,18 @@ void BulletRobot::actuateJoints(float dt)
                         jointCounter++;
 
                         */
-
+						break;
                     }
-                    break;
+					case ePositionVelocity:
+					{
+						btScalar pos = btScalar(getJointAngle(it->first));
+						float gain = 0.5;
+						float target = it->second.jointVelocityTarget + gain*(it->second.jointValueTarget - pos) / dt;
+                        hinge->enableAngularMotor(true, target, bulletMaxMotorImulse);
+
+                        jointCounter++;
+						break;
+					}
 
                     default:
                         hinge->enableMotor(false);

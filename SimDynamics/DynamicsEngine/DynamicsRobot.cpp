@@ -69,7 +69,7 @@ DynamicsObjectPtr DynamicsRobot::getDynamicsRobotNode( VirtualRobot::RobotNodePt
 	return dynamicRobotNodes[node];
 }
 
-void DynamicsRobot::actuateNode( std::string &node, float jointValue )
+void DynamicsRobot::actuateNode(const std::string &node, float jointValue )
 {
     VR_ASSERT(robot);
     VR_ASSERT(robot->hasRobotNode(node));
@@ -100,7 +100,23 @@ void DynamicsRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointVal
     actuationTargets[node] = target;
 }
 
-void DynamicsRobot::actuateNodeVel( std::string &node, float jointVelocity )
+void DynamicsRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointValue , float jointVelocity)
+{
+    VR_ASSERT(robot);
+    VR_ASSERT(node);
+    VR_ASSERT(robot->hasRobotNode(node));
+
+    robotNodeActuationTarget target;
+    target.actuation = ePositionVelocity;
+    target.node = node;
+    target.jointValueTarget = jointValue;
+    target.jointVelocityTarget = jointVelocity;
+    target.jointTorqueTarget = 0.0f;
+
+    actuationTargets[node] = target;
+}
+
+void DynamicsRobot::actuateNodeVel(const std::string &node, float jointVelocity )
 {
     VR_ASSERT(robot);
     VR_ASSERT(robot->hasRobotNode(node));
@@ -129,7 +145,7 @@ void DynamicsRobot::actuateNodeVel( VirtualRobot::RobotNodePtr node, float joint
     actuationTargets[node] = target;
 }
 
-void DynamicsRobot::actuateNodeTorque( std::string &node, float jointTorque )
+void DynamicsRobot::actuateNodeTorque(const std::string &node, float jointTorque )
 {
     VR_ASSERT(robot);
     VR_ASSERT(robot->hasRobotNode(node));

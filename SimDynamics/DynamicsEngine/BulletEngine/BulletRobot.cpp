@@ -27,7 +27,7 @@ namespace SimDynamics {
 BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
 	: DynamicsRobot(rob)
 {
-    bulletMaxMotorImulse = 50.0f;
+    bulletMaxMotorImulse = 1500.0f;
 
     bulletMotorVelFactor = 10.0f;
 	buildBulletModels(enableJointMotors);

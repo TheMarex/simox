@@ -9,13 +9,14 @@
 
 namespace VirtualRobot
 {
-	CoMIK::CoMIK(RobotNodeSetPtr rnsJoints, RobotNodeSetPtr rnsBodies, RobotNodePtr coordSystem)
+    CoMIK::CoMIK(RobotNodeSetPtr rnsJoints, RobotNodeSetPtr rnsBodies, RobotNodePtr coordSystem, int dimensions)
 	: JacobiProvider(rnsJoints), coordSystem(coordSystem)
 {
 	VR_ASSERT(rns);
 	VR_ASSERT(rnsBodies);
 	checkImprovement = false;
 	this->rnsBodies = rnsBodies;
+    numDimensions = dimensions;
 
 	bodyNodes = rnsBodies->getAllRobotNodes();
 	for (size_t i = 0; i < bodyNodes.size(); i++)
@@ -30,10 +31,10 @@ namespace VirtualRobot
 	}
 }
 
-void CoMIK::setGoal(const Eigen::Vector2f &goal, float tolerance)
+void CoMIK::setGoal(const Eigen::VectorXf &goal, float tolerance)
 {
 	target = goal;
-	this->tolerance = tolerance;
+    this->tolerance = tolerance;
 	initialized = true;
 }
 
@@ -53,7 +54,7 @@ Eigen::MatrixXf CoMIK::getJacobianOfCoM(RobotNodePtr node)
 		RobotNodePtr dof = rns->getNode(i);// bodyNodes[i];
 
 		// Check if the tcp is affected by this DOF
-		if (find(parentsN.begin(),parentsN.end(),dof) != parentsN.end() )
+        if (find(parentsN.begin(),parentsN.end(),dof) != parentsN.end() )
 		{
 			// Calculus for rotational joints is different as for prismatic joints.
 			if (dof->isRotationalJoint())
@@ -84,13 +85,21 @@ Eigen::MatrixXf CoMIK::getJacobianOfCoM(RobotNodePtr node)
 		}
 	}
 
-	Eigen::MatrixXf result(2,nDoF);
-	result.row(0) = position.row(0);
-	result.row(1) = position.row(1);
-
-	//cout << "Position, jac:\n" << position << endl;
-
-	return result;
+    if(target.rows() == 2)
+    {
+        Eigen::MatrixXf result(2,nDoF);
+        result.row(0) = position.row(0);
+        result.row(1) = position.row(1);
+        return result;
+    }
+    else if(target.rows() == 1)
+    {
+        VR_INFO << "One dimensional CoMs not supported." << endl;
+    }
+    else
+    {
+       return position;
+    }
 }
 
 Eigen::MatrixXf CoMIK::getJacobianMatrix(SceneObjectPtr tcp)
@@ -107,10 +116,10 @@ Eigen::MatrixXf CoMIK::getJacobianMatrix()
 	for(std::vector<RobotNodePtr>::const_iterator n = bodyNodes.begin(); n != bodyNodes.end(); n++)
 	{
 		// Retrieve (positional) Jacobian for this node's CoM
-		// This Jacobian is already projected to the X-Y-plane
+        // Depeding on the set target, the Jacobian is already projected to the XY-plane
 		Eigen::MatrixXf J = getJacobianOfCoM(*n);
 
-		// Sum up the Jacobians weighted by the respective node's mass
+        // Sum up the Jacobians weighted by the respective node masses
 		if(Jsum.rows() == 0)
 			Jsum = (*n)->getMass() * J;
 		else
@@ -119,24 +128,24 @@ Eigen::MatrixXf CoMIK::getJacobianMatrix()
 
 	if (rnsBodies->getMass()!=0)
 		Jsum /= rnsBodies->getMass();
+
 	return Jsum;
 }
 
-Eigen::VectorXf CoMIK::getError(float stepsize)
+Eigen::VectorXf CoMIK::getError(float stepSize)
 {
-	return (target - rnsBodies->getCoM().head(2));
+    return (target - rnsBodies->getCoM().head(target.rows()));
 }
 
 Eigen::VectorXf CoMIK::computeStep(float stepSize )
 {
-	Eigen::Vector2f error = getError(stepSize);
+    Eigen::VectorXf error = (target - rnsBodies->getCoM().head(target.rows())) * stepSize;
 	return getPseudoInverseJacobianMatrix() * error;
-
 }
 
 bool CoMIK::checkTolerances() const
 {
-	float error = (target - rnsBodies->getCoM().head(2)).norm();
+    float error = (target - rnsBodies->getCoM().head(target.rows())).norm();
 	return error < tolerance;
 }
 
@@ -196,7 +205,7 @@ bool CoMIK::computeSteps(float stepSize, float minumChange, int maxNStep)
 	}
 
 	VR_INFO << "IK failed, loop:" << step << endl;
-	VR_INFO << "error:" << (target - rns->getCoM().head(2)).norm() << endl;
+    VR_INFO << "error:" << (target - rns->getCoM().head(target.rows())).norm() << endl;
 	return false;
 }
 

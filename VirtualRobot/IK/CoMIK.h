@@ -42,18 +42,15 @@ public:
 	/*!
 		Initialize with a rns that contains joints and one that contains the bodies.
 	*/
-	CoMIK(RobotNodeSetPtr rnsJoints, RobotNodeSetPtr rnsBodies, RobotNodePtr coordSystem = RobotNodePtr());
+    CoMIK(RobotNodeSetPtr rnsJoints, RobotNodeSetPtr rnsBodies, RobotNodePtr coordSystem = RobotNodePtr(), int dimensions = 2);
 
-	void setGoal(const Eigen::Vector2f &goal, float tolerance=5.0f);
+    void setGoal(const Eigen::VectorXf &goal, float tolerance=5.0f);
 
 	Eigen::MatrixXf getJacobianOfCoM(RobotNodePtr node);
 	virtual Eigen::MatrixXf getJacobianMatrix();
     virtual Eigen::MatrixXf getJacobianMatrix(SceneObjectPtr tcp); // ignored for CoM IK but needed for interface
 
-	/*!
-		Computes the 2d error vector
-	*/
-	virtual Eigen::VectorXf getError(float stepSize = 1.0f);
+    virtual Eigen::VectorXf getError(float stepSize = 1.0f);
 
 	Eigen::VectorXf computeStep(float stepSize );
 	bool computeSteps(float stepSize, float minumChange, int maxNStep);
@@ -73,7 +70,9 @@ private:
 
 	float tolerance;
 	bool checkImprovement;
-	Eigen::Vector2f target;
+    Eigen::VectorXf target;
+
+    int numDimensions;
 };
 
 

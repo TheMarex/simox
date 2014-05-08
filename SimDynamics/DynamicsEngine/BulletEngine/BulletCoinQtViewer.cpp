@@ -18,8 +18,8 @@ namespace SimDynamics
 
 BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 {
-	bulletTimestepMsec = 0;
-	bulletMaxSubSteps = 50;
+	bulletTimeStepMsec = 1.0f / 60.0f;
+	bulletMaxSubSteps = 1;
 	enablePhysicsUpdates = true;
 
 	const float TIMER_MS = 30.0f;
@@ -156,21 +156,22 @@ void BulletCoinQtViewer::stepPhysics()
 	{
 		bulletEngine->activateAllObjects(); // avoid sleeping objects
 
-		if (bulletTimestepMsec) {
-			btScalar dt1 = btScalar(bulletTimestepMsec / 1000.0f);
+		// Commented out: This is now handled by Bullet (bulletMaxSubSteps * bulletTimeStepMsec is the maximal duration of a frame)
+		/* float minFPS = 1000000.f/40.f;  // Don't use 60 Hz (cannot be reached due to Vsync)
+		if (ms > minFPS) {
+			VR_INFO << "Slow frame (" << ms << "us elapsed)! Limiting elapsed time (losing realtime capabilities for this frame)." << endl;
+			ms = minFPS;
+		} */
 
-			updateMotors(dt1);
-			bulletEngine->stepSimulation(dt1, 0);
-		} else {
-			float minFPS = 1000000.f/60.f;
-			if (ms > minFPS)
-				ms = minFPS;
-
-			btScalar dt1 = btScalar(ms / 1000000.0f);
-
-			updateMotors(dt1);
-			bulletEngine->stepSimulation(dt1,bulletMaxSubSteps);
+		if ((ms / 1000.0f) > bulletMaxSubSteps * bulletTimeStepMsec) {
+			VR_INFO << "Elapsed time (" << (ms / 1000.0f) << "ms) too long: Simulation is not running in realtime." << endl;
 		}
+
+		btScalar dt1 = btScalar(ms / 1000000.0f);
+
+		updateMotors(dt1);
+		// VR_INFO << "stepSimulation(" << dt1 << ", " << bulletMaxSubSteps << ", " << (bulletTimeStepMsec / 1000.0f) << ")" << endl;
+		bulletEngine->stepSimulation(dt1, bulletMaxSubSteps, bulletTimeStepMsec / 1000.0f);
 
 		//optional but useful: debug drawing
 		//m_dynamicsWorld->debugDrawWorld();
@@ -291,11 +292,11 @@ void BulletCoinQtViewer::stopCB()
 	}
 }
 
-void BulletCoinQtViewer::setBulletSimTimestepMsec(int msec)
+void BulletCoinQtViewer::setBulletSimTimeStepMsec(int msec)
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	VR_ASSERT(msec>=0);
-	bulletTimestepMsec = msec;
+	bulletTimeStepMsec = msec;
 }
 
 void BulletCoinQtViewer::setBulletSimMaxSubSteps(int n)

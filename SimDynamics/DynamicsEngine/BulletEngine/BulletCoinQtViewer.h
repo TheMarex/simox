@@ -88,23 +88,29 @@ public:
 	void stopCB();
 
 	/*!
-		Length of a simuation timestep in milliseconds.
-		When msec is 0 (the default), the simulation is done in realtime. Then, a fixed timestep of 1/60s (the Bullet default) is used to
-		ensure framerate-independence. This timestep is applied multiple times depending on the elapsed time since the last frame (e.g. if
-		50ms elapsed, 3 timesteps are performed).
-		When msec is not 0, the simulation is advanced by the value of the parameter each frame.
-		Additional information: http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World
-		TODO: We shouldn't really the timeStep, but change fixedTimestep (default 1/60s) instead. This way, we can achieve the same level
-			  of simulation accuracy, but won't lose realtime simulation (or be faster than realtime), given sufficient computational
-			  capacity.
+		Length of a simulation timestep in milliseconds (default 1/60s).
+		If necessary, this timestep is applied multiple times depending on the elapsed time since the last frame (e.g. if 50ms elapsed, 3
+		timesteps of 1/60s are performed), but at most maxSubSteps times per frame.
 	*/
-	void setBulletSimTimestepMsec(int msec);
+	void setBulletSimTimeStepMsec(int timeStep);
 
 	/*!
-		Parameter that is passed to bulletstepSimulation.
-		Specifies how many sub steps should be performed. Higher value means better simulation but lower performance.
+		Specifies how many sub steps should be performed at most for each render frame (default 1).
+		If this value is too low, the simulation will not run in real-time if the computer is not fast enough to render enough frames to
+		perform 1/timeStep time steps per second.
+		If this value is too high, more time is spent on simulation, increasing visualization lagginess on a slow computer.
 	*/
-	void setBulletSimMaxSubSteps(int n);
+	void setBulletSimMaxSubSteps(int maxSubSteps);
+
+	/*!
+		See setBulletSimTimeStepMsec()
+	 */
+	int getBulletSimTimeStepMsec() const { return bulletTimeStepMsec; }
+
+	/*!
+		See setBulletSimMaxSubSteps()
+	 */
+	int getBulletSimMaxSubSteps() const { return bulletMaxSubSteps; }
 
 protected:
 
@@ -158,7 +164,7 @@ protected:
 	SoSeparator* floor;
 	SoSelection* sceneGraph;
 
-	int bulletTimestepMsec;
+	int bulletTimeStepMsec;
 	int bulletMaxSubSteps;
 
 	bool enablePhysicsUpdates;

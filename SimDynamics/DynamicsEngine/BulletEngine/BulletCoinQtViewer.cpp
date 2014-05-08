@@ -18,7 +18,7 @@ namespace SimDynamics
 
 BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 {
-	bulletTimeStepMsec = 1.0f / 60.0f;
+	bulletTimeStepMsec = 16; // 60FPS
 	bulletMaxSubSteps = 1;
 	enablePhysicsUpdates = true;
 
@@ -288,14 +288,14 @@ void BulletCoinQtViewer::stopCB()
 void BulletCoinQtViewer::setBulletSimTimeStepMsec(int msec)
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-	VR_ASSERT(msec>=0);
+	VR_ASSERT(msec > 0);
 	bulletTimeStepMsec = msec;
 }
 
 void BulletCoinQtViewer::setBulletSimMaxSubSteps(int n)
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-	VR_ASSERT(n>=0);
+	VR_ASSERT(n > 0);
 	bulletMaxSubSteps = n;
 }
 

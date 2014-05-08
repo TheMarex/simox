@@ -169,7 +169,6 @@ void BulletCoinQtViewer::stepPhysics()
 
 		btScalar dt1 = btScalar(ms / 1000000.0f);
 
-		updateMotors(dt1);
 		// VR_INFO << "stepSimulation(" << dt1 << ", " << bulletMaxSubSteps << ", " << (bulletTimeStepMsec / 1000.0f) << ")" << endl;
 		bulletEngine->stepSimulation(dt1, bulletMaxSubSteps, bulletTimeStepMsec / 1000.0f);
 
@@ -179,22 +178,11 @@ void BulletCoinQtViewer::stepPhysics()
 }
 
 
-void BulletCoinQtViewer::updateMotors(float dt)
-{
-	std::vector<DynamicsRobotPtr> robots = bulletEngine->getRobots();
-	for (size_t i=0;i<robots.size();i++)
-	{
-		robots[i]->actuateJoints(dt);
-		robots[i]->updateSensors();
-	}
-}
-
 btScalar BulletCoinQtViewer::getDeltaTimeMicroseconds()
 {
 	btScalar dt = (btScalar)m_clock.getTimeMicroseconds();
 	m_clock.reset();
 	return dt;
-
 }
 
 void BulletCoinQtViewer::viewAll()
@@ -219,6 +207,11 @@ void BulletCoinQtViewer::addVisualization(DynamicsObjectPtr o, VirtualRobot::Sce
 		sceneGraph->addDeselectionCallback( deselectionCB, this );
 		addedVisualizations[o] = n;
 	}
+}
+
+void BulletCoinQtViewer::addStepCallback(BulletStepCallback callback, void* data)
+{
+	bulletEngine->addExternalCallback(callback, data);
 }
 
 void BulletCoinQtViewer::addVisualization(DynamicsRobotPtr r, VirtualRobot::SceneObject::VisualizationType visuType)

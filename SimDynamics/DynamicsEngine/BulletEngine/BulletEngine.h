@@ -33,6 +33,8 @@
 namespace SimDynamics
 {
 
+	typedef void (*BulletStepCallback)(void* data, btScalar timeStep);
+
 	class BulletEngineConfig : public DynamicsEngineConfig
 	{
 	public:
@@ -129,6 +131,11 @@ public:
 	void print();
 
 	/*!
+	 * Adds callback that is called each time bullet steps the engine.
+	 */
+	void addExternalCallback(BulletStepCallback function, void* data);
+
+	/*!
 		Transforms pose to bullet.
 		Translation is scaled from mm to m.
 	*/
@@ -139,6 +146,8 @@ public:
 	static btMatrix3x3 getRotMatrix(const Eigen::Matrix4f &pose);
 	static Eigen::Matrix4f getRotMatrix(const btMatrix3x3 &pose);
 protected:
+	// callback called each tick by bullet callback
+	void updateRobots(btScalar timeStep);
 
 	class CustomCollisionCallback : public btOverlapFilterCallback
 	{
@@ -163,6 +172,9 @@ protected:
 		BulletEngine* engine;
 	};
 
+	typedef std::pair<BulletStepCallback, void*> ExCallbackData;
+	std::vector<ExCallbackData> callbacks;
+	static void externalCallbacks(btDynamicsWorld *world, btScalar timeStep);
 
 	virtual bool addLink(BulletRobot::LinkInfo &l);
 	virtual bool removeLink(BulletRobot::LinkInfo &l);

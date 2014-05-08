@@ -112,6 +112,11 @@ public:
 	 */
 	int getBulletSimMaxSubSteps() const { return bulletMaxSubSteps; }
 
+	/*!
+	 * Adds callback that is called each time the engine is updated.
+	 */
+	void addStepCallback(BulletStepCallback callback, void* data);
+
 protected:
 
 	//checks if physics engine is enabled and performes a time step.
@@ -144,9 +149,6 @@ protected:
 	virtual void scheduleRedraw();
 
 	btScalar getDeltaTimeMicroseconds();
-
-	void updateMotors(float dt);
-
 
 	static void timerCB(void * data, SoSensor * sensor);
 	static void selectionCB( void *userdata, SoPath *path );

@@ -891,7 +891,7 @@ void BulletRobot::ensureKinematicConstraints()
 #endif
 }
 
-void BulletRobot::actuateJoints(float dt)
+void BulletRobot::actuateJoints(btScalar dt)
 {
     //cout << "=== === BulletRobot: actuateJoints() 1 === " << endl;
 

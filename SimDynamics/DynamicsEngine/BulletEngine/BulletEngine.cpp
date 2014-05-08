@@ -84,6 +84,7 @@ bool BulletEngine::init( BulletEngineConfigPtr config )
 	//only enable split impulse position correction when the penetration is deeper than this m_splitImpulsePenetrationThreshold, otherwise use the regular velocity/position constraint coupling (Baumgarte).
 	//solverInfo.m_splitImpulsePenetrationThreshold = btScalar(-0.02);
 
+	dynamicsWorld->setInternalTickCallback(externalCallbacks, this, true);
 	return true;
 }
 
@@ -179,7 +180,7 @@ bool BulletEngine::addObject( DynamicsObjectPtr o )
 		btColFlag = 0;
 		break;
 
-	}
+    }
 	btObject->getRigidBody()->setCollisionFlags(btColFlag);
 	btObject->getRigidBody()->setRestitution(bulletConfig->bulletObjectRestitution);
 	btObject->getRigidBody()->setFriction(bulletConfig->bulletObjectFriction);
@@ -199,7 +200,7 @@ bool BulletEngine::addObject( DynamicsObjectPtr o )
 
 bool BulletEngine::removeObject( DynamicsObjectPtr o )
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	BulletObjectPtr btObject = boost::dynamic_pointer_cast<BulletObject>(o);
 	if (!btObject)
 	{
@@ -227,10 +228,10 @@ btDynamicsWorld* BulletEngine::getBulletWorld()
 
 void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Vector3f &up )
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	DynamicsEngine::createFloorPlane(pos,up);
-	float size = floorExtendMM;//50000.0f; // mm
-	float sizeSmall = floorDepthMM; 500.0f;
+    float size = floorExtendMM;//50000.0f; // mm
+    float sizeSmall = floorDepthMM; 500.0f;
 	float w = size;
 	float h = size;
 	float d = sizeSmall;
@@ -268,20 +269,20 @@ void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Ve
 
 btMatrix3x3 BulletEngine::getRotMatrix(const Eigen::Matrix4f &pose)
 {
-	btMatrix3x3 rot(pose(0,0), pose(0,1), pose(0,2),
-		pose(1,0), pose(1,1), pose(1,2),
-		pose(2,0), pose(2,1), pose(2,2));
-	return rot;
+    btMatrix3x3 rot(pose(0,0), pose(0,1), pose(0,2),
+        pose(1,0), pose(1,1), pose(1,2),
+        pose(2,0), pose(2,1), pose(2,2));
+    return rot;
 }
 
 Eigen::Matrix4f BulletEngine::getRotMatrix(const btMatrix3x3 &pose)
 {
-	Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
+    Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
 
-	for (int a=0;a<3;a++)
-		for (int b=0;b<3;b++)
-			rot(a,b) = pose[a][b];
-	return rot;
+    for (int a=0;a<3;a++)
+        for (int b=0;b<3;b++)
+            rot(a,b) = pose[a][b];
+    return rot;
 }
 
 btTransform BulletEngine::getPoseBullet( const Eigen::Matrix4f &pose, bool scaling )
@@ -291,9 +292,9 @@ btTransform BulletEngine::getPoseBullet( const Eigen::Matrix4f &pose, bool scali
 	if (scaling && DynamicsWorld::convertMM2M)
 		sc = 0.001f; // mm -> m
 	btVector3 pos(pose(0,3)*sc,pose(1,3)*sc,pose(2,3)*sc);
-	res.setOrigin(pos);
-	btMatrix3x3 rot = getRotMatrix(pose);
-	//VirtualRobot::MathTools::Quaternion q = VirtualRobot::MathTools::eigen4f2quat(pose);
+    res.setOrigin(pos);
+    btMatrix3x3 rot = getRotMatrix(pose);
+    //VirtualRobot::MathTools::Quaternion q = VirtualRobot::MathTools::eigen4f2quat(pose);
 	//btQuaternion rot(q.x,q.y,q.z,q.w);
 	res.setBasis(rot);
 	return res;
@@ -312,7 +313,7 @@ Eigen::Matrix4f BulletEngine::getPoseEigen( const btTransform &pose, bool scalin
 	qvr.z = q.getZ();
 	qvr.w = q.getW();
 	Eigen::Matrix4f res = VirtualRobot::MathTools::quat2eigen4f(qvr);*/
-	Eigen::Matrix4f res = getRotMatrix(pose.getBasis());
+    Eigen::Matrix4f res = getRotMatrix(pose.getBasis());
 	res(0,3) = pose.getOrigin().getX()*sc;
 	res(1,3) = pose.getOrigin().getY()*sc;
 	res(2,3) = pose.getOrigin().getZ()*sc;
@@ -345,7 +346,7 @@ Eigen::Vector3f BulletEngine::getVecEigen( const btVector3 &vec, bool scaling )
 
 bool BulletEngine::addRobot( DynamicsRobotPtr r )
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	BulletRobotPtr btRobot = boost::dynamic_pointer_cast<BulletRobot>(r);
 	if (!btRobot)
 	{
@@ -368,9 +369,39 @@ bool BulletEngine::addRobot( DynamicsRobotPtr r )
 	return DynamicsEngine::addRobot(r);
 }
 
+void BulletEngine::addExternalCallback(BulletStepCallback function, void* data)
+{
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+
+	callbacks.push_back(ExCallbackData(function, data));
+}
+
+void BulletEngine::externalCallbacks(btDynamicsWorld *world, btScalar timeStep)
+{
+    BulletEngine *e = static_cast<BulletEngine *>(world->getWorldUserInfo());
+    boost::recursive_mutex::scoped_lock scoped_lock(e->engineMutex);
+
+	e->updateRobots(timeStep);
+
+	for (int i = 0; i < e->callbacks.size(); i++)
+	{
+		e->callbacks[i].first(e->callbacks[i].second, timeStep);
+	}
+}
+
+
+void BulletEngine::updateRobots(btScalar timeStep)
+{
+	for (size_t i=0; i < robots.size();i++)
+	{
+		robots[i]->actuateJoints(timeStep);
+		robots[i]->updateSensors();
+	}
+}
+
 bool BulletEngine::removeRobot( DynamicsRobotPtr r )
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	BulletRobotPtr btRobot = boost::dynamic_pointer_cast<BulletRobot>(r);
 	if (!btRobot)
 	{
@@ -466,7 +497,7 @@ void BulletEngine::print()
 
 void BulletEngine::activateAllObjects()
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	for (size_t i=0;i<objects.size();i++)
 	{
 		BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(objects[i]);
@@ -480,7 +511,7 @@ void BulletEngine::activateAllObjects()
 
 std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	//Assume world->stepSimulation or world->performDiscreteCollisionDetection has been called
 
 	std::vector<DynamicsEngine::DynamicsContactInfo> result;

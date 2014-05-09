@@ -630,8 +630,13 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
         filepath = fs::canonical(fs::path(filename));
     }
     else
-        THROW_VR_EXCEPTION("Could not make path " + filename + " relative to " + basePath);
-
+	{
+		// combine paths
+		fs::path res = fs::path(basePath) / fs::path(filename).filename();
+		filename = res.generic_string();
+		return;
+        //THROW_VR_EXCEPTION("Could not make path " + filename + " relative to " + basePath);
+	}
 	fs::path basePathDir = fs::canonical(fs::path(basePath));
     fs::path::iterator itBasePath = basePathDir.begin();
     fs::path::iterator itFile = filepath.begin();

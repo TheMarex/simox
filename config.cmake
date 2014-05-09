@@ -163,7 +163,7 @@ IF (NOT Simox_CONFIGURED)
 	endif (Eigen3_FOUND)
 	
 	#### BOOST
-	FIND_PACKAGE(Boost 1.42.0 COMPONENTS filesystem system unit_test_framework program_options thread REQUIRED)
+	FIND_PACKAGE(Boost 1.48.0 COMPONENTS filesystem system unit_test_framework program_options thread REQUIRED)
 	if (Boost_FOUND)
 	    MESSAGE (STATUS "Boost found at: ${Boost_INCLUDE_DIR}")
 	    SET (Simox_EXTERNAL_INCLUDE_DIRS ${Simox_EXTERNAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})

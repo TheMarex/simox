@@ -19,7 +19,9 @@
 
 //#include <boost/foreach.hpp>
 //#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <sstream>
+
 using namespace std;
 using namespace VirtualRobot;
 
@@ -274,7 +276,20 @@ void showRobotWindow::displayPhysics()
 void showRobotWindow::exportVRML()
 {
     if (!robot) return;
-
+#if 0
+	// XML
+    QString fi = QFileDialog::getSaveFileName(this, tr("xml File"), QString(), tr("xml Files (*.xml)"));
+    std::string s = std::string(fi.toAscii());
+    if (!s.empty())
+    {
+		
+		boost::filesystem::path p1(s);
+		std::string fn = p1.filename().generic_string();
+		std::string fnPath = p1.parent_path().generic_string();
+		RobotIO::saveXML(robot,fn,fnPath);
+    }
+#else
+	// VRML
     QString fi = QFileDialog::getSaveFileName(this, tr("VRML 2.0 File"), QString(), tr("VRML Files (*.wrl)"));
     std::string s = std::string(fi.toAscii());
     if (!s.empty())
@@ -283,6 +298,7 @@ void showRobotWindow::exportVRML()
         visualization = robot->getVisualization<CoinVisualization>(colModel);
         visualization->exportToVRML2(s);
     }
+#endif
 }
 
 void showRobotWindow::showRobot()

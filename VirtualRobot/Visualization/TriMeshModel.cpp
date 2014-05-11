@@ -81,15 +81,18 @@ void TriMeshModel::addTriangleWithFace(Eigen::Vector3f& vertex1, Eigen::Vector3f
  */
 Eigen::Vector3f TriMeshModel::CreateNormal(Eigen::Vector3f& vertex1, Eigen::Vector3f& vertex2, Eigen::Vector3f& vertex3)
 {
+    static bool warningPrinted = false;
 	// calculate normal
 	Eigen::Vector3f v1v2 = vertex2 - vertex1;
 	Eigen::Vector3f v1v3 = vertex3 - vertex1;
 	Eigen::Vector3f normal = v1v2.cross(v1v3);
 
 	float l = normal.norm();
-	if (l<1e-10)
-		VR_INFO << ": Warning: tiny normal: " << l << "\n";
-	else
+    if (l < 1e-10 && !warningPrinted)
+    {
+        VR_INFO << ": Warning: tiny normal found in TriMeshModel. This error is printed only once!\n";
+        warningPrinted = true;
+    } else
 		normal /= l;
 
 	return normal;

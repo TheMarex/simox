@@ -253,7 +253,13 @@ void GenericIKWindow::selectKC(int nr)
 	}*/
 	box2TCP();
 
-	ikSolver.reset(new GenericIKSolver(kc,JacobiProvider::eSVDDamped));
+	if (kc->getNode(kc->getSize() - 1)->isTranslationalJoint())
+	{
+		ikGazeSolver.reset(new GazeIK(kc, boost::dynamic_pointer_cast<RobotNodePrismatic>(kc->getNode(kc->getSize() - 1))));
+	} else
+		ikGazeSolver.reset();
+
+	ikSolver.reset(new GenericIKSolver(kc, JacobiProvider::eSVDDamped));
 	//ikSolver->getDifferentialIK()->setVerbose(true);
 	/*Eigen::VectorXf js(d);
 	js.setConstant(1.0f);
@@ -293,7 +299,7 @@ void GenericIKWindow::solve()
 	//ikSolver->setVerbose(true);
 	Eigen::Matrix4f targetPose = box->getGlobalPose();
 
-
+	/*
 	if (kc && kc->getNode(kc->getSize() - 1)->isTranslationalJoint() && kc->getNode(kc->getSize() - 1)->getParent())
 	{
 		// setup gaze IK
@@ -301,11 +307,17 @@ void GenericIKWindow::solve()
 		cout << "Setting initial value of translation joint to :" << v << endl;
 		ikSolver->setupTranslationalJoint(kc->getNode(kc->getSize() - 1), v);
 		kc->getNode(kc->getSize() - 1)->setJointValue(v);
-	}
-
-
+	}*/
 	clock_t startT = clock();
-	ikSolver->solve(targetPose,s,50);
+
+	if (ikGazeSolver)
+	{
+		ikGazeSolver->solve(targetPose.block(0,3,3,1));
+	}
+	else
+	{
+		ikSolver->solve(targetPose, s, 50);
+	}
 	clock_t endT = clock();
 
 	Eigen::Matrix4f actPose = tcp->getGlobalPose();

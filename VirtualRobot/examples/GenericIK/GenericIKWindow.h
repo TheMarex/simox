@@ -11,6 +11,7 @@
 #include <VirtualRobot/Visualization/VisualizationFactory.h>
 #include <VirtualRobot/Visualization/CoinVisualization/CoinVisualization.h>
 #include <VirtualRobot/IK/GenericIKSolver.h>
+#include <VirtualRobot/IK/GazeIK.h>
 #include <string.h>
 #include <QtCore/QtGlobal>
 #include <QtGui/QtGui>
@@ -79,6 +80,7 @@ protected:
 	std::vector<VirtualRobot::RobotNodeSetPtr> kinChains;
 
 	VirtualRobot::GenericIKSolverPtr ikSolver;
+	VirtualRobot::GazeIKPtr ikGazeSolver;
 	VirtualRobot::ObstaclePtr box;
 
 	bool useColModel;

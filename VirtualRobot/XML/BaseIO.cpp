@@ -617,7 +617,8 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
 {
 	if (filename.empty())
 		return;
-
+#if (BOOST_VERSION>=104800)
+    // cononical needs boost version >=1.48
     namespace fs = boost::filesystem;    
 
     fs::path filepath;
@@ -658,6 +659,25 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
     }
 
     filename = newPath.generic_string();
+#else
+	// version compatible with boost below version 1.48,
+	// may be buggy in some cases... 
+	boost::filesystem::path diffpath;
+	boost::filesystem::path tmppath = filename;
+	while(tmppath != basePath)
+	{
+		diffpath = tmppath.filename() / diffpath;
+		tmppath = tmppath.parent_path();
+		if (tmppath.empty())
+		{
+			// no relative path found, take complete path
+			diffpath = filename;
+			break;
+		}
+	}
+
+	filename = diffpath.generic_string();
+#endif
 }
 
 

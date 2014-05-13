@@ -42,6 +42,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <cmath>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/algorithm/string.hpp>

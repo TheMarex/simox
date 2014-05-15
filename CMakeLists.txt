@@ -74,29 +74,37 @@ export(TARGETS ${SIMOX_EXPORT_TARGET_LIST}
 export(PACKAGE Simox)
 
 # Create the SimoxConfig.cmake and SimoxVersion files
-file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
-   "${INSTALL_INCLUDE_DIR}")
 # ... for the build tree
 set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
-set (Simox_DATA_PATH ${Simox_DATA_DIR})
-set (Simox_MACROS_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/CMakeModules")
-configure_file(CMakeModules/SimoxConfig.cmake.in
-  "${PROJECT_BINARY_DIR}/SimoxConfig.cmake" @ONLY)
+set(Simox_DATA_PATH ${Simox_DATA_DIR})
+set(Simox_MACROS_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/CMakeModules")
+
+configure_file(CMakeModules/SimoxBuildTreeSettings.cmake.in
+    "${PROJECT_BINARY_DIR}/SimoxBuildTreeSettings.cmake" @ONLY)
+
+
 # ... for the install tree
-set(CONF_INCLUDE_DIRS "\${Simox_CMAKE_DIR}/${REL_INCLUDE_DIR}")
-set (Simox_DATA_PATH ${Simox_INSTALL_DATA_DIR})
-set (Simox_MACROS_INCLUDE_DIR "\${Simox_CMAKE_DIR}")
+file(RELATIVE_PATH RELATIVE_INSTALL_DIR
+     "${CMAKE_INSTALL_PREFIX}/${INSTALL_CMAKE_DIR}"
+     "${CMAKE_INSTALL_PREFIX}")
+
+set(CONF_INCLUDE_DIRS "${INSTALL_INCLUDE_DIR}")
+set(Simox_DATA_PATH "${Simox_INSTALL_DATA_DIR}")
+set(Simox_MACROS_INCLUDE_DIR "\${Simox_CMAKE_DIR}")
+
 configure_file(CMakeModules/SimoxConfig.cmake.in
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/SimoxConfig.cmake" @ONLY)
+    "${PROJECT_BINARY_DIR}/SimoxConfig.cmake" @ONLY)
+
 # ... for both
 configure_file(CMakeModules/SimoxConfigVersion.cmake.in
-  "${PROJECT_BINARY_DIR}/SimoxConfigVersion.cmake" @ONLY)
+    "${PROJECT_BINARY_DIR}/SimoxConfigVersion.cmake" @ONLY)
 
-# Install the SimoxConfig.cmake and SimoxConfigVersion.cmake
+# Install the SimoxBuildTreeSettings.cmake, SimoxConfig.cmake, and SimoxConfigVersion.cmake
 install(FILES
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/SimoxConfig.cmake"
-  "${PROJECT_BINARY_DIR}/SimoxConfigVersion.cmake"
-  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+    "${PROJECT_BINARY_DIR}/SimoxBuildTreeSettings.cmake"
+    "${PROJECT_BINARY_DIR}/SimoxConfig.cmake"
+    "${PROJECT_BINARY_DIR}/SimoxConfigVersion.cmake"
+    DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 install(FILES
     "${PROJECT_SOURCE_DIR}/CMakeModules/SimoxMacros.cmake"

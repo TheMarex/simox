@@ -96,10 +96,8 @@ Eigen::MatrixXf CoMIK::getJacobianOfCoM(RobotNodePtr node)
     {
         VR_INFO << "One dimensional CoMs not supported." << endl;
     }
-    else
-    {
-       return position;
-    }
+
+    return position;
 }
 
 Eigen::MatrixXf CoMIK::getJacobianMatrix(SceneObjectPtr tcp)

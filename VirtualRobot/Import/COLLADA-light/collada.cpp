@@ -108,7 +108,7 @@ pugi::xml_node resolveSIDREF(pugi::xml_node node,std::string sidref,std::string 
 
 struct ModelWalker : ColladaWalker {
     ModelWalker(StructureMap _structureMap)  : ColladaWalker(_structureMap,XmlMap()){}
-#ifdef USE_SENSORS
+#ifdef COLLADA_IMPORT_USE_SENSORS
     void setSensorMap(XmlVectorMap _sensorMap ){
         this->sensorMap = _sensorMap;
     }
@@ -142,7 +142,7 @@ struct ModelWalker : ColladaWalker {
         } else {
             if (string("link").compare(node.name())==0){
                     parents.back()->preJoint = stack[depth()];  // QUICKFIX -- LOGIC ERROR IN ROBOT EDITOR
-#ifdef USE_SENSORS
+#ifdef COLLADA_IMPORT_USE_SENSORS
                     if (sensorMap.count(node)){
                         parents.back()->sensors = sensorMap[node];
                     }
@@ -158,7 +158,7 @@ struct ModelWalker : ColladaWalker {
     ColladaRobotNodeSet parents;
     std::vector<XmlNodeVector> stack;
     TraversalStack<XmlNodeVector> travstack;
-#ifdef USE_SENSORS
+#ifdef COLLADA_IMPORT_USE_SENSORS
     XmlVectorMap sensorMap;
 #endif
 };
@@ -193,7 +193,7 @@ void ColladaRobot::parse(std::string fileName){
     pugi::xpath_variable_set vars;
     vars.set("kinematicsScene", scene.select_nodes("//library_kinematics_scenes/kinematics_scene[@id=substring(//scene/instance_kinematics_scene/@url,2)]"));
 
-#ifdef USE_SENSORS
+#ifdef COLLADA_IMPORT_USE_SENSORS
     XmlVectorMap sensorMap;
 #endif
 
@@ -215,7 +215,7 @@ void ColladaRobot::parse(std::string fileName){
             jointMap[joint_axis] = make_pair(motion_axis_info.node(),kinematics_axis_info);
         }
 
-#ifdef USE_SENSORS
+#ifdef COLLADA_IMPORT_USE_SENSORS
         // Get sensors
         BOOST_FOREACH(pugi::xpath_node sensor, motion_articulated_system.select_nodes(".//extra[@type='attach_sensor']")){
             pugi::xml_node link = resolveSIDREF(collada, sensor.node().select_single_node(".//frame_origin/@link").attribute().value(),IN_KINEMATICS_MODELS);
@@ -297,7 +297,7 @@ void ColladaRobot::parse(std::string fileName){
     BOOST_FOREACH(pugi::xml_node model, kinematicsModels){
         cout << model.name() <<endl;
         ModelWalker modelWalker(structureMap);
-#ifdef USE_SENSORS
+#ifdef COLLADA_IMPORT_USE_SENSORS
         modelWalker.setSensorMap(sensorMap);
 #endif
         BOOST_FOREACH(pugi::xpath_node link, model.select_nodes("./technique_common/link")){

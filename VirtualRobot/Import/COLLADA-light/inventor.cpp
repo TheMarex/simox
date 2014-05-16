@@ -116,7 +116,7 @@ void InventorRobotNode::initialize(){
 
     SoSphere * sphere = new SoSphere;
     this->preJointTransformation->addChild(sphere);
-    sphere->radius=0.01;
+    sphere->radius=0.01f;
     /* SoPendulum seems broken :(
     SoPendulum *pendulum = new SoPendulum;
     this->preJointTransformation->addChild(pendulum);
@@ -187,7 +187,7 @@ void addGeometry(SoSeparator * separator,const pugi::xml_node &node){
              * Inventor stores vertices in a vector with a -1 between vertices of different faces: (vertex11, vertex12, vertex13, -1, vertex21, vertex22, ...)
              * This leads to the follwing loop that creates the vertex indices for InventorRobot
              */
-            for (int pInd=vertexOffset, vOffset=0, vInd=0, countInd=0; pInd<p.size(); pInd+=stride,vInd++){
+            for (int pInd=vertexOffset, vOffset=0, vInd=0, countInd=0; pInd<int(p.size()); pInd+=stride,vInd++){
                 if (vInd>=vcount[countInd]){
                     //vertexIndices[vInd+vOffset] = SO_END_FACE_INDEX;
                     faceSet->coordIndex.set1Value(vInd+vOffset,SO_END_FACE_INDEX);
@@ -210,8 +210,8 @@ void addGeometry(SoSeparator * separator,const pugi::xml_node &node){
 
 bool InventorWalker::for_each(pugi::xml_node &node)
 {
-    if (depth()+1>stack.size()){}
-    while (depth()+1<stack.size()){
+    if (depth()+1>int(stack.size())){}
+    while (depth() + 1<int(stack.size())){
         stack.pop_back();
         parents.pop_back();
     }

@@ -10,7 +10,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
-#define USE_SENSORS
+#define COLLADA_IMPORT_USE_SENSORS
 
 namespace Collada {
 
@@ -36,7 +36,7 @@ namespace Collada {
         pugi::xml_node motion_info;
         pugi::xml_node kinematics_info;
         XmlNodeVector rigidBodies;
-#ifdef USE_SENSORS
+#ifdef COLLADA_IMPORT_USE_SENSORS
         XmlNodeVector sensors;
 #endif
         ColladaRobotNodeSet children;

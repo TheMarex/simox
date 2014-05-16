@@ -1,13 +1,15 @@
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
-#include "inventor.h"
-#include "ColladaSimox.h"
 
 #include <VirtualRobot/VirtualRobotException.h>
 #include <VirtualRobot/Nodes/RobotNodePrismatic.h>
 #include <VirtualRobot/Nodes/RobotNodeRevolute.h>
 #include <VirtualRobot/RobotNodeSet.h>
 #include <VirtualRobot/Visualization/CoinVisualization/CoinVisualizationNode.h>
+
+#include "inventor.h"
+#include "ColladaSimox.h"
+
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
 
 using namespace std;
 using namespace boost;
@@ -165,8 +167,8 @@ void ColladaSimoxRobotNode::initialize(){
     }
 
     if (this->type == ColladaRobotNode::eREVOLUTE){
-        jointLimitLow = jointLimitLow/180.0*M_PI;
-        jointLimitHigh= jointLimitHigh/180.0*M_PI;
+        jointLimitLow = float(jointLimitLow/180.0*M_PI);
+        jointLimitHigh= float(jointLimitHigh/180.0*M_PI);
             this->simoxRobotNode = revoluteNodeFactory->createRobotNode(simoxRobot,this-> name, visualizationNode, collisionModel,
                 jointLimitLow, jointLimitHigh, jointOffset, preJointTransformation, axis, Eigen::Vector3f::Zero(), physics);
     }else if (this->type == ColladaRobotNode::ePRISMATIC){
@@ -180,7 +182,7 @@ void ColladaSimoxRobotNode::initialize(){
         cout << "Node " << this->name << " not Created" << endl;
     }
 
-#ifdef USE_SENSORS
+#ifdef COLLADA_IMPORT_USE_SENSORS
     BOOST_FOREACH(pugi::xml_node sensor, this->sensors){
         string sensorName = sensor.attribute("name").value();
         Eigen::Matrix4f sensorTransformation=Eigen::Matrix4f::Identity();

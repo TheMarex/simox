@@ -40,6 +40,8 @@
   planning. Simox consists of three libraries (VirtualRobot, Saba and GraspStudio) and numerous 
   examples showing how these libraries can be used to build complex tools in the
   context of mobile manipulation. 
+
+  Further information and documentation can be found at the wiki pages: http://sourceforge.net/apps/mediawiki/simox
   
   \section VirtualRobot VirtualRobot
   

@@ -17,6 +17,7 @@ namespace SimDynamics
 
 
 BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
+: warned_norealtime(false)
 {
 	bulletTimeStepMsec = 16; // 60FPS
 	bulletMaxSubSteps = 1;
@@ -164,7 +165,15 @@ void BulletCoinQtViewer::stepPhysics()
 		} */
 
 		if ((ms / 1000.0f) > bulletMaxSubSteps * bulletTimeStepMsec) {
-			VR_INFO << "Elapsed time (" << (ms / 1000.0f) << "ms) too long: Simulation is not running in realtime." << endl;
+			if (!warned_norealtime)
+			{
+				VR_INFO << "Elapsed time (" << (ms / 1000.0f) << "ms) too long: Simulation is not running in realtime." << endl;
+				warned_norealtime = true;
+			}
+		}
+		else
+		{
+			warned_norealtime = false;
 		}
 
 		btScalar dt1 = btScalar(ms / 1000000.0f);

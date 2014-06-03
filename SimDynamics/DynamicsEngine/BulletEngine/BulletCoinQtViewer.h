@@ -169,6 +169,8 @@ protected:
 	int bulletTimeStepMsec;
 	int bulletMaxSubSteps;
 
+	bool warned_norealtime;
+
 	bool enablePhysicsUpdates;
 
 	boost::recursive_mutex engineMutex;

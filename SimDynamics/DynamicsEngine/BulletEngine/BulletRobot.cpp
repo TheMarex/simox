@@ -900,7 +900,7 @@ void BulletRobot::actuateJoints(btScalar dt)
 
     int jointCounter = 0;
 
-    while (it!=actuationTargets.end())
+    for (; it != actuationTargets.end(); it++)
     {
         //BulletObjectPtr drn;
         //if (it->second.dynNode)
@@ -1095,9 +1095,8 @@ void BulletRobot::actuateJoints(btScalar dt)
             */
 #endif
         }
-
-        it++;
     }
+
     setPoseNonActuatedRobotNodes();
 }
 

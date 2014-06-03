@@ -8,6 +8,7 @@
 #include <VirtualRobot/Obstacle.h>
 #include <VirtualRobot/Nodes/RobotNodePrismatic.h>
 #include <VirtualRobot/Nodes/RobotNodeFixed.h>
+#include <VirtualRobot/RobotNodeSet.h>
 #include <VirtualRobot/Nodes/RobotNodeRevolute.h>
 #include <VirtualRobot/Nodes/ForceTorqueSensor.h>
 
@@ -1407,6 +1408,40 @@ Eigen::Matrix4f BulletRobot::getComGlobal( VirtualRobot::RobotNodePtr rn )
         return Eigen::Matrix4f::Identity();
     }
     return bo->getComGlobal();
+}
+
+Eigen::Vector3f BulletRobot::getComGlobal( VirtualRobot::RobotNodeSetPtr set)
+{
+	Eigen::Vector3f com = Eigen::Vector3f::Zero();
+	float totalMass = 0.0;
+	for (int i = 0; i < set->getSize(); i++)
+	{
+		VirtualRobot::RobotNodePtr node = (*set)[i];
+		BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(getDynamicsRobotNode(node));
+		Eigen::Matrix4f pose = bo->getComGlobal();
+		com += node->getMass() * pose.block(0, 3, 3, 1);
+		totalMass += node->getMass();
+	}
+
+	com *= 1.0f/totalMass;
+	return com;
+}
+
+Eigen::Vector3f BulletRobot::getComGlobalVelocity( VirtualRobot::RobotNodeSetPtr set)
+{
+	Eigen::Vector3f com = Eigen::Vector3f::Zero();
+	float totalMass = 0.0;
+	for (int i = 0; i < set->getSize(); i++)
+	{
+		VirtualRobot::RobotNodePtr node = (*set)[i];
+		BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(getDynamicsRobotNode(node));
+		Eigen::Vector3f vel = bo->getLinearVelocity();
+		com += node->getMass() * vel;
+		totalMass += node->getMass();
+	}
+
+	com *= 1.0f/totalMass;
+	return com;
 }
 
 void BulletRobot::setPoseNonActuatedRobotNodes()

@@ -42,6 +42,7 @@ private:
 	std::vector<Eigen::VectorXf> actualAngleLog;
 	std::vector<Eigen::VectorXf> actualVelocityLog;
 	std::vector<Eigen::Vector3f> actualCoMLog;
+	std::vector<Eigen::Vector3f> actualCoMVelocityLog;
 	std::vector<float> timestamps;
 	float timestamp;
 	bool running;

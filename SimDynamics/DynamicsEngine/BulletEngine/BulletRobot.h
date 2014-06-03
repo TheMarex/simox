@@ -128,6 +128,8 @@ public:
         Returns the CoM pose, which is reported by bullet
     */
     virtual Eigen::Matrix4f getComGlobal(VirtualRobot::RobotNodePtr rn);
+	Eigen::Vector3f getComGlobal( VirtualRobot::RobotNodeSetPtr set);
+	Eigen::Vector3f getComGlobalVelocity( VirtualRobot::RobotNodeSetPtr set);
 
 	// experimental...
 	virtual void ensureKinematicConstraints();

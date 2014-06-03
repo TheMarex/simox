@@ -36,6 +36,9 @@ void BulletRobotLogger::writeToFile(const std::string& path)
 	output << "CoM X" << ",";
 	output << "CoM Y" << ",";
 	output << "CoM Z" << ",";
+	output << "CoMVelocity X" << ",";
+	output << "CoMVelocity Y" << ",";
+	output << "CoMVelocity Z" << ",";
 	output << std::endl;
 
 	for (int frame = 0; frame < num_frames; frame++)
@@ -52,6 +55,9 @@ void BulletRobotLogger::writeToFile(const std::string& path)
 		output << actualCoMLog[frame].x() << ",";
 		output << actualCoMLog[frame].y() << ",";
 		output << actualCoMLog[frame].z() << ",";
+		output << actualCoMVelocityLog[frame].x() << ",";
+		output << actualCoMVelocityLog[frame].y() << ",";
+		output << actualCoMVelocityLog[frame].z() << ",";
 		output << std::endl;
 	}
 }
@@ -91,6 +97,7 @@ void BulletRobotLogger::log(btScalar dt)
 	}
 
 	actualCoMLog.push_back(bodyNodes->getCoM());
+	actualCoMVelocityLog.push_back(robot->getComGlobalVelocity(bodyNodes));
 	actualVelocityLog.push_back(actualVelocity);
 	actualAngleLog.push_back(actualAngle);
 	targetAngleLog.push_back(targetAngle);

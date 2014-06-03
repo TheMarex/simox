@@ -71,7 +71,8 @@ bool BulletEngine::init( BulletEngineConfigPtr config )
 	solverInfo.m_numIterations = config->bulletSolverIterations;
 	solverInfo.m_globalCfm = config->bulletSolverGlobalContactForceMixing;
 	solverInfo.m_erp = config->bulletSolverGlobalErrorReductionParameter;
-	//solverInfo.m_solverMode |= SOLVER_USE_2_FRICTION_DIRECTIONS;
+	solverInfo.m_solverMode |= SOLVER_USE_2_FRICTION_DIRECTIONS;
+	solverInfo.m_sor = config->bulletSolverSuccessiveOverRelaxation;
 
 	/*
 	By default, Bullet solves positional constraints and velocity constraints coupled together.
@@ -79,10 +80,10 @@ bool BulletEngine::init( BulletEngineConfigPtr config )
 	Instead of coupled positional and velocity constraint solving, the two can be solved separately using the 'split impulse' option.
 	This means that recovering from deep penetrations doesn't add any velocity. You can enable the option using:
 	*/
-	//solverInfo.m_splitImpulse = 1; //enable split impulse feature
+	solverInfo.m_splitImpulse = 1; //enable split impulse feature
 	//optionally set the m_splitImpulsePenetrationThreshold (only used when m_splitImpulse  is enabled)
 	//only enable split impulse position correction when the penetration is deeper than this m_splitImpulsePenetrationThreshold, otherwise use the regular velocity/position constraint coupling (Baumgarte).
-	//solverInfo.m_splitImpulsePenetrationThreshold = btScalar(-0.02);
+	solverInfo.m_splitImpulsePenetrationThreshold = config->bulletSolverSplitImpulsePenetrationThreshold;
 
 	dynamicsWorld->setInternalTickCallback(externalCallbacks, this, true);
 	return true;

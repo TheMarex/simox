@@ -46,12 +46,15 @@ namespace SimDynamics
 			//bulletObjectDampingAngular = btScalar(0.85f);
 			bulletObjectDampingAngular = btScalar(0.1f);
 			bulletObjectDeactivation = btScalar(5.0);//1.0);
-			bulletObjectSleepingThresholdLinear = btScalar(0.05f);//1.5);
-			bulletObjectSleepingThresholdAngular = btScalar(0.05f);//2.5);
+			bulletObjectSleepingThresholdLinear = btScalar(0.005f);//1.5);
+			bulletObjectSleepingThresholdAngular = btScalar(0.005f);//2.5);
 
 			bulletSolverIterations = 100;
 			bulletSolverGlobalContactForceMixing = 0;
-			bulletSolverGlobalErrorReductionParameter = btScalar(0.5);//0.1);
+			bulletSolverGlobalErrorReductionParameter = btScalar(0.2);//0.1);
+			bulletSolverSuccessiveOverRelaxation = 1.3;
+			bulletSolverContactSurfaceLayer = 0.001;
+			bulletSolverSplitImpulsePenetrationThreshold = -0.01;
 		}
 
 		virtual ~BulletEngineConfig(){}
@@ -66,7 +69,10 @@ namespace SimDynamics
 		btScalar bulletObjectDeactivation;
 		int bulletSolverIterations;
 		btScalar bulletSolverGlobalContactForceMixing; // allow to violate constraints (eg joint limits). A value>0 may increase stablity. (standard:0)
-		btScalar bulletSolverGlobalErrorReductionParameter; // How hard should the solver try to correct misaligned joints/constraints/links. (standard 0.2)
+		btScalar bulletSolverGlobalErrorReductionParameter; // How hard should the solver try to correct misaligned joints/constraints/links. (standard 0.2
+		btScalar bulletSolverSuccessiveOverRelaxation;
+		btScalar bulletSolverContactSurfaceLayer;
+		btScalar bulletSolverSplitImpulsePenetrationThreshold;
 	};
 
 	typedef boost::shared_ptr<BulletEngineConfig> BulletEngineConfigPtr;

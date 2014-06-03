@@ -21,7 +21,7 @@ namespace SimDynamics {
 BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
     : DynamicsObject(o)
 {
-	float interatiaFactor = 1.0f;
+	double interatiaFactor = 1.0f;
 #ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
     interatiaFactor = 5.0f;
 #endif
@@ -131,7 +131,7 @@ btConvexHullShape* BulletObject::createConvexHullShape(VirtualRobot::TriMeshMode
     comLoc = (sceneObject->getGlobalPoseVisualization().inverse()*comLoc);
 	com = comLoc.block(0,3,3,1);
 	
-	float sc = 1.0f;
+	double sc = 1.0f;
 	if (DynamicsWorld::convertMM2M)
 		sc = 0.001f;
 

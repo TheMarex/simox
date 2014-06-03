@@ -230,11 +230,11 @@ void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Ve
 {
     boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	DynamicsEngine::createFloorPlane(pos,up);
-    float size = floorExtendMM;//50000.0f; // mm
-    float sizeSmall = floorDepthMM; 500.0f;
-	float w = size;
-	float h = size;
-	float d = sizeSmall;
+    double size = floorExtendMM;//50000.0f; // mm
+    double sizeSmall = floorDepthMM; 500.0f;
+	double w = size;
+	double h = size;
+	double d = sizeSmall;
 	if (up(1) == 0 && up(2) == 0)
 	{
 		w = sizeSmall;
@@ -288,7 +288,7 @@ Eigen::Matrix4f BulletEngine::getRotMatrix(const btMatrix3x3 &pose)
 btTransform BulletEngine::getPoseBullet( const Eigen::Matrix4f &pose, bool scaling )
 {
 	btTransform res;
-	float sc = 1.0f;
+	double sc = 1.0f;
 	if (scaling && DynamicsWorld::convertMM2M)
 		sc = 0.001f; // mm -> m
 	btVector3 pos(pose(0,3)*sc,pose(1,3)*sc,pose(2,3)*sc);
@@ -302,7 +302,7 @@ btTransform BulletEngine::getPoseBullet( const Eigen::Matrix4f &pose, bool scali
 
 Eigen::Matrix4f BulletEngine::getPoseEigen( const btTransform &pose, bool scaling )
 {
-	float sc = 1.0f;
+	double sc = 1.0f;
 	if (scaling && DynamicsWorld::convertMM2M)
 		sc = 1000.0f; // m -> mm
 
@@ -323,7 +323,7 @@ Eigen::Matrix4f BulletEngine::getPoseEigen( const btTransform &pose, bool scalin
 btVector3 BulletEngine::getVecBullet( const Eigen::Vector3f &vec, bool scaling )
 {
 	btTransform res;
-	float sc = 1.0f;
+	double sc = 1.0f;
 	if (scaling && DynamicsWorld::convertMM2M)
 		sc = 0.001f; // mm -> m
 	btVector3 pos(vec(0)*sc,vec(1)*sc,vec(2)*sc);
@@ -332,7 +332,7 @@ btVector3 BulletEngine::getVecBullet( const Eigen::Vector3f &vec, bool scaling )
 
 Eigen::Vector3f BulletEngine::getVecEigen( const btVector3 &vec, bool scaling )
 {
-	float sc = 1.0f;
+	double sc = 1.0f;
 	if (scaling && DynamicsWorld::convertMM2M)
 		sc = 1000.0f; // m -> mm
 
@@ -551,7 +551,7 @@ std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 	return result;
 }
 
-void BulletEngine::stepSimulation( float dt, int maxSubSteps, float fixedTimeStep )
+void BulletEngine::stepSimulation( double dt, int maxSubSteps, double fixedTimeStep )
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	dynamicsWorld->stepSimulation(dt, maxSubSteps, fixedTimeStep);

@@ -55,7 +55,7 @@ public:
 		BulletObjectPtr dynNode2; // child
 		std::vector< std::pair<DynamicsObjectPtr,DynamicsObjectPtr> > disabledCollisionPairs;
 		boost::shared_ptr<btTypedConstraint> joint;
-		float jointValueOffset; // offset simox -> bullet joint values
+		double jointValueOffset; // offset simox -> bullet joint values
 	};
 
 
@@ -98,8 +98,8 @@ public:
 	
 	std::vector<LinkInfo> getLinks();
 
-    virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue);
-    virtual void actuateNodeVel(VirtualRobot::RobotNodePtr node, float jointVelocity);
+    virtual void actuateNode(VirtualRobot::RobotNodePtr node, double jointValue);
+    virtual void actuateNodeVel(VirtualRobot::RobotNodePtr node, double jointVelocity);
 
 	/*!
 		Usually this method is called by the framework in every tick to perform joint actuation.
@@ -109,10 +109,10 @@ public:
 
     virtual void updateSensors();
 
-	virtual float getJointAngle(VirtualRobot::RobotNodePtr rn);
-    virtual float getJointSpeed(VirtualRobot::RobotNodePtr rn);
-    virtual float getJointTargetSpeed(VirtualRobot::RobotNodePtr rn);
-    virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
+	virtual double getJointAngle(VirtualRobot::RobotNodePtr rn);
+    virtual double getJointSpeed(VirtualRobot::RobotNodePtr rn);
+    virtual double getJointTargetSpeed(VirtualRobot::RobotNodePtr rn);
+    virtual double getNodeTarget(VirtualRobot::RobotNodePtr node);
 
     /*!
      * \brief getJointTorques retrieves the torques in the given joint.

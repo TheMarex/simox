@@ -65,9 +65,9 @@ void BulletOpenGLViewer::clientMoveAndDisplay()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//simple dynamics world doesn't handle fixed-time-stepping
-	float ms = getDeltaTimeMicroseconds();
+	double ms = getDeltaTimeMicroseconds();
 
-	float minFPS = 1000000.f/60.f;
+	double minFPS = 1000000.f/60.f;
 	if (ms > minFPS)
 		ms = minFPS;
 

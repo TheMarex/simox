@@ -127,7 +127,7 @@ public:
     /*!
        Stores current floor description to floorPos and floorUp.
     */
-    void getFloorInfo(Eigen::Vector3f &floorPos, Eigen::Vector3f &floorUp, float &floorExtendMM, float &floorDepthMM);
+    void getFloorInfo(Eigen::Vector3f &floorPos, Eigen::Vector3f &floorUp, double &floorExtendMM, double &floorDepthMM);
 
 	struct DynamicsContactInfo 
 	{
@@ -136,9 +136,9 @@ public:
 		Eigen::Vector3f posGlobalA;
 		Eigen::Vector3f posGlobalB;
 		Eigen::Vector3f normalGlobalB;
-		float combinedFriction;
-		float combinedRestitution;
-        float appliedImpulse;
+		double combinedFriction;
+		double combinedRestitution;
+        double appliedImpulse;
 	};
 
 	virtual std::vector<DynamicsEngine::DynamicsContactInfo> getContacts();
@@ -162,8 +162,8 @@ protected:
 	Eigen::Vector3f floorPos;
 	Eigen::Vector3f floorUp;
 
-    float floorExtendMM;
-    float floorDepthMM;
+    double floorExtendMM;
+    double floorDepthMM;
 
     boost::recursive_mutex engineMutex;
 

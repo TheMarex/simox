@@ -148,7 +148,7 @@ bool DynamicsEngine::checkCollisionEnabled( DynamicsObject* o1 )
     return (i1 == collisionToAllDisabled.end());
 }
 
-void DynamicsEngine::getFloorInfo(Eigen::Vector3f &floorPos, Eigen::Vector3f &floorUp, float &floorExtendMM, float &floorDepthMM)
+void DynamicsEngine::getFloorInfo(Eigen::Vector3f &floorPos, Eigen::Vector3f &floorUp, double &floorExtendMM, double &floorDepthMM)
 {
     floorPos = this->floorPos;
     floorUp = this->floorUp;

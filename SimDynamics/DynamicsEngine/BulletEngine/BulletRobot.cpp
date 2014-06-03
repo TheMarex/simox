@@ -110,14 +110,14 @@ void BulletRobot::buildBulletModels(bool enableJointMotors)
                         Eigen::Matrix4f p1 = joint->getGlobalPoseJoint();
                         Eigen::Matrix4f p2 = joint2->getGlobalPoseJoint();
 
-                        float d = (p1.block(0,3,3,1) - p2.block(0,3,3,1)).norm();
+                        double d = (p1.block(0,3,3,1) - p2.block(0,3,3,1)).norm();
                         THROW_VR_EXCEPTION_IF( (d>1e-6), "Could not create hinge2 joint: Joint coord systems must be located at the same position:" << joint->getName() << ", " << joint2->getName());
                         RobotNodeRevolutePtr rev1 = boost::dynamic_pointer_cast<RobotNodeRevolute>(joint);
                         RobotNodeRevolutePtr rev2 = boost::dynamic_pointer_cast<RobotNodeRevolute>(joint2);
                         THROW_VR_EXCEPTION_IF( !rev1 || !rev2 , "Could not create hinge2 joint: Joints must be revolute nodes:" << joint->getName() << ", " << joint2->getName());
                         Eigen::Vector3f ax1 = rev1->getJointRotationAxis();
                         Eigen::Vector3f ax2 = rev2->getJointRotationAxis();
-                        float ang = MathTools::getAngle(ax1,ax2);
+                        double ang = MathTools::getAngle(ax1,ax2);
                         THROW_VR_EXCEPTION_IF( fabs(fabs(ang)-M_PI_2) > 1e-6, "Could not create hinge2 joint: Joint axes must be orthogonal to each other:" << joint->getName() << ", " << joint2->getName());
                     }
                 }
@@ -372,7 +372,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::Ro
 
     boost::shared_ptr<btTypedConstraint> jointbt;
 
-    float vr2bulletOffset = 0.0f;
+    double vr2bulletOffset = 0.0f;
 
     THROW_VR_EXCEPTION_IF (joint->isTranslationalJoint(), "Translational joints nyi...");
     if (joint->isRotationalJoint())
@@ -387,7 +387,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::Ro
         tmpGpJoint.block(0,3,3,1).setZero(); // coordSystemJoint
         Eigen::Vector4f axisGlobal = tmpGpJoint * axisLocalJoint;
 
-        float limMin,limMax;
+        double limMin,limMax;
         limMin = joint->getJointLimitLo();
         limMax = joint->getJointLimitHi();
 
@@ -412,7 +412,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::Ro
             btVector3 axis2 = BulletEngine::getVecBullet(axisGlobal2.head(3),false);
             btVector3 pivot = BulletEngine::getVecBullet(anchorPointGlobal.block(0,3,3,1));
             boost::shared_ptr<btUniversalConstraint> hinge2(new btUniversalConstraint(*btBody1, *btBody2, pivot, axis1, axis2));
-            float limMin2,limMax2;
+            double limMin2,limMax2;
             limMin2 = joint2->getJointLimitLo();
             limMax2 = joint2->getJointLimitHi();
             hinge2->setLowerLimit(btScalar(limMin),btScalar(limMin2));
@@ -610,7 +610,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 		
 	 boost::shared_ptr<btTypedConstraint> joint;
 
-	 float vr2bulletOffset = 0.0f;
+	 double vr2bulletOffset = 0.0f;
 
 	 if (node2->isTranslationalJoint())
 	 {
@@ -654,7 +654,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 		btVector3 pivot2 = BulletEngine::getVecBullet(anchor_inNode2.block(0,3,3,1));
 
 	
-        float limMin,limMax;
+        double limMin,limMax;
 		limMin = node2->getJointLimitLo();
 		limMax = node2->getJointLimitHi();
 
@@ -664,7 +664,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
         MathTools::Quaternion axisRotQuat2 = MathTools::getRotation(axis_inLocal2,Eigen::Vector3f::UnitX());
         Eigen::Matrix4f axisRot1 = MathTools::quat2eigen4f(axisRotQuat1);
         Eigen::Matrix4f axisRot2 = MathTools::quat2eigen4f(axisRotQuat2);
-        float ang1,ang2;
+        double ang1,ang2;
         Eigen::Vector3f ax1,ax2;
         // test
         MathTools::eigen4f2axisangle(axisRot1,ax1,ang1);
@@ -802,7 +802,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr node1,VirtualRobot::Rob
 
         generic6Dof->setOverrideNumSolverIterations(100);
 
-        //float totalMass = 1.f/btBody1->getInvMass() + 1.f/btBody2->getInvMass();
+        //double totalMass = 1.f/btBody1->getInvMass() + 1.f/btBody2->getInvMass();
 
         //generic6Dof->setBreakingImpulseThreshold(2*totalMass);//needed? copied from voronoi demo
 
@@ -1084,7 +1084,7 @@ void BulletRobot::actuateJoints(btScalar dt)
             case ePositionVelocity:
             {
             btScalar pos = btScalar(getJointAngle(it->first));
-            float gain = 0.5;
+            double gain = 0.5;
             m->m_targetVelocity = it->second.jointVelocityTarget + gain*(it->second.jointValueTarget - pos) / dt;
             break;
             }
@@ -1153,7 +1153,7 @@ bool BulletRobot::hasLink( VirtualRobot::RobotNodePtr node )
 	return false;
 }
 
-void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointValue )
+void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, double jointValue )
 {
 	VR_ASSERT(node);
 
@@ -1206,7 +1206,7 @@ void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, float jointValue
     }
 }
 
-void BulletRobot::actuateNodeVel(RobotNodePtr node, float jointVelocity)
+void BulletRobot::actuateNodeVel(RobotNodePtr node, double jointVelocity)
 {
     VR_ASSERT(node);
 
@@ -1259,7 +1259,7 @@ void BulletRobot::actuateNodeVel(RobotNodePtr node, float jointVelocity)
     }
 }
 
-float BulletRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
+double BulletRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
 {
 	VR_ASSERT(rn);
 	if (!hasLink(rn))
@@ -1274,8 +1274,8 @@ float BulletRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
     btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
     VR_ASSERT(m);
     dof->calculateTransforms();
-    float a1 = dof->getAngle(0);
-    float a2 = m->m_currentPosition;
+    double a1 = dof->getAngle(0);
+    double a2 = m->m_currentPosition;
     if (fabs(a1-a2)>0.05f)
     {
         VR_INFO << "Angle diff " << a1 << ", " << a2 << endl;
@@ -1300,14 +1300,14 @@ float BulletRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
             return 0.0f;
         VR_ASSERT(m);
         hinge2->calculateTransforms();
-        float a2 = m->m_currentPosition;
+        double a2 = m->m_currentPosition;
         return (a2-link.jointValueOffset);// inverted joint direction in bullet
 	}
     return (hinge->getHingeAngle()-link.jointValueOffset);// inverted joint direction in bullet
 #endif
 }
 
-float BulletRobot::getJointTargetSpeed( VirtualRobot::RobotNodePtr rn )
+double BulletRobot::getJointTargetSpeed( VirtualRobot::RobotNodePtr rn )
 {
     VR_ASSERT(rn);
     if (!hasLink(rn))
@@ -1338,7 +1338,7 @@ float BulletRobot::getJointTargetSpeed( VirtualRobot::RobotNodePtr rn )
     return hinge->getMotorTargetVelosity();
 }
 
-float BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
+double BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
 {
     VR_ASSERT(rn);
 	if (!hasLink(rn))
@@ -1360,12 +1360,12 @@ float BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
 
     Eigen::Vector3f deltaVel = link.dynNode1->getAngularVelocity() - link.dynNode2->getAngularVelocity();
     boost::shared_ptr<RobotNodeRevolute> rnRevJoint = boost::dynamic_pointer_cast<RobotNodeRevolute>(link.nodeJoint);
-    float speed = deltaVel.dot(rnRevJoint->getJointRotationAxis());
+    double speed = deltaVel.dot(rnRevJoint->getJointRotationAxis());
     return speed;//hinge->getMotorTargetVelosity();
 #endif
 }
 
-float BulletRobot::getNodeTarget( VirtualRobot::RobotNodePtr node )
+double BulletRobot::getNodeTarget( VirtualRobot::RobotNodePtr node )
 {
 #ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
     return DynamicsRobot::getNodeTarget(node);
@@ -1412,7 +1412,7 @@ Eigen::Matrix4f BulletRobot::getComGlobal( VirtualRobot::RobotNodePtr rn )
 Eigen::Vector3f BulletRobot::getComGlobal( VirtualRobot::RobotNodeSetPtr set)
 {
 	Eigen::Vector3f com = Eigen::Vector3f::Zero();
-	float totalMass = 0.0;
+	double totalMass = 0.0;
 	for (int i = 0; i < set->getSize(); i++)
 	{
 		VirtualRobot::RobotNodePtr node = (*set)[i];
@@ -1429,7 +1429,7 @@ Eigen::Vector3f BulletRobot::getComGlobal( VirtualRobot::RobotNodeSetPtr set)
 Eigen::Vector3f BulletRobot::getComGlobalVelocity( VirtualRobot::RobotNodeSetPtr set)
 {
 	Eigen::Vector3f com = Eigen::Vector3f::Zero();
-	float totalMass = 0.0;
+	double totalMass = 0.0;
 	for (int i = 0; i < set->getSize(); i++)
 	{
 		VirtualRobot::RobotNodePtr node = (*set)[i];

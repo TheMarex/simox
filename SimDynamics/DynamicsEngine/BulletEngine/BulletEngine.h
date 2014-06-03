@@ -114,7 +114,7 @@ public:
 	virtual void createFloorPlane(const Eigen::Vector3f &pos, const Eigen::Vector3f &up);
 
 
-	virtual void stepSimulation(float dt, int maxSubSteps, float fixedTimeStep);
+	virtual void stepSimulation(double dt, int maxSubSteps, double fixedTimeStep);
 
 	btDynamicsWorld* getBulletWorld();
 

@@ -4,7 +4,7 @@
 #include <iostream>
 
 namespace SimDynamics {
-PIDController::PIDController(float gainP, float gainI, float gainD)
+PIDController::PIDController(double gainP, double gainI, double gainD)
 : gainP(gainP)
 , gainI(gainI)
 , gainD(gainD)
@@ -13,15 +13,15 @@ PIDController::PIDController(float gainP, float gainI, float gainD)
 {
 }
 
-float PIDController::update(float error, float dt)
+double PIDController::update(double error, double dt)
 {
-	float p = error * gainP;
+	double p = error * gainP;
 	errorSum += error * dt;
-	float i = errorSum * gainI;
-	float d = (error - lastError)/dt * gainD;
+	double i = errorSum * gainI;
+	double d = (error - lastError)/dt * gainD;
 	lastError = error;
 
-	float output = (p + i + d);
+	double output = (p + i + d);
 	lastOutput = output;
 	return output;
 }
@@ -57,11 +57,11 @@ TorqueMotorController::TorqueMotorController(const PIDController& positionContro
 }
 
 
-float TorqueMotorController::update(float positionError, float velocityError, float torqueError, ActuationMode actuation, float dt)
+double TorqueMotorController::update(double positionError, double velocityError, double torqueError, ActuationMode actuation, double dt)
 {
-	float posUpdate = 0.0;
-	float velUpdate = 0.0;
-	float torqueUpdate = 0.0;
+	double posUpdate = 0.0;
+	double velUpdate = 0.0;
+	double torqueUpdate = 0.0;
 	if (actuation.modes.position)
 		posUpdate = positionController.update(positionError, dt);
 	else
@@ -92,7 +92,7 @@ float TorqueMotorController::update(float positionError, float velocityError, fl
 }
 
 VelocityMotorController::VelocityMotorController()
-: positionController(100.0, 50.0, 0.0)
+: positionController(100.0, 10.0, 0.0)
 {
 }
 
@@ -102,15 +102,15 @@ VelocityMotorController::VelocityMotorController(const PIDController& positionCo
 }
 
 
-float VelocityMotorController::update(float positionError, float targetVelocity, ActuationMode actuation, float dt)
+double VelocityMotorController::update(double positionError, double targetVelocity, ActuationMode actuation, double dt)
 {
-	float posUpdate = 0.0;
+	double posUpdate = 0.0;
 	if (actuation.modes.position)
 		posUpdate = positionController.update(positionError, dt);
-	else
-		positionController.reset();
+	//else
+	//	positionController.reset();
 
-	float output = 0.0f;
+	double output = 0.0f;
 	if (actuation.modes.position && actuation.modes.velocity)
 		output = posUpdate + targetVelocity;
 	else if (actuation.modes.position)

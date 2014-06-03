@@ -43,8 +43,8 @@ private:
 	std::vector<Eigen::VectorXf> actualVelocityLog;
 	std::vector<Eigen::Vector3f> actualCoMLog;
 	std::vector<Eigen::Vector3f> actualCoMVelocityLog;
-	std::vector<float> timestamps;
-	float timestamp;
+	std::vector<double> timestamps;
+	double timestamp;
 	bool running;
 	int max_samples;
 

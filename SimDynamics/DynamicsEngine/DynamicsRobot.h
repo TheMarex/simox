@@ -62,16 +62,16 @@ public:
 	/*!
 		Enable joint actuation for given node.
 	*/
-    virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue, float jointVelocity);
-    virtual void actuateNode(VirtualRobot::RobotNodePtr node, float jointValue);
-    virtual void actuateNodeVel(VirtualRobot::RobotNodePtr node, float jointVelocity);
-    virtual void actuateNodeTorque(VirtualRobot::RobotNodePtr node, float jointTorque);
-    virtual void actuateNode(const std::string &node, float jointValue);
-    virtual void actuateNodeVel(const std::string &node, float jointVelocity);
-    virtual void actuateNodeTorque(const std::string &node, float jointTorque);
+    virtual void actuateNode(VirtualRobot::RobotNodePtr node, double jointValue, double jointVelocity);
+    virtual void actuateNode(VirtualRobot::RobotNodePtr node, double jointValue);
+    virtual void actuateNodeVel(VirtualRobot::RobotNodePtr node, double jointVelocity);
+    virtual void actuateNodeTorque(VirtualRobot::RobotNodePtr node, double jointTorque);
+    virtual void actuateNode(const std::string &node, double jointValue);
+    virtual void actuateNodeVel(const std::string &node, double jointVelocity);
+    virtual void actuateNodeTorque(const std::string &node, double jointTorque);
     virtual void disableNodeActuation(VirtualRobot::RobotNodePtr node);
 	virtual bool isNodeActuated(VirtualRobot::RobotNodePtr node);
-	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
+	virtual double getNodeTarget(VirtualRobot::RobotNodePtr node);
     virtual void enableActuation(ActuationMode mode);
 	virtual void disableActuation();
 
@@ -79,7 +79,7 @@ public:
 		Usually this method is called by the framework in every tick to perform joint actuation.
 		\param dt Timestep
 	*/
-    virtual void actuateJoints(float dt);
+    virtual void actuateJoints(double dt);
     virtual void updateSensors(){}
 
 	// experimental...
@@ -92,9 +92,9 @@ public:
 	//virtual void setPose(const Eigen::Matrix4f &pose);
 
 
-	virtual float getJointAngle(VirtualRobot::RobotNodePtr rn);
-    virtual float getJointSpeed(VirtualRobot::RobotNodePtr rn);
-    virtual float getJointTargetSpeed(VirtualRobot::RobotNodePtr rn);
+	virtual double getJointAngle(VirtualRobot::RobotNodePtr rn);
+    virtual double getJointSpeed(VirtualRobot::RobotNodePtr rn);
+    virtual double getJointTargetSpeed(VirtualRobot::RobotNodePtr rn);
 
     virtual Eigen::Matrix4f getComGlobal(VirtualRobot::RobotNodePtr rn);
 
@@ -114,9 +114,9 @@ protected:
         {
 			actuation.mode = 0;
 		}
-        float jointValueTarget;
-        float jointVelocityTarget;
-        float jointTorqueTarget;
+        double jointValueTarget;
+        double jointVelocityTarget;
+        double jointTorqueTarget;
         VirtualRobot::RobotNodePtr node;
 		//DynamicsObjectPtr dynNode; // if node is a joint without model, there is no dyn node!
         ActuationMode actuation;

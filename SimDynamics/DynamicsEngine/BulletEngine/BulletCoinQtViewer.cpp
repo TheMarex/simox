@@ -22,7 +22,7 @@ BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 	bulletMaxSubSteps = 1;
 	enablePhysicsUpdates = true;
 
-	const float TIMER_MS = 5.0f;
+	const double TIMER_MS = 5.0f;
 
 	SIMDYNAMICS_ASSERT(world);
 
@@ -122,8 +122,8 @@ void BulletCoinQtViewer::initSceneGraph( QFrame* embedViewer, SoNode* scene )
 		// better grid visu
 		Eigen::Vector3f floorPos;
 		Eigen::Vector3f floorUp;
-		float floorExtendMM;
-		float floorDepthMM;
+		double floorExtendMM;
+		double floorDepthMM;
 		bulletEngine->getFloorInfo(floorPos,floorUp,floorExtendMM,floorDepthMM);
 		SoNode * n = (SoNode*)CoinVisualizationFactory::CreatePlaneVisualization(floorPos,floorUp,floorExtendMM,0.0f);
 		if (n)
@@ -150,14 +150,14 @@ void BulletCoinQtViewer::stepPhysics()
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 
 	//simple dynamics world doesn't handle fixed-time-stepping
-	float ms = getDeltaTimeMicroseconds();
+	double ms = getDeltaTimeMicroseconds();
 
 	if (bulletEngine)
 	{
 		bulletEngine->activateAllObjects(); // avoid sleeping objects
 
 		// Commented out: This is now handled by Bullet (bulletMaxSubSteps * bulletTimeStepMsec is the maximal duration of a frame)
-		/* float minFPS = 1000000.f/40.f;  // Don't use 60 Hz (cannot be reached due to Vsync)
+		/* double minFPS = 1000000.f/40.f;  // Don't use 60 Hz (cannot be reached due to Vsync)
 		if (ms > minFPS) {
 			VR_INFO << "Slow frame (" << ms << "us elapsed)! Limiting elapsed time (losing realtime capabilities for this frame)." << endl;
 			ms = minFPS;

@@ -6,21 +6,21 @@
 namespace SimDynamics {
 class PIDController {
 public:
-	PIDController(float gainP, float gainI, float gainD);
+	PIDController(double gainP, double gainI, double gainD);
 
-	float update(float error, float dt);
+	double update(double error, double dt);
 
 	void reset();
 
 	void debug();
 
 private:
-	float gainP;
-	float gainI;
-	float gainD;
-	float errorSum;
-	float lastError;
-	float lastOutput;
+	double gainP;
+	double gainI;
+	double gainD;
+	double errorSum;
+	double lastError;
+	double lastOutput;
 };
 
 // use bit field because enums are a pain
@@ -65,7 +65,7 @@ public:
 					const PIDController& velocityController,
 					const PIDController& torqueController);
 
-	float update(float positionError, float velocityError, float torqueError, ActuationMode actuation, float dt);
+	double update(double positionError, double velocityError, double torqueError, ActuationMode actuation, double dt);
 
 private:
 	PIDController positionController;
@@ -99,7 +99,7 @@ public:
 	VelocityMotorController(const PIDController& positionController);
 
 
-	float update(float positionError, float targetVelocity, ActuationMode actuation, float dt);
+	double update(double positionError, double targetVelocity, ActuationMode actuation, double dt);
 
 	void reset();
 

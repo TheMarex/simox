@@ -136,6 +136,9 @@ public:
 		Eigen::Vector3f posGlobalA;
 		Eigen::Vector3f posGlobalB;
 		Eigen::Vector3f normalGlobalB;
+		float combinedFriction;
+		float combinedRestitution;
+        float appliedImpulse;
 	};
 
 	virtual std::vector<DynamicsEngine::DynamicsContactInfo> getContacts();

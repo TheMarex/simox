@@ -541,6 +541,9 @@ std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 				i.normalGlobalB(0) = normalOnB.x();
 				i.normalGlobalB(1) = normalOnB.y();
 				i.normalGlobalB(2) = normalOnB.z();
+				i.combinedFriction = pt.m_combinedFriction;
+				i.combinedRestitution = pt.m_combinedRestitution;
+                i.appliedImpulse = pt.m_appliedImpulse;
 				result.push_back(i);
 			}
 		}

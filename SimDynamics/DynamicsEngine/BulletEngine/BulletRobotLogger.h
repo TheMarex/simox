@@ -15,10 +15,14 @@ namespace SimDynamics
 class SIMDYNAMICS_IMPORT_EXPORT BulletRobotLogger
 {
 public:
-	BulletRobotLogger(BulletEnginePtr engine, const BulletRobotPtr robot, const VirtualRobot::RobotNodeSetPtr& nodes)
+	BulletRobotLogger(BulletEnginePtr engine,
+					  const BulletRobotPtr robot,
+					  const VirtualRobot::RobotNodeSetPtr& jointNodes,
+					  const VirtualRobot::RobotNodeSetPtr& bodyNodes)
 	: robot(robot)
 	, running(false)
-	, nodes(nodes)
+	, jointNodes(jointNodes)
+	, bodyNodes(bodyNodes)
 	, max_samples(1024 * 1024)
 	, timestamp(0.0f)
 	{
@@ -31,11 +35,13 @@ public:
 
 private:
 	const BulletRobotPtr robot;
-	VirtualRobot::RobotNodeSetPtr nodes;
+	VirtualRobot::RobotNodeSetPtr jointNodes;
+	VirtualRobot::RobotNodeSetPtr bodyNodes;
 	std::vector<Eigen::VectorXf> targetAngleLog;
 	std::vector<Eigen::VectorXf> targetVelocityLog;
 	std::vector<Eigen::VectorXf> actualAngleLog;
 	std::vector<Eigen::VectorXf> actualVelocityLog;
+	std::vector<Eigen::Vector3f> actualCoMLog;
 	std::vector<float> timestamps;
 	float timestamp;
 	bool running;

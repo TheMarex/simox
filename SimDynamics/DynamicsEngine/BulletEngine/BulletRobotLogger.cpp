@@ -27,12 +27,15 @@ void BulletRobotLogger::writeToFile(const std::string& path)
 	output << "Timestamp" << ",";
 	for (int dof = 0; dof < num_dof; dof++)
 	{
-		std::string name = (*nodes)[dof]->getName();
+		std::string name = (*jointNodes)[dof]->getName();
 		output << "TargetAngle" << name << ",";
 		output << "ActualAngle" << name << ",";
 		output << "TargetVelocity" << name << ",";
 		output << "ActualVelocity" << name << ",";
 	}
+	output << "CoM X" << ",";
+	output << "CoM Y" << ",";
+	output << "CoM Z" << ",";
 	output << std::endl;
 
 	for (int frame = 0; frame < num_frames; frame++)
@@ -46,6 +49,9 @@ void BulletRobotLogger::writeToFile(const std::string& path)
 			output << targetVelocityLog[frame](dof) << ",";
 			output << actualVelocityLog[frame](dof) << ",";
 		}
+		output << actualCoMLog[frame].x() << ",";
+		output << actualCoMLog[frame].y() << ",";
+		output << actualCoMLog[frame].z() << ",";
 		output << std::endl;
 	}
 }
@@ -68,15 +74,15 @@ void BulletRobotLogger::log(btScalar dt)
 		return;
 	}
 
-	int dof = nodes->getSize();
+	int dof = jointNodes->getSize();
 	Eigen::VectorXf actualAngle(dof);
 	Eigen::VectorXf targetAngle(dof);
 	Eigen::VectorXf actualVelocity(dof);
 	Eigen::VectorXf targetVelocity(dof);
 
-	for (unsigned int i = 0; i < nodes->getSize(); i++)
+	for (unsigned int i = 0; i < jointNodes->getSize(); i++)
 	{
-		const VirtualRobot::RobotNodePtr& node = (*nodes)[i];
+		const VirtualRobot::RobotNodePtr& node = (*jointNodes)[i];
 		actualAngle(i)    = robot->getJointAngle(node);
 		// bullet changes the sign???
 		actualVelocity(i) = -robot->getJointSpeed(node);
@@ -84,6 +90,7 @@ void BulletRobotLogger::log(btScalar dt)
 		targetVelocity(i) = robot->getJointTargetSpeed(node);
 	}
 
+	actualCoMLog.push_back(bodyNodes->getCoM());
 	actualVelocityLog.push_back(actualVelocity);
 	actualAngleLog.push_back(actualAngle);
 	targetAngleLog.push_back(targetAngle);

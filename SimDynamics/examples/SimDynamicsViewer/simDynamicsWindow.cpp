@@ -173,9 +173,15 @@ void SimDynamicsWindow::actuation()
 	bool actuate = UI.checkBoxActuation->checkState() == Qt::Checked;
 
 	if (actuate)
-        dynamicsRobot->enableActuation(SimDynamics::DynamicsRobot::ePosition);
+    {
+        ActuationMode actuation;
+        actuation.modes.position = 1;
+        dynamicsRobot->enableActuation(actuation);
+    }
 	else
+    {
 		dynamicsRobot->disableActuation();
+    }
 }
 
 void SimDynamicsWindow::buildVisualization()

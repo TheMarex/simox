@@ -899,214 +899,204 @@ void BulletRobot::actuateJoints(btScalar dt)
 
     int jointCounter = 0;
 
-	while (it!=actuationTargets.end())
-	{
-		//BulletObjectPtr drn;
-		//if (it->second.dynNode)
-		//	drn = boost::dynamic_pointer_cast<BulletObject>(it->second.dynNode);
-		//VR_ASSERT(drn);
+    while (it!=actuationTargets.end())
+    {
+        //BulletObjectPtr drn;
+        //if (it->second.dynNode)
+        //	drn = boost::dynamic_pointer_cast<BulletObject>(it->second.dynNode);
+        //VR_ASSERT(drn);
 
-		if (it->second.node->isRotationalJoint())
+        VelocityMotorController& controller = actuationControllers[it->first];
+
+        if (it->second.node->isRotationalJoint())
         {
             LinkInfo link = getLink(it->second.node);
+
+            const ActuationMode& actuation = it->second.actuation;
+
+            btScalar posTarget = btScalar(it->second.jointValueTarget + link.jointValueOffset);
+            btScalar posActual = btScalar(getJointAngle(it->first));
+            btScalar velocityTarget = it->second.jointVelocityTarget;
+
 #ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
             boost::shared_ptr<btGeneric6DofConstraint> dof = boost::dynamic_pointer_cast<btGeneric6DofConstraint>(link.joint);
             VR_ASSERT(dof);
             btRotationalLimitMotor *m = dof->getRotationalLimitMotor(0);
             VR_ASSERT(m);
 
-            switch (it->second.actuation)
-            {
-                case ePosition:
-                {
-                    btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
-                    //btScalar act = btScalar(it->first->getJointValue());
-                    btScalar act = btScalar(getJointAngle(it->first));
-                    m->m_enableMotor = true;
-                    m->m_targetVelocity = (targ-act); // inverted joint dir?!
-                }
-                    break;
-                case eVelocity:
-                {
-                    m->m_enableMotor = true;
-                    m->m_targetVelocity = it->second.jointVelocityTarget;
-                    break;
-                }
-                case eTorque:
-                {
-                     m->m_enableMotor = true;
-                    m->m_targetVelocity = it->second.jointVelocityTarget;
-                    break;
-                }
-                case ePositionVelocity:
-                {
-                    btScalar pos = btScalar(getJointAngle(it->first));
-					float gain = 0.5;
-                    m->m_targetVelocity = it->second.jointVelocityTarget + gain*(it->second.jointPositionTarget - pos) / dt;
-                }
-                default:
-                    m->m_enableMotor = false;
+            if (actuation.mode == 0) {
+                m->m_enableMotor = false;
+                continue;
             }
+
+            m->m_enableMotor = true;
+
+            if (actuation.modes.position && actuation.modes.velocity)
+            {
+                m->m_targetVelocity = controller.update(posTarget - posActual, velocityTarget, actuation, dt);
+            }
+            else if (actuation.modes.position)
+            {
+                m->m_targetVelocity = controller.update(posTarget - posActual, 0, actuation, dt);
+            }
+            else if (actuation.modes.velocity)
+            {
+                m->m_targetVelocity = controller.update(0, velocityTarget, actuation, dt);
+            }
+
+            // FIXME torque based control is ignored
 #else
-			boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
-            if (!hinge)
-            {
-                // hinge2 / universal joint
-                boost::shared_ptr<btUniversalConstraint> hinge2 = boost::dynamic_pointer_cast<btUniversalConstraint>(link.joint);
-                VR_ASSERT(hinge2);
-                btRotationalLimitMotor *m;
-                if (it->second.node==link.nodeJoint)
-                {
-                    m = hinge2->getRotationalLimitMotor(1); // second motor
-                } else
-                {
-                    VR_ASSERT(it->second.node==link.nodeJoint2);
-                    m = hinge2->getRotationalLimitMotor(2); // third motor
-                }
-                VR_ASSERT(m);
-                switch (it->second.actuation)
-                {
-                    case ePosition:
-                    {
-                        btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
-                        //btScalar act = btScalar(it->first->getJointValue());
-                        btScalar act = btScalar(getJointAngle(it->first));
-                        m->m_enableMotor = true;
-                        m->m_targetVelocity = (targ-act)*bulletMotorVelFactor;
-                    }
-                    break;
+            boost::shared_ptr<btHingeConstraint> hinge = boost::dynamic_pointer_cast<btHingeConstraint>(link.joint);
 
-                case eVelocity:
-                {
-                    m->m_enableMotor = true;
-                    m->m_targetVelocity = it->second.jointVelocityTarget;
-                    break;
-                }
-                case eTorque:
-                {
-                    m->m_enableMotor = true;
-                    m->m_targetVelocity = it->second.jointVelocityTarget;
-                    break;
-                }
-                case ePositionVelocity:
-                {
-                    btScalar pos = btScalar(getJointAngle(it->first));
-					float gain = 0.5;
-                    m->m_targetVelocity = it->second.jointVelocityTarget + gain*(it->second.jointValueTarget - pos) / dt;
-					break;
-                }
-
-                default:
-                    m->m_enableMotor = false;
-                }
-            } else
-            {
-                switch (it->second.actuation)
-                {
-                    case ePosition:
-                    {
-                        btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
-                        //btScalar act = btScalar(it->first->getJointValue());
-                        btScalar act = btScalar(getJointAngle(it->first));
-                        hinge->enableAngularMotor(true,(targ-act)*bulletMotorVelFactor,bulletMaxMotorImulse);
-                        //hinge->enableMotor(true);
-                        //hinge->setMotorTarget(it->second.jointValueTarget+link.jointValueOffset,dt);
-						break;
-                    }
-                    case eVelocity:
-                    {
-                        hinge->enableAngularMotor(true,it->second.jointVelocityTarget,bulletMaxMotorImulse);
-
-                        jointCounter++;
-                        //cout << "jointVelocityTarget for joint " << it->second.node->getName() << " :" << it->second.jointVelocityTarget << endl;
-
-
-						break;
-                    }
-                    case eTorque:
-                    {
-
-                        //Only first try (using torques as velocity targets...)
-                        hinge->enableAngularMotor(true,it->second.jointTorqueTarget,bulletMaxMotorImulse);
-                        //cout << "jointTorqueTarget for joint " << it->second.node->getName() << " :" << it->second.jointTorqueTarget << endl;
-
-                        /*
-
-                        //=======
-                        //Here is some code that sets torques directly to the finger joints (bypassing the Bullet motors).
-                        //Unfortunately, this does not seem to work, so far.
-                        //1. With hinge->enableAngularMotor(true,...), the fingers do not move at all.
-                        //2. Wtih hinge->enableAngularMotor(false,...), the fingers are simply actuated by gravity...
-                        //=======
-
-                        //cout << " === == === === === > BulletRobot (hinge !): eTorque NEW!!! ====" << endl;
-
-                        cout << "Disabling Angular Motor... " << endl;
-                        hinge->enableAngularMotor(false,0,bulletMaxMotorImulse);
-
-
-                        cout << "=== === === jointCounter: " << jointCounter << " === === ===" << endl;
-
-                        //get the links that are connected by the hinge.
-                        btRigidBody rbA = hinge->getRigidBodyA();
-                        btRigidBody rbB = hinge->getRigidBodyB();
-
-                        //get joint axis from the hinge ...
-                        btMatrix3x3 rbAFrameBasis = hinge->getAFrame().getBasis();
-                        //z-Achse ist Gelenkachse? (das steht in btHingeConstraint.h; setAxis() bzw. struct btHingeConstraintDoubleData)
-                        btVector3 hingeAxis = rbAFrameBasis.getColumn(2);
-
-                        //calc 3dim torque by multiplication with joint axis!
-                        btVector3 resTorqueA = hingeAxis * it->second.jointTorqueTarget;
-
-
-                        //TODO (maybe): calc "realistic" torque to be applied (using dt)
-
-                        //apply torques to the bodies connected by the joint
-                        rbA.applyTorqueImpulse(resTorqueA);
-                        rbB.applyTorqueImpulse(-resTorqueA);
-
-                        //DEBUG OUT:
-                        //--> TODO!
-                        //cout << "==== ==== ==== DEBUG OUT: ==== ==== ==== " << endl;
-                        cout << "rbAFrameBasis:" << endl;
-                        btVector3 row0 = rbAFrameBasis.getRow(0);
-                        btVector3 row1 = rbAFrameBasis.getRow(1);
-                        btVector3 row2 = rbAFrameBasis.getRow(2);
-                        cout << row0.getX() << " " << row0.getY() << " " << row0.getZ() << endl;
-                        cout << row1.getX() << " " << row1.getY() << " " << row1.getZ() << endl;
-                        cout << row2.getX() << " " << row2.getY() << " " << row2.getZ() << endl;
-
-                        cout << "hingeAxis: " << hingeAxis.getX() << " " << hingeAxis.getY() << " " << hingeAxis.getZ() << endl;
-                        cout << "resTorqueA: " << resTorqueA.getX() << " " << resTorqueA.getY() << " " << resTorqueA.getZ() << endl;
-
-
-
-                        jointCounter++;
-
-                        */
-						break;
-                    }
-					case ePositionVelocity:
-					{
-						btScalar pos = btScalar(getJointAngle(it->first));
-						float gain = 0.5;
-						float target = it->second.jointVelocityTarget + gain*(it->second.jointValueTarget - pos) / dt;
-                        hinge->enableAngularMotor(true, target, bulletMaxMotorImulse);
-
-                        jointCounter++;
-						break;
-					}
-
-                    default:
-                        hinge->enableMotor(false);
-                }
+            if (actuation.mode == 0) {
+                hinge->enableMotor(false);
+                continue;
             }
-#endif
-		}
 
-		it++;
-	}
+            if (it->second.node->getName() == "LeftLeg_Joint3")
+            {
+                std::cout <<  "Mode: " << (int) actuation.mode << " : " << posTarget << " " << posActual << std::endl;
+                controller.debug();
+            }
+
+            if (actuation.modes.position && actuation.modes.velocity)
+            {
+                hinge->enableAngularMotor(true,
+                        controller.update(posTarget - posActual, velocityTarget, actuation, dt),
+                        bulletMaxMotorImulse);
+
+            }
+            else if (actuation.modes.position)
+            {
+                hinge->enableAngularMotor(true,
+                        controller.update(posTarget - posActual, 0.0, actuation, dt),
+                        bulletMaxMotorImulse);
+            }
+            else if (actuation.modes.velocity)
+            {
+                hinge->enableAngularMotor(true,
+                        controller.update(0.0, velocityTarget, actuation, dt),
+                        bulletMaxMotorImulse);
+            }
+            // FIXME this bypasses the controller (and doesn't work..)
+            else if (actuation.modes.torque)
+            {
+                //Only first try (using torques as velocity targets...)
+                hinge->enableAngularMotor(true,it->second.jointTorqueTarget,bulletMaxMotorImulse);
+                //cout << "jointTorqueTarget for joint " << it->second.node->getName() << " :" << it->second.jointTorqueTarget << endl;
+
+                /*
+
+                //=======
+                //Here is some code that sets torques directly to the finger joints (bypassing the Bullet motors).
+                //Unfortunately, this does not seem to work, so far.
+                //1. With hinge->enableAngularMotor(true,...), the fingers do not move at all.
+                //2. Wtih hinge->enableAngularMotor(false,...), the fingers are simply actuated by gravity...
+                //=======
+
+                //cout << " === == === === === > BulletRobot (hinge !): eTorque NEW!!! ====" << endl;
+
+                cout << "Disabling Angular Motor... " << endl;
+                hinge->enableAngularMotor(false,0,bulletMaxMotorImulse);
+
+
+                cout << "=== === === jointCounter: " << jointCounter << " === === ===" << endl;
+
+                //get the links that are connected by the hinge.
+                btRigidBody rbA = hinge->getRigidBodyA();
+                btRigidBody rbB = hinge->getRigidBodyB();
+
+                //get joint axis from the hinge ...
+                btMatrix3x3 rbAFrameBasis = hinge->getAFrame().getBasis();
+                //z-Achse ist Gelenkachse? (das steht in btHingeConstraint.h; setAxis() bzw. struct btHingeConstraintDoubleData)
+                btVector3 hingeAxis = rbAFrameBasis.getColumn(2);
+
+                //calc 3dim torque by multiplication with joint axis!
+                btVector3 resTorqueA = hingeAxis * it->second.jointTorqueTarget;
+
+
+                //TODO (maybe): calc "realistic" torque to be applied (using dt)
+
+                //apply torques to the bodies connected by the joint
+                rbA.applyTorqueImpulse(resTorqueA);
+                rbB.applyTorqueImpulse(-resTorqueA);
+
+                //DEBUG OUT:
+                //--> TODO!
+                //cout << "==== ==== ==== DEBUG OUT: ==== ==== ==== " << endl;
+                cout << "rbAFrameBasis:" << endl;
+                btVector3 row0 = rbAFrameBasis.getRow(0);
+                btVector3 row1 = rbAFrameBasis.getRow(1);
+                btVector3 row2 = rbAFrameBasis.getRow(2);
+                cout << row0.getX() << " " << row0.getY() << " " << row0.getZ() << endl;
+                cout << row1.getX() << " " << row1.getY() << " " << row1.getZ() << endl;
+                cout << row2.getX() << " " << row2.getY() << " " << row2.getZ() << endl;
+
+                cout << "hingeAxis: " << hingeAxis.getX() << " " << hingeAxis.getY() << " " << hingeAxis.getZ() << endl;
+                cout << "resTorqueA: " << resTorqueA.getX() << " " << resTorqueA.getY() << " " << resTorqueA.getZ() << endl;
+
+
+
+                jointCounter++;
+
+*/
+            }
+
+            // Universal constraint instead of hinge constraint
+            /*
+               boost::shared_ptr<btUniversalConstraint> hinge = boost::dynamic_pointer_cast<btUniversalConstraint>(link.joint);
+               VR_ASSERT(hinge2);
+               btRotationalLimitMotor *m;
+               if (it->second.node==link.nodeJoint)
+               {
+               m = hinge2->getRotationalLimitMotor(1); // second motor
+               } else
+               {
+               VR_ASSERT(it->second.node==link.nodeJoint2);
+               m = hinge2->getRotationalLimitMotor(2); // third motor
+               }
+               VR_ASSERT(m);
+               switch (it->second.actuation)
+               {
+               case ePosition:
+               {
+               btScalar targ = btScalar(it->second.jointValueTarget+link.jointValueOffset);
+            //btScalar act = btScalar(it->first->getJointValue());
+            btScalar act = btScalar(getJointAngle(it->first));
+            m->m_enableMotor = true;
+            m->m_targetVelocity = (targ-act)*bulletMotorVelFactor;
+            }
+            break;
+
+            case eVelocity:
+            {
+            m->m_enableMotor = true;
+            m->m_targetVelocity = it->second.jointVelocityTarget;
+            break;
+            }
+            case eTorque:
+            {
+            m->m_enableMotor = true;
+            m->m_targetVelocity = it->second.jointVelocityTarget;
+            break;
+            }
+            case ePositionVelocity:
+            {
+            btScalar pos = btScalar(getJointAngle(it->first));
+            float gain = 0.5;
+            m->m_targetVelocity = it->second.jointVelocityTarget + gain*(it->second.jointValueTarget - pos) / dt;
+            break;
+            }
+
+            default:
+            m->m_enableMotor = false;
+            }
+            */
+#endif
+        }
+
+        it++;
+    }
     setPoseNonActuatedRobotNodes();
 }
 

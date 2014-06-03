@@ -133,6 +133,7 @@ if (SimDynamics_DYNAMICSENGINE)
     DynamicsEngine/DynamicsObject.cpp
     DynamicsEngine/DynamicsEngine.cpp
     DynamicsEngine/DynamicsRobot.cpp
+    DynamicsEngine/DynamicsUtils.cpp
   )
     
   SET(INCLUDES
@@ -142,6 +143,7 @@ if (SimDynamics_DYNAMICSENGINE)
     DynamicsEngine/DynamicsObject.h
     DynamicsEngine/DynamicsEngine.h
     DynamicsEngine/DynamicsRobot.h
+    DynamicsEngine/DynamicsUtils.h
   )
  #    ${SimDynamics_SimoxDir}/VirtualRobot/definesVR.h
    

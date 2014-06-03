@@ -25,6 +25,7 @@
 
 #include "../SimDynamics.h"
 #include "DynamicsObject.h"
+#include "DynamicsUtils.h"
 #include <VirtualRobot/Robot.h>
 #include <VirtualRobot/Nodes/Sensor.h>
 
@@ -58,15 +59,6 @@ public:
 	*/
 	DynamicsObjectPtr getDynamicsRobotNode(VirtualRobot::RobotNodePtr node);
 
-    enum JointActuation
-    {
-        eDisabled,
-        ePosition,
-        eVelocity,
-        ePositionVelocity,
-        eTorque
-    };
-
 	/*!
 		Enable joint actuation for given node.
 	*/
@@ -80,7 +72,7 @@ public:
     virtual void disableNodeActuation(VirtualRobot::RobotNodePtr node);
 	virtual bool isNodeActuated(VirtualRobot::RobotNodePtr node);
 	virtual float getNodeTarget(VirtualRobot::RobotNodePtr node);
-    virtual void enableActuation(JointActuation mode);
+    virtual void enableActuation(ActuationMode mode);
 	virtual void disableActuation();
 
 	/*!
@@ -108,8 +100,6 @@ public:
 
     virtual void setGlobalPose(Eigen::Matrix4f &gp);
 
-
-
 protected:
 
 	virtual void createDynamicsNode(VirtualRobot::RobotNodePtr node);
@@ -117,15 +107,23 @@ protected:
 
 	struct robotNodeActuationTarget
 	{
+        robotNodeActuationTarget()
+        : jointValueTarget(0)
+        , jointVelocityTarget(0)
+        , jointTorqueTarget(0)
+        {
+			actuation.mode = 0;
+		}
         float jointValueTarget;
         float jointVelocityTarget;
         float jointTorqueTarget;
         VirtualRobot::RobotNodePtr node;
 		//DynamicsObjectPtr dynNode; // if node is a joint without model, there is no dyn node!
-        JointActuation actuation;
+        ActuationMode actuation;
 	};
 
 	std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget> actuationTargets;
+	std::map<VirtualRobot::RobotNodePtr, VelocityMotorController> actuationControllers;
 
 	VirtualRobot::RobotPtr robot;
 

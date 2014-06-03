@@ -64,12 +64,6 @@ public:
 	virtual void enableContraintsDebugDrawing();
 protected:
 
-	static void motorPreTickCallback (btDynamicsWorld *world, btScalar timeStep);
-
-	/*!
-		Move all joints which are actuated by motors.
-	*/
-	void updateMotors(float dt);
 
 	/*static DemoApplication* Create()
 	{

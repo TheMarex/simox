@@ -27,37 +27,6 @@ BulletOpenGLViewer::BulletOpenGLViewer(DynamicsWorldPtr world)
 	setCameraUp(up);	
 
 	clientResetScene();
-
-	// register callback
-	m_dynamicsWorld->setInternalTickCallback(motorPreTickCallback,this,true);
-}
-
-void BulletOpenGLViewer::updateRobotConstraints()
-{
-	// does not work as expected....
-	std::vector<DynamicsRobotPtr> robots = bulletEngine->getRobots();
-	for (size_t i=0;i<robots.size();i++)
-	{
-		robots[i]->ensureKinematicConstraints();
-	}
-}
-
-void BulletOpenGLViewer::motorPreTickCallback (btDynamicsWorld *world, btScalar timeStep)
-{
-	BulletOpenGLViewer* glViewer = (BulletOpenGLViewer*)world->getWorldUserInfo();
-
-	glViewer->updateMotors(timeStep);
-
-}
-
-void BulletOpenGLViewer::updateMotors(float dt)
-{
-	std::vector<DynamicsRobotPtr> robots = bulletEngine->getRobots();
-	for (size_t i=0;i<robots.size();i++)
-	{
-		robots[i]->actuateJoints(dt);
-        robots[i]->updateSensors();
-	}
 }
 
 void BulletOpenGLViewer::clientMoveAndDisplay()

@@ -954,12 +954,6 @@ void BulletRobot::actuateJoints(btScalar dt)
                 continue;
             }
 
-            if (it->second.node->getName() == "LeftLeg_Joint3")
-            {
-                std::cout <<  "Mode: " << (int) actuation.mode << " : " << posTarget << " " << posActual << std::endl;
-                controller.debug();
-            }
-
             if (actuation.modes.position && actuation.modes.velocity)
             {
                 hinge->enableAngularMotor(true,

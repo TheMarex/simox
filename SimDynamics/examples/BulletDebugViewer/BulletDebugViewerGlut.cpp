@@ -178,10 +178,12 @@ int main(int argc,char* argv[])
 	{
 		Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
 		//gp(2,3) = 35.0f;
-		gp(2,3) = 800.0f;
-		robot->setGlobalPose(gp);
+		//gp(2,3) = 800.0f;
+		//robot->setGlobalPose(gp);
 		DynamicsRobotPtr dynRob = world->CreateDynamicsRobot(robot);
-		dynRob->disableActuation();
+		ActuationMode mode;
+		mode.modes.position = 1;
+		dynRob->enableActuation(mode);
 		world->addRobot(dynRob);
 	}
 	BulletOpenGLViewer viewer(world);

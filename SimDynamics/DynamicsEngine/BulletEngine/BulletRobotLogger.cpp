@@ -73,7 +73,7 @@ void BulletRobotLogger::log(btScalar dt)
 	if (!running)
 		return;
 
-	if (actualAngleLog.size() > max_samples)
+	if (int(actualAngleLog.size()) > max_samples)
 	{
 		std::cout << "Warning: Exceeded max_samples! Stopping logging." << std::endl;
 		running = false;

@@ -30,7 +30,7 @@ BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
 {
     bulletMaxMotorImulse = 1500.0f;
 
-    bulletMotorVelFactor = 10.0f;
+    bulletMotorVelFactor = 100.0f;
 	buildBulletModels(enableJointMotors);
 
     // activate force torque sensors
@@ -133,171 +133,16 @@ void BulletRobot::buildBulletModels(bool enableJointMotors)
             }
             if (!bodyA)
             {
-                // root node
-                /*if (joint)
-                {
-                    THROW_VR_EXCEPTION ("Not able to build valid dynamic model: First node of robot with collision model (" << rn->getName() << ") is connected with a joint (" << joint->getName() <<") but no parent collision model found.");
-                }*/
                 bodyA = robot->getRootNode();
             }
-            //} else
-            {
-                /* Eigen::Matrix4f trafoA2J = Eigen::Matrix4f::Identity(); // bodyA->joint
-                Eigen::Matrix4f trafoJ2B = Eigen::Matrix4f::Identity(); // joint->bodyB
-                if (joint)
-                {
-                    // now we have bodyA->joint->bodyB
-                    // compute trafoA2J
-                    std::vector<Eigen::Matrix4f> trafosA;
-                    // visualization is affected by preJointTransformation
-                    trafosA.push_back(joint->getPreJointTransformation());
 
-                    // go parents up until bodyA is reached
-                    parent =  boost::dynamic_pointer_cast<RobotNode>(joint->getParent());
-                    while (parent && parent!=bodyA)
-                    {
-                        trafosA.push_back(parent->getPostJointTransformation());
-                        trafosA.push_back(parent->getPreJointTransformation());
-                        parent = boost::dynamic_pointer_cast<RobotNode>(parent->getParent());
-                    }
-                    THROW_VR_EXCEPTION_IF(!parent,"internal error, no parent 2");
-                    trafosA.push_back(bodyA->getPostJointTransformation());
-                    std::vector<Eigen::Matrix4f>::reverse_iterator rit;
-                    // accumulate transformations from bodyA_post to joint_pre
-                    for (rit=trafosA.rbegin(); rit != trafosA.rend(); rit++)
-                    {
-                        trafoA2J *= *rit;
-                    }
+            // check for fixed joint
+            if (!joint)
+                joint = bodyB;
 
-                    // compute trafoJ2B
-                    std::vector<Eigen::Matrix4f> trafosB;
-               
-                    // visualization is affected by preJointTransformation
-                    trafosB.push_back(bodyB->getPreJointTransformation());
-                    if (joint!=bodyB)
-                    {
-                        // go parents up until joint is reached
-                        parent = boost::dynamic_pointer_cast<RobotNode>(bodyB->getParent());
-                        while (parent && parent!=joint)
-                        {
-                            trafosB.push_back(parent->getPostJointTransformation());
-                            trafosB.push_back(parent->getPreJointTransformation());
-                            parent = boost::dynamic_pointer_cast<RobotNode>(parent->getParent());
-                        }
-                        THROW_VR_EXCEPTION_IF(!parent,"internal error, no parent");
-                        trafosB.push_back(joint->getPostJointTransformation());
-                    }
-                    // accumulate transformations from joint_post to bodyB_pre
-                    for (rit=trafosB.rbegin(); rit != trafosB.rend(); rit++)
-                    {
-                        trafoJ2B *= *rit;
-                    }
-                } else
-                {
-                    // fixed joint: bodyA -> bodyB
-                    joint = bodyB;
-
-                    // compute trafoA2J (which is trafo from A to B)
-                    std::vector<Eigen::Matrix4f> trafosA;
-                    // visualization is affected by preJointTransformation
-                    trafosA.push_back(bodyB->getPreJointTransformation());
-
-                    // go parents up until bodyA is reached
-                    parent =  boost::dynamic_pointer_cast<RobotNode>(bodyB->getParent());
-                    while (parent && parent!=bodyA)
-                    {
-                        trafosA.push_back(parent->getPostJointTransformation());
-                        trafosA.push_back(parent->getPreJointTransformation());
-                        parent = boost::dynamic_pointer_cast<RobotNode>(parent->getParent());
-                    }
-                    THROW_VR_EXCEPTION_IF(!parent,"internal error, no parent 3");
-                    trafosA.push_back(bodyA->getPostJointTransformation());
-                    std::vector<Eigen::Matrix4f>::reverse_iterator rit;
-                    // accumulate transformations from bodyA_post to joint_pre
-                    for (rit=trafosA.rbegin(); rit != trafosA.rend(); rit++)
-                    {
-                        trafoA2J *= *rit;
-                    }
-
-                }*/
-
-                // check for fixed joint
-                if (!joint)
-                    joint = bodyB;
-
-                createLink(bodyA,joint,joint2,bodyB);//,trafoA2J,trafoJ2B);
-            }
-
+            createLink(bodyA,joint,joint2,bodyB);//,trafoA2J,trafoJ2B);
         }
 
-    /*
-    RobotNodePtr bodyA;
-    RobotNodePtr bodyB;
-    RobotNodePtr joint;
-    Eigen::Matrix4f trafoA = Eigen::Matrix4f;
-    Eigen::Matrix4f trafoB = Eigen::Matrix4f;
-	for (size_t i=0;i<robotNodes.size();i++)
-	{
-
-		RobotNodePtr rn = robotNodes[i];
-
-        switch(rn->getType())
-        {
-        case RobotNode::Generic:
-            THROW_VR_EXCEPTION ("Could not build dynamic model. Only <JointNode> <TransformationNode> and <BodyNode> tags allowed!");
-            break;
-        case RobotNode::Body:
-            break;
-        default: 
-            continue;
-        }
-        // a body
-        bodyB = rn;
-        bodyA.reset();
-        joint.reset();
-        trafoA = Eigen::Matrix4f;
-        trafoB = Eigen::Matrix4f;
-
-        // search parent body
-        RobotNodePtr parent = rn->getParent();
-        bool built = false;
-        while (parent && !built)
-        {
-            switch (parent->getType())
-            {
-            case RobotNode::Joint:
-                if (joint)
-                {
-                    THROW_VR_EXCEPTION("Need bodies between joints. Two succeeding joints found in kinematic structure");
-                }
-                joint = parent;
-                break;
-            case RobotNode::Body:
-                if (!joint)
-                {
-                    THROW_VR_EXCEPTION("Need joint between body. Two succeeding bodies found in kinematic structure");
-                }
-                createLink(bodyA,joint,bodyB,trafoA,trafoB);
-                built = true;
-                break;
-            case RobotNode::Transform:
-                if (!joint)
-                    trafoA *= parent->getPostJointTransformation
-                built = true;
-                break;
-            }
-        }
-
-        */
-
-        /*
-		std::vector<SceneObjectPtr> children = rn->getChildren();
-		for (size_t c=0;c<children.size();c++)
-		{
-			RobotNodePtr rn2 = boost::dynamic_pointer_cast<RobotNode>(children[c]);
-			if (rn2)
-				createLink(rn,rn2,enableJointMotors);
-		}*/
 	}
 }
 
@@ -892,7 +737,7 @@ void BulletRobot::ensureKinematicConstraints()
 #endif
 }
 
-void BulletRobot::actuateJoints(btScalar dt)
+void BulletRobot::actuateJoints(double dt)
 {
     //cout << "=== === BulletRobot: actuateJoints() 1 === " << endl;
 
@@ -917,7 +762,7 @@ void BulletRobot::actuateJoints(btScalar dt)
 
             btScalar posTarget = btScalar(it->second.jointValueTarget + link.jointValueOffset);
             btScalar posActual = btScalar(getJointAngle(it->first));
-            btScalar velocityTarget = it->second.jointVelocityTarget;
+            btScalar velocityTarget = btScalar(it->second.jointVelocityTarget);
 
 #ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
             boost::shared_ptr<btGeneric6DofConstraint> dof = boost::dynamic_pointer_cast<btGeneric6DofConstraint>(link.joint);
@@ -957,20 +802,20 @@ void BulletRobot::actuateJoints(btScalar dt)
             if (actuation.modes.position && actuation.modes.velocity)
             {
                 hinge->enableAngularMotor(true,
-                        controller.update(posTarget - posActual, velocityTarget, actuation, dt),
+                    controller.update(posTarget - posActual, velocityTarget, actuation, btScalar(dt)),
                         bulletMaxMotorImulse);
 
             }
             else if (actuation.modes.position)
             {
                 hinge->enableAngularMotor(true,
-                        controller.update(posTarget - posActual, 0.0, actuation, dt),
+                    controller.update(posTarget - posActual, 0.0, actuation, btScalar(dt)),
                         bulletMaxMotorImulse);
             }
             else if (actuation.modes.velocity)
             {
                 hinge->enableAngularMotor(true,
-                        controller.update(0.0, velocityTarget, actuation, dt),
+                    controller.update(0.0, velocityTarget, actuation, btScalar(dt)),
                         bulletMaxMotorImulse);
             }
             // FIXME this bypasses the controller (and doesn't work..)
@@ -1407,7 +1252,7 @@ Eigen::Vector3f BulletRobot::getComGlobal( VirtualRobot::RobotNodeSetPtr set)
 {
 	Eigen::Vector3f com = Eigen::Vector3f::Zero();
 	double totalMass = 0.0;
-	for (int i = 0; i < set->getSize(); i++)
+	for (unsigned int i = 0; i < set->getSize(); i++)
 	{
 		VirtualRobot::RobotNodePtr node = (*set)[i];
 		BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(getDynamicsRobotNode(node));
@@ -1416,7 +1261,7 @@ Eigen::Vector3f BulletRobot::getComGlobal( VirtualRobot::RobotNodeSetPtr set)
 		totalMass += node->getMass();
 	}
 
-	com *= 1.0f/totalMass;
+	com *= float(1.0f/totalMass);
 	return com;
 }
 
@@ -1424,7 +1269,7 @@ Eigen::Vector3f BulletRobot::getComGlobalVelocity( VirtualRobot::RobotNodeSetPtr
 {
 	Eigen::Vector3f com = Eigen::Vector3f::Zero();
 	double totalMass = 0.0;
-	for (int i = 0; i < set->getSize(); i++)
+	for (unsigned int i = 0; i < set->getSize(); i++)
 	{
 		VirtualRobot::RobotNodePtr node = (*set)[i];
 		BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(getDynamicsRobotNode(node));

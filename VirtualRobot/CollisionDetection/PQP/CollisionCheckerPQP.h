@@ -50,7 +50,7 @@ public:
 	CollisionCheckerPQP();
 	virtual ~CollisionCheckerPQP();
 
-	virtual float calculateDistance (CollisionModelPtr model1, CollisionModelPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
+    virtual float calculateDistance(CollisionModelPtr model1, CollisionModelPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1 = NULL, int* trID2 = NULL);
 	virtual bool checkCollision (CollisionModelPtr model1, CollisionModelPtr model2);//, Eigen::Vector3f *storeContact = NULL);
 
 	/*!

@@ -52,9 +52,9 @@ namespace SimDynamics
 			bulletSolverIterations = 100;
 			bulletSolverGlobalContactForceMixing = 0;
 			bulletSolverGlobalErrorReductionParameter = btScalar(0.2);//0.1);
-			bulletSolverSuccessiveOverRelaxation = 1.3;
-			bulletSolverContactSurfaceLayer = 0.001;
-			bulletSolverSplitImpulsePenetrationThreshold = -0.01;
+            bulletSolverSuccessiveOverRelaxation = btScalar(1.3);
+            bulletSolverContactSurfaceLayer = btScalar(0.001);
+            bulletSolverSplitImpulsePenetrationThreshold = btScalar(-0.01);
 		}
 
 		virtual ~BulletEngineConfig(){}
@@ -118,7 +118,6 @@ public:
 		Set floor
 	*/
 	virtual void createFloorPlane(const Eigen::Vector3f &pos, const Eigen::Vector3f &up);
-
 
 	virtual void stepSimulation(double dt, int maxSubSteps, double fixedTimeStep);
 

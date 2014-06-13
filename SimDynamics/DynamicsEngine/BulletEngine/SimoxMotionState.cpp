@@ -122,7 +122,7 @@ void SimoxMotionState::setGlobalPoseSimox( const Eigen::Matrix4f& worldPose )
             {
                 if (links[i].nodeJoint)
                 {
-                    float ja = bdr->getJointAngle(links[i].nodeJoint);
+                    float ja = float(bdr->getJointAngle(links[i].nodeJoint));
                     // we can update the joint value via an RobotNodeActuator
                     RobotNodeActuatorPtr rna (new RobotNodeActuator(links[i].nodeJoint));
                     rna->updateJointAngle(ja);

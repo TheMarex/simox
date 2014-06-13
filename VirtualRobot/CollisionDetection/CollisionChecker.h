@@ -63,9 +63,9 @@ public:
 	virtual float calculateDistance (SceneObjectSetPtr model1, SceneObjectSetPtr model2);
 	virtual float calculateDistance (CollisionModelPtr model1, SceneObjectSetPtr model2);
 	virtual float calculateDistance (CollisionModelPtr model1, CollisionModelPtr model2);
-	virtual float calculateDistance (SceneObjectSetPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
-	virtual float calculateDistance (CollisionModelPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
-	virtual float calculateDistance (CollisionModelPtr model1, CollisionModelPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
+    virtual float calculateDistance(SceneObjectSetPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1 = NULL, int* trID2 = NULL);
+    virtual float calculateDistance(CollisionModelPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1 = NULL, int* trID2 = NULL);
+    virtual float calculateDistance(CollisionModelPtr model1, CollisionModelPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1 = NULL, int* trID2 = NULL);
 	
 	/*! 
 		Test if the two models are colliding.
@@ -124,8 +124,8 @@ public:
 	*/
 	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectSetPtr model2);
 	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectPtr model2);
-	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
-	virtual float calculateDistance (SceneObjectPtr model1, SceneObjectPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2);
+    virtual float calculateDistance(SceneObjectPtr model1, SceneObjectSetPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1 = NULL, int* trID2 = NULL);
+    virtual float calculateDistance(SceneObjectPtr model1, SceneObjectPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1 = NULL, int* trID2 = NULL);
 
 	/*! 
 		Test if the two models are colliding.

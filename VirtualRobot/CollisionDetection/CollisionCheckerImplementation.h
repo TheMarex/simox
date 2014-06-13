@@ -41,7 +41,7 @@ public:
 	CollisionCheckerImplementation(){automaticSizeCheck = true; debugOutput=false;}
 	virtual ~CollisionCheckerImplementation(){}
 
-	virtual float calculateDistance (CollisionModelPtr model1, CollisionModelPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1, int* trID2) = 0;
+    virtual float calculateDistance(CollisionModelPtr model1, CollisionModelPtr model2, Eigen::Vector3f &P1, Eigen::Vector3f &P2, int* trID1 = NULL, int* trID2 = NULL) = 0;
 	virtual bool checkCollision (CollisionModelPtr model1, CollisionModelPtr model2) = 0;//, Eigen::Vector3f *storeContact = NULL) = 0;
 
 	virtual void setAutomaticSizeCheck(bool checkSizeOnColModelCreation){automaticSizeCheck = checkSizeOnColModelCreation;}

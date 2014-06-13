@@ -1,3 +1,6 @@
+#ifndef __COLLADA_SIMOX_H__
+#define __COLLADA_SIMOX_H__
+
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include "inventor.h"
@@ -52,5 +55,7 @@ public:
 };
 
 
-
 } //namespace
+
+
+#endif

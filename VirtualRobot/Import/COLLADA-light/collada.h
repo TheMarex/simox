@@ -1,5 +1,5 @@
-#ifndef __COLLADA_H__
-#define __COLLADA_H__
+#ifndef __COLLADA_SIMOX_IMPORT_H__
+#define __COLLADA_SIMOX_IMPORT_H__
 
 
 #include "pugixml/pugixml.hpp"

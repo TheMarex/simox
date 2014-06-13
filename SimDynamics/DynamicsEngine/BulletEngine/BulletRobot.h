@@ -105,7 +105,7 @@ public:
 		Usually this method is called by the framework in every tick to perform joint actuation.
 		\param dt Timestep
 	*/
-	virtual void actuateJoints(btScalar dt);
+	virtual void actuateJoints(double dt);
 
     virtual void updateSensors();
 

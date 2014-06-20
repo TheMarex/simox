@@ -51,6 +51,11 @@ Eigen::MatrixXf JacobiProvider::getPseudoInverseJacobianMatrix()
 
 Eigen::MatrixXf JacobiProvider::computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m) const
 {
+	return computePseudoInverseJacobianMatrix(m,0.0f);
+}
+
+Eigen::MatrixXf JacobiProvider::computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m, float invParameter) const
+{
 #ifdef CHECK_PERFORMANCE
 	clock_t startT = clock();
 #endif
@@ -74,12 +79,17 @@ Eigen::MatrixXf JacobiProvider::computePseudoInverseJacobianMatrix(const Eigen::
 	case eSVD:
 		{
 				 float pinvtoler = 0.00001f;
+				 if (invParameter!=0.0f)
+					 pinvtoler = invParameter;
 				 pseudo = MathTools::getPseudoInverse(m, pinvtoler);
 				 break;
 		}
 	case eSVDDamped:
 		{
-				 float pinvtoler = 0.00001f;
+				 float pinvtoler = 1.0f;
+				 if (invParameter!=0.0f)
+					 pinvtoler = invParameter;
+
 				 pseudo = MathTools::getPseudoInverseDamped(m,pinvtoler);
 				 break;
 		}

@@ -21,8 +21,8 @@ using namespace Eigen;
 namespace VirtualRobot
 {
 
-DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem, JacobiProvider::InverseJacobiMethod invJacMethod) :
-    JacobiProvider(_rns,invJacMethod), coordSystem(_coordSystem), nRows(0)
+DifferentialIK::DifferentialIK(RobotNodeSetPtr _rns, RobotNodePtr _coordSystem, JacobiProvider::InverseJacobiMethod invJacMethod, float invParam) :
+    JacobiProvider(_rns,invJacMethod), coordSystem(_coordSystem), invParam(invParam), nRows(0)
 {
 	if (!rns)
 		THROW_VR_EXCEPTION("Null data");
@@ -357,7 +357,7 @@ Eigen::MatrixXf DifferentialIK::getPseudoInverseJacobianMatrix(SceneObjectPtr tc
 #ifdef CHECK_PERFORMANCE
         clock_t startT2 = clock();
 #endif
-    Eigen::MatrixXf res = computePseudoInverseJacobianMatrix(Jacobian);
+    Eigen::MatrixXf res = computePseudoInverseJacobianMatrix(Jacobian,invParam);
 #ifdef CHECK_PERFORMANCE
         clock_t endT = clock();
         float diffClock1 = (float)(((float)(startT2 - startT) / (float)CLOCKS_PER_SEC) * 1000.0f);

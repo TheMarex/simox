@@ -113,8 +113,10 @@ public:
 		@brief Initialize a Jacobian object.
 		\param rns The robotNodes (i.e., joints) for which the Jacobians should be calculated.
 		\param coordSystem The coordinate system in which the Jacobians are defined. By default the global coordinate system is used.
+		\param invJacMethod The method for inverting the Jacobian
+		\param invParam Only used when != 0.0f
 	*/
-    DifferentialIK(RobotNodeSetPtr rns, RobotNodePtr coordSystem = RobotNodePtr(), JacobiProvider::InverseJacobiMethod invJacMethod = eSVD);
+    DifferentialIK(RobotNodeSetPtr rns, RobotNodePtr coordSystem = RobotNodePtr(), JacobiProvider::InverseJacobiMethod invJacMethod = eSVD, float invParam = 0.0f);
 	
 	/*!	@brief Sets the target position for (one of) the tcp(s).  
 		\param goal Target pose of the tcp. 	
@@ -263,6 +265,7 @@ public:
     virtual void setMaxPositionStep(float s);
 protected:
 	
+    float invParam;
 	void setNRows();
 	bool checkTolerances();
     std::vector<SceneObjectPtr> tcp_set;

@@ -60,6 +60,8 @@ public:
 
 	virtual Eigen::MatrixXf getJacobianMatrix() = 0;
     virtual Eigen::MatrixXf getJacobianMatrix(SceneObjectPtr tcp) = 0;
+
+	virtual Eigen::MatrixXf computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m, float invParameter) const;
 	virtual Eigen::MatrixXf computePseudoInverseJacobianMatrix(const Eigen::MatrixXf &m) const;
 	virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix();
     virtual Eigen::MatrixXf getPseudoInverseJacobianMatrix(SceneObjectPtr tcp);
@@ -74,7 +76,7 @@ public:
 
 	bool isInitialized();
 	/*
-		If set, a weigthed inverse Jacobian is computed. The weighting is only applied in eTranspose mode!
+		If set, a weighted inverse Jacobian is computed. The weighting is only applied in eTranspose mode!
 		jointScaling.rows() must be nDoF
 		Large entries result in small joint deltas.
 	*/

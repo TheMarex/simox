@@ -1,17 +1,17 @@
 
 IF (NOT Simox_CONFIGURED)
 
-	# defines Simox_CONFIGURED variable which indicates that this config file has already been included
-	SET(Simox_CONFIGURED TRUE)
+  # defines Simox_CONFIGURED variable which indicates that this config file has already been included
+  SET(Simox_CONFIGURED TRUE)
 
-	# Set up build type
-	IF(NOT CMAKE_BUILD_TYPE)
-	  SET(CMAKE_BUILD_TYPE Debug CACHE STRING
-	      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-	      FORCE)
-	ENDIF(NOT CMAKE_BUILD_TYPE)
+  # Set up build type
+  IF(NOT CMAKE_BUILD_TYPE)
+    SET(CMAKE_BUILD_TYPE Debug CACHE STRING
+        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+        FORCE)
+  ENDIF(NOT CMAKE_BUILD_TYPE)
 
-	GET_FILENAME_COMPONENT (CurrentSimoxPath ${CMAKE_CURRENT_LIST_FILE} PATH)
+  GET_FILENAME_COMPONENT (CurrentSimoxPath ${CMAKE_CURRENT_LIST_FILE} PATH)
   MESSAGE (STATUS "** Simox_DIR: ${CurrentSimoxPath}")
   SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CurrentSimoxPath}/CMakeModules)
   SET(Simox_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})

@@ -24,7 +24,7 @@ ELSE(SimDynamics_USE_BULLET_USE_GLUT)
 		SimoxApplication(${PROJECT_NAME} ${SRC} "")
 		TARGET_LINK_LIBRARIES(${PROJECT_NAME} SimDynamics BulletOpenGLSupport)
 	ELSE(WIN32)
-		MESSAGE (" * !GLUT only supported on windows so far... Skipping BulletDebugViewer")
+		MESSAGE (STATUS " * !GLUT only supported on windows so far... Skipping BulletDebugViewer")
 	ENDIF(WIN32)
 ENDIF(SimDynamics_USE_BULLET_USE_GLUT)
 

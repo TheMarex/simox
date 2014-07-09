@@ -348,8 +348,8 @@ private:
 	PQP_REAL TriDistance(PQP_REAL R[3][3], PQP_REAL T[3], Tri *t1, Tri *t2, PQP_REAL p[3], PQP_REAL q[3]);
 	int TriContact(PQP_REAL *P1, PQP_REAL *P2, PQP_REAL *P3, PQP_REAL *Q1, PQP_REAL *Q2, PQP_REAL *Q3);
 	int project6(PQP_REAL *ax, PQP_REAL *p1, PQP_REAL *p2, PQP_REAL *p3, PQP_REAL *q1, PQP_REAL *q2, PQP_REAL *q3);
-	PQP_REAL min(PQP_REAL a, PQP_REAL b, PQP_REAL c);
-	PQP_REAL max(PQP_REAL a, PQP_REAL b, PQP_REAL c);
+	PQP_REAL pqp_min(PQP_REAL a, PQP_REAL b, PQP_REAL c);
+    PQP_REAL pqp_max(PQP_REAL a, PQP_REAL b, PQP_REAL c);
 
 	Tri_Processor triProcessor;
 	BV_Processor bvProcessor;

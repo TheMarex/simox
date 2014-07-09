@@ -333,7 +333,7 @@ PQP_CollideResult::Add(int a, int b)
        
 inline
 PQP_REAL
-PQP_Checker::max(PQP_REAL a, PQP_REAL b, PQP_REAL c)
+PQP_Checker::pqp_max(PQP_REAL a, PQP_REAL b, PQP_REAL c)
 {
   PQP_REAL t = a;
   if (b > t) t = b;
@@ -343,7 +343,7 @@ PQP_Checker::max(PQP_REAL a, PQP_REAL b, PQP_REAL c)
 
 inline
 PQP_REAL
-PQP_Checker::min(PQP_REAL a, PQP_REAL b, PQP_REAL c)
+PQP_Checker::pqp_min(PQP_REAL a, PQP_REAL b, PQP_REAL c)
 {
   PQP_REAL t = a;
   if (b < t) t = b;
@@ -363,10 +363,10 @@ PQP_Checker::project6(PQP_REAL *ax,
   PQP_REAL Q2 = pqp_math.VdotV(ax, q2);
   PQP_REAL Q3 = pqp_math.VdotV(ax, q3);
   
-  PQP_REAL mx1 = max(P1, P2, P3);
-  PQP_REAL mn1 = min(P1, P2, P3);
-  PQP_REAL mx2 = max(Q1, Q2, Q3);
-  PQP_REAL mn2 = min(Q1, Q2, Q3);
+  PQP_REAL mx1 = pqp_max(P1, P2, P3);
+  PQP_REAL mn1 = pqp_min(P1, P2, P3);
+  PQP_REAL mx2 = pqp_max(Q1, Q2, Q3);
+  PQP_REAL mn2 = pqp_min(Q1, Q2, Q3);
 
   if (mn1 > mx2) return 0;
   if (mn2 > mx1) return 0;

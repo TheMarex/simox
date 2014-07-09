@@ -41,7 +41,7 @@
   examples showing how these libraries can be used to build complex tools in the
   context of mobile manipulation. 
 
-  Further information and documentation can be found at the wiki pages: http://sourceforge.net/apps/mediawiki/simox
+  Further information and documentation can be found at the wiki pages: http://sourceforge.net/p/simox/wiki/
   
   \section VirtualRobot VirtualRobot
   
@@ -86,7 +86,7 @@
   functionality. As a reference implementation Simox offers Coin3D/SoQt-based visualization
   support.
     
-  Please have a look at the wiki pages: http://sourceforge.net/apps/mediawiki/simox
+  Please have a look at the wiki pages: http://sourceforge.net/p/simox/wiki/
  *
  */ 
 

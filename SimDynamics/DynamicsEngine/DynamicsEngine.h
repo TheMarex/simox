@@ -136,6 +136,9 @@ public:
 		Eigen::Vector3f posGlobalA;
 		Eigen::Vector3f posGlobalB;
 		Eigen::Vector3f normalGlobalB;
+		Eigen::Vector3f frictionDir1;
+		Eigen::Vector3f frictionDir2;
+		double distance;
 		double combinedFriction;
 		double combinedRestitution;
         double appliedImpulse;

@@ -529,24 +529,28 @@ std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 		for (int j=0;j<numContacts;j++)
 		{
 			btManifoldPoint& pt = contactManifold->getContactPoint(j);
-			if (pt.getDistance()<0.f)
-			{
-				DynamicsContactInfo i;
-				i.objectA = dynObjA;
-				i.objectB = dynObjB;
-				const btVector3& ptA = pt.getPositionWorldOnA();
-				const btVector3& ptB = pt.getPositionWorldOnB();
-				const btVector3& normalOnB = pt.m_normalWorldOnB;
-				i.posGlobalA = getVecEigen(ptA);
-				i.posGlobalB = getVecEigen(ptB);
-				i.normalGlobalB(0) = normalOnB.x();
-				i.normalGlobalB(1) = normalOnB.y();
-				i.normalGlobalB(2) = normalOnB.z();
-				i.combinedFriction = pt.m_combinedFriction;
-				i.combinedRestitution = pt.m_combinedRestitution;
-                i.appliedImpulse = pt.m_appliedImpulse;
-				result.push_back(i);
-			}
+			DynamicsContactInfo i;
+			i.objectA = dynObjA;
+			i.objectB = dynObjB;
+			const btVector3& ptA = pt.getPositionWorldOnA();
+			const btVector3& ptB = pt.getPositionWorldOnB();
+			const btVector3& normalOnB = pt.m_normalWorldOnB;
+			i.posGlobalA = getVecEigen(ptA);
+			i.posGlobalB = getVecEigen(ptB);
+			i.normalGlobalB(0) = normalOnB.x();
+			i.normalGlobalB(1) = normalOnB.y();
+			i.normalGlobalB(2) = normalOnB.z();
+			i.combinedFriction = pt.m_combinedFriction;
+			i.combinedRestitution = pt.m_combinedRestitution;
+			i.appliedImpulse = pt.m_appliedImpulse;
+			i.frictionDir1.x() = pt.m_lateralFrictionDir1.x();
+			i.frictionDir1.y() = pt.m_lateralFrictionDir1.y();
+			i.frictionDir1.z() = pt.m_lateralFrictionDir1.z();
+			i.frictionDir2.x() = pt.m_lateralFrictionDir2.x();
+			i.frictionDir2.y() = pt.m_lateralFrictionDir2.y();
+			i.frictionDir2.z() = pt.m_lateralFrictionDir2.z();
+			i.distance = pt.getDistance();
+			result.push_back(i);
 		}
 	}
 	return result;

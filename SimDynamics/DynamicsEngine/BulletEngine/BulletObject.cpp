@@ -10,6 +10,8 @@
 
 
 #include <BulletCollision/CollisionShapes/btShapeHull.h>
+#include <BulletCollision/CollisionShapes/btBoxShape.h>
+#include <BulletCollision/CollisionShapes/btCompoundShape.h>
 
 //#define DEBUG_FIXED_OBJECTS
 //#define USE_BULLET_GENERIC_6DOF_CONSTRAINT
@@ -42,16 +44,26 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
 		colModel = ob->getCollisionModel();*/
 	} else
 	{
-
-		TriMeshModelPtr trimesh;
 		THROW_VR_EXCEPTION_IF(!colModel,"No CollisionModel, could not create dynamics model...");
-		trimesh = colModel->getTriMeshModel();
-		
-		THROW_VR_EXCEPTION_IF( ( !trimesh || trimesh->faces.size()==0) , "No TriMeshModel, could not create dynamics model...");
-		collisionShape.reset(createConvexHullShape(trimesh));
+
+		if (o->getName() != "Floor")
+		{
+			TriMeshModelPtr trimesh;
+			trimesh = colModel->getTriMeshModel();
+			THROW_VR_EXCEPTION_IF( ( !trimesh || trimesh->faces.size()==0) , "No TriMeshModel, could not create dynamics model...");
+			collisionShape.reset(createConvexHullShape(trimesh));
+		}
+		else
+		{
+			// the floor needs a primitive shape, works better with collision handling
+			VirtualRobot::BoundingBox bb = colModel->getBoundingBox();
+			Eigen::Vector3f half_size = (bb.getMax() - bb.getMin()) / 1000.0 / 2;
+			btBoxShape* box = new btBoxShape(btVector3(half_size.x(), half_size.y(), half_size.z()));
+			collisionShape.reset(box);
+		}
 	}
 
-	collisionShape->setMargin(btMargin);
+	//collisionShape->setMargin(btMargin);
 
 	btScalar mass = o->getMass();
 	btVector3 localInertia;

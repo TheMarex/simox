@@ -799,30 +799,23 @@ void BulletRobot::actuateJoints(double dt)
                 continue;
             }
 
+            double targetVelocity;
             if (actuation.modes.position && actuation.modes.velocity)
             {
-                hinge->enableAngularMotor(true,
-                    controller.update(posTarget - posActual, velocityTarget, actuation, btScalar(dt)),
-                        bulletMaxMotorImulse);
-
+                targetVelocity = controller.update(posTarget - posActual, velocityTarget, actuation, btScalar(dt));
             }
             else if (actuation.modes.position)
             {
-                hinge->enableAngularMotor(true,
-                    controller.update(posTarget - posActual, 0.0, actuation, btScalar(dt)),
-                        bulletMaxMotorImulse);
+                targetVelocity = controller.update(posTarget - posActual, 0.0, actuation, btScalar(dt));
             }
             else if (actuation.modes.velocity)
             {
-                hinge->enableAngularMotor(true,
-                    controller.update(0.0, velocityTarget, actuation, btScalar(dt)),
-                        bulletMaxMotorImulse);
+                targetVelocity = controller.update(0.0, velocityTarget, actuation, btScalar(dt));
             }
             // FIXME this bypasses the controller (and doesn't work..)
             else if (actuation.modes.torque)
             {
-                //Only first try (using torques as velocity targets...)
-                hinge->enableAngularMotor(true,it->second.jointTorqueTarget,bulletMaxMotorImulse);
+                targetVelocity = it->second.jointTorqueTarget;
                 //cout << "jointTorqueTarget for joint " << it->second.node->getName() << " :" << it->second.jointTorqueTarget << endl;
 
                 /*
@@ -881,6 +874,8 @@ void BulletRobot::actuateJoints(double dt)
 
 */
             }
+
+            hinge->enableAngularMotor(true, targetVelocity, bulletMaxMotorImulse);
 
             // Universal constraint instead of hinge constraint
             /*

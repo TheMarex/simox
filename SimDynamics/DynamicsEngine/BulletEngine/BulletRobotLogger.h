@@ -7,7 +7,7 @@
 #include "BulletRobot.h"
 
 /*
- * Wrapper for a BulletRobot that logs target/actual position/velocity to a file.
+ * Logger for a BulletRobot that logs target/actual position/velocity to a file.
  */
 namespace SimDynamics
 {
@@ -25,8 +25,22 @@ public:
 	, bodyNodes(bodyNodes)
 	, max_samples(1024 * 1024)
 	, timestamp(0.0f)
+	, logPath("")
 	{
 		engine->addExternalCallback(logCB, (void*) this);
+	}
+
+	~BulletRobotLogger()
+	{
+		if (logPath.size() > 0)
+		{
+			writeToFile(logPath);
+		}
+	}
+
+	void setLogPath(const std::string& path)
+	{
+		logPath = path;
 	}
 
 	void writeToFile(const std::string& path);
@@ -49,6 +63,7 @@ private:
 	double timestamp;
 	bool running;
 	int max_samples;
+	std::string logPath;
 
 	static void logCB(void* data, btScalar dt);
 	void log(btScalar dt);

@@ -32,6 +32,10 @@ void BulletRobotLogger::writeToFile(const std::string& path)
 		output << "ActualAngle" << name << ",";
 		output << "TargetVelocity" << name << ",";
 		output << "ActualVelocity" << name << ",";
+		output << "ActualTorque" << name << ",";
+		output << "ActualForceX" << name << ",";
+		output << "ActualForceY" << name << ",";
+		output << "ActualForceZ" << name << ",";
 	}
 	output << "CoM X" << ",";
 	output << "CoM Y" << ",";
@@ -51,6 +55,10 @@ void BulletRobotLogger::writeToFile(const std::string& path)
 			output << actualAngleLog[frame](dof) << ",";
 			output << targetVelocityLog[frame](dof) << ",";
 			output << actualVelocityLog[frame](dof) << ",";
+			output << actualJointTorquesLog[frame](dof) << ",";
+			output << actualJointForcesLog[frame](0, dof) << ",";
+			output << actualJointForcesLog[frame](1, dof) << ",";
+			output << actualJointForcesLog[frame](2, dof) << ",";
 		}
 		output << actualCoMLog[frame].x() << ",";
 		output << actualCoMLog[frame].y() << ",";
@@ -85,6 +93,8 @@ void BulletRobotLogger::log(btScalar dt)
 	Eigen::VectorXf targetAngle(dof);
 	Eigen::VectorXf actualVelocity(dof);
 	Eigen::VectorXf targetVelocity(dof);
+	Eigen::VectorXf actualTorque(dof);
+	Eigen::Matrix3Xf actualForces(3, dof);
 
 	for (unsigned int i = 0; i < jointNodes->getSize(); i++)
 	{
@@ -94,8 +104,12 @@ void BulletRobotLogger::log(btScalar dt)
 		actualVelocity(i) = -robot->getJointSpeed(node);
 		targetAngle(i)    = robot->getNodeTarget(node);
 		targetVelocity(i) = robot->getJointTargetSpeed(node);
+		actualTorque(i) = robot->getJointTorque(node);
+		actualForces.col(i) = robot->getJointForces(node);
 	}
 
+	actualJointTorquesLog.push_back(actualTorque);
+	actualJointForcesLog.push_back(actualForces);
 	actualCoMLog.push_back(bodyNodes->getCoM());
 	actualCoMVelocityLog.push_back(robot->getComGlobalVelocity(bodyNodes));
 	actualVelocityLog.push_back(actualVelocity);

@@ -41,6 +41,8 @@ private:
 	std::vector<Eigen::VectorXf> targetVelocityLog;
 	std::vector<Eigen::VectorXf> actualAngleLog;
 	std::vector<Eigen::VectorXf> actualVelocityLog;
+	std::vector<Eigen::VectorXf> actualJointTorquesLog;
+	std::vector<Eigen::Matrix3Xf> actualJointForcesLog;
 	std::vector<Eigen::Vector3f> actualCoMLog;
 	std::vector<Eigen::Vector3f> actualCoMVelocityLog;
 	std::vector<double> timestamps;

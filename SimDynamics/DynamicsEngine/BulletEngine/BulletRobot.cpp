@@ -1226,12 +1226,52 @@ Eigen::Vector3f BulletRobot::getJointTorques(RobotNodePtr rn)
     }
     LinkInfo link = getLink(rn);
 
+    if(rn->isRotationalJoint())
+    {
+		enableForceTorqueFeedback(link, true);
+        result = getJointForceTorqueGlobal(link).tail(3);
+    }
 
+    return result;
+}
 
+double BulletRobot::getJointTorque(RobotNodePtr rn)
+{
+    VR_ASSERT(rn);
+    if (!hasLink(rn))
+    {
+        VR_ERROR << "No link with node " << rn->getName() << endl;
+        return 0.0;
+    }
+    LinkInfo link = getLink(rn);
+
+    if(!rn->isRotationalJoint())
+		return 0.0;
+
+	enableForceTorqueFeedback(link, true);
+	Eigen::Vector3f torqueVector = getJointForceTorqueGlobal(link).tail(3);
+
+	// project onto joint axis
+	double troque = (torqueVector.adjoint() * link.nodeJoint->getGlobalPose().block(0, 2, 3, 1))(0, 0);
+	return troque;
+}
+
+Eigen::Vector3f BulletRobot::getJointForces(RobotNodePtr rn)
+{
+    VR_ASSERT(rn);
+    Eigen::Vector3f result;
+    result.setZero();
+    if (!hasLink(rn))
+    {
+        VR_ERROR << "No link with node " << rn->getName() << endl;
+        return result;
+    }
+    LinkInfo link = getLink(rn);
 
     if(rn->isRotationalJoint())
     {
-        result = getJointForceTorqueGlobal(link).tail(3);
+		enableForceTorqueFeedback(link, true);
+        result = getJointForceTorqueGlobal(link).head(3);
     }
 
     return result;

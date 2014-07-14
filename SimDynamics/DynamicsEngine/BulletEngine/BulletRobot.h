@@ -118,11 +118,30 @@ public:
      * \brief getJointTorques retrieves the torques in the given joint.
      * \param rn
      * \return Returns the torques in the given joint. If rn is not a
-     * rotational joint.
+     * rotational joint zero is returned.
      * Values are in N*m. Position of the values is in the middle of the joint
      * in the global coordinate system.
      */
     Eigen::Vector3f getJointTorques(VirtualRobot::RobotNodePtr rn);
+
+    /*!
+     * \brief getJointTorque retrieves the torque along the axis in the given joint.
+     * \param rn
+     * \return Returns the torque in the given joint. If rn is not a
+     * rotational joint zero is returned.
+     * Values are in N*m.
+     */
+    double getJointTorque(VirtualRobot::RobotNodePtr rn);
+
+    /*!
+     * \brief getJointForce retrieves the forces in the given joint.
+     * \param rn
+     * \return Returns the forces in the given joint. If rn is not a
+     * rotational joint zero is returned.
+     * Values are in N. Position of the values is in the middle of the joint
+     * in the global coordinate system.
+     */
+    Eigen::Vector3f getJointForces(VirtualRobot::RobotNodePtr rn);
 
     /*!
         Returns the CoM pose, which is reported by bullet

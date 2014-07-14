@@ -7,6 +7,7 @@
 
 #include <VirtualRobot/Visualization/CoinVisualization/CoinVisualizationFactory.h>
 #include <VirtualRobot/Visualization/CoinVisualization/CoinVisualizationNode.h>
+#include <VirtualRobot/Visualization/CoinVisualization/CoinVisualization.h>
 
 #include <boost/foreach.hpp>
 
@@ -201,6 +202,39 @@ void BulletCoinQtViewer::viewAll()
 	//viewer->viewAll();
 }
 
+void BulletCoinQtViewer::addVisualization(RobotPtr robot, VirtualRobot::SceneObject::VisualizationType visuType)
+{
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	VR_ASSERT(so);
+	removeVisualization(robot);
+
+    boost::shared_ptr<VirtualRobot::CoinVisualization> visualization = robot->getVisualization<CoinVisualization>(visuType);
+	SoNode* n = visualization->getCoinVisualization();
+
+	if (n)
+	{
+		sceneGraph->addChild(n);
+		sceneGraph->addSelectionCallback( selectionCB, this );
+		sceneGraph->addDeselectionCallback( deselectionCB, this );
+		addedSpriteRobotVisualizations[robot] = n;
+	}
+}
+
+void BulletCoinQtViewer::addVisualization(SceneObjectPtr so, VirtualRobot::SceneObject::VisualizationType visuType)
+{
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	VR_ASSERT(so);
+	removeVisualization(so);
+	SoNode * n = CoinVisualizationFactory::getCoinVisualization(so, visuType);
+	if (n)
+	{
+		sceneGraph->addChild(n);
+		sceneGraph->addSelectionCallback( selectionCB, this );
+		sceneGraph->addDeselectionCallback( deselectionCB, this );
+		addedSpriteVisualizations[so] = n;
+	}
+}
+
 void BulletCoinQtViewer::addVisualization(DynamicsObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType)
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
@@ -253,6 +287,28 @@ void BulletCoinQtViewer::addVisualization(DynamicsRobotPtr r, VirtualRobot::Scen
 		sceneGraph->addChild(n);
 		addedRobotVisualizations[r] = n;
 	}*/
+}
+
+void BulletCoinQtViewer::removeVisualization( RobotPtr o )
+{
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	VR_ASSERT(o);
+	if (addedSpriteRobotVisualizations.find(o) != addedSpriteRobotVisualizations.end())
+	{
+		sceneGraph->removeChild(addedSpriteRobotVisualizations[o]);
+		addedSpriteRobotVisualizations.erase(o);
+	}
+}
+
+void BulletCoinQtViewer::removeVisualization( SceneObjectPtr o )
+{
+	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+	VR_ASSERT(o);
+	if (addedSpriteVisualizations.find(o) != addedSpriteVisualizations.end())
+	{
+		sceneGraph->removeChild(addedSpriteVisualizations[o]);
+		addedSpriteVisualizations.erase(o);
+	}
 }
 
 void BulletCoinQtViewer::removeVisualization( DynamicsObjectPtr o )

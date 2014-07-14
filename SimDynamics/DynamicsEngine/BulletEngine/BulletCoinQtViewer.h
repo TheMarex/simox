@@ -63,12 +63,16 @@ public:
 	/*!
 		Visualize dynamics object.
 	*/
+	void addVisualization(VirtualRobot::RobotPtr o, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
+	void addVisualization(VirtualRobot::SceneObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
 	void addVisualization(DynamicsObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
 	void addVisualization(DynamicsRobotPtr r, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
 
 	/*!
 		Remove visualization of dynamics object.
 	*/
+	void removeVisualization(VirtualRobot::RobotPtr o);
+	void removeVisualization(VirtualRobot::SceneObjectPtr o);
 	void removeVisualization(DynamicsObjectPtr o);
 	void removeVisualization(DynamicsRobotPtr r);
 
@@ -159,6 +163,8 @@ protected:
 	BulletEnginePtr bulletEngine;
 	btClock m_clock;
 
+	std::map<VirtualRobot::RobotPtr,SoNode*> addedSpriteRobotVisualizations;
+	std::map<VirtualRobot::SceneObjectPtr,SoNode*> addedSpriteVisualizations;
 	std::map<DynamicsObjectPtr,SoNode*> addedVisualizations;
 	std::map<DynamicsRobotPtr,SoNode*> addedRobotVisualizations;
 

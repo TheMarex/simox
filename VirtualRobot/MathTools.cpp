@@ -1322,27 +1322,6 @@ MathTools::Line VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::intersectPlanes( const Pl
 	return MathTools::Line(pos,dir);
 }
 
-Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::nearestPointOnLine( const Line &l, const Eigen::Vector3f &p )
-{
-	if (!l.isValid())
-		return Eigen::Vector3f::Zero();
-
-	Eigen::Vector3f lp = p - l.p;
-
-	float lambda = l.d.dot(lp);
-
-	Eigen::Vector3f res = l.p + lambda*l.d;
-	return res;
-}
-
-float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::distPointLine( const Line &l, const Eigen::Vector3f &p )
-{
-	if (!l.isValid())
-		return -1.0f;
-	Eigen::Vector3f p2 = nearestPointOnLine(l,p);
-	return (p2-p).norm();
-}
-
 float VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::rad2deg( float rad )
 {
 	static const float c = (float)(180.0/M_PI);

@@ -175,9 +175,12 @@ namespace MathTools
 	//! Create a floor plane
 	Plane VIRTUAL_ROBOT_IMPORT_EXPORT getFloorPlane();
 
-	struct Line
+	template<typename VectorT>
+	struct BaseLine
 	{
-		Line(const Eigen::Vector3f &point, const Eigen::Vector3f &dir)
+		BaseLine() {}
+
+		BaseLine(const VectorT &point, const VectorT &dir)
 		{
 			p = point;
 			d = dir;
@@ -185,13 +188,20 @@ namespace MathTools
 				d.normalize();
 		}
 
-		Line(const Line& line){this->p = line.p;this->d = line.d;}
+		BaseLine(const BaseLine<VectorT>& line)
+		: p(line.p)
+		, d(line.d)
+		{
+		}
 
 		bool isValid() const {return d.norm()>1e-9;}
 
-		Eigen::Vector3f	p;	// point
-		Eigen::Vector3f d;	// direction (unit length)
+		VectorT p;	// point
+		VectorT d;	// direction (unit length)
 	};
+
+    typedef BaseLine<Eigen::Vector3f> Line;
+    typedef BaseLine<Eigen::Vector2f> Line2D;
 
     struct Segment
     {
@@ -424,8 +434,29 @@ namespace MathTools
     IntersectionResult VIRTUAL_ROBOT_IMPORT_EXPORT intersectOOBBPlane(const OOBB &oobb, const Plane &plane, std::vector<Eigen::Vector3f> &storeResult);
 
 	//! Returns nearest point to p on line l
-	Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT nearestPointOnLine(const Line &l, const Eigen::Vector3f &p);
-	float VIRTUAL_ROBOT_IMPORT_EXPORT distPointLine(const Line &l, const Eigen::Vector3f &p);
+	template<typename VectorT>
+	inline VectorT nearestPointOnLine( const BaseLine<VectorT> &l, const VectorT &p )
+	{
+		if (!l.isValid())
+			return VectorT::Zero();
+
+		VectorT lp = p - l.p;
+
+		float lambda = l.d.dot(lp);
+
+		VectorT res = l.p + lambda*l.d;
+		return res;
+	}
+
+	//! Returns the distance of vector p to line l
+	template<typename VectorT>
+	inline float distPointLine( const BaseLine<VectorT> &l, const VectorT &p )
+	{
+		if (!l.isValid())
+			return -1.0f;
+		VectorT p2 = nearestPointOnLine<VectorT>(l, p);
+		return (p2-p).norm();
+	}
 
 	//! Check if three points are collinear
 	bool VIRTUAL_ROBOT_IMPORT_EXPORT collinear(const Eigen::Vector3f &p1, const Eigen::Vector3f &p2, const Eigen::Vector3f &p3 );

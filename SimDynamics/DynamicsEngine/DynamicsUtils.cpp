@@ -2,6 +2,7 @@
 #include "DynamicsUtils.h"
 
 #include <iostream>
+#include <cmath>
 
 namespace SimDynamics {
 PIDController::PIDController(double gainP, double gainI, double gainD)
@@ -92,7 +93,9 @@ double TorqueMotorController::update(double positionError, double velocityError,
 }
 
 VelocityMotorController::VelocityMotorController()
-: positionController(100.0, 10.0, 0.0)
+: positionController(80.0, 10.0, 0.8)
+, maxAcceleration(80.0)
+, velocity(0)
 {
 }
 
@@ -117,6 +120,14 @@ double VelocityMotorController::update(double positionError, double targetVeloci
 		output = posUpdate;
 	else if (actuation.modes.velocity)
 		output = targetVelocity;
+
+	if (fabs(output - velocity)/dt > maxAcceleration)
+	{
+		double sign = (output - velocity) > 0 ? 1.0 : -1.0;
+		output = velocity + sign * maxAcceleration*dt;
+	}
+
+	velocity = output;
 
 	return output;
 }

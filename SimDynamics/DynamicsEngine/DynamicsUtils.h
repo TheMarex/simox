@@ -107,6 +107,8 @@ public:
 
 private:
 	PIDController positionController;
+	double maxAcceleration;
+	double velocity;
 };
 }
 

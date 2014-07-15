@@ -205,7 +205,7 @@ void BulletCoinQtViewer::viewAll()
 void BulletCoinQtViewer::addVisualization(RobotPtr robot, VirtualRobot::SceneObject::VisualizationType visuType)
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-	VR_ASSERT(so);
+	//VR_ASSERT(so);
 	removeVisualization(robot);
 
     boost::shared_ptr<VirtualRobot::CoinVisualization> visualization = robot->getVisualization<CoinVisualization>(visuType);

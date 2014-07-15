@@ -30,7 +30,6 @@ BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
 {
     bulletMaxMotorImulse = 100.0f;
 
-    bulletMotorVelFactor = 100.0f;
 	buildBulletModels(enableJointMotors);
 
     // activate force torque sensors
@@ -744,6 +743,7 @@ void BulletRobot::actuateJoints(double dt)
     std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget>::iterator it = actuationTargets.begin();
 
     int jointCounter = 0;
+    //cout << "**** Control Values: ";
 
     for (; it != actuationTargets.end(); it++)
     {
@@ -798,18 +798,46 @@ void BulletRobot::actuateJoints(double dt)
                 hinge->enableMotor(false);
                 continue;
             }
-
+            double controllerOutput;
             double targetVelocity;
             if (actuation.modes.position && actuation.modes.velocity)
             {
                 targetVelocity = controller.update(posTarget - posActual, velocityTarget, actuation, btScalar(dt));
+                /*if (it->second.node->getMaxVelocity()>0 && fabs(targetVelocity)>it->second.node->getMaxVelocity())
+                {
+                    double newOutput = double(it->second.node->getMaxVelocity());
+                    targetVelocity = copysign(newOutput,targetVelocity);
+                }
+                hinge->enableAngularMotor(true,
+                        controllerOutput,
+                        bulletMaxMotorImulse);*/
+
             }
             else if (actuation.modes.position)
             {
-                targetVelocity = controller.update(posTarget - posActual, 0.0, actuation, btScalar(dt));
+				targetVelocity = controller.update(posTarget - posActual, 0.0, actuation, btScalar(dt));
+                /*if (it->second.node->getMaxVelocity()>0 && fabs(targetVelocity)>it->second.node->getMaxVelocity())
+                {
+                    double newOutput = double(it->second.node->getMaxVelocity());
+                    controllerOutput = copysign(newOutput,controllerOutput);
+                }
+                hinge->enableAngularMotor(true,
+                    controllerOutput,
+                        bulletMaxMotorImulse);*/
+
             }
             else if (actuation.modes.velocity)
             {
+                targetVelocity = controller.update(0.0, velocityTarget, actuation, btScalar(dt));
+                /*if (it->second.node->getMaxVelocity()>0 && fabs(controllerOutput)>it->second.node->getMaxVelocity())
+                {
+                    double newOutput = double(it->second.node->getMaxVelocity());
+                    controllerOutput = copysign(newOutput,controllerOutput);
+                }
+                hinge->enableAngularMotor(true,
+                    controllerOutput,
+                        bulletMaxMotorImulse);*/
+
                 targetVelocity = controller.update(0.0, velocityTarget, actuation, btScalar(dt));
             }
             // FIXME this bypasses the controller (and doesn't work..)
@@ -874,8 +902,13 @@ void BulletRobot::actuateJoints(double dt)
 
 */
             }
-
+			if (it->second.node->getMaxVelocity()>0 && fabs(targetVelocity)>it->second.node->getMaxVelocity())
+			{
+				double newOutput = double(it->second.node->getMaxVelocity());
+				targetVelocity = copysign(newOutput,targetVelocity);
+			}
             hinge->enableAngularMotor(true, targetVelocity, bulletMaxMotorImulse);
+
 
             // Universal constraint instead of hinge constraint
             /*
@@ -930,6 +963,7 @@ void BulletRobot::actuateJoints(double dt)
 #endif
         }
     }
+    //cout << endl;
 
     setPoseNonActuatedRobotNodes();
 }
@@ -950,7 +984,7 @@ void BulletRobot::updateSensors()
             const LinkInfo& link = getLink(node);
             Eigen::VectorXf forceTorques = getJointForceTorqueGlobal(link);
             ftSensor->updateSensors(forceTorques);
-            std::cout << "Updating force torque sensor: " << node->getName() << ": " << forceTorques << std::endl;
+            //std::cout << "Updating force torque sensor: " << node->getName() << ": " << forceTorques << std::endl;
         }
     }
 }

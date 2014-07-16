@@ -68,7 +68,7 @@ IK/PoseQualityExtendedManipulability.cpp
 IK/HierarchicalIK.cpp
 IK/JointLimitAvoidanceJacobi.cpp
 IK/GazeIK.cpp
-Workspace/WorkspaceData.cpp
+Workspace/WorkspaceDataArray.cpp
 Workspace/WorkspaceRepresentation.cpp
 Workspace/Reachability.cpp
 Workspace/Manipulability.cpp
@@ -148,6 +148,7 @@ IK/HierarchicalIK.h
 IK/JointLimitAvoidanceJacobi.h
 IK/GazeIK.h
 Workspace/WorkspaceData.h
+Workspace/WorkspaceDataArray.h
 Workspace/WorkspaceRepresentation.h
 Workspace/Reachability.h
 Workspace/Manipulability.h

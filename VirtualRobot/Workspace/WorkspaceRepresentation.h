@@ -25,6 +25,7 @@
 
 #include "../VirtualRobotImportExport.h"
 #include "WorkspaceData.h"
+#include "WorkspaceDataArray.h"
 #include "../MathTools.h"
 #include "../XML/FileIO.h"
 

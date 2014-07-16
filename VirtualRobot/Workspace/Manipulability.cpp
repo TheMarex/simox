@@ -459,7 +459,7 @@ bool Manipulability::smooth(unsigned int minNeighbors)
 		minNeighbors = 1;
 
 	// copy data
-	WorkspaceDataPtr newData(new WorkspaceData(data));
+    WorkspaceDataPtr newData(data->clone());
 
 	int s = 1;
 	for (int a=s;a<(int)data->getSize(0)-s;a++)
@@ -575,7 +575,7 @@ VirtualRobot::WorkspaceRepresentationPtr Manipulability::clone()
 	memcpy(res->spaceSize,this->spaceSize,sizeof(float)*6);	
 
 	res->adjustOnOverflow = this->adjustOnOverflow;
-	res->data.reset(new WorkspaceData(this->data));
+    res->data.reset(this->data->clone());
 
 	res->measure = this->measure;
 	res->maxManip = this->maxManip;

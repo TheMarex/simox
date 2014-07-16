@@ -176,6 +176,7 @@ namespace VirtualRobot
 	class SphereApproximator;
 	class BasicGraspQualityMeasure;
 	class WorkspaceGrid;
+    class WorkspaceDataArray;
 
     typedef boost::shared_ptr<RobotNode> RobotNodePtr;
     typedef boost::shared_ptr<RobotNodeSet> RobotNodeSetPtr;
@@ -197,6 +198,7 @@ namespace VirtualRobot
     typedef boost::shared_ptr<VisualizationNode> VisualizationNodePtr;
     typedef boost::shared_ptr<VisualizationFactory> VisualizationFactoryPtr;
     typedef boost::shared_ptr<WorkspaceData> WorkspaceDataPtr;
+    typedef boost::shared_ptr<WorkspaceDataArray> WorkspaceDataArrayPtr;
 	typedef boost::shared_ptr<WorkspaceRepresentation> WorkspaceRepresentationPtr;
 	typedef boost::shared_ptr<Reachability> ReachabilityPtr;
 	typedef boost::shared_ptr<Scene> ScenePtr;

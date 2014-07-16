@@ -99,7 +99,7 @@ VirtualRobot::WorkspaceRepresentationPtr Reachability::clone()
 	memcpy(res->spaceSize,this->spaceSize,sizeof(float)*6);	
 
 	res->adjustOnOverflow = this->adjustOnOverflow;
-	res->data.reset(new WorkspaceData(this->data));
+    res->data.reset(this->data->clone());
 
 	return res;
 }

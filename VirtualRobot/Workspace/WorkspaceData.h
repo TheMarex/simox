@@ -1,13 +1,13 @@
 /**
 * This file is part of Simox.
 *
-* Simox is free software; you can redistribute it and/or modify
+* Simox is free software = 0; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as
-* published by the Free Software Foundation; either version 2 of
+* published by the Free Software Foundation = 0; either version 2 of
 * the License, or (at your option) any later version.
 *
 * Simox is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
+* WITHOUT ANY WARRANTY = 0; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU Lesser General Public License for more details.
 *
@@ -43,161 +43,67 @@ namespace VirtualRobot
 */
 class VIRTUAL_ROBOT_IMPORT_EXPORT WorkspaceData : public boost::enable_shared_from_this<WorkspaceData>
 {
-public:	
-	/*!
-		Constructor, fills the data with 0
-	*/
-	WorkspaceData(unsigned int size1, unsigned int size2, unsigned int size3,
-			      unsigned int size4, unsigned int size5, unsigned int size6, bool adjustOnOverflow);
-
-	//! Clone other data structure
-	WorkspaceData(WorkspaceDataPtr other);
-
-	~WorkspaceData();
+public:
 
 	//! Return the amount of data in bytes
-	unsigned int getSizeTr() const;
-	unsigned int getSizeRot() const;
+    virtual unsigned int getSizeTr() const = 0;
+    virtual unsigned int getSizeRot() const = 0;
 
-	inline void getPos(	unsigned int x0, unsigned int x1, unsigned int x2,
+    virtual void getPos(	unsigned int x0, unsigned int x1, unsigned int x2,
 						unsigned int x3, unsigned int x4, unsigned int x5 , 
-						unsigned int &storePosTr, unsigned int &storePosRot) const
-	{
-		storePosTr  = x0 * sizeTr0  + x1 * sizeTr1  + x2;
-		storePosRot = x3 * sizeRot0 + x4 * sizeRot1 + x5;
-	}
+                        unsigned int &storePosTr, unsigned int &storePosRot) const = 0;
 
-	inline void getPos( unsigned int x[6], unsigned int &storePosTr, unsigned int &storePosRot ) const
-	{
-		storePosTr  = x[0] * sizeTr0  + x[1] * sizeTr1  + x[2];
-		storePosRot = x[3] * sizeRot0 + x[4] * sizeRot1 + x[5];	
-	}
+    virtual void getPos( unsigned int x[6], unsigned int &storePosTr, unsigned int &storePosRot ) const = 0;
 
-	inline void setDatum(unsigned int x0, unsigned int x1, unsigned int x2,
-		                 unsigned int x3, unsigned int x4, unsigned int x5, unsigned char value)
-	{
-		ensureData(x0,x1,x2);
-		unsigned int posTr = 0, posRot = 0;
-		getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
-		if (data[posTr][posRot]==0)
-			voxelFilledCount++;
-		data[posTr][posRot] = value;
-		if (value >= maxEntry)
-			maxEntry = value;
-	}
+    virtual void setDatum(unsigned int x0, unsigned int x1, unsigned int x2,
+                         unsigned int x3, unsigned int x4, unsigned int x5, unsigned char value) = 0;
 
-	inline void setDatum(unsigned int x[6], unsigned char value)
-	{
-		ensureData(x[0],x[1],x[2]);
-		unsigned int posTr = 0, posRot = 0;
-		getPos(x,posTr,posRot);
-		if (data[posTr][posRot]==0)
-			voxelFilledCount++;
-		data[posTr][posRot] = value;
-		if (value >= maxEntry)
-			maxEntry = value;
-	}
+    virtual void setDatum(unsigned int x[6], unsigned char value) = 0;
 
-    void setDatumCheckNeighbors(unsigned int x[6], unsigned char value, unsigned int neighborVoxels);
+    virtual void setDatumCheckNeighbors(unsigned int x[6], unsigned char value, unsigned int neighborVoxels) = 0;
 
-	inline void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
-								unsigned int x3, unsigned int x4, unsigned int x5)
-	{
-		ensureData(x0,x1,x2);
-		unsigned int posTr = 0, posRot = 0;
-		getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
-		unsigned char e = data[posTr][posRot];
-		if (e==0)
-			voxelFilledCount++;
-		if (e<UCHAR_MAX)
-		{
-			data[posTr][posRot]++;
-			if (e >= maxEntry)
-				maxEntry = e+1;
-		} else if (adjustOnOverflow)
-			bisectData();
-	}
-	inline void increaseDatum(	unsigned int x[6] )
-	{
-		ensureData(x[0],x[1],x[2]);
-		unsigned int posTr = 0, posRot = 0;
-		getPos(x,posTr,posRot);
-		unsigned char e = data[posTr][posRot];
-		if (e==0)
-			voxelFilledCount++;
-		if (e<UCHAR_MAX)
-		{
-			data[posTr][posRot]++;
-			if (e >= maxEntry)
-				maxEntry = e+1;
-		} else if (adjustOnOverflow)
-			bisectData();
-	}
+    virtual void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
+                                unsigned int x3, unsigned int x4, unsigned int x5) = 0;
+
+    virtual void increaseDatum(	unsigned int x[6] ) = 0;
 	/*!
 		Set rotation data for given x,y,z position.
 	*/
-	void setDataRot(unsigned char *data, unsigned int x, unsigned int y, unsigned int z);
+    virtual void setDataRot(unsigned char *data, unsigned int x, unsigned int y, unsigned int z) = 0;
 	/*!
 		Get rotation data for given x,y,z position.
 	*/
-	const unsigned char *getDataRot(unsigned int x, unsigned int y, unsigned int z);
+    virtual const unsigned char *getDataRot(unsigned int x, unsigned int y, unsigned int z) = 0;
 
 	//! Simulates a multi-dimensional array access
-	inline unsigned char get(unsigned int x0, unsigned int x1, unsigned int x2,
-		                     unsigned int x3, unsigned int x4, unsigned int x5) const
-	{
-		unsigned int posTr = 0, posRot = 0;
-		getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
-		if (data[posTr])
-			return data[posTr][posRot];
-		else
-			return 0;
-	}
+    virtual unsigned char get(unsigned int x0, unsigned int x1, unsigned int x2,
+                             unsigned int x3, unsigned int x4, unsigned int x5) const = 0;
 
 	//! Simulates a multi-dimensional array access
-	inline unsigned char get( unsigned int x[6] ) const
-	{
-		unsigned int posTr = 0, posRot = 0;
-		getPos(x,posTr,posRot);
-		if (data[posTr])
-			return data[posTr][posRot];
-		else
-			return 0;
-	}
+    virtual unsigned char get( unsigned int x[6] ) const = 0;
 
-	bool hasEntry(unsigned int x, unsigned int y, unsigned int z);
+    virtual bool hasEntry(unsigned int x, unsigned int y, unsigned int z) = 0;
 
 	// Set all entries to 0
-	void clear();
+    virtual void clear() = 0;
 
-	unsigned char getMaxEntry() const;
-	unsigned int getVoxelFilledCount() const;
-	void binarize();
+    virtual unsigned char getMaxEntry() const = 0;
+    virtual unsigned int getVoxelFilledCount() const = 0;
+    virtual void binarize() = 0;
 
-	void bisectData();
-	void ensureData(unsigned int x, unsigned int y, unsigned int z);
+    virtual void bisectData() = 0;
 
-	void setVoxelFilledCount(int c){voxelFilledCount = c;}
-	void setMaxEntry(unsigned char m){maxEntry = m;}
+    virtual void setVoxelFilledCount(int c) = 0;
+    virtual void setMaxEntry(unsigned char m) = 0;
 
-	unsigned int getSize(int dim){return sizes[dim];}
+    virtual unsigned int getSize(int dim) = 0;
 
 	//! Min valid value is 1 by default. In cases some values are needed to indicate special flags (e.g. stability) the minimum valid number can be set here
-	void setMinValidValue(unsigned char v);
+    virtual void setMinValidValue(unsigned char v) = 0;
 
-    unsigned char** getRawData(){return data;}
-protected:
-	unsigned int sizes[6];
-	unsigned int sizeTr0,sizeTr1;
-	unsigned int sizeRot0,sizeRot1;
+    virtual unsigned char** getRawData() = 0;
 
-	unsigned char** data;
-
-	unsigned char minValidValue;
-
-	unsigned char maxEntry;
-	unsigned int voxelFilledCount;
-	bool adjustOnOverflow;
+    virtual WorkspaceData* clone() = 0;
 };
 
 

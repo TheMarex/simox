@@ -267,7 +267,7 @@ void WorkspaceRepresentation::load(const std::string &filename)
 		THROW_VR_EXCEPTION_IF(tmpString != "DATA_START", "Bad file format, expecting DATA_START.");
 
 		long size = numVoxels[0]*numVoxels[1]*numVoxels[2]*numVoxels[3]*numVoxels[4]*numVoxels[5];
-		data.reset(new WorkspaceData(numVoxels[0], numVoxels[1], numVoxels[2], numVoxels[3], numVoxels[4], numVoxels[5],true));
+        data.reset(new WorkspaceDataArray(numVoxels[0], numVoxels[1], numVoxels[2], numVoxels[3], numVoxels[4], numVoxels[5],true));
 
 		if (version[0]<=1 || (version[0]==2 && version[1]<=3))
 		{
@@ -923,7 +923,7 @@ void WorkspaceRepresentation::initialize( RobotNodeSetPtr nodeSet, float discret
 		THROW_VR_EXCEPTION_IF( (numVoxels[i]<=0), " numVoxels <= 0 in dimension " << i);
 	}
 
-	data.reset(new WorkspaceData(numVoxels[0],numVoxels[1],numVoxels[2],numVoxels[3],numVoxels[4],numVoxels[5],adjustOnOverflow));
+    data.reset(new WorkspaceDataArray(numVoxels[0],numVoxels[1],numVoxels[2],numVoxels[3],numVoxels[4],numVoxels[5],adjustOnOverflow));
 }
 
 void WorkspaceRepresentation::binarize()
@@ -1015,7 +1015,7 @@ Eigen::Matrix4f WorkspaceRepresentation::sampleCoveredPose()
 int WorkspaceRepresentation::fillHoles(unsigned int minNeighbors)
 {
 	// copy data
-	WorkspaceDataPtr newData(new WorkspaceData(data));
+    WorkspaceDataPtr newData(data->clone());
 
 	unsigned int x[6];
 	int res = 0;
@@ -1528,7 +1528,7 @@ VirtualRobot::WorkspaceRepresentationPtr WorkspaceRepresentation::clone()
 	memcpy(res->spaceSize,this->spaceSize,sizeof(float)*6);	
 
 	res->adjustOnOverflow = this->adjustOnOverflow;
-	res->data.reset(new WorkspaceData(this->data));
+    res->data.reset(this->data->clone());
 
 	return res;
 }

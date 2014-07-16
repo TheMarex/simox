@@ -1,0 +1,16 @@
+<ManipulationObject name='Vitalis'>
+	<Visualization>
+		<Primitives>
+			<!-- relative to previous primitive -->
+			<Box width="136" height="190" depth="40"/> <!-- primitive-specific parameters -->
+			<Sphere radius="0.2" unitslength="m">
+				<Transform>
+					<Translation x="0" y="20" z="0"/>
+				</Transform>
+			</Sphere>
+			<!-- other primitives -->
+		</Primitives>
+		<File type='inventor'>iv/vitalis.iv</File>
+		<UseAsCollisionModel/>
+	</Visualization>
+</ManipulationObject>

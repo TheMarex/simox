@@ -712,6 +712,7 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 	std::string visuFileType = "";
 	std::string visuFile = "";
 	rapidxml::xml_attribute<> *attr;
+    std::vector<VisualizationNode::PrimitivePtr> primitives;
 	VisualizationNodePtr visualizationNode;
 
 	if (!visuXMLNode)
@@ -749,14 +750,68 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 			//visuFile = visuFileXMLNode->value();
 			//makeAbsolutePath(basePath,visuFile);
 		}
-		if (visuFile!="")
+
+        rapidxml::xml_node<> *visuPrimitivesXMLNode = visuXMLNode->first_node("primitives",0,false);
+        if (visuPrimitivesXMLNode)
+        {
+            rapidxml::xml_node<> *primitiveXMLNode = visuPrimitivesXMLNode->first_node();
+
+            while (primitiveXMLNode)
+            {
+                //extract info
+                std::string pName = primitiveXMLNode->name();
+                VisualizationNode::PrimitivePtr primitive;
+
+                float lenFactor = 1.f;
+                if (hasUnitsAttribute(primitiveXMLNode))
+                {
+                    Units u = getUnitsAttribute(primitiveXMLNode,Units::eLength);
+                    if (u.isMeter())
+                    {
+                        lenFactor = 1000.f;
+                    }
+                }
+
+                if (pName == "Box")
+                {
+                    VisualizationNode::Box *box = new VisualizationNode::Box;
+                    box->width = convertToFloat(primitiveXMLNode->first_attribute("width",0,false)->value()) * lenFactor;
+                    box->height = convertToFloat(primitiveXMLNode->first_attribute("height",0,false)->value()) * lenFactor;
+                    box->depth = convertToFloat(primitiveXMLNode->first_attribute("depth",0,false)->value()) * lenFactor;
+                    primitive.reset(box);
+                } else if (pName == "Sphere")
+                {
+                    VisualizationNode::Sphere *sphere = new VisualizationNode::Sphere;
+                    sphere->radius = convertToFloat(primitiveXMLNode->first_attribute("radius",0,false)->value()) * lenFactor;
+                    primitive.reset(sphere);
+                } else
+                {
+                    VR_ERROR << "Unknown primitive type \"" << pName << "\"; skipping";
+                }
+
+                if (primitive)
+                {
+                    Eigen::Matrix4f transform;
+                    processTransformNode(primitiveXMLNode->first_node("transform",0,false), "transform", transform);
+                    primitive->transform = transform;
+                    primitives.push_back(primitive);
+                }
+
+                primitiveXMLNode = primitiveXMLNode->next_sibling();
+            }
+        }
+
+        if (visuFile!="")
 		{
 			VisualizationFactoryPtr visualizationFactory = VisualizationFactory::fromName(visuFileType, NULL);
-			if (visualizationFactory)
-				visualizationNode = visualizationFactory->getVisualizationFromFile(visuFile);
-			else
+            if (visualizationFactory)
+            {
+                visualizationNode = visualizationFactory->getVisualizationFromFile(visuFile);
+                visualizationNode->primitives = primitives;
+            } else
 				VR_WARNING << "VisualizationFactory of type '" << visuFileType << "' not present. Ignoring Visualization data in Node <" << tagName << ">" << endl;
-		}
+        }
+
 
 		rapidxml::xml_node<> *coordXMLNode = visuXMLNode->first_node("coordinateaxis",0,false);
 		if (coordXMLNode)
@@ -862,8 +917,8 @@ CollisionModelPtr BaseIO::processCollisionTag(rapidxml::xml_node<char> *colXMLNo
 			{
 				bbox = isTrue(attr->value());
 			}
-
 		}
+
 		if (collisionFile!="")
 		{
 			VisualizationFactoryPtr visualizationFactory = VisualizationFactory::fromName(collisionFileType, NULL);

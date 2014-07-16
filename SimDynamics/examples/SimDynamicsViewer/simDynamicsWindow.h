@@ -75,6 +75,7 @@ protected:
 	SimDynamics::DynamicsRobotPtr dynamicsRobot;
 	SimDynamics::DynamicsObjectPtr dynamicsObject;
     SimDynamics::DynamicsObjectPtr dynamicsObject2;
+    SimDynamics::DynamicsObjectPtr dynamicsObjectVitalis;
 
 	Ui::MainWindowBulletViewer UI;
 

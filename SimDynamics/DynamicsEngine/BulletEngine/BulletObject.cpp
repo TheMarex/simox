@@ -11,10 +11,13 @@
 
 #include <BulletCollision/CollisionShapes/btShapeHull.h>
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
+#include <BulletCollision/CollisionShapes/btSphereShape.h>
 #include <BulletCollision/CollisionShapes/btCompoundShape.h>
 
 //#define DEBUG_FIXED_OBJECTS
 //#define USE_BULLET_GENERIC_6DOF_CONSTRAINT
+
+#include <typeinfo>
 
 using namespace VirtualRobot;
 
@@ -33,7 +36,7 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
 	THROW_VR_EXCEPTION_IF(!o,"NULL object");
 	CollisionModelPtr colModel = o->getCollisionModel();
 
-	if (!colModel)
+    if (!colModel)
 	{
 		VR_WARNING << "Building empty collision shape for object " << o->getName() << endl;
 		collisionShape.reset(new btEmptyShape());
@@ -42,16 +45,34 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
 		VirtualRobot::ObstaclePtr ob = Obstacle::createBox(10.0f,10.0f,10.0f);
 		ob->setGlobalPose(o->getGlobalPose());
 		colModel = ob->getCollisionModel();*/
-	} else
+    } else
 	{
-		THROW_VR_EXCEPTION_IF(!colModel,"No CollisionModel, could not create dynamics model...");
+        THROW_VR_EXCEPTION_IF(!colModel, "No CollisionModel, could not create dynamics model...");
 
 		if (o->getName() != "Floor")
 		{
-			TriMeshModelPtr trimesh;
-			trimesh = colModel->getTriMeshModel();
-			THROW_VR_EXCEPTION_IF( ( !trimesh || trimesh->faces.size()==0) , "No TriMeshModel, could not create dynamics model...");
-			collisionShape.reset(createConvexHullShape(trimesh));
+
+            std::vector<VisualizationNode::PrimitivePtr> primitives = colModel->getVisualization()->primitives;
+            if (primitives.size() == 1)
+            {
+                collisionShape.reset(getShapeFromPrimitive(primitives[0]));
+            }
+            else if (primitives.size() > 1)
+            {
+                std::vector<VisualizationNode::PrimitivePtr>::iterator it;
+                btCompoundShape *compoundShape = new btCompoundShape();
+                for (it = primitives.begin(); it != primitives.end(); it++) {
+                    compoundShape->addChildShape(BulletEngine::getPoseBullet((*it)->transform), getShapeFromPrimitive(*it));
+                }
+                collisionShape.reset(compoundShape);
+            }
+            else
+            {
+                TriMeshModelPtr trimesh;
+                trimesh = colModel->getTriMeshModel();
+                THROW_VR_EXCEPTION_IF( ( !trimesh || trimesh->faces.size()==0) , "No TriMeshModel, could not create dynamics model...");
+                collisionShape.reset(createConvexHullShape(trimesh));
+            }
 		}
 		else
 		{
@@ -127,6 +148,30 @@ BulletObject::~BulletObject()
 {
 	rigidBody.reset();
 	delete motionState;
+}
+
+
+btCollisionShape* BulletObject::getShapeFromPrimitive(VirtualRobot::VisualizationNode::PrimitivePtr primitive)
+{
+    btCollisionShape* result;
+    if (primitive->type == VisualizationNode::Box::TYPE)
+    {
+        VisualizationNode::Box* box = boost::dynamic_pointer_cast<VisualizationNode::Box>(primitive).get();
+        btBoxShape *boxShape = new btBoxShape(btVector3(box->width / 1000.f, box->height / 1000.f, box->depth / 1000.f));
+        result = boxShape;
+    }
+    else if (primitive->type == VisualizationNode::Sphere::TYPE)
+    {
+        VisualizationNode::Sphere* sphere = boost::dynamic_pointer_cast<VisualizationNode::Sphere>(primitive).get();
+        btSphereShape *sphereShape = new btSphereShape(btScalar(sphere->radius / 1000.f));
+        result = sphereShape;
+    }
+    else
+    {
+        VR_ERROR << "Unsupported shape type " << primitive->type << std::endl;
+        result = new btEmptyShape();
+    }
+    return result;
 }
 
 btConvexHullShape* BulletObject::createConvexHullShape(VirtualRobot::TriMeshModelPtr trimesh)

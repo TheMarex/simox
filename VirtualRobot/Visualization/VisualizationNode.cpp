@@ -204,5 +204,4 @@ void VisualizationNode::scale( Eigen::Vector3f &scaleFactor )
 	VR_WARNING << "not implemented..." << endl;
 }
 
-
 } // namespace VirtualRobot

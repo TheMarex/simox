@@ -66,6 +66,21 @@ SimDynamicsWindow::SimDynamicsWindow(std::string &sRobotFilename, Qt::WFlags fla
     dynamicsObject->setPosition(Eigen::Vector3f(1000,2000,1000.0f));
 	dynamicsWorld->addObject(dynamicsObject);
 
+    ManipulationObjectPtr vitalis;
+    std::string vitalisPath = "objects/VitalisWithPrimitives.xml";
+    if (VirtualRobot::RuntimeEnvironment::getDataFileAbsolute(vitalisPath))
+    {
+        vitalis = ObjectIO::loadManipulationObject(vitalisPath);
+    }
+    if (vitalis)
+    {
+        vitalis->setMass(0.5f);
+        dynamicsObjectVitalis = dynamicsWorld->CreateDynamicsObject(vitalis);
+        dynamicsObjectVitalis->setPosition(Eigen::Vector3f(-1000.f, 2000.f, 1000.f));
+        dynamicsWorld->addObject(dynamicsObjectVitalis);
+    }
+
+
 #if 0
     std::string f = "/home/niko/coding/armarx/SimulationX/data/environment/KIT_Robot_Kitchen.xml";
     ManipulationObjectPtr mo = ObjectIO::loadManipulationObject(f);
@@ -193,6 +208,8 @@ void SimDynamicsWindow::buildVisualization()
 	SceneObject::VisualizationType colModel = useColModel?SceneObject::Collision:SceneObject::Full;
 	viewer->addVisualization(dynamicsRobot,colModel);
     viewer->addVisualization(dynamicsObject,colModel);
+    if (dynamicsObjectVitalis)
+        viewer->addVisualization(dynamicsObjectVitalis,colModel);
     if (dynamicsObject2)
         viewer->addVisualization(dynamicsObject2,colModel);
 }

@@ -37,7 +37,7 @@ CoinVisualizationNode::CoinVisualizationNode(SoNode* visualizationNode) :
 	visualizationAtGlobalPose->ref();
 	
 	globalPoseTransform = new SoMatrixTransform();
-	visualizationAtGlobalPose->addChild(globalPoseTransform);
+    visualizationAtGlobalPose->addChild(globalPoseTransform);
 	
 	attachedVisualizationsSeparator = new SoSeparator();
 	attachedVisualizationsSeparator->ref();
@@ -243,7 +243,7 @@ void CoinVisualizationNode::attachVisualization(const std::string &name, Visuali
 	if (coinVisualizationNode && coinVisualizationNode->getCoinVisualization())
 	{
 		attachedCoinVisualizations[name] = coinVisualizationNode->getCoinVisualization();
-		attachedVisualizationsSeparator->addChild(coinVisualizationNode->getCoinVisualization());
+        attachedVisualizationsSeparator->addChild(coinVisualizationNode->getCoinVisualization());
 	}
 }
 

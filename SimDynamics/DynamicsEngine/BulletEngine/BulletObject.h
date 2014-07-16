@@ -84,11 +84,12 @@ public:
 protected:
 
     void setPoseIntern(const Eigen::Matrix4f &pose);
+    btCollisionShape* getShapeFromPrimitive(VirtualRobot::VisualizationNode::PrimitivePtr primitive);
 
 	btConvexHullShape* createConvexHullShape(VirtualRobot::TriMeshModelPtr trimesh);
 
 	boost::shared_ptr<btRigidBody> rigidBody;
-	boost::shared_ptr<btCollisionShape> collisionShape; // bullet collision shape
+    boost::shared_ptr<btCollisionShape> collisionShape; // bullet collision shape
 	
 	Eigen::Vector3f com; // com offset of trimesh
 

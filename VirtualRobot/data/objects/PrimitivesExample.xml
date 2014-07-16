@@ -1,10 +1,9 @@
 <ManipulationObject name='Vitalis'>
 	<Visualization>
 		<Primitives>
-			<!-- relative to previous primitive -->
-			<Box width="136" height="190" depth="40"/> <!-- primitive-specific parameters -->
+			<Box width="136" height="190" depth="40"/> <!-- primitive-specific parameters, default unit is mm -->
 			<Sphere radius="0.2" unitslength="m">
-				<Transform>
+				<Transform> <!-- transform is relative to previous primitive -->
 					<Translation x="0" y="20" z="0"/>
 				</Transform>
 			</Sphere>

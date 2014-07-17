@@ -334,6 +334,7 @@ public:
     void matrix2Vector(const Eigen::Matrix4f &m, float x[6]) const;
     void vector2Matrix(const float x[6], Eigen::Matrix4f &m) const;
     void vector2Matrix( const Eigen::Vector3f &pos, const Eigen::Vector3f &rot, Eigen::Matrix4f &m ) const;
+    virtual bool getVoxelFromPose(float x[6], unsigned int v[6]) const;
 
     /*!
         Usually not needed. Don't call this method after data has been loaded or created!
@@ -366,8 +367,6 @@ protected:
 	void uncompressData(const unsigned char *source, int size, unsigned char *dest);
 	//! Compress the data
 	unsigned char *compressData(const unsigned char *source, int size, int &compressedSize);
-
-	virtual bool getVoxelFromPose(float x[6], unsigned int v[6]) const;
 
 	virtual Eigen::Matrix4f getToLocalTransformation() const;
 	virtual Eigen::Matrix4f getToGlobalTransformation() const;

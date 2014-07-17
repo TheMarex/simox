@@ -766,12 +766,7 @@ void WorkspaceRepresentation::addPose(const Eigen::Matrix4f &globalPose)
 			achievedMaxValues[i] = x[i];
 	}
 
-	// get voxels
-	unsigned int v[6];
-	if (getVoxelFromPose(x,v))
-	{
-		data->increaseDatum(v);
-	}
+    data->increaseDatum(x, this);
 
 	buildUpLoops++;
 }

@@ -24,6 +24,7 @@
 #define _VirtualRobot_WorkspaceData_h_
 
 #include "../VirtualRobotImportExport.h"
+#include "WorkspaceRepresentation.h"
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/type_traits/is_base_of.hpp>
@@ -41,6 +42,8 @@ namespace VirtualRobot
 	Stores a 6-dimensional array for the vertex data of a workspace representation.
 	Internally unsigned char data types are used (0...255)
 */
+class WorkspaceRepresentation;
+
 class VIRTUAL_ROBOT_IMPORT_EXPORT WorkspaceData : public boost::enable_shared_from_this<WorkspaceData>
 {
 public:
@@ -49,12 +52,6 @@ public:
     virtual unsigned int getSizeTr() const = 0;
     virtual unsigned int getSizeRot() const = 0;
 
-    virtual void getPos(	unsigned int x0, unsigned int x1, unsigned int x2,
-						unsigned int x3, unsigned int x4, unsigned int x5 , 
-                        unsigned int &storePosTr, unsigned int &storePosRot) const = 0;
-
-    virtual void getPos( unsigned int x[6], unsigned int &storePosTr, unsigned int &storePosRot ) const = 0;
-
     virtual void setDatum(unsigned int x0, unsigned int x1, unsigned int x2,
                          unsigned int x3, unsigned int x4, unsigned int x5, unsigned char value) = 0;
 
@@ -62,10 +59,15 @@ public:
 
     virtual void setDatumCheckNeighbors(unsigned int x[6], unsigned char value, unsigned int neighborVoxels) = 0;
 
+    virtual void increaseDatum(float x[], WorkspaceRepresentation
+                               *workspace) = 0;
+
+    /*!
     virtual void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
                                 unsigned int x3, unsigned int x4, unsigned int x5) = 0;
 
     virtual void increaseDatum(	unsigned int x[6] ) = 0;
+    */
 	/*!
 		Set rotation data for given x,y,z position.
 	*/
@@ -84,7 +86,7 @@ public:
 
     virtual bool hasEntry(unsigned int x, unsigned int y, unsigned int z) = 0;
 
-	// Set all entries to 0
+    // clear all entrys
     virtual void clear() = 0;
 
     virtual unsigned char getMaxEntry() const = 0;
@@ -104,6 +106,7 @@ public:
     virtual unsigned char** getRawData() = 0;
 
     virtual WorkspaceData* clone() = 0;
+
 };
 
 

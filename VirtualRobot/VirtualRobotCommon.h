@@ -56,6 +56,7 @@
 #include <VirtualRobot/IK/CoMIK.h>
 #include <VirtualRobot/IK/PoseQualityMeasurement.h>
 #include <VirtualRobot/IK/PoseQualityManipulability.h>
+#include <VirtualRobot/Workspace/WorkspaceDataArray.h>
 #include <VirtualRobot/Workspace/WorkspaceData.h>
 #include <VirtualRobot/Workspace/WorkspaceRepresentation.h>
 #include <VirtualRobot/Workspace/Reachability.h>

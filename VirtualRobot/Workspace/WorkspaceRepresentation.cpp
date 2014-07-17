@@ -669,15 +669,11 @@ void WorkspaceRepresentation::setCurrentTCPPoseEntryIfLower(unsigned char e)
 			achievedMaxValues[i] = x[i];
 	}
 
-	// get voxels
-	unsigned int v[6];
-	if (getVoxelFromPose(x,v))
-	{
-		if (data->get(v) < e)
-		{
-			data->setDatum(v,e);
-		}
-	}
+    if (data->get(x, this) < e)
+    {
+        data->setDatum(x,e, this);
+    }
+
 
 	buildUpLoops++;
 }

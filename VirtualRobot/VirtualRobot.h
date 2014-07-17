@@ -168,8 +168,8 @@ namespace VirtualRobot
 	class ManipulationObject;
 	class CDManager;
 	class Reachability;
-	class WorkspaceRepresentation;
-	class WorkspaceData;
+    class WorkspaceRepresentation;
+    class WorkspaceData;
 	class PoseQualityMeasurement;
 	class PoseQualityManipulability;
 	class Trajectory;

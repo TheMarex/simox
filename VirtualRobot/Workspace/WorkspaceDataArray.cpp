@@ -5,12 +5,10 @@
 #include <float.h>
 #include <limits.h>
 
-namespace VirtualRobot
-{
+namespace VirtualRobot {
 
 WorkspaceDataArray::WorkspaceDataArray(unsigned int size1, unsigned int size2, unsigned int size3,
-                             unsigned int size4, unsigned int size5, unsigned int size6, bool adjustOnOverflow)
-{
+                             unsigned int size4, unsigned int size5, unsigned int size6, bool adjustOnOverflow) {
 	unsigned long long sizeTr = (unsigned long long)size1 * (unsigned long long)size2 * (unsigned long long)size3;
 	unsigned long long sizeRot = (unsigned long long)size4 * (unsigned long long)size5 * (unsigned long long)size6;
 	sizes[0] = size1;
@@ -52,13 +50,12 @@ WorkspaceDataArray::WorkspaceDataArray(unsigned int size1, unsigned int size2, u
 	}
 
 	minValidValue = 1;
-	maxEntry = 0;
+    maxEntry = 0;
 	voxelFilledCount = 0;
 	this->adjustOnOverflow = adjustOnOverflow;
 }
 
-WorkspaceDataArray::WorkspaceDataArray(WorkspaceDataArray* other)
-{
+WorkspaceDataArray::WorkspaceDataArray(WorkspaceDataArray* other) {
 	VR_ASSERT(other);
 	for (int i=0;i<6;i++)
 		this->sizes[i] = other->sizes[i];
@@ -111,8 +108,7 @@ WorkspaceDataArray::WorkspaceDataArray(WorkspaceDataArray* other)
 	this->adjustOnOverflow = other->adjustOnOverflow;
 }
 
-WorkspaceDataArray::~WorkspaceDataArray()
-{
+WorkspaceDataArray::~WorkspaceDataArray() {
 	for (unsigned int x=0;x<sizes[0];x++)
 	{
 		for (unsigned int y=0;y<sizes[1];y++)
@@ -126,57 +122,107 @@ WorkspaceDataArray::~WorkspaceDataArray()
 	delete[] data;
 }
 
-unsigned int WorkspaceDataArray::getSizeTr() const
-{
+unsigned int WorkspaceDataArray::getSizeTr() const {
 	return sizes[0]*sizes[1]*sizes[2];
 }
 
-unsigned int WorkspaceDataArray::getSizeRot() const
-{
-	return sizes[3]*sizes[4]*sizes[5];
+unsigned int WorkspaceDataArray::getSizeRot() const {
+    return sizes[3]*sizes[4]*sizes[5];
 }
 
-void WorkspaceDataArray::ensureData(unsigned int x, unsigned int y, unsigned int z)
+void WorkspaceDataArray::setDatum(float x[6], unsigned char value, WorkspaceRepresentation *workspace) {
+    // get voxels
+    unsigned int v[6];
+    if (workspace->getVoxelFromPose(x,v))
+    {
+        setDatum(v, value);
+    }
+}
+
+void WorkspaceDataArray::setDatum(unsigned int x0, unsigned int x1, unsigned int x2, unsigned int x3, unsigned int x4, unsigned int x5, unsigned char value)
 {
-	if (data[x*sizeTr0+y*sizeTr1+z])
-		return;
-	unsigned long long sizeRot = (unsigned long long)sizes[3] * (unsigned long long)sizes[4] * (unsigned long long)sizes[5];
-	data[x*sizeTr0+y*sizeTr1+z] = new unsigned char[(unsigned int)sizeRot];
+    ensureData(x0,x1,x2);
+    unsigned int posTr = 0, posRot = 0;
+    getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
+    if (data[posTr][posRot]==0)
+        voxelFilledCount++;
+    data[posTr][posRot] = value;
+    if (value >= maxEntry)
+        maxEntry = value;
+}
+
+void WorkspaceDataArray::setDatum(unsigned int x[], unsigned char value)
+{
+    ensureData(x[0],x[1],x[2]);
+    unsigned int posTr = 0, posRot = 0;
+    getPos(x,posTr,posRot);
+    if (data[posTr][posRot]==0)
+        voxelFilledCount++;
+    data[posTr][posRot] = value;
+    if (value >= maxEntry)
+        maxEntry = value;
+}
+
+void WorkspaceDataArray::ensureData(unsigned int x, unsigned int y, unsigned int z) {
+    if (data[x*sizeTr0+y*sizeTr1+z])
+        return;
+    unsigned long long sizeRot = (unsigned long long)sizes[3] * (unsigned long long)sizes[4] * (unsigned long long)sizes[5];
+    data[x*sizeTr0+y*sizeTr1+z] = new unsigned char[(unsigned int)sizeRot];
 	memset(data[x*sizeTr0+y*sizeTr1+z],0,(unsigned int)sizeRot*sizeof(unsigned char));
 }
 
-void WorkspaceDataArray::setDataRot(unsigned char *data, unsigned int x, unsigned int y, unsigned int z)
-{
+void WorkspaceDataArray::setDataRot(unsigned char *data, unsigned int x, unsigned int y, unsigned int z) {
 	ensureData(x,y,z);
 	memcpy(this->data[x*sizeTr0+y*sizeTr1+z], data, getSizeRot()*sizeof(unsigned char));
 }
 
-const unsigned char *WorkspaceDataArray::getDataRot(unsigned int x, unsigned int y, unsigned int z)
-{
+const unsigned char *WorkspaceDataArray::getDataRot(unsigned int x, unsigned int y, unsigned int z) {
 	ensureData(x,y,z);
-	return data[x*sizeTr0+y*sizeTr1+z];
+    return data[x*sizeTr0+y*sizeTr1+z];
 }
 
-unsigned char WorkspaceDataArray::getMaxEntry() const
-{
-	return maxEntry;
+unsigned char WorkspaceDataArray::get(float x[6], WorkspaceRepresentation *workspace) {
+    unsigned int v[6];
+    if (workspace->getVoxelFromPose(x, v)) {
+        return get(v);
+    }
+
+    return 0;
 }
 
-unsigned int WorkspaceDataArray::getVoxelFilledCount() const
+unsigned char WorkspaceDataArray::get(unsigned int x0, unsigned int x1, unsigned int x2, unsigned int x3, unsigned int x4, unsigned int x5) const
 {
-	return voxelFilledCount;
+    unsigned int posTr = 0, posRot = 0;
+    getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
+    if (data[posTr])
+        return data[posTr][posRot];
+    else
+        return 0;
 }
 
-void WorkspaceDataArray::binarize()
+unsigned char WorkspaceDataArray::get(unsigned int x[]) const
 {
-	unsigned int posTr = 0, posRot = 0;
-	for (unsigned int a=0;a<sizes[0];a++)
-	{
-		for (unsigned int b=0;b<sizes[1];b++)
-		{
-			for (unsigned int c=0;c<sizes[2];c++)
-			{
-				for (unsigned int d=0;d<sizes[3];d++)
+    unsigned int posTr = 0, posRot = 0;
+    getPos(x,posTr,posRot);
+    if (data[posTr])
+        return data[posTr][posRot];
+    else
+        return 0;
+}
+
+unsigned int WorkspaceDataArray::getVoxelFilledCount() const {
+    return voxelFilledCount;
+}
+
+void WorkspaceDataArray::binarize() {
+    unsigned int posTr = 0, posRot = 0;
+    for (unsigned int a=0;a<sizes[0];a++)
+    {
+        for (unsigned int b=0;b<sizes[1];b++)
+        {
+            for (unsigned int c=0;c<sizes[2];c++)
+            {
+                for (unsigned int d=0;d<sizes[3];d++)
 				{
 					for (unsigned int e=0;e<sizes[4];e++)
 					{
@@ -195,8 +241,7 @@ void WorkspaceDataArray::binarize()
 	maxEntry = minValidValue;
 }
 
-void WorkspaceDataArray::bisectData()
-{
+void WorkspaceDataArray::bisectData() {
 	unsigned int posTr = 0, posRot = 0;
 	for (unsigned int x0=0;x0<sizes[0];x0++)
 		for (unsigned int x1=0;x1<sizes[1];x1++)
@@ -222,8 +267,7 @@ void WorkspaceDataArray::bisectData()
 	}
 }
 
-void WorkspaceDataArray::setDatumCheckNeighbors( unsigned int x[6], unsigned char value, unsigned int neighborVoxels )
-{
+void WorkspaceDataArray::setDatumCheckNeighbors( unsigned int x[6], unsigned char value, unsigned int neighborVoxels ) {
     setDatum(x,value);
     if (neighborVoxels==0)
         return;
@@ -253,8 +297,7 @@ void WorkspaceDataArray::setDatumCheckNeighbors( unsigned int x[6], unsigned cha
                         }
 }
 
-void WorkspaceDataArray::increaseDatum(float x[6], WorkspaceRepresentation *workspace)
-{
+void WorkspaceDataArray::increaseDatum(float x[6], WorkspaceRepresentation *workspace) {
     // get voxels
     unsigned int v[6];
     if (workspace->getVoxelFromPose(x,v))
@@ -263,40 +306,66 @@ void WorkspaceDataArray::increaseDatum(float x[6], WorkspaceRepresentation *work
     }
 }
 
-void WorkspaceDataArray::clear()
+void WorkspaceDataArray::increaseDatum(unsigned int x0, unsigned int x1, unsigned int x2, unsigned int x3, unsigned int x4, unsigned int x5)
 {
-	for (unsigned int x=0;x<sizes[0];x++)
-	{
-		for (unsigned int y=0;y<sizes[1];y++)
-		{
-			for (unsigned int z=0;z<sizes[2];z++)
-			{
-				if (data[x*sizeTr0+y*sizeTr1+z])
-				{
-					delete [] data[x*sizeTr0+y*sizeTr1+z];
-					data[x*sizeTr0+y*sizeTr1+z] = NULL;
-				}
-			}
-		}
-	}
-	maxEntry = 0;
-	voxelFilledCount = 0;
+    ensureData(x0,x1,x2);
+    unsigned int posTr = 0, posRot = 0;
+    getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
+    unsigned char e = data[posTr][posRot];
+    if (e==0)
+        voxelFilledCount++;
+    if (e<UCHAR_MAX)
+    {
+        data[posTr][posRot]++;
+        if (e >= maxEntry)
+            maxEntry = e+1;
+    } else if (adjustOnOverflow)
+        bisectData();
 }
 
-bool WorkspaceDataArray::hasEntry( unsigned int x, unsigned int y, unsigned int z )
+void WorkspaceDataArray::increaseDatum(unsigned int x[])
 {
+    ensureData(x[0],x[1],x[2]);
+    unsigned int posTr = 0, posRot = 0;
+    getPos(x,posTr,posRot);
+    unsigned char e = data[posTr][posRot];
+    if (e==0)
+        voxelFilledCount++;
+    if (e<UCHAR_MAX)
+    {
+        data[posTr][posRot]++;
+        if (e >= maxEntry)
+            maxEntry = e+1;
+    } else if (adjustOnOverflow)
+        bisectData();
+}
+
+void WorkspaceDataArray::clear() {
+    for (unsigned int x=0;x<sizes[0];x++)
+    {
+        for (unsigned int y=0;y<sizes[1];y++)
+        {
+            for (unsigned int z=0;z<sizes[2];z++)
+            {
+                if (data[x*sizeTr0+y*sizeTr1+z])
+                {
+                    delete [] data[x*sizeTr0+y*sizeTr1+z];
+                    data[x*sizeTr0+y*sizeTr1+z] = NULL;
+                }
+            }
+        }
+    }
+    maxEntry = 0;
+    voxelFilledCount = 0;
+}
+
+bool WorkspaceDataArray::hasEntry( unsigned int x, unsigned int y, unsigned int z ) {
 	if (x<0 || y<0 || z<0 || x>=sizes[0] || y>=sizes[1] || z>=sizes[2])
 		return false;
 	return (data[x*sizeTr0+y*sizeTr1+z]!=NULL);
 }
 
-void WorkspaceDataArray::setMinValidValue( unsigned char v )
-{
-    minValidValue = v;
-}
-
-WorkspaceData *WorkspaceDataArray::clone()
-{
+WorkspaceData *WorkspaceDataArray::clone() {
     return new WorkspaceDataArray(this);
 }
 

@@ -38,11 +38,11 @@
 
 namespace VirtualRobot
 {
+class WorkspaceRepresentation;
 /*!
 	Stores a 6-dimensional array for the vertex data of a workspace representation.
 	Internally unsigned char data types are used (0...255)
 */
-class WorkspaceRepresentation;
 
 class VIRTUAL_ROBOT_IMPORT_EXPORT WorkspaceData : public boost::enable_shared_from_this<WorkspaceData>
 {
@@ -52,6 +52,8 @@ public:
     virtual unsigned int getSizeTr() const = 0;
     virtual unsigned int getSizeRot() const = 0;
 
+    virtual void setDatum(float x[], unsigned char value, WorkspaceRepresentation* workspace) = 0;
+
     virtual void setDatum(unsigned int x0, unsigned int x1, unsigned int x2,
                          unsigned int x3, unsigned int x4, unsigned int x5, unsigned char value) = 0;
 
@@ -59,8 +61,12 @@ public:
 
     virtual void setDatumCheckNeighbors(unsigned int x[6], unsigned char value, unsigned int neighborVoxels) = 0;
 
-    virtual void increaseDatum(float x[], WorkspaceRepresentation
-                               *workspace) = 0;
+    virtual void increaseDatum(float x[], WorkspaceRepresentation *workspace) = 0;
+
+    virtual void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
+                                unsigned int x3, unsigned int x4, unsigned int x5) = 0;
+
+    virtual void increaseDatum(	unsigned int x[6] ) = 0;
 
     /*!
     virtual void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
@@ -77,35 +83,46 @@ public:
 	*/
     virtual const unsigned char *getDataRot(unsigned int x, unsigned int y, unsigned int z) = 0;
 
-	//! Simulates a multi-dimensional array access
+    virtual bool hasEntry(unsigned int x, unsigned int y, unsigned int z) = 0;
+
+    virtual unsigned char get(float x[], WorkspaceRepresentation *workspace) = 0;
+
+    //! Simulates a multi-dimensional array access
     virtual unsigned char get(unsigned int x0, unsigned int x1, unsigned int x2,
                              unsigned int x3, unsigned int x4, unsigned int x5) const = 0;
 
-	//! Simulates a multi-dimensional array access
+    //! Simulates a multi-dimensional array access
     virtual unsigned char get( unsigned int x[6] ) const = 0;
-
-    virtual bool hasEntry(unsigned int x, unsigned int y, unsigned int z) = 0;
 
     // clear all entrys
     virtual void clear() = 0;
 
-    virtual unsigned char getMaxEntry() const = 0;
     virtual unsigned int getVoxelFilledCount() const = 0;
     virtual void binarize() = 0;
 
     virtual void bisectData() = 0;
 
     virtual void setVoxelFilledCount(int c) = 0;
-    virtual void setMaxEntry(unsigned char m) = 0;
+
+    virtual unsigned char getMaxEntry() {return maxEntry;}
+    virtual void setMaxEntry(unsigned char m){maxEntry = m;}
 
     virtual unsigned int getSize(int dim) = 0;
 
 	//! Min valid value is 1 by default. In cases some values are needed to indicate special flags (e.g. stability) the minimum valid number can be set here
-    virtual void setMinValidValue(unsigned char v) = 0;
+    virtual void setMinValidValue(unsigned char v) {minValidValue = v;}
 
     virtual unsigned char** getRawData() = 0;
 
     virtual WorkspaceData* clone() = 0;
+
+protected:
+
+    unsigned char minValidValue;
+
+    unsigned char maxEntry;
+    unsigned int voxelFilledCount;
+    bool adjustOnOverflow;
 
 };
 

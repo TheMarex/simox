@@ -741,7 +741,7 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 				if (VisualizationFactory::first(NULL))
 					visuFileType = VisualizationFactory::first(NULL)->getDescription();
 				else
-                    VR_WARNING << "No visualization present..." << endl;
+					VR_WARNING << "No visualization present..." << endl;
 			} else
 				visuFileType = attr->value();
 
@@ -761,6 +761,7 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
             {
                 //extract info
                 std::string pName = primitiveXMLNode->name();
+                getLowerCase(pName);
                 VisualizationFactory::PrimitivePtr primitive;
 
                 float lenFactor = 1.f;
@@ -773,14 +774,14 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
                     }
                 }
 
-                if (pName == "Box")
+                if (pName == "box")
                 {
                     VisualizationFactory::Box *box = new VisualizationFactory::Box;
                     box->width = convertToFloat(primitiveXMLNode->first_attribute("width",0,false)->value()) * lenFactor;
                     box->height = convertToFloat(primitiveXMLNode->first_attribute("height",0,false)->value()) * lenFactor;
                     box->depth = convertToFloat(primitiveXMLNode->first_attribute("depth",0,false)->value()) * lenFactor;
                     primitive.reset(box);
-                } else if (pName == "Sphere")
+                } else if (pName == "sphere")
                 {
                     VisualizationFactory::Sphere *sphere = new VisualizationFactory::Sphere;
                     sphere->radius = convertToFloat(primitiveXMLNode->first_attribute("radius",0,false)->value()) * lenFactor;

@@ -74,8 +74,8 @@ public:
         static const int TYPE = 0;
         Primitive() : type(TYPE), transform(Eigen::Matrix4f::Identity()) {}
         virtual ~Primitive() {} //needed for dynamic cast to work
-        Eigen::Matrix4f transform;
         const int type;
+        Eigen::Matrix4f transform;
     protected:
         Primitive(int type) : type(type) {}
     };

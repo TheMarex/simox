@@ -59,10 +59,11 @@ public:
 	CoinVisualizationFactory();
 	virtual ~CoinVisualizationFactory();
 
+    virtual VisualizationNodePtr getVisualizationFromPrimitives(std::vector<PrimitivePtr> primitives, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false);
     virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromString(const std::string& modelString, bool boundingBox = false);
-	virtual VisualizationNodePtr createBox(float width, float height, float depth, float colorR, float colorG, float colorB);
+    virtual VisualizationNodePtr createBox(float width, float height, float depth, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
 	virtual VisualizationNodePtr createLine(const Eigen::Vector3f &from, const Eigen::Vector3f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
 	virtual VisualizationNodePtr createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
 	virtual VisualizationNodePtr createSphere(float radius, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);
@@ -299,6 +300,7 @@ public:
 	*/
 	virtual void cleanup();
 protected:
+    static SoNode* GetNodeFromPrimitive(PrimitivePtr primitive, bool boundingBox);
     static void GetVisualizationFromSoInput(SoInput& soInput, VisualizationNodePtr& visualizationNode, bool bbox = false);
 
 	static inline char IVToolsHelper_ReplaceSpaceWithUnderscore(char input) { if ( ' ' == input ) return '_'; else return input; }

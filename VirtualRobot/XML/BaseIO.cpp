@@ -712,7 +712,7 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 	std::string visuFileType = "";
 	std::string visuFile = "";
 	rapidxml::xml_attribute<> *attr;
-    std::vector<VisualizationNode::PrimitivePtr> primitives;
+    std::vector<VisualizationFactory::PrimitivePtr> primitives;
 	VisualizationNodePtr visualizationNode;
 
 	if (!visuXMLNode)
@@ -741,7 +741,7 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 				if (VisualizationFactory::first(NULL))
 					visuFileType = VisualizationFactory::first(NULL)->getDescription();
 				else
-					VR_WARNING << "No visualization present..." << endl;
+                    VR_WARNING << "No visualization present..." << endl;
 			} else
 				visuFileType = attr->value();
 
@@ -754,13 +754,14 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
         rapidxml::xml_node<> *visuPrimitivesXMLNode = visuXMLNode->first_node("primitives",0,false);
         if (visuPrimitivesXMLNode)
         {
+            THROW_VR_EXCEPTION_IF(visuFileXMLNode, "Multiple visualization sources defined (file and primitives)" << endl)
             rapidxml::xml_node<> *primitiveXMLNode = visuPrimitivesXMLNode->first_node();
 
             while (primitiveXMLNode)
             {
                 //extract info
                 std::string pName = primitiveXMLNode->name();
-                VisualizationNode::PrimitivePtr primitive;
+                VisualizationFactory::PrimitivePtr primitive;
 
                 float lenFactor = 1.f;
                 if (hasUnitsAttribute(primitiveXMLNode))
@@ -774,14 +775,14 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 
                 if (pName == "Box")
                 {
-                    VisualizationNode::Box *box = new VisualizationNode::Box;
+                    VisualizationFactory::Box *box = new VisualizationFactory::Box;
                     box->width = convertToFloat(primitiveXMLNode->first_attribute("width",0,false)->value()) * lenFactor;
                     box->height = convertToFloat(primitiveXMLNode->first_attribute("height",0,false)->value()) * lenFactor;
                     box->depth = convertToFloat(primitiveXMLNode->first_attribute("depth",0,false)->value()) * lenFactor;
                     primitive.reset(box);
                 } else if (pName == "Sphere")
                 {
-                    VisualizationNode::Sphere *sphere = new VisualizationNode::Sphere;
+                    VisualizationFactory::Sphere *sphere = new VisualizationFactory::Sphere;
                     sphere->radius = convertToFloat(primitiveXMLNode->first_attribute("radius",0,false)->value()) * lenFactor;
                     primitive.reset(sphere);
                 } else
@@ -807,9 +808,13 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
             if (visualizationFactory)
             {
                 visualizationNode = visualizationFactory->getVisualizationFromFile(visuFile);
-                visualizationNode->primitives = primitives;
             } else
 				VR_WARNING << "VisualizationFactory of type '" << visuFileType << "' not present. Ignoring Visualization data in Node <" << tagName << ">" << endl;
+        } else if (primitives.size() != 0)
+        {
+            VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
+            visualizationNode = visualizationFactory->getVisualizationFromPrimitives(primitives);
+            visualizationNode->primitives = primitives;
         }
 
 

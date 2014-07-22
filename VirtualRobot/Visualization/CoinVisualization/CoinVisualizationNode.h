@@ -44,7 +44,7 @@ class VIRTUAL_ROBOT_IMPORT_EXPORT CoinVisualizationNode : virtual public Visuali
 {
 	friend class CoinVisualizationFactory;
 public:
-	CoinVisualizationNode(SoNode* visualizationNode);
+    CoinVisualizationNode(SoNode* visualizationNode);
 	~CoinVisualizationNode();
 	virtual TriMeshModelPtr getTriMeshModel();
 

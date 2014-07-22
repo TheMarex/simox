@@ -39,33 +39,7 @@ class VIRTUAL_ROBOT_IMPORT_EXPORT VisualizationNode
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    struct Primitive {
-        static const int TYPE = 0;
-        Primitive() : type(TYPE), transform(Eigen::Matrix4f::Identity()) {}
-        virtual ~Primitive() {} //needed for dynamic cast to work
-        Eigen::Matrix4f transform;
-        const int type;
-    protected:
-        Primitive(int type) : type(type) {}
-    };
-
-    struct Box : public Primitive {
-        static const int TYPE = 1;
-        Box() : Primitive(TYPE) {}
-        float width;
-        float height;
-        float depth;
-    };
-
-    struct Sphere : public Primitive {
-        static const int TYPE = 2;
-        Sphere() : Primitive(TYPE) {}
-        float radius;
-    };
-
-    typedef boost::shared_ptr<Primitive> PrimitivePtr;
-
-    std::vector<PrimitivePtr> primitives;
+    std::vector<VisualizationFactory::PrimitivePtr> primitives;
 
 	/*!
 	Constructor

@@ -68,6 +68,77 @@ namespace VirtualRobot {
 	{
 	}
 
+    /**
+    * This method creates a VirtualRobot::CoinVisualizationNode from a given vector of \p primitives.
+    * An instance of VirtualRobot::VisualizationNode is returned in case of an occured error.
+    *
+    * \param primitives vector of primitives to create the visualization from.
+    * \param boundingBox Use bounding box instead of full model.
+    * \return instance of VirtualRobot::CoinVisualizationNode upon success and VirtualRobot::VisualizationNode on error.
+    */
+    VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromPrimitives(std::vector<PrimitivePtr> primitives, bool boundingBox)
+    {
+        VisualizationNodePtr visualizationNode = VisualizationNodePtr(new VisualizationNode());
+        SoSeparator *coinVisualization = new SoSeparator();
+        coinVisualization->ref();
+
+        Eigen::Matrix4f currentTransform = Eigen::Matrix4f::Identity();
+        for (std::vector<PrimitivePtr>::iterator it = primitives.begin(); it != primitives.end(); it++)
+        {
+            PrimitivePtr p = *it;
+            currentTransform *= p->transform;
+            SoSeparator *soSep = new SoSeparator();
+            SoNode *pNode = GetNodeFromPrimitive(p, boundingBox);
+            soSep->addChild(getMatrixTransformScaleMM2M(currentTransform));
+            soSep->addChild(pNode);
+            coinVisualization->addChild(soSep);
+        }
+
+        if (boundingBox)
+        {
+            SoSeparator* bboxVisu = CreateBoundingBox(coinVisualization, false);
+            bboxVisu->ref();
+            coinVisualization->unref();
+            coinVisualization = bboxVisu;
+        }
+
+        // create new CoinVisualizationNode if no error occurred
+        visualizationNode.reset(new CoinVisualizationNode(coinVisualization));
+
+        coinVisualization->unref();
+
+        return visualizationNode;
+    }
+
+    SoNode* CoinVisualizationFactory::GetNodeFromPrimitive(PrimitivePtr primitive, bool boundingBox)
+    {
+        SoNode *coinVisualization;
+        if (primitive->type == Box::TYPE)
+        {
+            Box *box = boost::dynamic_pointer_cast<Box>(primitive).get();
+            SoCube *soBox = new SoCube;
+            soBox->width = box->width / 1000.f;
+            soBox->height = box->height / 1000.f;
+            soBox->depth = box->depth / 1000.f;
+            coinVisualization = soBox;
+        } else if (primitive->type == Sphere::TYPE)
+        {
+            Sphere *sphere = boost::dynamic_pointer_cast<Sphere>(primitive).get();
+            SoSphere *soSphere = new SoSphere;
+            soSphere->radius = sphere->radius / 1000.f;
+            coinVisualization = soSphere;
+        }
+
+        if (boundingBox && coinVisualization)
+        {
+            SoSeparator* bboxVisu = CreateBoundingBox(coinVisualization, false);
+            bboxVisu->ref();
+            coinVisualization->unref();
+            coinVisualization = bboxVisu;
+        }
+
+        return coinVisualization;
+    }
 
 	/**
 	* This method creates a VirtualRobot::CoinVisualizationNode from a given \p filename.

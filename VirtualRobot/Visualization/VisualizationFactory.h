@@ -57,7 +57,7 @@ public:
 
     struct PhongMaterial
     {
-        PhongMaterial(){};
+        PhongMaterial(){}
         Color emission;
         Color ambient;
         Color diffuse;
@@ -70,15 +70,42 @@ public:
         float refractionIndex;
     };
 
+    struct Primitive {
+        static const int TYPE = 0;
+        Primitive() : type(TYPE), transform(Eigen::Matrix4f::Identity()) {}
+        virtual ~Primitive() {} //needed for dynamic cast to work
+        Eigen::Matrix4f transform;
+        const int type;
+    protected:
+        Primitive(int type) : type(type) {}
+    };
+
+    struct Box : public Primitive {
+        static const int TYPE = 1;
+        Box() : Primitive(TYPE) {}
+        float width;
+        float height;
+        float depth;
+    };
+
+    struct Sphere : public Primitive {
+        static const int TYPE = 2;
+        Sphere() : Primitive(TYPE) {}
+        float radius;
+    };
+
+    typedef boost::shared_ptr<Primitive> PrimitivePtr;
+
 	VisualizationFactory() {;}
 	virtual ~VisualizationFactory() {;}
 
+    virtual VisualizationNodePtr getVisualizationFromPrimitives(std::vector<PrimitivePtr> primitives, bool boundingBox = false){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false){return VisualizationNodePtr();};
     /*!
         A box, dimensions are given in mm.
     */
-	virtual VisualizationNodePtr createBox(float length, float height, float width, float colorR, float colorG, float colorB){return VisualizationNodePtr();}
+    virtual VisualizationNodePtr createBox(float width, float height, float depth, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createLine(const Eigen::Vector3f &from, const Eigen::Vector3f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createLine(const Eigen::Matrix4f &from, const Eigen::Matrix4f &to, float width = 1.0f, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr createSphere(float radius, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f){return VisualizationNodePtr();}

@@ -6,6 +6,7 @@
 
 #include "CoinVisualizationNode.h"
 #include "CoinVisualizationFactory.h"
+#include "../../MathTools.h"
 #include "../TriMeshModel.h"
 #include "../../VirtualRobotException.h"
 #include "../../XML/BaseIO.h"
@@ -22,6 +23,7 @@
 #include <Inventor/actions/SoWriteAction.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 
 namespace VirtualRobot {
 
@@ -131,15 +133,91 @@ TriMeshModelPtr CoinVisualizationNode::getTriMeshModel()
  */
 void CoinVisualizationNode::createTriMeshModel()
 {
-	THROW_VR_EXCEPTION_IF(!visualization, "CoinVisualizationNode::createTriMeshModel(): no Coin model present!");
+    THROW_VR_EXCEPTION_IF(!visualization, "CoinVisualizationNode::createTriMeshModel(): no Coin model present!");
 
 	if (triMeshModel)
 		triMeshModel->clear();
 	else
 		triMeshModel.reset(new TriMeshModel());
-	SoCallbackAction ca;
-	ca.addTriangleCallback(SoShape::getClassTypeId(), &CoinVisualizationNode::InventorTriangleCB, triMeshModel.get());
-	ca.apply(visualization);
+
+//    if (primitives.size() != 0 && !visualization)
+//    {
+//        std::vector<PrimitivePtr>::iterator it;
+//        Eigen::Matrix4f currentTransform = Eigen::Matrix4f::Identity();
+//        SoNode* newVis = new SoSeparator;
+//        newVis->ref();
+//        for (it = primitives.begin(); it != primitives.end(); it++) {
+//            PrimitivePtr p = *it;
+//            VisualizationNodePtr visNode;
+//            CoinVisualizationFactory vf;
+
+//            if (p->type == Box::TYPE)
+//            {
+//                Box* box = boost::dynamic_pointer_cast<Box>(p).get();
+//                visNode = vf.createBox(box->width, box->height, box->depth);
+////                triMesh = visNode->getTriMeshModel();
+//            } else if (p->type == Sphere::TYPE)
+//            {
+//                Sphere* sphere = boost::dynamic_pointer_cast<Sphere>(p).get();
+//                visNode = vf.createSphere(sphere->radius);
+////                triMesh = visNode->getTriMeshModel();
+//            } else
+//            {
+//                VR_ERROR << "Unknown primitive" << std::endl;
+//            }
+
+//            if (visNode)
+//                newVis->addChild(vf.getCoinVisualization(visNode));
+//        }
+//        visualization = newVis;
+//        std::vector<PrimitivePtr>::iterator it;
+//        Eigen::Matrix4f currentTransform = Eigen::Matrix4f::Identity();
+//        for (it = primitives.begin(); it != primitives.end(); it++) {
+//            PrimitivePtr p = *it;
+//            currentTransform *= p->transform;
+//            VisualizationNodePtr visNode;
+//            TriMeshModelPtr triMesh;
+
+//            CoinVisualizationFactory vf;
+//            if (p->type == Box::TYPE)
+//            {
+//                Box* box = boost::dynamic_pointer_cast<Box>(p).get();
+//                visNode = vf.createBox(box->width, box->height, box->depth);
+//                triMesh = visNode->getTriMeshModel();
+//            } else if (p->type == Sphere::TYPE)
+//            {
+//                Sphere* sphere = boost::dynamic_pointer_cast<Sphere>(p).get();
+//                visNode = vf.createSphere(sphere->radius);
+//                triMesh = visNode->getTriMeshModel();
+//            }
+
+//            if (visNode)
+//            {
+//                std::vector<MathTools::TriangleFace> faces = triMesh->faces;
+//                std::vector<Eigen::Vector3f> vertices = triMesh->vertices;
+
+//                for (std::vector<Eigen::Vector3f>::iterator it = vertices.begin(); it != vertices.end(); it++)
+//                {
+//                    Eigen::Vector4f v;
+//                    v << (*it).x(), (*it).y(), (*it).z(), 1.f;
+//                    v = currentTransform * v;
+//                    (*it) = v.head(3);
+//                }
+
+//                for (std::vector<MathTools::TriangleFace>::iterator it = faces.begin(); it != faces.end(); it++)
+//                {
+//                    triMeshModel->addTriangleWithFace(vertices[it->id1], vertices[it->id2], vertices[it->id3]);
+//                }
+//            }
+//        }
+//    }
+
+//    if (visualization)
+//    {
+        SoCallbackAction ca;
+        ca.addTriangleCallback(SoShape::getClassTypeId(), &CoinVisualizationNode::InventorTriangleCB, triMeshModel.get());
+        ca.apply(visualization);
+//    }
 }
 
 
@@ -300,6 +378,7 @@ VirtualRobot::VisualizationNodePtr CoinVisualizationNode::clone(bool deepCopy, f
 		p->attachVisualization(i->first, attachedClone);
 		i++;
 	}
+    p->primitives = primitives;
 
 	return p;
 }

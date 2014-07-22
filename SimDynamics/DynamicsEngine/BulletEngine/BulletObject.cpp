@@ -51,15 +51,14 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
 
 		if (o->getName() != "Floor")
 		{
-
-            std::vector<VisualizationNode::PrimitivePtr> primitives = colModel->getVisualization()->primitives;
+            std::vector<VisualizationFactory::PrimitivePtr> primitives = colModel->getVisualization()->primitives;
             if (primitives.size() == 1)
             {
                 collisionShape.reset(getShapeFromPrimitive(primitives[0]));
             }
             else if (primitives.size() > 1)
             {
-                std::vector<VisualizationNode::PrimitivePtr>::iterator it;
+                std::vector<VisualizationFactory::PrimitivePtr>::iterator it;
                 btCompoundShape *compoundShape = new btCompoundShape();
                 for (it = primitives.begin(); it != primitives.end(); it++) {
                     compoundShape->addChildShape(BulletEngine::getPoseBullet((*it)->transform), getShapeFromPrimitive(*it));
@@ -151,18 +150,18 @@ BulletObject::~BulletObject()
 }
 
 
-btCollisionShape* BulletObject::getShapeFromPrimitive(VirtualRobot::VisualizationNode::PrimitivePtr primitive)
+btCollisionShape* BulletObject::getShapeFromPrimitive(VirtualRobot::VisualizationFactory::PrimitivePtr primitive)
 {
     btCollisionShape* result;
-    if (primitive->type == VisualizationNode::Box::TYPE)
+    if (primitive->type == VisualizationFactory::Box::TYPE)
     {
-        VisualizationNode::Box* box = boost::dynamic_pointer_cast<VisualizationNode::Box>(primitive).get();
+        VisualizationFactory::Box* box = boost::dynamic_pointer_cast<VisualizationFactory::Box>(primitive).get();
         btBoxShape *boxShape = new btBoxShape(btVector3(box->width / 1000.f, box->height / 1000.f, box->depth / 1000.f));
         result = boxShape;
     }
-    else if (primitive->type == VisualizationNode::Sphere::TYPE)
+    else if (primitive->type == VisualizationFactory::Sphere::TYPE)
     {
-        VisualizationNode::Sphere* sphere = boost::dynamic_pointer_cast<VisualizationNode::Sphere>(primitive).get();
+        VisualizationFactory::Sphere* sphere = boost::dynamic_pointer_cast<VisualizationFactory::Sphere>(primitive).get();
         btSphereShape *sphereShape = new btSphereShape(btScalar(sphere->radius / 1000.f));
         result = sphereShape;
     }

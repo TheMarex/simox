@@ -87,31 +87,157 @@ bool RobotFactory::initializeRobot( RobotPtr robot,
 	return result;
 }
 
-/*
-bool RobotFactory::initRobotNode(RobotNodePtr n, RobotNodePtr parent, std::vector< RobotNodePtr > &robotNodes)
+
+
+struct robotNodeDef
 {
-	std::vector< RobotNodePtr >::iterator nodeIter = std::find(robotNodes.begin(), robotNodes.end(), n);
+    std::string name;
+    std::vector<std::string> children;
+};
 
-	THROW_VR_EXCEPTION_IF((robotNodes.end() == nodeIter), "Searching child node: no node with name <" << n->getName() << "> found...");
-	robotNodes.erase(nodeIter);
+struct robotStructureDef
+{
+    std::string rootName;
+    std::vector<robotNodeDef> parentChildMapping;
+};
 
-	if (!n->initialize(parent))
-	{
-		THROW_VR_EXCEPTION("Robot Node <" << n->getName() << "> could not be initialized...");
-	}
 
-	bool result = true;
-	// now the children
-	std::vector< SceneObjectPtr > children = n->children;
-	for (unsigned int i=0; i<children.size(); i++)
-	{
-		if (!initRobotNode(boost::dynamic_pointer_cast<RobotNode>(children[i]),n,robotNodes))
-		{
-			VR_ERROR << "Could not initialize node " << children[i]->getName() << endl;
-			result = false;
-		}
-	}
-	return result;
-}*/
+RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, const std::string &startNode, const std::string &endNode)
+{
+    VR_ASSERT(robot);
+    if (!robot->hasRobotNode(startNode))
+    {
+        VR_ERROR << "No node with name " << startNode << endl;
+        return RobotPtr();
+    }
+    if (!robot->hasRobotNode(endNode))
+    {
+        VR_ERROR << "No node with name " << endNode << endl;
+        return RobotPtr();
+    }
+
+    if (!robot->getRobotNode(startNode)->hasChild(endNode, true))
+    {
+        VR_ERROR << "No node " << endNode << " is not a child of " << startNode << endl;
+        return RobotPtr();
+    }
+
+    std::vector<std::string> nodes;
+    std::string currentNodeName = endNode;
+    RobotNodePtr rn = robot->getRobotNode(currentNodeName);
+    while (rn && !(rn->getName() == startNode))
+    {
+        currentNodeName = rn->getName();
+        nodes.push_back(currentNodeName);
+        rn = boost::dynamic_pointer_cast<RobotNode>(rn->getParent());
+    }
+    if (!rn)
+    {
+        VR_ERROR << "No node " << endNode << " is not a child of " << startNode << endl;
+        return RobotPtr();
+    }
+    nodes.push_back(startNode);
+    //std::reverse(nodes.begin(), nodes.end());
+
+    RobotFactory::robotStructureDef newStructure;
+    newStructure.rootName = endNode;
+
+    for (size_t i = 0; i < nodes.size()-1; i++)
+    {
+        RobotFactory::robotNodeDef rnDef;
+        rnDef.name = nodes[i];
+        rnDef.children.push_back(nodes[i+1]);
+        rnDef.invertTransformation = true;
+        newStructure.parentChildMapping.push_back(rnDef);
+    }
+    RobotFactory::robotNodeDef rnDef;
+    rnDef.name = nodes[nodes.size() - 1];
+    rnDef.invertTransformation = true;
+    newStructure.parentChildMapping.push_back(rnDef);
+
+
+    return RobotFactory::cloneChangeStructure(robot, newStructure);
+}
+
+RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, robotStructureDef &newStructure)
+{
+    VR_ASSERT(robot);
+    if (!robot->hasRobotNode(newStructure.rootName))
+    {
+        VR_ERROR << "No root with name " << newStructure.rootName << endl;
+        return RobotPtr();
+    }
+
+    std::map<std::string, RobotNodePtr> newNodes;
+    RobotPtr newRobot = createRobot(robot->getName());
+    RobotNodePtr rn = robot->getRobotNode(newStructure.rootName);
+    rn = rn->clone(newRobot, false);
+    newNodes[newStructure.rootName] = rn;
+    newRobot->setRootNode(newNodes[newStructure.rootName]);
+
+    std::string nodeName;
+    std::map<RobotNodePtr, Eigen::Matrix4f, std::less<RobotNodePtr>, Eigen::aligned_allocator<std::pair<const int, Eigen::Matrix4f> > > localTransformations;
+
+    for (size_t i = 0; i < newStructure.parentChildMapping.size(); i++)
+    {
+        if (!robot->hasRobotNode(newStructure.parentChildMapping[i].name))
+        {
+            VR_ERROR << "Error in parentChildMapping, no node with name " << newStructure.parentChildMapping[i].name << endl;
+            return RobotPtr();
+        }
+        nodeName = newStructure.parentChildMapping[i].name;
+        if (newNodes.find(nodeName) == newNodes.end())
+        {
+            rn = robot->getRobotNode(nodeName);
+            rn = rn->clone(newRobot, false);
+            newNodes[nodeName] = rn;
+        }
+
+        //std::vector<SceneObjectPtr> children;
+
+        for (size_t j = 0; j<newStructure.parentChildMapping[i].children.size();j++)
+        {
+            nodeName = newStructure.parentChildMapping[i].children[j];
+            if (!robot->hasRobotNode(nodeName))
+            {
+                VR_ERROR << "Error in parentChildMapping, no child node with name " << nodeName << endl;
+                return RobotPtr();
+            }
+            
+            if (newNodes.find(nodeName) == newNodes.end())
+            {
+                rn = robot->getRobotNode(nodeName);
+                rn = rn->clone(newRobot, false);
+                newNodes[nodeName] = rn;
+            }
+            //children.push_back(newNodes[nodeName]);
+            RobotNodePtr parent = newNodes[newStructure.parentChildMapping[i].name];
+            RobotNodePtr child = newNodes[nodeName];
+            parent->attachChild(child);
+            if (newStructure.parentChildMapping[i].invertTransformation)
+            {
+                //Eigen::Matrix4f tr = child->getLocalTransformation().inverse();
+                //localTransformations[parent] = tr;
+                Eigen::Matrix4f tr = parent->getLocalTransformation().inverse();
+                localTransformations[child] = tr;
+                if (localTransformations.find(parent) == localTransformations.end())
+                {
+                    localTransformations[parent] = Eigen::Matrix4f::Identity();
+                }
+            }
+        }
+
+    }
+    // apply all transformations
+    std::map<RobotNodePtr, Eigen::Matrix4f>::iterator it = localTransformations.begin();
+    while (it != localTransformations.end())
+    {
+        it->first->localTransformation = it->second;
+        it++;
+    }
+    newRobot->getRootNode()->initialize();
+
+    return newRobot;
+}
 
 } // namespace VirtualRobot

@@ -315,16 +315,16 @@ Eigen::Matrix4f BulletEngine::getPoseEigen( const btTransform &pose, bool scalin
 	qvr.w = q.getW();
 	Eigen::Matrix4f res = VirtualRobot::MathTools::quat2eigen4f(qvr);*/
     Eigen::Matrix4f res = getRotMatrix(pose.getBasis());
-	res(0,3) = pose.getOrigin().getX()*sc;
-	res(1,3) = pose.getOrigin().getY()*sc;
-	res(2,3) = pose.getOrigin().getZ()*sc;
+	res(0,3) = float(pose.getOrigin().getX()*sc);
+    res(1, 3) = float(pose.getOrigin().getY()*sc);
+    res(2, 3) = float(pose.getOrigin().getZ()*sc);
 	return res;
 }
 
 btVector3 BulletEngine::getVecBullet( const Eigen::Vector3f &vec, bool scaling )
 {
 	btTransform res;
-	double sc = 1.0f;
+	btScalar sc = 1.0f;
 	if (scaling && DynamicsWorld::convertMM2M)
 		sc = 0.001f; // mm -> m
 	btVector3 pos(vec(0)*sc,vec(1)*sc,vec(2)*sc);
@@ -338,9 +338,9 @@ Eigen::Vector3f BulletEngine::getVecEigen( const btVector3 &vec, bool scaling )
 		sc = 1000.0f; // m -> mm
 
 	Eigen::Vector3f res;
-	res(0) =  vec.getX()*sc;
-	res(1) =  vec.getY()*sc;
-	res(2) =  vec.getZ()*sc;
+	res(0) = float(vec.getX()*sc);
+    res(1) = float(vec.getY()*sc);
+    res(2) = float(vec.getZ()*sc);
 
 	return res;
 }
@@ -384,7 +384,7 @@ void BulletEngine::externalCallbacks(btDynamicsWorld *world, btScalar timeStep)
 
 	e->updateRobots(timeStep);
 
-	for (int i = 0; i < e->callbacks.size(); i++)
+	for (unsigned int i = 0; i < e->callbacks.size(); i++)
 	{
 		e->callbacks[i].first(e->callbacks[i].second, timeStep);
 	}

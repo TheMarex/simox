@@ -114,6 +114,7 @@ void showRobotWindow::setupUI()
 
     connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeHand()));
     connect(UI.ExportVRML20, SIGNAL(clicked()), this, SLOT(exportVRML()));
+    connect(UI.ExportXML, SIGNAL(clicked()), this, SLOT(exportXML()));
     connect(UI.pushButtonOpen, SIGNAL(clicked()), this, SLOT(openHand()));
 	connect(UI.comboBoxEndEffector, SIGNAL(activated(int)), this, SLOT(selectEEF(int)));
 
@@ -276,19 +277,77 @@ void showRobotWindow::displayPhysics()
 void showRobotWindow::exportVRML()
 {
     if (!robot) return;
+
 #if 0
-	// XML
-    QString fi = QFileDialog::getSaveFileName(this, tr("xml File"), QString(), tr("xml Files (*.xml)"));
-    std::string s = std::string(fi.toAscii());
-    if (!s.empty())
-    {
-		
-		boost::filesystem::path p1(s);
-		std::string fn = p1.filename().generic_string();
-		std::string fnPath = p1.parent_path().generic_string();
-		RobotIO::saveXML(robot,fn,fnPath);
-    }
-#else
+    resetSceneryAll();
+
+    RobotNodePtr start1 = robot->getRobotNode("Shoulder 2 L");
+    RobotNodePtr tcp1 = robot->getRobotNode("Wrist 1 L");
+
+    Eigen::Matrix4f m1 = start1->toLocalCoordinateSystem(tcp1->getGlobalPose());
+    cout << "OLD trafo (FW):" << endl << m1 << endl;
+
+    /*
+    RobotFactory::robotStructureDef newStructure;
+    newStructure.rootName = "TCP L";
+
+    RobotFactory::robotNodeDef rn1;
+    rn1.name = "TCP L";
+    rn1.children.push_back("Wrist 2 L");
+    rn1.invertTransformation = true;
+    newStructure.parentChildMapping.push_back(rn1);
+
+    RobotFactory::robotNodeDef rn2;
+    rn2.name = "Wrist 2 L";
+    rn2.children.push_back("Wrist 1 L");
+    rn2.invertTransformation = true;
+    newStructure.parentChildMapping.push_back(rn2);
+
+    RobotFactory::robotNodeDef rn3;
+    rn3.name = "Wrist 1 L";
+    rn3.children.push_back("Underarm L");
+    rn3.invertTransformation = true;
+    newStructure.parentChildMapping.push_back(rn3);
+
+    RobotFactory::robotNodeDef rn4;
+    rn4.name = "Underarm L";
+    rn4.children.push_back("Elbow L");
+    rn4.invertTransformation = true;
+    newStructure.parentChildMapping.push_back(rn4);
+
+    RobotFactory::robotNodeDef rn5;
+    rn5.name = "Elbow L";
+    rn5.children.push_back("Upperarm L");
+    rn5.invertTransformation = true;
+    newStructure.parentChildMapping.push_back(rn5);
+
+    RobotFactory::robotNodeDef rn6;
+    rn6.name = "Upperarm L";
+    rn6.children.push_back("Shoulder 2 L");
+    rn6.invertTransformation = true;
+    newStructure.parentChildMapping.push_back(rn6);
+
+    RobotFactory::robotNodeDef rn7;
+    rn7.name = "Shoulder 2 L";
+    rn7.children.push_back("Shoulder 1 L");
+    rn7.invertTransformation = true;
+    newStructure.parentChildMapping.push_back(rn7);
+
+    robot = RobotFactory::cloneChangeStructure(robot, newStructure);
+    */
+    robot = RobotFactory::cloneChangeStructure(robot, "Shoulder 1 L", "TCP L");
+
+    updatRobotInfo();
+
+    RobotNodePtr start2 = robot->getRobotNode("Shoulder 2 L");
+    RobotNodePtr tcp2 = robot->getRobotNode("Wrist 1 L");
+
+    Eigen::Matrix4f m2 = start2->toLocalCoordinateSystem(tcp2->getGlobalPose());
+    cout << "NEW trafo (INV):" << endl << m2 << endl;
+
+    return;
+
+#endif
 	// VRML
     QString fi = QFileDialog::getSaveFileName(this, tr("VRML 2.0 File"), QString(), tr("VRML Files (*.wrl)"));
     std::string s = std::string(fi.toAscii());
@@ -298,7 +357,24 @@ void showRobotWindow::exportVRML()
         visualization = robot->getVisualization<CoinVisualization>(colModel);
         visualization->exportToVRML2(s);
     }
-#endif
+}
+
+
+void showRobotWindow::exportXML()
+{
+    if (!robot) return;
+    // XML
+    QString fi = QFileDialog::getSaveFileName(this, tr("xml File"), QString(), tr("xml Files (*.xml)"));
+    std::string s = std::string(fi.toAscii());
+    if (!s.empty())
+    {
+
+        boost::filesystem::path p1(s);
+        std::string fn = p1.filename().generic_string();
+        std::string fnPath = p1.parent_path().generic_string();
+        RobotIO::saveXML(robot, fn, fnPath);
+    }
+
 }
 
 void showRobotWindow::showRobot()
@@ -520,55 +596,62 @@ void showRobotWindow::loadRobot()
 		cout << " ERROR while creating robot" << endl;
 		return;
 	}
-	UI.checkBoxColModel->setChecked(false);
-	UI.checkBoxFullModel->setChecked(true);
-	UI.checkBoxPhysicsCoM->setChecked(false);
-	UI.checkBoxPhysicsInertia->setChecked(false);
-	UI.checkBoxRobotCoordSystems->setChecked(false);
-	UI.checkBoxShowCoordSystem->setChecked(false);
-	UI.checkBoxStructure->setChecked(false);
+    updatRobotInfo();
+}
 
-	// get nodes
-	robot->getRobotNodes(allRobotNodes);
-	robot->getRobotNodeSets(robotNodeSets);
-	robot->getEndEffectors(eefs);
-	updateEEFBox();
-	updateRNSBox();
-	selectRNS(0);
-	if (allRobotNodes.size()==0)
-		selectJoint(-1);
-	else
-		selectJoint(0);
+void showRobotWindow::updatRobotInfo()
+{
+    if (!robot)
+        return;
+    UI.checkBoxColModel->setChecked(false);
+    UI.checkBoxFullModel->setChecked(true);
+    UI.checkBoxPhysicsCoM->setChecked(false);
+    UI.checkBoxPhysicsInertia->setChecked(false);
+    UI.checkBoxRobotCoordSystems->setChecked(false);
+    UI.checkBoxShowCoordSystem->setChecked(false);
+    UI.checkBoxStructure->setChecked(false);
 
-	if (eefs.size()==0)
-		selectEEF(-1);
-	else
-		selectEEF(0);
+    // get nodes
+    robot->getRobotNodes(allRobotNodes);
+    robot->getRobotNodeSets(robotNodeSets);
+    robot->getEndEffectors(eefs);
+    updateEEFBox();
+    updateRNSBox();
+    selectRNS(0);
+    if (allRobotNodes.size() == 0)
+        selectJoint(-1);
+    else
+        selectJoint(0);
 
-	displayTriangles();
+    if (eefs.size() == 0)
+        selectEEF(-1);
+    else
+        selectEEF(0);
+
+    displayTriangles();
 
 #if 0
-	RobotPtr r2 = robot->clone(robot->getName(),robot->getCollisionChecker(),2.0f);
-	Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
-	gp(0,3) += 1000.0f;
+    RobotPtr r2 = robot->clone(robot->getName(), robot->getCollisionChecker(), 2.0f);
+    Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
+    gp(0, 3) += 1000.0f;
 
-	r2->setGlobalPose(gp);
-	extraSep->removeAllChildren();
-	useColModel = UI.checkBoxColModel->checkState() == Qt::Checked;
-	SceneObject::VisualizationType colModel = (UI.checkBoxColModel->isChecked())?SceneObject::Collision:SceneObject::Full;
+    r2->setGlobalPose(gp);
+    extraSep->removeAllChildren();
+    useColModel = UI.checkBoxColModel->checkState() == Qt::Checked;
+    SceneObject::VisualizationType colModel = (UI.checkBoxColModel->isChecked()) ? SceneObject::Collision : SceneObject::Full;
 
-	boost::shared_ptr<VirtualRobot::CoinVisualization> visualization = r2->getVisualization<CoinVisualization>(colModel);
-	SoNode* visualisationNode = NULL;
-	if (visualization)
-		visualisationNode = visualization->getCoinVisualization();
-	extraSep->addChild(visualisationNode);
+    boost::shared_ptr<VirtualRobot::CoinVisualization> visualization = r2->getVisualization<CoinVisualization>(colModel);
+    SoNode* visualisationNode = NULL;
+    if (visualization)
+        visualisationNode = visualization->getCoinVisualization();
+    extraSep->addChild(visualisationNode);
 #endif
 
-	// build visualization
-	rebuildVisualization();
-	robotStructure();
-	displayPhysics();
-	viewer->viewAll();
+    // build visualization
+    rebuildVisualization();
+    robotStructure();
+    displayPhysics();
+    viewer->viewAll();
 }
 
 void showRobotWindow::robotStructure()

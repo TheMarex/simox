@@ -64,6 +64,7 @@ public slots:
 	void selectRobot();
 	void displayPhysics();
     void exportVRML();
+    void exportXML();
 
 	SoQtExaminerViewer* getExaminerViewer(){return viewer;};
 
@@ -74,6 +75,7 @@ protected:
 	void updateRNSBox();
 	void updateEEFBox();
 	void displayTriangles();
+    void updatRobotInfo();
 	Ui::MainWindowShowRobot UI;
 	SoQtExaminerViewer *viewer; /*!< Viewer to display the 3D model of the robot and the environment. */
 		

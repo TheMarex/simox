@@ -54,6 +54,24 @@ public:
 								std::vector<RobotNodePtr > &robotNodes, 
 								std::map< RobotNodePtr, std::vector<std::string> > childrenMap,
 								RobotNodePtr rootNode);
+
+
+    struct robotNodeDef
+    {
+        std::string name;
+        std::vector<std::string> children;
+        bool invertTransformation;
+    };
+
+    struct robotStructureDef
+    {
+        std::string rootName;
+        std::vector<robotNodeDef> parentChildMapping;
+    };
+
+    static RobotPtr cloneChangeStructure(RobotPtr robot, robotStructureDef &newStructure);
+
+    static RobotPtr cloneChangeStructure(RobotPtr robot, const std::string &startNode, const std::string &endNode);
 protected:
 	// instantiation not allowed
 	RobotFactory();

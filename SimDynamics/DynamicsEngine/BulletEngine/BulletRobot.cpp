@@ -798,7 +798,6 @@ void BulletRobot::actuateJoints(double dt)
                 hinge->enableMotor(false);
                 continue;
             }
-            double controllerOutput;
             double targetVelocity;
             if (actuation.modes.position && actuation.modes.velocity)
             {
@@ -907,7 +906,7 @@ void BulletRobot::actuateJoints(double dt)
 				double newOutput = double(it->second.node->getMaxVelocity());
 				targetVelocity = copysign(newOutput,targetVelocity);
 			}
-            hinge->enableAngularMotor(true, targetVelocity, bulletMaxMotorImulse);
+            hinge->enableAngularMotor(true, btScalar(targetVelocity), bulletMaxMotorImulse);
 
 
             // Universal constraint instead of hinge constraint
@@ -1347,7 +1346,7 @@ Eigen::Vector3f BulletRobot::getComGlobalVelocity( VirtualRobot::RobotNodeSetPtr
 		totalMass += node->getMass();
 	}
 
-	com *= 1.0f/totalMass;
+	com *= float(1.0f/totalMass);
 	return com;
 }
 

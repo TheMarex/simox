@@ -99,13 +99,13 @@ void BulletRobotLogger::log(btScalar dt)
 	for (unsigned int i = 0; i < jointNodes->getSize(); i++)
 	{
 		const VirtualRobot::RobotNodePtr& node = (*jointNodes)[i];
-		actualAngle(i)    = robot->getJointAngle(node);
+		actualAngle(i)    = float(robot->getJointAngle(node));
 		// bullet changes the sign???
-		actualVelocity(i) = -robot->getJointSpeed(node);
-		targetAngle(i)    = robot->getNodeTarget(node);
-		targetVelocity(i) = robot->getJointTargetSpeed(node);
-		actualTorque(i) = robot->getJointTorque(node);
-		actualForces.col(i) = robot->getJointForces(node);
+        actualVelocity(i) = float(-robot->getJointSpeed(node));
+        targetAngle(i) = float(robot->getNodeTarget(node));
+        targetVelocity(i) = float(robot->getJointTargetSpeed(node));
+        actualTorque(i) = float(robot->getJointTorque(node));
+        actualForces.col(i) = robot->getJointForces(node);
 	}
 
 	actualJointTorquesLog.push_back(actualTorque);

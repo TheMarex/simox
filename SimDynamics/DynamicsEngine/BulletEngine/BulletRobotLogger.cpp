@@ -111,7 +111,7 @@ void BulletRobotLogger::log(btScalar dt)
 	actualJointTorquesLog.push_back(actualTorque);
 	actualJointForcesLog.push_back(actualForces);
 	actualCoMLog.push_back(bodyNodes->getCoM());
-	actualCoMVelocityLog.push_back(robot->getComGlobalVelocity(bodyNodes));
+	actualCoMVelocityLog.push_back(robot->getComVelocityGlobal(bodyNodes));
 	actualVelocityLog.push_back(actualVelocity);
 	actualAngleLog.push_back(actualAngle);
 	targetAngleLog.push_back(targetAngle);

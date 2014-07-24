@@ -147,7 +147,7 @@ public:
     */
     virtual Eigen::Matrix4f getComGlobal(VirtualRobot::RobotNodePtr rn);
 	Eigen::Vector3f getComGlobal( VirtualRobot::RobotNodeSetPtr set);
-	Eigen::Vector3f getComGlobalVelocity( VirtualRobot::RobotNodeSetPtr set);
+	Eigen::Vector3f getComVelocityGlobal( VirtualRobot::RobotNodeSetPtr set);
 
 	// experimental...
 	virtual void ensureKinematicConstraints();

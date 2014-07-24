@@ -1386,7 +1386,7 @@ Eigen::Vector3f BulletRobot::getComGlobal( VirtualRobot::RobotNodeSetPtr set)
 	return com;
 }
 
-Eigen::Vector3f BulletRobot::getComGlobalVelocity( VirtualRobot::RobotNodeSetPtr set)
+Eigen::Vector3f BulletRobot::getComVelocityGlobal( VirtualRobot::RobotNodeSetPtr set)
 {
 	Eigen::Vector3f com = Eigen::Vector3f::Zero();
 	double totalMass = 0.0;

@@ -177,6 +177,7 @@ namespace VirtualRobot
 	class BasicGraspQualityMeasure;
 	class WorkspaceGrid;
     class WorkspaceDataArray;
+	class ForceTorqueSensor;
 
     typedef boost::shared_ptr<RobotNode> RobotNodePtr;
     typedef boost::shared_ptr<RobotNodeSet> RobotNodeSetPtr;
@@ -213,6 +214,7 @@ namespace VirtualRobot
 	typedef boost::shared_ptr<SphereApproximator> SphereApproximatorPtr;
 	typedef boost::shared_ptr<BasicGraspQualityMeasure> BasicGraspQualityMeasurePtr;
 	typedef boost::shared_ptr<WorkspaceGrid> WorkspaceGridPtr;
+	typedef boost::shared_ptr<ForceTorqueSensor> ForceTorqueSensorPtr;
 
 
 #define VR_INFO std::cout <<__FILE__ << ":" << __LINE__ << ": "

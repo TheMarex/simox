@@ -60,8 +60,8 @@ public:
 
 
     const Eigen::VectorXf &getForceTorque();
-    const Eigen::Vector3f &getForce();
-    const Eigen::Vector3f &getTorque();
+    Eigen::Vector3f getForce() const;
+    Eigen::Vector3f getTorque() const;
 
 	/**
 	 * Projects torque on joint axis and returns amplitude.

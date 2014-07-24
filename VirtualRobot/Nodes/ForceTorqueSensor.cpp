@@ -19,12 +19,12 @@ ForceTorqueSensor::~ForceTorqueSensor()
 {
 }
 
-const Eigen::Vector3f &ForceTorqueSensor::getForce()
+Eigen::Vector3f ForceTorqueSensor::getForce() const
 {
     return forceTorqueValues.head(3);
 }
 
-const Eigen::Vector3f &ForceTorqueSensor::getTorque()
+Eigen::Vector3f ForceTorqueSensor::getTorque() const
 {
     return forceTorqueValues.tail(3);
 }

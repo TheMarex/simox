@@ -63,10 +63,18 @@ public:
 	/*!
 		Visualize dynamics object.
 	*/
-	void addVisualization(VirtualRobot::RobotPtr o, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
-	void addVisualization(VirtualRobot::SceneObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
-	void addVisualization(DynamicsObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
-	void addVisualization(DynamicsRobotPtr r, VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full);
+	void addVisualization(VirtualRobot::RobotPtr o,
+						  VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full,
+						  SoSeparator* container = NULL);
+	void addVisualization(VirtualRobot::SceneObjectPtr o,
+						  VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full,
+						  SoSeparator* container = NULL);
+	void addVisualization(DynamicsObjectPtr o,
+						  VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full,
+						  SoSeparator* container = NULL);
+	void addVisualization(DynamicsRobotPtr r,
+						  VirtualRobot::SceneObject::VisualizationType visuType = VirtualRobot::SceneObject::Full,
+						  SoSeparator* container = NULL);
 
 	/*!
 		Remove visualization of dynamics object.

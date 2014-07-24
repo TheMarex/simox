@@ -2,6 +2,7 @@
 
 #include <Inventor/sensors/SoTimerSensor.h>
 #include <Inventor/nodes/SoEventCallback.h>
+#include <Inventor/nodes/SoDrawStyle.h>
 #include "Inventor/actions/SoBoxHighlightRenderAction.h"
 #include <Inventor/nodes/SoSelection.h>
 
@@ -202,7 +203,7 @@ void BulletCoinQtViewer::viewAll()
 	//viewer->viewAll();
 }
 
-void BulletCoinQtViewer::addVisualization(RobotPtr robot, VirtualRobot::SceneObject::VisualizationType visuType)
+void BulletCoinQtViewer::addVisualization(RobotPtr robot, VirtualRobot::SceneObject::VisualizationType visuType, SoSeparator* container)
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	//VR_ASSERT(so);
@@ -213,14 +214,20 @@ void BulletCoinQtViewer::addVisualization(RobotPtr robot, VirtualRobot::SceneObj
 
 	if (n)
 	{
-		sceneGraph->addChild(n);
+		SoNode* rootNode = n;
+		if (container)
+		{
+			container->addChild(n);
+			rootNode = container;
+		}
+		sceneGraph->addChild(rootNode);
 		sceneGraph->addSelectionCallback( selectionCB, this );
 		sceneGraph->addDeselectionCallback( deselectionCB, this );
-		addedSpriteRobotVisualizations[robot] = n;
+		addedSpriteRobotVisualizations[robot] = rootNode;
 	}
 }
 
-void BulletCoinQtViewer::addVisualization(SceneObjectPtr so, VirtualRobot::SceneObject::VisualizationType visuType)
+void BulletCoinQtViewer::addVisualization(SceneObjectPtr so, VirtualRobot::SceneObject::VisualizationType visuType, SoSeparator* container)
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	VR_ASSERT(so);
@@ -228,14 +235,20 @@ void BulletCoinQtViewer::addVisualization(SceneObjectPtr so, VirtualRobot::Scene
 	SoNode * n = CoinVisualizationFactory::getCoinVisualization(so, visuType);
 	if (n)
 	{
-		sceneGraph->addChild(n);
+		SoNode* rootNode = n;
+		if (container)
+		{
+			container->addChild(n);
+			rootNode = container;
+		}
+		sceneGraph->addChild(rootNode);
 		sceneGraph->addSelectionCallback( selectionCB, this );
 		sceneGraph->addDeselectionCallback( deselectionCB, this );
-		addedSpriteVisualizations[so] = n;
+		addedSpriteVisualizations[so] = rootNode;
 	}
 }
 
-void BulletCoinQtViewer::addVisualization(DynamicsObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType)
+void BulletCoinQtViewer::addVisualization(DynamicsObjectPtr o, VirtualRobot::SceneObject::VisualizationType visuType, SoSeparator* container)
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	VR_ASSERT(o);
@@ -245,10 +258,16 @@ void BulletCoinQtViewer::addVisualization(DynamicsObjectPtr o, VirtualRobot::Sce
 	SoNode * n = CoinVisualizationFactory::getCoinVisualization(so,visuType);
 	if (n)
 	{
-		sceneGraph->addChild(n);
+		SoNode* rootNode = n;
+		if (container)
+		{
+			container->addChild(n);
+			rootNode = container;
+		}
+		sceneGraph->addChild(rootNode);
 		sceneGraph->addSelectionCallback( selectionCB, this );
 		sceneGraph->addDeselectionCallback( deselectionCB, this );
-		addedVisualizations[o] = n;
+		addedVisualizations[o] = rootNode;
 	}
 }
 
@@ -257,7 +276,7 @@ void BulletCoinQtViewer::addStepCallback(BulletStepCallback callback, void* data
 	bulletEngine->addExternalCallback(callback, data);
 }
 
-void BulletCoinQtViewer::addVisualization(DynamicsRobotPtr r, VirtualRobot::SceneObject::VisualizationType visuType)
+void BulletCoinQtViewer::addVisualization(DynamicsRobotPtr r, VirtualRobot::SceneObject::VisualizationType visuType, SoSeparator* container)
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	VR_ASSERT(r);
@@ -274,19 +293,18 @@ void BulletCoinQtViewer::addVisualization(DynamicsRobotPtr r, VirtualRobot::Scen
 	SoSeparator* n = new SoSeparator();
 	BOOST_FOREACH(VisualizationNodePtr visualizationNode, collectedVisualizationNodes)
 	{
-			boost::shared_ptr<CoinVisualizationNode> coinVisualizationNode = boost::dynamic_pointer_cast<CoinVisualizationNode>(visualizationNode);
-			if (coinVisualizationNode && coinVisualizationNode->getCoinVisualization())
-					n->addChild(coinVisualizationNode->getCoinVisualization());
+		boost::shared_ptr<CoinVisualizationNode> coinVisualizationNode = boost::dynamic_pointer_cast<CoinVisualizationNode>(visualizationNode);
+		if (coinVisualizationNode && coinVisualizationNode->getCoinVisualization())
+			n->addChild(coinVisualizationNode->getCoinVisualization());
 	}
-	sceneGraph->addChild(n);
-	addedRobotVisualizations[r] = n;
-
-	/*SoNode * n = CoinVisualizationFactory::getCoinVisualization(ro,visuType);
-	if (n)
+	SoNode* rootNode = n;
+	if (container)
 	{
-		sceneGraph->addChild(n);
-		addedRobotVisualizations[r] = n;
-	}*/
+		container->addChild(n);
+		rootNode = container;
+	}
+	sceneGraph->addChild(rootNode);
+	addedRobotVisualizations[r] = rootNode;
 }
 
 void BulletCoinQtViewer::removeVisualization( RobotPtr o )

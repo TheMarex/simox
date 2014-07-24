@@ -751,57 +751,8 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 			//makeAbsolutePath(basePath,visuFile);
 		}
 
-        rapidxml::xml_node<> *visuPrimitivesXMLNode = visuXMLNode->first_node("primitives",0,false);
-        if (visuPrimitivesXMLNode)
-        {
-            THROW_VR_EXCEPTION_IF(visuFileXMLNode, "Multiple visualization sources defined (file and primitives)" << endl)
-            rapidxml::xml_node<> *primitiveXMLNode = visuPrimitivesXMLNode->first_node();
-
-            while (primitiveXMLNode)
-            {
-                //extract info
-                std::string pName = primitiveXMLNode->name();
-                getLowerCase(pName);
-                VisualizationFactory::PrimitivePtr primitive;
-
-                float lenFactor = 1.f;
-                if (hasUnitsAttribute(primitiveXMLNode))
-                {
-                    Units u = getUnitsAttribute(primitiveXMLNode,Units::eLength);
-                    if (u.isMeter())
-                    {
-                        lenFactor = 1000.f;
-                    }
-                }
-
-                if (pName == "box")
-                {
-                    VisualizationFactory::Box *box = new VisualizationFactory::Box;
-                    box->width = convertToFloat(primitiveXMLNode->first_attribute("width",0,false)->value()) * lenFactor;
-                    box->height = convertToFloat(primitiveXMLNode->first_attribute("height",0,false)->value()) * lenFactor;
-                    box->depth = convertToFloat(primitiveXMLNode->first_attribute("depth",0,false)->value()) * lenFactor;
-                    primitive.reset(box);
-                } else if (pName == "sphere")
-                {
-                    VisualizationFactory::Sphere *sphere = new VisualizationFactory::Sphere;
-                    sphere->radius = convertToFloat(primitiveXMLNode->first_attribute("radius",0,false)->value()) * lenFactor;
-                    primitive.reset(sphere);
-                } else
-                {
-                    VR_ERROR << "Unknown primitive type \"" << pName << "\"; skipping";
-                }
-
-                if (primitive)
-                {
-                    Eigen::Matrix4f transform;
-                    processTransformNode(primitiveXMLNode->first_node("transform",0,false), "transform", transform);
-                    primitive->transform = transform;
-                    primitives.push_back(primitive);
-                }
-
-                primitiveXMLNode = primitiveXMLNode->next_sibling();
-            }
-        }
+        primitives = processPrimitives(visuXMLNode);
+        THROW_VR_EXCEPTION_IF(primitives.size() != 0 && visuFileXMLNode, "Multiple visualization sources defined (file and primitives)" << endl);
 
         if (visuFile!="")
 		{
@@ -815,7 +766,6 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
         {
             VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
             visualizationNode = visualizationFactory->getVisualizationFromPrimitives(primitives);
-            visualizationNode->primitives = primitives;
         }
 
 
@@ -884,13 +834,14 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 	return visualizationNode;
 }
 
-
 CollisionModelPtr BaseIO::processCollisionTag(rapidxml::xml_node<char> *colXMLNode, const std::string &tagName, const std::string &basePath)
 {
 	rapidxml::xml_attribute<> *attr;
 	std::string collisionFile = "";
 	std::string collisionFileType = "";
+    VisualizationNodePtr visualizationNode;
 	CollisionModelPtr collisionModel;
+    std::vector<VisualizationFactory::PrimitivePtr> primitives;
 	bool enableCol = true;
 	bool bbox = false;
 
@@ -925,26 +876,98 @@ CollisionModelPtr BaseIO::processCollisionTag(rapidxml::xml_node<char> *colXMLNo
 			}
 		}
 
+        primitives = processPrimitives(colXMLNode);
+        THROW_VR_EXCEPTION_IF(primitives.size() != 0 && colFileXMLNode, "Multiple collision model sources defined (file and primitives)" << endl);
+
 		if (collisionFile!="")
 		{
 			VisualizationFactoryPtr visualizationFactory = VisualizationFactory::fromName(collisionFileType, NULL);
-			VisualizationNodePtr visualizationNode;
 			if (visualizationFactory)
 				visualizationNode = visualizationFactory->getVisualizationFromFile(collisionFile, bbox);
 			else
 				VR_WARNING << "VisualizationFactory of type '" << collisionFileType << "' not present. Ignoring Visualization data in Robot Node <" << tagName << ">" << endl;
-			if (visualizationNode)
-			{
-				std::string colModelName = tagName;
-				colModelName += "_ColModel";
-				// todo: ID?
-				collisionModel.reset(new CollisionModel(visualizationNode,colModelName,CollisionCheckerPtr()));
-			}
-		}
+
+        } else if (primitives.size() != 0)
+        {
+            VisualizationFactoryPtr visualizationFactory = VisualizationFactory::first(NULL);
+            visualizationNode = visualizationFactory->getVisualizationFromPrimitives(primitives);
+        }
+
+        if (visualizationNode)
+        {
+            std::string colModelName = tagName;
+            colModelName += "_ColModel";
+            // todo: ID?
+            collisionModel.reset(new CollisionModel(visualizationNode,colModelName,CollisionCheckerPtr()));
+        }
 	}
 	return collisionModel;
 }
 
+std::vector<VisualizationFactory::PrimitivePtr> BaseIO::processPrimitives(rapidxml::xml_node<char> *primitivesXMLNode)
+{
+    std::vector<VisualizationFactory::PrimitivePtr> result;
+    rapidxml::xml_node<> *node;
+
+    if (!primitivesXMLNode)
+        return result;
+
+    if (primitivesXMLNode->name() == "primitives")
+        node = primitivesXMLNode;
+    else
+        node = primitivesXMLNode->first_node("primitives",0,false);
+
+    if (!node)
+        return result;
+
+    rapidxml::xml_node<> *primitiveXMLNode = node->first_node();
+
+    while (primitiveXMLNode)
+    {
+        std::string pName = primitiveXMLNode->name();
+        getLowerCase(pName);
+        VisualizationFactory::PrimitivePtr primitive;
+
+        float lenFactor = 1.f;
+        if (hasUnitsAttribute(primitiveXMLNode))
+        {
+            Units u = getUnitsAttribute(primitiveXMLNode,Units::eLength);
+            if (u.isMeter())
+            {
+                lenFactor = 1000.f;
+            }
+        }
+
+        if (pName == "box")
+        {
+            VisualizationFactory::Box *box = new VisualizationFactory::Box;
+            box->width = convertToFloat(primitiveXMLNode->first_attribute("width",0,false)->value()) * lenFactor;
+            box->height = convertToFloat(primitiveXMLNode->first_attribute("height",0,false)->value()) * lenFactor;
+            box->depth = convertToFloat(primitiveXMLNode->first_attribute("depth",0,false)->value()) * lenFactor;
+            primitive.reset(box);
+        } else if (pName == "sphere")
+        {
+            VisualizationFactory::Sphere *sphere = new VisualizationFactory::Sphere;
+            sphere->radius = convertToFloat(primitiveXMLNode->first_attribute("radius",0,false)->value()) * lenFactor;
+            primitive.reset(sphere);
+        } else
+        {
+            VR_ERROR << "Unknown primitive type \"" << pName << "\"; skipping";
+        }
+
+        if (primitive)
+        {
+            Eigen::Matrix4f transform;
+            processTransformNode(primitiveXMLNode->first_node("transform",0,false), "transform", transform);
+            primitive->transform = transform;
+            result.push_back(primitive);
+        }
+
+        primitiveXMLNode = primitiveXMLNode->next_sibling();
+    }
+
+    return result;
+}
 
 void BaseIO::processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const std::string &nodeName, SceneObject::Physics &physics)
 {

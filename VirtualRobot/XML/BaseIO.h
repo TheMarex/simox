@@ -89,6 +89,7 @@ public:
 
 	static VisualizationNodePtr processVisualizationTag(rapidxml::xml_node<char> *visuXMLNode, const std::string &tagName, const std::string &basePath, bool &useAsColModel);
 	static CollisionModelPtr processCollisionTag(rapidxml::xml_node<char> *colXMLNode, const std::string &tagName, const std::string &basePath);
+        static std::vector<VisualizationFactory::PrimitivePtr> processPrimitives(rapidxml::xml_node<char> *primitivesXMLNode);
 	static void processPhysicsTag(rapidxml::xml_node<char> *physicsXMLNode, const std::string &nodeName, SceneObject::Physics &physics);
 	static RobotNodeSetPtr processRobotNodeSet(rapidxml::xml_node<char>* setXMLNode, RobotPtr robo, const std::string& robotRootNode, int& robotNodeSetCounter );
 	static TrajectoryPtr processTrajectory(rapidxml::xml_node<char> *trajectoryXMLNode,std::vector<RobotPtr> &robots);

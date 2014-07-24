@@ -104,6 +104,7 @@ namespace VirtualRobot {
 
         // create new CoinVisualizationNode if no error occurred
         visualizationNode.reset(new CoinVisualizationNode(coinVisualization));
+        visualizationNode->primitives = primitives;
 
         coinVisualization->unref();
 

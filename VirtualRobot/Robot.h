@@ -365,6 +365,11 @@ public:
 	BoundingBox getBoundingBox(bool collisionModel = true);
 
 	/*!
+	 * Returns the sensor with the given name.
+	 */
+	SensorPtr getSensor(const std::string& name);
+
+	/*!
 		Returns all sensors that are defined within this robot.
 	*/
 	std::vector<SensorPtr> getSensors();

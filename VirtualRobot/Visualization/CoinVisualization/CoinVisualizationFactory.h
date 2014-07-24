@@ -59,7 +59,7 @@ public:
 	CoinVisualizationFactory();
 	virtual ~CoinVisualizationFactory();
 
-    virtual VisualizationNodePtr getVisualizationFromPrimitives(std::vector<PrimitivePtr> primitives, bool boundingBox = false);
+    virtual VisualizationNodePtr getVisualizationFromPrimitives(const std::vector<PrimitivePtr> &primitives, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false);
     virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromString(const std::string& modelString, bool boundingBox = false);

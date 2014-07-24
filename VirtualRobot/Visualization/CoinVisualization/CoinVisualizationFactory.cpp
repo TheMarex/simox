@@ -76,14 +76,14 @@ namespace VirtualRobot {
     * \param boundingBox Use bounding box instead of full model.
     * \return instance of VirtualRobot::CoinVisualizationNode upon success and VirtualRobot::VisualizationNode on error.
     */
-    VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromPrimitives(std::vector<PrimitivePtr> primitives, bool boundingBox)
+    VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromPrimitives(const std::vector<PrimitivePtr> &primitives, bool boundingBox)
     {
         VisualizationNodePtr visualizationNode = VisualizationNodePtr(new VisualizationNode());
         SoSeparator *coinVisualization = new SoSeparator();
         coinVisualization->ref();
 
         Eigen::Matrix4f currentTransform = Eigen::Matrix4f::Identity();
-        for (std::vector<PrimitivePtr>::iterator it = primitives.begin(); it != primitives.end(); it++)
+        for (std::vector<PrimitivePtr>::const_iterator it = primitives.begin(); it != primitives.end(); it++)
         {
             PrimitivePtr p = *it;
             currentTransform *= p->transform;

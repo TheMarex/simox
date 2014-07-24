@@ -76,16 +76,16 @@ namespace VirtualRobot {
     * \param boundingBox Use bounding box instead of full model.
     * \return instance of VirtualRobot::CoinVisualizationNode upon success and VirtualRobot::VisualizationNode on error.
     */
-    VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromPrimitives(const std::vector<PrimitivePtr> &primitives, bool boundingBox)
+    VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromPrimitives(const std::vector<Primitive::PrimitivePtr> &primitives, bool boundingBox)
     {
         VisualizationNodePtr visualizationNode = VisualizationNodePtr(new VisualizationNode());
         SoSeparator *coinVisualization = new SoSeparator();
         coinVisualization->ref();
 
         Eigen::Matrix4f currentTransform = Eigen::Matrix4f::Identity();
-        for (std::vector<PrimitivePtr>::const_iterator it = primitives.begin(); it != primitives.end(); it++)
+        for (std::vector<Primitive::PrimitivePtr>::const_iterator it = primitives.begin(); it != primitives.end(); it++)
         {
-            PrimitivePtr p = *it;
+            Primitive::PrimitivePtr p = *it;
             currentTransform *= p->transform;
             SoSeparator *soSep = new SoSeparator();
             SoNode *pNode = GetNodeFromPrimitive(p, boundingBox);
@@ -111,20 +111,20 @@ namespace VirtualRobot {
         return visualizationNode;
     }
 
-    SoNode* CoinVisualizationFactory::GetNodeFromPrimitive(PrimitivePtr primitive, bool boundingBox)
+    SoNode* CoinVisualizationFactory::GetNodeFromPrimitive(Primitive::PrimitivePtr primitive, bool boundingBox)
     {
         SoNode *coinVisualization;
-        if (primitive->type == Box::TYPE)
+        if (primitive->type == Primitive::Box::TYPE)
         {
-            Box *box = boost::dynamic_pointer_cast<Box>(primitive).get();
+            Primitive::Box *box = boost::dynamic_pointer_cast<Primitive::Box>(primitive).get();
             SoCube *soBox = new SoCube;
             soBox->width = box->width / 1000.f;
             soBox->height = box->height / 1000.f;
             soBox->depth = box->depth / 1000.f;
             coinVisualization = soBox;
-        } else if (primitive->type == Sphere::TYPE)
+        } else if (primitive->type == Primitive::Sphere::TYPE)
         {
-            Sphere *sphere = boost::dynamic_pointer_cast<Sphere>(primitive).get();
+            Primitive::Sphere *sphere = boost::dynamic_pointer_cast<Primitive::Sphere>(primitive).get();
             SoSphere *soSphere = new SoSphere;
             soSphere->radius = sphere->radius / 1000.f;
             coinVisualization = soSphere;

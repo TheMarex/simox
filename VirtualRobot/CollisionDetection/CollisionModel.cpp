@@ -200,6 +200,16 @@ std::string CollisionModel::toXML(const std::string &basePath, const std::string
            << tmpFilename
            << "</File>\n";
 	}
+    if (visualization && visualization->primitives.size() != 0)
+    {
+        ss << pre << "\t<Primitives>\n";
+        std::vector<Primitive::PrimitivePtr>::const_iterator it;
+        for (it = visualization->primitives.begin(); it != visualization->primitives.end(); it++)
+        {
+            ss << (*it)->toXMLString(tabs + 1);
+        }
+        ss << pre << "\t</Primitives>\n";
+    }
 	ss << pre << "</CollisionModel>\n";
 	return ss.str();
 }

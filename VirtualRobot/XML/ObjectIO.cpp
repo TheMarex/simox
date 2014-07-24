@@ -231,8 +231,6 @@ ManipulationObjectPtr ObjectIO::processManipulationObject(rapidxml::xml_node<cha
 		{
 			THROW_VR_EXCEPTION_IF(colProcessed, "Two collision tags defined in ManipulationObject '" << objName << "'." << endl);
 			collisionModel = processCollisionTag(node, objName, basePath);
-            if (collisionModel && visualizationNode)
-                collisionModel->getVisualization()->primitives = visualizationNode->primitives;
 			colProcessed = true;
 		} else if (nodeName == "physics")
 		{
@@ -329,8 +327,6 @@ ObstaclePtr ObjectIO::processObstacle(rapidxml::xml_node<char>* objectXMLNode, c
 		{
 			THROW_VR_EXCEPTION_IF(colProcessed, "Two collision tags defined in Obstacle '" << objName << "'." << endl);
 			collisionModel = processCollisionTag(node, objName, basePath);
-            if (collisionModel && visualizationNode)
-                collisionModel->getVisualization()->primitives = visualizationNode->primitives;
 			colProcessed = true;
 		} else if (nodeName == "physics")
 		{

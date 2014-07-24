@@ -87,6 +87,7 @@ SceneObject.cpp
 SceneObjectSet.cpp
 Scene.cpp
 Obstacle.cpp
+Primitive.cpp
 VirtualRobotException.cpp
 ManipulationObject.cpp
 BoundingBox.cpp
@@ -173,6 +174,7 @@ SceneObject.h
 SceneObjectSet.h
 Scene.h
 Obstacle.h
+Primitive.h
 VirtualRobotException.h
 VirtualRobotImportExport.h
 VirtualRobotTest.h

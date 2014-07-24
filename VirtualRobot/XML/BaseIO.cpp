@@ -712,7 +712,7 @@ VisualizationNodePtr BaseIO::processVisualizationTag(rapidxml::xml_node<char> *v
 	std::string visuFileType = "";
 	std::string visuFile = "";
 	rapidxml::xml_attribute<> *attr;
-    std::vector<VisualizationFactory::PrimitivePtr> primitives;
+    std::vector<Primitive::PrimitivePtr> primitives;
 	VisualizationNodePtr visualizationNode;
 
 	if (!visuXMLNode)
@@ -841,7 +841,7 @@ CollisionModelPtr BaseIO::processCollisionTag(rapidxml::xml_node<char> *colXMLNo
 	std::string collisionFileType = "";
     VisualizationNodePtr visualizationNode;
 	CollisionModelPtr collisionModel;
-    std::vector<VisualizationFactory::PrimitivePtr> primitives;
+    std::vector<Primitive::PrimitivePtr> primitives;
 	bool enableCol = true;
 	bool bbox = false;
 
@@ -904,9 +904,9 @@ CollisionModelPtr BaseIO::processCollisionTag(rapidxml::xml_node<char> *colXMLNo
 	return collisionModel;
 }
 
-std::vector<VisualizationFactory::PrimitivePtr> BaseIO::processPrimitives(rapidxml::xml_node<char> *primitivesXMLNode)
+std::vector<Primitive::PrimitivePtr> BaseIO::processPrimitives(rapidxml::xml_node<char> *primitivesXMLNode)
 {
-    std::vector<VisualizationFactory::PrimitivePtr> result;
+    std::vector<Primitive::PrimitivePtr> result;
     rapidxml::xml_node<> *node;
 
     if (!primitivesXMLNode)
@@ -926,7 +926,7 @@ std::vector<VisualizationFactory::PrimitivePtr> BaseIO::processPrimitives(rapidx
     {
         std::string pName = primitiveXMLNode->name();
         getLowerCase(pName);
-        VisualizationFactory::PrimitivePtr primitive;
+        Primitive::PrimitivePtr primitive;
 
         float lenFactor = 1.f;
         if (hasUnitsAttribute(primitiveXMLNode))
@@ -940,14 +940,14 @@ std::vector<VisualizationFactory::PrimitivePtr> BaseIO::processPrimitives(rapidx
 
         if (pName == "box")
         {
-            VisualizationFactory::Box *box = new VisualizationFactory::Box;
+            Primitive::Box *box = new Primitive::Box;
             box->width = convertToFloat(primitiveXMLNode->first_attribute("width",0,false)->value()) * lenFactor;
             box->height = convertToFloat(primitiveXMLNode->first_attribute("height",0,false)->value()) * lenFactor;
             box->depth = convertToFloat(primitiveXMLNode->first_attribute("depth",0,false)->value()) * lenFactor;
             primitive.reset(box);
         } else if (pName == "sphere")
         {
-            VisualizationFactory::Sphere *sphere = new VisualizationFactory::Sphere;
+            Primitive::Sphere *sphere = new Primitive::Sphere;
             sphere->radius = convertToFloat(primitiveXMLNode->first_attribute("radius",0,false)->value()) * lenFactor;
             primitive.reset(sphere);
         } else

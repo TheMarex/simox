@@ -59,7 +59,7 @@ public:
 	CoinVisualizationFactory();
 	virtual ~CoinVisualizationFactory();
 
-    virtual VisualizationNodePtr getVisualizationFromPrimitives(const std::vector<PrimitivePtr> &primitives, bool boundingBox = false);
+    virtual VisualizationNodePtr getVisualizationFromPrimitives(const std::vector<Primitive::PrimitivePtr> &primitives, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false);
     virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromString(const std::string& modelString, bool boundingBox = false);
@@ -300,7 +300,7 @@ public:
 	*/
 	virtual void cleanup();
 protected:
-    static SoNode* GetNodeFromPrimitive(PrimitivePtr primitive, bool boundingBox);
+    static SoNode* GetNodeFromPrimitive(Primitive::PrimitivePtr primitive, bool boundingBox);
     static void GetVisualizationFromSoInput(SoInput& soInput, VisualizationNodePtr& visualizationNode, bool bbox = false);
 
 	static inline char IVToolsHelper_ReplaceSpaceWithUnderscore(char input) { if ( ' ' == input ) return '_'; else return input; }

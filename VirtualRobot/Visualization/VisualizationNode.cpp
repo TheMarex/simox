@@ -35,6 +35,7 @@ VirtualRobot::VisualizationNodePtr VisualizationNode::clone(bool deepCopy, float
 	VisualizationNodePtr p(new VisualizationNode());
 	p->setUpdateVisualization(updateVisualization);
 	p->setFilename(filename,boundingBox);
+    p->primitives = primitives;
 
 	return p;
 }
@@ -142,7 +143,16 @@ std::string VisualizationNode::toXML(const std::string &basePath, const std::str
         std::string tmpFilename = filename;
         BaseIO::makeRelativePath(basePath, tmpFilename);
         ss << pre << t << "<File type='" << getType() << "'>" << tmpFilename << "</File>\n";
-	}
+    } else if (primitives.size() != 0)
+    {
+        ss << pre << "\t<Primitives>\n";
+        std::vector<Primitive::PrimitivePtr>::const_iterator it;
+        for (it = primitives.begin(); it != primitives.end(); it++)
+        {
+            ss << (*it)->toXMLString(tabs + 1);
+        }
+        ss << pre << "\t</Primitives>\n";
+    }
 	ss << pre << "</Visualization>\n";
 
 	return ss.str();

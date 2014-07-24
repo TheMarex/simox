@@ -27,6 +27,7 @@
 #include "../AbstractFactoryMethod.h"
 #include "../MathTools.h"
 #include "../BoundingBox.h"
+#include "../Primitive.h"
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -70,36 +71,10 @@ public:
         float refractionIndex;
     };
 
-    struct Primitive {
-        static const int TYPE = 0;
-        Primitive() : type(TYPE), transform(Eigen::Matrix4f::Identity()) {}
-        virtual ~Primitive() {} //needed for dynamic cast to work
-        const int type;
-        Eigen::Matrix4f transform;
-    protected:
-        Primitive(int type) : type(type) {}
-    };
-
-    struct Box : public Primitive {
-        static const int TYPE = 1;
-        Box() : Primitive(TYPE) {}
-        float width;
-        float height;
-        float depth;
-    };
-
-    struct Sphere : public Primitive {
-        static const int TYPE = 2;
-        Sphere() : Primitive(TYPE) {}
-        float radius;
-    };
-
-    typedef boost::shared_ptr<Primitive> PrimitivePtr;
-
 	VisualizationFactory() {;}
 	virtual ~VisualizationFactory() {;}
 
-    virtual VisualizationNodePtr getVisualizationFromPrimitives(const std::vector<PrimitivePtr> &primitives, bool boundingBox = false){return VisualizationNodePtr();}
+    virtual VisualizationNodePtr getVisualizationFromPrimitives(const std::vector<Primitive::PrimitivePtr> &primitives, bool boundingBox = false){return VisualizationNodePtr();}
 	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false){return VisualizationNodePtr();}
     virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false){return VisualizationNodePtr();}
     /*!

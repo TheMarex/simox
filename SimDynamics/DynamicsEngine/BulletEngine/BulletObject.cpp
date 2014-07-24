@@ -7,6 +7,7 @@
 #include <VirtualRobot/Obstacle.h>
 #include <VirtualRobot/CollisionDetection/CollisionModel.h>
 #include <VirtualRobot/Visualization/TriMeshModel.h>
+#include <VirtualRobot/Primitive.h>
 
 
 #include <BulletCollision/CollisionShapes/btShapeHull.h>
@@ -51,15 +52,15 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
 
 		if (o->getName() != "Floor")
 		{
-            std::vector<VisualizationFactory::PrimitivePtr> primitives = colModel->getVisualization()->primitives;
+            std::vector<Primitive::PrimitivePtr> primitives = colModel->getVisualization()->primitives;
             if (primitives.size() == 1)
             {
                 collisionShape.reset(getShapeFromPrimitive(primitives[0]));
             }
             else if (primitives.size() > 1)
             {
-                std::vector<VisualizationFactory::PrimitivePtr>::iterator it;
                 btCompoundShape *compoundShape = new btCompoundShape();
+                std::vector<Primitive::PrimitivePtr>::const_iterator it;
                 for (it = primitives.begin(); it != primitives.end(); it++) {
                     compoundShape->addChildShape(BulletEngine::getPoseBullet((*it)->transform), getShapeFromPrimitive(*it));
                 }
@@ -150,18 +151,18 @@ BulletObject::~BulletObject()
 }
 
 
-btCollisionShape* BulletObject::getShapeFromPrimitive(VirtualRobot::VisualizationFactory::PrimitivePtr primitive)
+btCollisionShape* BulletObject::getShapeFromPrimitive(VirtualRobot::Primitive::PrimitivePtr primitive)
 {
     btCollisionShape* result;
-    if (primitive->type == VisualizationFactory::Box::TYPE)
+    if (primitive->type == Primitive::Box::TYPE)
     {
-        VisualizationFactory::Box* box = boost::dynamic_pointer_cast<VisualizationFactory::Box>(primitive).get();
+        Primitive::Box* box = boost::dynamic_pointer_cast<Primitive::Box>(primitive).get();
         btBoxShape *boxShape = new btBoxShape(btVector3(box->width / 1000.f, box->height / 1000.f, box->depth / 1000.f));
         result = boxShape;
     }
-    else if (primitive->type == VisualizationFactory::Sphere::TYPE)
+    else if (primitive->type == Primitive::Sphere::TYPE)
     {
-        VisualizationFactory::Sphere* sphere = boost::dynamic_pointer_cast<VisualizationFactory::Sphere>(primitive).get();
+        Primitive::Sphere* sphere = boost::dynamic_pointer_cast<Primitive::Sphere>(primitive).get();
         btSphereShape *sphereShape = new btSphereShape(btScalar(sphere->radius / 1000.f));
         result = sphereShape;
     }

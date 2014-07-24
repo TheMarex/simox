@@ -84,7 +84,7 @@ public:
 protected:
 
     void setPoseIntern(const Eigen::Matrix4f &pose);
-    btCollisionShape* getShapeFromPrimitive(VirtualRobot::VisualizationFactory::PrimitivePtr primitive);
+    btCollisionShape* getShapeFromPrimitive(VirtualRobot::Primitive::PrimitivePtr primitive);
 
 	btConvexHullShape* createConvexHullShape(VirtualRobot::TriMeshModelPtr trimesh);
 

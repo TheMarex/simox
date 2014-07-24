@@ -39,7 +39,7 @@ class VIRTUAL_ROBOT_IMPORT_EXPORT VisualizationNode
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    std::vector<VisualizationFactory::PrimitivePtr> primitives;
+    std::vector<Primitive::PrimitivePtr> primitives;
 
 	/*!
 	Constructor

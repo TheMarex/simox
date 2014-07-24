@@ -94,19 +94,18 @@ private:
  */
 class VelocityMotorController {
 public:
-	VelocityMotorController();
+	VelocityMotorController(double maxVelocity=-1.0, double maxAcceleration=-1.0);
 
 	VelocityMotorController(const PIDController& positionController);
-
 
 	double update(double positionError, double targetVelocity, ActuationMode actuation, double dt);
 
 	void reset();
 
 	void debug();
-
 private:
 	PIDController positionController;
+	double maxVelocity;
 	double maxAcceleration;
 	double velocity;
 };

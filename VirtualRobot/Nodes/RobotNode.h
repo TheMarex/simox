@@ -220,32 +220,38 @@ public:
 	inline float getJointLimitLow() const {return jointLimitLo;}
 
 	/*!
-		Set maximum velocity of this joint in m/s.
+		Set maximum velocity of this joint in rad/s or m/s.
+		To disbale max. velocity set to -1.0f.
 	*/
-	virtual void setMaxVelocity(float maxVel);	
+	virtual void setMaxVelocity(float maxVel);
 	
 	/*!
-		Set maximum acceleration pf this joint in m/s^2.
+		Set maximum acceleration pf this joint in rad/s^2 or m/s^2.
+		To disbale max. acceleration set to -1.0f.
 	*/
 	virtual void setMaxAcceleration(float maxAcc);
 
 	/*!
 		Set maximum torque pf this joint in Nm.
+		To disbale max. torque set to -1.0f.
 	*/
 	virtual void setMaxTorque(float maxTo);
 
 	/*!
-		Maximum velocity in m/s.
+		Maximum velocity in rad/s or m/s.
+		Returns -1.0f if no maxium value is set.
 	*/
 	float getMaxVelocity();
 
 	/*!
-		Maximum acceleration in m/s^2.
+		Maximum acceleration in rad/s^2 or m/s^2.
+		Returns -1.0f if no maxium value is set.
 	*/
 	float getMaxAcceleration();
 
 	/*!
 		Maximum acceleration in Nm.
+		Returns -1.0f if no maxium value is set.
 	*/
 	float getMaxTorque();
 

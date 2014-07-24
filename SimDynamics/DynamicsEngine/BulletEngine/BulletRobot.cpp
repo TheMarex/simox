@@ -902,11 +902,6 @@ void BulletRobot::actuateJoints(double dt)
 
 */
             }
-			if (it->second.node->getMaxVelocity()>0 && fabs(targetVelocity)>it->second.node->getMaxVelocity())
-			{
-				double newOutput = double(it->second.node->getMaxVelocity());
-				targetVelocity = copysign(newOutput,targetVelocity);
-			}
             hinge->enableAngularMotor(true, btScalar(targetVelocity), bulletMaxMotorImulse);
 
 

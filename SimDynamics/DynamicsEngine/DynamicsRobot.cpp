@@ -97,7 +97,7 @@ void DynamicsRobot::actuateNode( VirtualRobot::RobotNodePtr node, double jointVa
     actuationTargets[node] = target;
     if (actuationControllers.find(node) == actuationControllers.end())
     {
-        actuationControllers[node] = VelocityMotorController();
+        actuationControllers[node] = VelocityMotorController(node->getMaxVelocity(), node->getMaxAcceleration());
     }
     else
     {
@@ -121,7 +121,7 @@ void DynamicsRobot::actuateNode( VirtualRobot::RobotNodePtr node, double jointVa
     actuationTargets[node] = target;
     if (actuationControllers.find(node) == actuationControllers.end())
     {
-        actuationControllers[node] = VelocityMotorController();
+        actuationControllers[node] = VelocityMotorController(node->getMaxVelocity(), node->getMaxAcceleration());
     }
     else
     {
@@ -156,7 +156,7 @@ void DynamicsRobot::actuateNodeVel( VirtualRobot::RobotNodePtr node, double join
     actuationTargets[node] = target;
     if (actuationControllers.find(node) == actuationControllers.end())
     {
-        actuationControllers[node] = VelocityMotorController();
+        actuationControllers[node] = VelocityMotorController(node->getMaxVelocity(), node->getMaxAcceleration());
     }
     else
     {
@@ -191,7 +191,7 @@ void DynamicsRobot::actuateNodeTorque( VirtualRobot::RobotNodePtr node, double j
     actuationTargets[node] = target;
     if (actuationControllers.find(node) == actuationControllers.end())
     {
-        actuationControllers[node] = VelocityMotorController();
+        actuationControllers[node] = VelocityMotorController(node->getMaxVelocity(), node->getMaxAcceleration());
     }
     else
     {

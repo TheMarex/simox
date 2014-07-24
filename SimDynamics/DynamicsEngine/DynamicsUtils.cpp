@@ -92,26 +92,21 @@ double TorqueMotorController::update(double positionError, double velocityError,
 	return 0.0f;
 }
 
-VelocityMotorController::VelocityMotorController()
+VelocityMotorController::VelocityMotorController(double maxVelocity, double maxAcceleration)
 : positionController(80.0, 10.0, 0.8)
-, maxAcceleration(80.0)
+, maxVelocity(maxVelocity)
+, maxAcceleration(maxAcceleration)
 , velocity(0)
 {
 }
-
-VelocityMotorController::VelocityMotorController(const PIDController& positionController)
-: positionController(positionController)
-{
-}
-
 
 double VelocityMotorController::update(double positionError, double targetVelocity, ActuationMode actuation, double dt)
 {
 	double posUpdate = 0.0;
 	if (actuation.modes.position)
+	{
 		posUpdate = positionController.update(positionError, dt);
-	//else
-	//	positionController.reset();
+	}
 
 	double output = 0.0f;
 	if (actuation.modes.position && actuation.modes.velocity)
@@ -121,9 +116,16 @@ double VelocityMotorController::update(double positionError, double targetVeloci
 	else if (actuation.modes.velocity)
 		output = targetVelocity;
 
-	if (fabs(output - velocity)/dt > maxAcceleration)
+	if (maxVelocity > 0.0 && fabs(output) > maxVelocity)
+	{
+		double sign = output > 0 ? 1.0 : -1.0;
+		output = sign * maxVelocity;
+	}
+
+	if (maxAcceleration > 0.0 && fabs(output - velocity)/dt > maxAcceleration)
 	{
 		double sign = (output - velocity) > 0 ? 1.0 : -1.0;
+
 		output = velocity + sign * maxAcceleration*dt;
 	}
 

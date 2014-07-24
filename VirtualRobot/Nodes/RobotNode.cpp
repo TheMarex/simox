@@ -37,9 +37,9 @@ RobotNode::RobotNode(	RobotWeakPtr rob,
 
 {
     nodeType = type;
-	maxVelocity = 0.0f;
-	maxAcceleration = 0.0f;
-	maxTorque = 0.0f;
+	maxVelocity = -1.0f;
+	maxAcceleration = -1.0f;
+	maxTorque = -1.0f;
 	robot = rob;
 	this->jointLimitLo = jointLimitLo;
 	this->jointLimitHi = jointLimitHi;

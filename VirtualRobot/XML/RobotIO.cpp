@@ -238,9 +238,9 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 	rapidxml::xml_node<> *tmpXMLNodeTranslation = NULL;
 	rapidxml::xml_node<> *limitsNode = NULL;
 
-	float maxVelocity = 1.0f; // m/s
-	float maxAcceleration = 1.0f; // m/s^2
-	float maxTorque = 1.0f; // Nm
+	float maxVelocity = -1.0f; // m/s
+	float maxAcceleration = -1.0f; // m/s^2
+	float maxTorque = -1.0f; // Nm
     float scaleVisu = false;
     Eigen::Vector3f scaleVisuFactor = Eigen::Vector3f::Zero();
 
@@ -284,12 +284,15 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 			std::vector< Units > unitsAttr = getUnitsAttributes(node);
 			Units uTime("sec");
 			Units uLength("m");
+			Units uAngle("rad");
 			for (size_t i=0;i<unitsAttr.size();i++)
 			{
 				if (unitsAttr[i].isTime())
 					uTime = unitsAttr[i];
 				if (unitsAttr[i].isLength())
 					uLength = unitsAttr[i];
+				if (unitsAttr[i].isAngle())
+					uAngle = unitsAttr[i];
 			}
 			float factor = 1.0f;
 			if (uTime.isMinute())
@@ -298,6 +301,8 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 				factor /= 3600.0f;
 			if (uLength.isMillimeter())
 				factor *= 0.001f;
+			if (uAngle.isDegree())
+				factor *= M_PI/180.0f;
 
 			maxVelocity *= factor;
 			
@@ -309,12 +314,15 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 			std::vector< Units > unitsAttr = getUnitsAttributes(node);
 			Units uTime("sec");
 			Units uLength("m");
+			Units uAngle("rad");
 			for (size_t i=0;i<unitsAttr.size();i++)
 			{
 				if (unitsAttr[i].isTime())
 					uTime = unitsAttr[i];
 				if (unitsAttr[i].isLength())
 					uLength = unitsAttr[i];
+				if (unitsAttr[i].isAngle())
+					uAngle = unitsAttr[i];
 			}
 			float factor = 1.0f;
 			if (uTime.isMinute())
@@ -323,6 +331,8 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 				factor /= 12960000.0f;
 			if (uLength.isMillimeter())
 				factor *= 0.001f;
+			if (uAngle.isDegree())
+				factor *= M_PI/180.0f;
 
 			maxAcceleration *= factor;
 

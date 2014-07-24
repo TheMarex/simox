@@ -395,8 +395,8 @@ void BulletEngine::updateRobots(btScalar timeStep)
 {
 	for (size_t i=0; i < robots.size();i++)
 	{
-		robots[i]->actuateJoints(double(timeStep));
-		robots[i]->updateSensors();
+		robots[i]->actuateJoints(static_cast<double>(timeStep));
+		robots[i]->updateSensors(static_cast<double>(timeStep));
 	}
 }
 

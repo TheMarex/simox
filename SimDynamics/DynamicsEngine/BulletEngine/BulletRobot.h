@@ -106,8 +106,7 @@ public:
 		\param dt Timestep
 	*/
 	virtual void actuateJoints(double dt);
-
-    virtual void updateSensors();
+    virtual void updateSensors(double dt);
 
 	virtual double getJointAngle(VirtualRobot::RobotNodePtr rn);
     virtual double getJointSpeed(VirtualRobot::RobotNodePtr rn);

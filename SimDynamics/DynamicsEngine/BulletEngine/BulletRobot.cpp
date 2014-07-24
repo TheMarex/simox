@@ -11,12 +11,14 @@
 #include <VirtualRobot/RobotNodeSet.h>
 #include <VirtualRobot/Nodes/RobotNodeRevolute.h>
 #include <VirtualRobot/Nodes/ForceTorqueSensor.h>
+#include <VirtualRobot/Nodes/ContactSensor.h>
 
 // either hinge or generic6DOF constraints can be used
 //#define USE_BULLET_GENERIC_6DOF_CONSTRAINT
 
-
 #include <boost/pointer_cast.hpp>
+#include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
 
 //#define DEBUG_FIXED_OBJECTS
 //#define DEBUG_SHOW_LINKS
@@ -36,11 +38,10 @@ BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
     std::vector<SensorPtr>::iterator it = sensors.begin();
     for(; it != sensors.end(); it++)
     {
-//        SensorPtr sensor = *it;
         ForceTorqueSensorPtr ftSensor = boost::dynamic_pointer_cast<ForceTorqueSensor>(*it);
         if(ftSensor)
         {
-            VirtualRobot::RobotNodePtr node = ftSensor->getRobotNode();//boost::dynamic_pointer_cast<VirtualRobot::RobotNode>(ftSensor->getParent());
+            VirtualRobot::RobotNodePtr node = ftSensor->getRobotNode();
             THROW_VR_EXCEPTION_IF(!node, "parent of sensor could not be casted to RobotNode")
 
             const LinkInfo& link = getLink(node);
@@ -967,23 +968,75 @@ void BulletRobot::actuateJoints(double dt)
     setPoseNonActuatedRobotNodes();
 }
 
-void BulletRobot::updateSensors()
+void BulletRobot::updateSensors(double dt)
 {
-    std::vector<SensorPtr>::iterator it = sensors.begin();
-    for(; it != sensors.end(); it++)
+    boost::unordered_set<std::string> contactObjectNames;
+    // this seems stupid and it is, but that is abstract interfaces for you.
+    for(std::vector<SensorPtr>::iterator it = sensors.begin(); it != sensors.end(); it++)
     {
-//        SensorPtr sensor = *it;
+        ContactSensorPtr contactSensor = boost::dynamic_pointer_cast<ContactSensor>(*it);
+        if (contactSensor)
+        {
+            contactObjectNames.insert(contactSensor->getRobotNode()->getName());
+        }
+    }
+
+    DynamicsWorldPtr world = DynamicsWorld::GetWorld();
+    std::vector<SimDynamics::DynamicsEngine::DynamicsContactInfo> contacts = world->getEngine()->getContacts();
+    boost::unordered_map<std::string, VirtualRobot::ContactSensor::ContactFrame> frameMap;
+    for (std::vector<SimDynamics::DynamicsEngine::DynamicsContactInfo>::iterator it = contacts.begin();
+         it != contacts.end(); it++)
+    {
+        const SimDynamics::DynamicsEngine::DynamicsContactInfo& contact = *it;
+
+        float sign;
+        std::string key;
+        if (contactObjectNames.find(contact.objectA->getName()) != contactObjectNames.end())
+        {
+            sign = 1.0f;
+            key = contact.objectA->getName();
+        }
+        else if (contactObjectNames.find(contact.objectB->getName()) != contactObjectNames.end())
+        {
+            sign = -1.0f;
+            key = contact.objectB->getName();
+        }
+        else
+        {
+            continue;
+        }
+
+        VirtualRobot::ContactSensor::ContactFrame& frame = frameMap[key];
+        double zForce = sign * contact.normalGlobalB.z() * contact.appliedImpulse;
+        VirtualRobot::ContactSensor::ContactForce cf;
+        cf.contactPoint = contact.posGlobalB;
+        cf.zForce = zForce;
+        frame.forces.push_back(cf);
+    }
+
+    // Update forces and troques
+    for(std::vector<SensorPtr>::iterator it = sensors.begin(); it != sensors.end(); it++)
+    {
         ForceTorqueSensorPtr ftSensor = boost::dynamic_pointer_cast<ForceTorqueSensor>(*it);
         if(ftSensor)
         {
             VirtualRobot::RobotNodePtr node = ftSensor->getRobotNode();
-                    //boost::dynamic_pointer_cast<VirtualRobot::RobotNode>(ftSensor->getParent());
             THROW_VR_EXCEPTION_IF(!node, "parent of sensor could not be casted to RobotNode")
 
             const LinkInfo& link = getLink(node);
             Eigen::VectorXf forceTorques = getJointForceTorqueGlobal(link);
             ftSensor->updateSensors(forceTorques);
-            //std::cout << "Updating force torque sensor: " << node->getName() << ": " << forceTorques << std::endl;
+        }
+        else
+        {
+            ContactSensorPtr contactSensor = boost::dynamic_pointer_cast<ContactSensor>(*it);
+            if (contactSensor)
+            {
+                VirtualRobot::RobotNodePtr node = contactSensor->getRobotNode();
+                THROW_VR_EXCEPTION_IF(!node, "parent of sensor could not be casted to RobotNode")
+                const VirtualRobot::ContactSensor::ContactFrame& frame = frameMap[node->getName()];
+                contactSensor->updateSensors(frame, dt);
+            }
         }
     }
 }

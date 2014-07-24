@@ -44,9 +44,11 @@ Nodes/RobotNodeActuator.cpp
 Nodes/Sensor.cpp
 Nodes/PositionSensor.cpp
 Nodes/ForceTorqueSensor.cpp
+Nodes/ContactSensor.cpp
 Nodes/CameraSensor.cpp
 Nodes/PositionSensorFactory.cpp
 Nodes/ForceTorqueSensorFactory.cpp
+Nodes/ContactSensorFactory.cpp
 Nodes/CameraSensorFactory.cpp
 Visualization/Visualization.cpp
 Visualization/VisualizationNode.cpp

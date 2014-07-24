@@ -42,6 +42,9 @@ class Robot;
 class VIRTUAL_ROBOT_IMPORT_EXPORT RobotNodeSet : public SceneObjectSet, public boost::enable_shared_from_this<RobotNodeSet>
 {
 public:
+	typedef std::vector<RobotNodePtr> NodeContainerT;
+	typedef NodeContainerT::iterator  NodeContainerIterT;
+
 	friend class RobotFactory;
 
 	/*!
@@ -126,6 +129,10 @@ public:
 	
 	RobotNodePtr& getNode(int i);
 
+	// implement container interface for easy access
+	inline NodeContainerIterT begin() { return robotNodes.begin(); }
+	inline NodeContainerIterT end()   { return robotNodes.end(); }
+
 	RobotPtr getRobot();
 
 	//CollisionCheckerPtr getCollisionChecker();
@@ -197,7 +204,7 @@ protected:
 		\param tcp The tcp.
 	*/
 	RobotNodeSet(const std::string &name, RobotWeakPtr robot, const std::vector< RobotNodePtr > &robotNodes, const RobotNodePtr kinematicRoot = RobotNodePtr(), const RobotNodePtr tcp = RobotNodePtr() );
-	std::vector< RobotNodePtr > robotNodes;
+	NodeContainerT robotNodes;
 	RobotWeakPtr robot;
 
 	RobotNodePtr kinematicRoot;

@@ -229,7 +229,7 @@ RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, robotStructureDef &n
 
     }
     // apply all transformations
-    std::map<RobotNodePtr, Eigen::Matrix4f>::iterator it = localTransformations.begin();
+    std::map<RobotNodePtr, Eigen::Matrix4f, std::less<RobotNodePtr>, Eigen::aligned_allocator<std::pair<const int, Eigen::Matrix4f> > >::iterator it = localTransformations.begin();
     while (it != localTransformations.end())
     {
         it->first->localTransformation = it->second;

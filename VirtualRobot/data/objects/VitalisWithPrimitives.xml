@@ -7,8 +7,8 @@
 	</Visualization>
 	<CollisionModel>
 		<Primitives>
-			<!--Box width="136" height="190" depth="40"/-->
-			<Sphere radius="50"/>
+			<Box width="136" height="190" depth="40"/>
+			<!--Sphere radius="50"/-->
 		</Primitives>
 	</CollisionModel>
 </ManipulationObject>

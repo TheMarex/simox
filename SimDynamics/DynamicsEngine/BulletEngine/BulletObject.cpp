@@ -157,7 +157,8 @@ btCollisionShape* BulletObject::getShapeFromPrimitive(VirtualRobot::Primitive::P
     if (primitive->type == Primitive::Box::TYPE)
     {
         Primitive::Box* box = boost::dynamic_pointer_cast<Primitive::Box>(primitive).get();
-        btBoxShape *boxShape = new btBoxShape(btVector3(box->width / 1000.f, box->height / 1000.f, box->depth / 1000.f));
+        // w/h/d have to be halved
+        btBoxShape *boxShape = new btBoxShape(btVector3(box->width / 2000.f, box->height / 2000.f, box->depth / 2000.f));
         result = boxShape;
     }
     else if (primitive->type == Primitive::Sphere::TYPE)

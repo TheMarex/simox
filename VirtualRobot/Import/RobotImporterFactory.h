@@ -59,6 +59,7 @@ public:
     virtual std::string getFileFilter()=0;
 
     static std::string getAllFileFilters();
+    static std::string getAllExtensions();
     static RobotImporterFactoryPtr fromFileExtension(std::string type, void *params);
 };
 

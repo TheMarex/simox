@@ -18,7 +18,7 @@
 #include <Inventor/nodes/SoLightModel.h>
 
 //#include <boost/foreach.hpp>
-//#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <sstream>
 
@@ -550,7 +550,9 @@ void showRobotWindow::showCoordSystem()
 
 void showRobotWindow::selectRobot()
 {
-    string filter = RobotImporterFactory::getAllFileFilters();
+    string supportedExtensions = RobotImporterFactory::getAllExtensions();
+    string supported = "Supported Formats, " + supportedExtensions + " (" + supportedExtensions + ")";
+    string filter = supported + ";;" + RobotImporterFactory::getAllFileFilters();
     QString fi = QFileDialog::getOpenFileName(this, tr("Open Robot File"), QString(), tr(filter.c_str()));
 	std::string s = m_sRobotFilename = std::string(fi.toAscii());
 	if (!s.empty())

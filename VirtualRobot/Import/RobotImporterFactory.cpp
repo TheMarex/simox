@@ -39,6 +39,15 @@ string RobotImporterFactory::getAllFileFilters(){
     return boost::algorithm::join(filter,";;");
 }
 
+string RobotImporterFactory::getAllExtensions(){
+    vector<string> filter;
+    BOOST_FOREACH(string subclass, RobotImporterFactory::getSubclassList()){
+        string extension = RobotImporterFactory::fromName(subclass,NULL)->getFileExtension();
+        filter.push_back("*." + extension);
+    }
+    return boost::algorithm::join(filter," ");
+}
+
 RobotImporterFactoryPtr RobotImporterFactory::fromFileExtension(string type, void *params)
 {
     BOOST_FOREACH(string subclass, RobotImporterFactory::getSubclassList()){

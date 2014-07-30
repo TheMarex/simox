@@ -59,10 +59,12 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
             }
             else if (primitives.size() > 1)
             {
-                btCompoundShape *compoundShape = new btCompoundShape();
+                btCompoundShape *compoundShape = new btCompoundShape(false);
                 std::vector<Primitive::PrimitivePtr>::const_iterator it;
+                Eigen::Matrix4f currentTransform = Eigen::Matrix4f::Identity();
                 for (it = primitives.begin(); it != primitives.end(); it++) {
-                    compoundShape->addChildShape(BulletEngine::getPoseBullet((*it)->transform), getShapeFromPrimitive(*it));
+                    currentTransform *= (*it)->transform;
+                    compoundShape->addChildShape(BulletEngine::getPoseBullet(currentTransform), getShapeFromPrimitive(*it));
                 }
                 collisionShape.reset(compoundShape);
             }

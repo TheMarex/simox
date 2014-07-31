@@ -23,6 +23,7 @@
 #ifndef _VirtualRobot_WorkspaceDataArray_h_
 #define _VirtualRobot_WorkspaceDataArray_h_
 
+#include "WorkspaceData.h"
 #include "../VirtualRobotImportExport.h"
 
 #include <boost/enable_shared_from_this.hpp>
@@ -30,7 +31,6 @@
 #include <boost/mpl/assert.hpp>
 
 #include <vector>
-#include "WorkspaceData.h"
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -60,7 +60,7 @@ public:
 	unsigned int getSizeTr() const;
     unsigned int getSizeRot() const;
 
-    void setDatum(float x[], unsigned char value, WorkspaceRepresentation* workspace);
+    void setDatum(float x[], unsigned char value, const WorkspaceRepresentation* workspace);
 
     inline void setDatum(unsigned int x0, unsigned int x1, unsigned int x2,
                          unsigned int x3, unsigned int x4, unsigned int x5, unsigned char value);
@@ -69,7 +69,7 @@ public:
 
     void setDatumCheckNeighbors(unsigned int x[6], unsigned char value, unsigned int neighborVoxels);
 
-    void increaseDatum(float x[], WorkspaceRepresentation *workspace);
+    void increaseDatum(float x[], const WorkspaceRepresentation *workspace);
 
     inline void increaseDatum(	unsigned int x0, unsigned int x1, unsigned int x2,
                                 unsigned int x3, unsigned int x4, unsigned int x5);
@@ -84,7 +84,9 @@ public:
 	*/
 	const unsigned char *getDataRot(unsigned int x, unsigned int y, unsigned int z);
 
-    unsigned char get(float x[], WorkspaceRepresentation *workspace);
+    unsigned char get(float x[], const WorkspaceRepresentation *workspace) const;
+
+    int getMaxSummedAngleReachablity();
 
 	//! Simulates a multi-dimensional array access
     inline unsigned char get(unsigned int x0, unsigned int x1, unsigned int x2,
@@ -96,13 +98,10 @@ public:
 	bool hasEntry(unsigned int x, unsigned int y, unsigned int z);
 
 	// Set all entries to 0
-	void clear();
-	unsigned int getVoxelFilledCount() const;
+    void clear();
 	void binarize();
 
     void bisectData();
-
-    void setVoxelFilledCount(int c){voxelFilledCount = c;}
 
     unsigned int getSize(int dim){return sizes[dim];}
 
@@ -112,6 +111,7 @@ public:
 protected:
 
     void ensureData(unsigned int x, unsigned int y, unsigned int z);
+    int sumAngleReachabilities(int x0, int x1, int x2);
 
     inline void getPos(	unsigned int x0, unsigned int x1, unsigned int x2,
                         unsigned int x3, unsigned int x4, unsigned int x5 ,

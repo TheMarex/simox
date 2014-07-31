@@ -45,7 +45,7 @@ namespace VirtualRobot
 
 /*!
 		This class represents a voxelized approximation of the workspace that is covered by a kinematic chain of a robot. 
-		The voxel grid covers the 6d Cartesian space: xyz translations (mm) and Tait–Bryan angles (eulerXYZ, fixed frame, extrinsic) orientations.
+		The voxel grid covers the 6d Cartesian space: xyz translations (mm) and Taitï¿½Bryan angles (eulerXYZ, fixed frame, extrinsic) orientations.
         Older versions (<=2.5) used RPY (intrinsic) for storing orientations, but it turned out that this representation is not suitable for discretization.
 		Each voxels holds a counter (uchar) that holds information, e.g. about reachability.
 		The discretized data can be written to and loaded from binary files.
@@ -208,7 +208,7 @@ public:
 	/*!
 		Sums all angle (x3,x4,x5) entries for the given position.
 	*/
-	virtual int sumAngleReachabilities(int x0, int x1, int x2) const;
+    virtual int sumAngleReachabilities(int x0, int x1, int x2) const;
 
 	/*!
 		Searches all angle entries (x3,x4,x5) for maximum entry.
@@ -349,8 +349,8 @@ public:
 	/*!
 		Returns the raw data.
 	*/
-	WorkspaceDataPtr getData();
-
+    WorkspaceDataPtr getData();
+    bool getPoseFromVoxel(unsigned int x[], float v[]) const;
 protected:
 
 	/*!

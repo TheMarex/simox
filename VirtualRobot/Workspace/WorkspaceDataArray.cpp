@@ -130,7 +130,7 @@ unsigned int WorkspaceDataArray::getSizeRot() const {
     return sizes[3]*sizes[4]*sizes[5];
 }
 
-void WorkspaceDataArray::setDatum(float x[6], unsigned char value, WorkspaceRepresentation *workspace) {
+void WorkspaceDataArray::setDatum(float x[6], unsigned char value, const WorkspaceRepresentation *workspace) {
     // get voxels
     unsigned int v[6];
     if (workspace->getVoxelFromPose(x,v))
@@ -181,13 +181,46 @@ const unsigned char *WorkspaceDataArray::getDataRot(unsigned int x, unsigned int
     return data[x*sizeTr0+y*sizeTr1+z];
 }
 
-unsigned char WorkspaceDataArray::get(float x[6], WorkspaceRepresentation *workspace) {
+unsigned char WorkspaceDataArray::get(float x[6], const WorkspaceRepresentation *workspace) const {
     unsigned int v[6];
     if (workspace->getVoxelFromPose(x, v)) {
         return get(v);
     }
 
     return 0;
+}
+
+int WorkspaceDataArray::getMaxSummedAngleReachablity()
+{
+    int maxValue = 0;
+    for(int a = 0; a < sizes[0]; a+=1)
+    {
+        for(int b = 0; b < sizes[1]; b+=1)
+        {
+            for(int c = 0; c < sizes[2]; c+=1)
+            {
+                int value = sumAngleReachabilities(a, b, c);
+                if (value>=maxValue)
+                    maxValue = value;
+            }
+        }
+    }
+    return maxValue;
+}
+int WorkspaceDataArray::sumAngleReachabilities(int x0, int x1, int x2)
+{
+    int res = 0;
+    if (hasEntry(x0,x1,x2))
+        return 0;
+    for(int d = 0; d < sizes[3]; d++)
+    {
+        for(int e = 0; e < sizes[4]; e++)
+        {
+            for(int f = 0; f < sizes[5]; f++)
+                res += get(x0, x1, x2, d, e, f);
+        }
+    }
+    return res;
 }
 
 unsigned char WorkspaceDataArray::get(unsigned int x0, unsigned int x1, unsigned int x2, unsigned int x3, unsigned int x4, unsigned int x5) const
@@ -208,10 +241,6 @@ unsigned char WorkspaceDataArray::get(unsigned int x[]) const
         return data[posTr][posRot];
     else
         return 0;
-}
-
-unsigned int WorkspaceDataArray::getVoxelFilledCount() const {
-    return voxelFilledCount;
 }
 
 void WorkspaceDataArray::binarize() {
@@ -297,7 +326,7 @@ void WorkspaceDataArray::setDatumCheckNeighbors( unsigned int x[6], unsigned cha
                         }
 }
 
-void WorkspaceDataArray::increaseDatum(float x[6], WorkspaceRepresentation *workspace) {
+void WorkspaceDataArray::increaseDatum(float x[6], const WorkspaceRepresentation *workspace) {
     // get voxels
     unsigned int v[6];
     if (workspace->getVoxelFromPose(x,v))

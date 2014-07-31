@@ -931,16 +931,15 @@ unsigned char WorkspaceRepresentation::getEntry( const Eigen::Matrix4f &globalPo
 		return 0;
 	}
 
-	// get voxels
-	unsigned int v[6];
-	if (getVoxelFromPose(globalPose,v))
-	{
-		return data->get(v);
-	} else
-	{
-		// position is outside WorkspaceRepresentation data
-		return 0;
-	}
+    float x[6];
+
+    Eigen::Matrix4f p = globalPose;
+    toLocal(p);
+
+    matrix2Vector(p,x);
+
+    // get entry
+    return data->get(x, this);
 }
 
 
@@ -952,6 +951,23 @@ Eigen::Matrix4f WorkspaceRepresentation::getPoseFromVoxel(unsigned int v[6],bool
 		x[j] = float(v[j])+0.5f;
 	}
     return getPoseFromVoxel(x,transformToGlobalPose);
+}
+
+bool WorkspaceRepresentation::getPoseFromVoxel(unsigned int x[6], float v[6]) const
+{
+    for (int i = 0; i < 6; i++) {
+        cout << i << endl;
+        if ((x[i] < 0) || (x[i] >= numVoxels[i]))
+            return false;
+
+        v[i] = ((((float) x[i]) * spaceSize[i]) / ((float)numVoxels[i]))  + minBounds[i];
+
+        if (i < 3)
+            v[i] += discretizeStepTranslation / 2;
+        else
+            v[i] += discretizeStepRotation / 2;
+    }
+    return true;
 }
 
 Eigen::Matrix4f WorkspaceRepresentation::getPoseFromVoxel( float v[6], bool transformToGlobalPose /*= true*/ )
@@ -1085,20 +1101,20 @@ unsigned char WorkspaceRepresentation::getVoxelEntry(unsigned int a, unsigned in
 
 int WorkspaceRepresentation::getMaxSummedAngleReachablity()
 {
-	int maxValue = 0;
-	for(int a = 0; a < getNumVoxels(0); a+=1)
-	{
-		for(int b = 0; b < getNumVoxels(1); b+=1)
-		{
-			for(int c = 0; c < getNumVoxels(2); c+=1)
-			{
-				int value = sumAngleReachabilities(a, b, c);
-				if (value>=maxValue)
-					maxValue = value;
-			}
-		}
-	}
-	return maxValue;
+    int maxValue = 0;
+    for(int a = 0; a < getNumVoxels(0); a+=1)
+    {
+        for(int b = 0; b < getNumVoxels(1); b+=1)
+        {
+            for(int c = 0; c < getNumVoxels(2); c+=1)
+            {
+                int value = sumAngleReachabilities(a, b, c);
+                if (value>=maxValue)
+                    maxValue = value;
+            }
+        }
+    }
+    return maxValue;
 }
 
 bool WorkspaceRepresentation::isCovered( const Eigen::Matrix4f &globalPose )

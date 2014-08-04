@@ -71,6 +71,11 @@ public:
 
     static RobotPtr cloneChangeStructure(RobotPtr robot, robotStructureDef &newStructure);
 
+    /*! Clone kinematic chain and reverse direction.
+     *
+     * \param startNode Name of the start node of the original kinematic chain.
+     * \param endNode Name of the end node of the original kinematic chain. Will be the new root.
+     */
     static RobotPtr cloneChangeStructure(RobotPtr robot, const std::string &startNode, const std::string &endNode);
 protected:
 	// instantiation not allowed

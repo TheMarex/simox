@@ -60,7 +60,9 @@ public:
 	virtual ~CoinVisualizationFactory();
 
     virtual VisualizationNodePtr getVisualizationFromPrimitives(const std::vector<Primitive::PrimitivePtr> &primitives, bool boundingBox = false);
-	virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false);
+    virtual VisualizationNodePtr getVisualizationFromFile(const std::string& filename, bool boundingBox = false);
+    virtual VisualizationNodePtr getVisualizationFromSTLFile(const std::string& filename, bool boundingBox = false);
+    virtual VisualizationNodePtr getVisualizationFromCoin3DFile(const std::string& filename, bool boundingBox = false);
     virtual VisualizationNodePtr getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox = false);
 	virtual VisualizationNodePtr getVisualizationFromString(const std::string& modelString, bool boundingBox = false);
     virtual VisualizationNodePtr createBox(float width, float height, float depth, float colorR = 0.5f, float colorG = 0.5f, float colorB = 0.5f);

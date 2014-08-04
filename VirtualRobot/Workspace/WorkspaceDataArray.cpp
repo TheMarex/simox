@@ -193,11 +193,11 @@ unsigned char WorkspaceDataArray::get(float x[6], const WorkspaceRepresentation 
 int WorkspaceDataArray::getMaxSummedAngleReachablity()
 {
     int maxValue = 0;
-    for(int a = 0; a < sizes[0]; a+=1)
+    for(unsigned int a = 0; a < sizes[0]; a+=1)
     {
-        for(int b = 0; b < sizes[1]; b+=1)
+        for(unsigned int b = 0; b < sizes[1]; b+=1)
         {
-            for(int c = 0; c < sizes[2]; c+=1)
+            for(unsigned int c = 0; c < sizes[2]; c+=1)
             {
                 int value = sumAngleReachabilities(a, b, c);
                 if (value>=maxValue)
@@ -212,11 +212,11 @@ int WorkspaceDataArray::sumAngleReachabilities(int x0, int x1, int x2)
     int res = 0;
     if (hasEntry(x0,x1,x2))
         return 0;
-    for(int d = 0; d < sizes[3]; d++)
+    for(unsigned int d = 0; d < sizes[3]; d++)
     {
-        for(int e = 0; e < sizes[4]; e++)
+        for(unsigned int e = 0; e < sizes[4]; e++)
         {
-            for(int f = 0; f < sizes[5]; f++)
+            for(unsigned int f = 0; f < sizes[5]; f++)
                 res += get(x0, x1, x2, d, e, f);
         }
     }

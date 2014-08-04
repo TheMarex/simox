@@ -18,6 +18,8 @@
 #include "../TriMeshModel.h"
 #include "../../Workspace/Reachability.h"
 #include "../../Workspace/WorkspaceGrid.h"
+#include "../../XML/BaseIO.h"
+#include "../../Import/MeshImport/STLReader.h"
 #include <Inventor/SoDB.h>
 #include <Inventor/nodes/SoFile.h>
 #include <Inventor/nodes/SoNode.h>
@@ -151,30 +153,63 @@ namespace VirtualRobot {
 	*/
 	VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromFile(const std::string& filename, bool boundingBox)
 	{
-		VisualizationNodePtr visualizationNode(new VisualizationNode);
-
 		// passing an empty string to SoInput and trying to open it aborts the program
 		if (filename.empty())
 		{
 			std::cerr <<  "No filename given" << std::endl;
-			return visualizationNode;
+			return VisualizationNodePtr();
 		}
 
-		// try to open the given file
-		SoInput fileInput;
-		if (!fileInput.openFile(filename.c_str()))
-		{
-			std::cerr <<  "Cannot open file " << filename << std::endl;
-			return visualizationNode;
-		}
+        // check for STL file (.stl, .stla, .stlb)
+        if (filename.length()>=4)
+        {
+            std::string ending = filename.substr(filename.length()-4,4);
+            BaseIO::getLowerCase(ending);
+            if (ending == ".stl" || ending == "stla" || ending == "stlb")
+                return getVisualizationFromSTLFile(filename,boundingBox);
+        }
 
-		CoinVisualizationFactory::GetVisualizationFromSoInput(fileInput, visualizationNode, boundingBox);
-
-		fileInput.closeFile();
-		visualizationNode->setFilename(filename, boundingBox);
-
-		return visualizationNode;
+        return getVisualizationFromCoin3DFile(filename,boundingBox);
 	}
+
+    VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromCoin3DFile(const std::string& filename, bool boundingBox)
+    {
+        VisualizationNodePtr visualizationNode(new VisualizationNode);
+        // try to open the given file
+        SoInput fileInput;
+        if (!fileInput.openFile(filename.c_str()))
+        {
+            std::cerr <<  "Cannot open file " << filename << std::endl;
+            return visualizationNode;
+        }
+
+        CoinVisualizationFactory::GetVisualizationFromSoInput(fileInput, visualizationNode, boundingBox);
+
+        fileInput.closeFile();
+        visualizationNode->setFilename(filename, boundingBox);
+
+        return visualizationNode;
+    }
+
+    VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromSTLFile(const std::string& filename, bool boundingBox)
+    {
+        VisualizationNodePtr visualizationNode(new VisualizationNode);
+        // try to read from file
+        visualizationNode->setFilename(filename, boundingBox);
+
+        TriMeshModelPtr t(new TriMeshModel());
+        STLReaderPtr r(new STLReader());
+        bool readOK = r->read(filename,t);
+        if (!readOK)
+        {
+            VR_ERROR << "Could not read stl file " << filename << endl;
+            return visualizationNode;
+        }
+        Eigen::Matrix4f id = Eigen::Matrix4f::Identity();
+        visualizationNode = createTriMeshModelVisualization(t,id);
+
+        return visualizationNode;
+    }
 
 	VisualizationNodePtr CoinVisualizationFactory::getVisualizationFromFile(const std::ifstream& ifs, bool boundingBox)
 	{

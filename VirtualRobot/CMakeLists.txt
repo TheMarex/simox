@@ -100,6 +100,7 @@ LinkedCoordinate.cpp
 SphereApproximator.cpp
 Import/SimoxXMLFactory.cpp
 Import/RobotImporterFactory.cpp
+Import/MeshImport/STLReader.cpp
 )
 
 SET(INCLUDES
@@ -188,6 +189,7 @@ Compression/CompressionBZip2.h
 SphereApproximator.h
 Import/SimoxXMLFactory.h
 Import/RobotImporterFactory.h
+Import/MeshImport/STLReader.h
 )
 
 ADD_SUBDIRECTORY(Visualization/tests)

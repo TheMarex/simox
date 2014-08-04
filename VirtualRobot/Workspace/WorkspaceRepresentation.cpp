@@ -956,7 +956,7 @@ Eigen::Matrix4f WorkspaceRepresentation::getPoseFromVoxel(unsigned int v[6],bool
 bool WorkspaceRepresentation::getPoseFromVoxel(unsigned int x[6], float v[6]) const
 {
     for (int i = 0; i < 6; i++) {
-        if ((x[i] < 0) || (x[i] >= numVoxels[i]))
+        if ((x[i] < 0) || (x[i] >= (unsigned int)(numVoxels[i])))
             return false;
 
         v[i] = ((((float) x[i]) * spaceSize[i]) / ((float)numVoxels[i]))  + minBounds[i];

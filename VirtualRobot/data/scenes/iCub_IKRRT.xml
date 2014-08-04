@@ -21,12 +21,12 @@
 	</Robot>
 	
 	
-	<Obstacle name="Kitchen">
+	<!--Obstacle name="Kitchen">
 	    <Visualization>
-		    <File type="Inventor" path="absolute">C:\Projects\simox\data\Environment\NewKitchen\kitchen.iv</File>
+		    <File type="Inventor" path="relative">../environment/KIT_kitchen.wrl</File>
 		    <UseAsCollisionModel/>
 		</Visualization>
- 	</Obstacle>
+ 	</Obstacle-->
    
 	
 	<Obstacle name="Box">

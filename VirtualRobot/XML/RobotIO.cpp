@@ -302,7 +302,7 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 			if (uLength.isMillimeter())
 				factor *= 0.001f;
 			if (uAngle.isDegree())
-				factor *= M_PI/180.0f;
+				factor *= float(M_PI/180.0f);
 
 			maxVelocity *= factor;
 			
@@ -332,7 +332,7 @@ RobotNodePtr RobotIO::processJointNode(rapidxml::xml_node<char> *jointXMLNode, c
 			if (uLength.isMillimeter())
 				factor *= 0.001f;
 			if (uAngle.isDegree())
-				factor *= M_PI/180.0f;
+				factor *= float(M_PI/180.0f);
 
 			maxAcceleration *= factor;
 

@@ -203,6 +203,12 @@ void showSceneWindow::selectScene()
 void showSceneWindow::loadScene()
 {
 	sceneVisuSep->removeAllChildren();
+    currentEEF.reset();
+    currentGrasp.reset();
+    currentGraspSet.reset();
+    currentObject.reset();
+    currentRobot.reset();
+    currentTrajectory.reset();
 	cout << "Loading Scene from " << sceneFile << endl;
 
 	try

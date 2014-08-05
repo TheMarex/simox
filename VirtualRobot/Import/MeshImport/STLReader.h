@@ -51,8 +51,8 @@ public:
 
 private:
 
-    int STLReader::read_int(FILE* _in, bool _swap) const;
-    float read_float(std::FILE* _in, bool _swap = false) const;
+    int read_int(FILE* _in, bool _swap) const;
+    float read_float(FILE* _in, bool _swap = false) const;
 
     float read_float(std::istream& _in, bool _swap = false) const;
     int read_int(std::istream& _in, bool _swap = false) const;

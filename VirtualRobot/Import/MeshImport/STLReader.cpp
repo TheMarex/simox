@@ -441,17 +441,18 @@ read_stlb(std::istream& _in, TriMeshModelPtr t) const
 int STLReader::read_int(FILE* _in, bool _swap) const
 {
     union u2 { int i; unsigned char c[4]; } ic;
-    fread((char*)ic.c, 1, 4, _in);
+    size_t bytesRead = fread((char*)ic.c, 1, 4, _in);
     if (_swap) {
         std::swap(ic.c[0], ic.c[3]);
         std::swap(ic.c[1], ic.c[2]);
     }
     return ic.i;
 }
+
 float STLReader::read_float(FILE* _in, bool _swap) const
 {
     union u3 { float f; unsigned char c[4]; } fc;
-    fread((char*)fc.c, 1, 4, _in);
+    size_t bytesRead = fread((char*)fc.c, 1, 4, _in);
     if (_swap) {
         std::swap(fc.c[0], fc.c[3]);
         std::swap(fc.c[1], fc.c[2]);
@@ -477,7 +478,7 @@ check_stl_type(const std::string& _filename) const
 
   // read number of triangles
   char dummy[100];
-  fread(dummy, 1, 80, in);
+  size_t bytesRead = fread(dummy, 1, 80, in);
   size_t nT = read_int(in, swapFlag);
 
 

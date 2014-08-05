@@ -60,7 +60,8 @@ public:
     {
         std::string name;
         std::vector<std::string> children;
-        bool invertTransformation;
+        // used to mark children whose transformation should be inverted
+        std::vector<bool> invertTransformation;
     };
 
     struct robotStructureDef
@@ -68,6 +69,8 @@ public:
         std::string rootName;
         std::vector<robotNodeDef> parentChildMapping;
     };
+
+    static RobotPtr cloneInversed(RobotPtr robot, const std::string& newRootName);
 
     static RobotPtr cloneChangeStructure(RobotPtr robot, robotStructureDef &newStructure);
 

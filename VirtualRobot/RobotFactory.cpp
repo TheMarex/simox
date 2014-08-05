@@ -101,6 +101,79 @@ struct robotStructureDef
     std::vector<robotNodeDef> parentChildMapping;
 };
 
+RobotPtr RobotFactory::cloneInversed(RobotPtr robot, const std::string& newRootName)
+{
+    VR_ASSERT(robot);
+
+    RobotNodePtr newRoot = robot->getRobotNode(newRootName);
+    if (!newRoot)
+    {
+        VR_ERROR << "No node " << newRootName << endl;
+    }
+
+    RobotFactory::robotStructureDef newStructure;
+    newStructure.rootName = newRootName;
+
+    typedef std::pair<RobotNodePtr, RobotNodePtr> RobotTreeEdge;
+
+    std::deque<RobotTreeEdge> edges;
+    RobotTreeEdge rootEdge;
+    rootEdge.second = newRoot;
+    edges.push_back(rootEdge);
+    while (!edges.empty())
+    {
+        RobotTreeEdge currentEdge = edges.front();
+        edges.pop_front();
+
+        RobotNodePtr parent = boost::dynamic_pointer_cast<RobotNode>(currentEdge.second->getParent());
+
+        std::vector<SceneObjectPtr> children = currentEdge.second->getChildren();
+        RobotFactory::robotNodeDef rnDef;
+        rnDef.name = currentEdge.second->getName();
+
+        // invert transformation of old parend
+        if (parent && parent != currentEdge.first)
+        {
+            rnDef.invertTransformation.push_back(true);
+            rnDef.children.push_back(parent->getName());
+
+            RobotTreeEdge edge;
+            edge.first = currentEdge.second;
+            edge.second = parent;
+
+            BOOST_ASSERT(edge.second);
+            edges.push_back(edge);
+        }
+
+        for (unsigned i = 0; i < children.size(); i++)
+        {
+            if (children[i] != currentEdge.first)
+            {
+                RobotNodePtr childNode = boost::dynamic_pointer_cast<RobotNode>(children[i]);
+                // not a robot node
+                if (!childNode)
+                {
+                    continue;
+                }
+
+                rnDef.children.push_back(children[i]->getName());
+                rnDef.invertTransformation.push_back(false);
+                RobotTreeEdge edge;
+                edge.second = childNode;
+                edge.first = currentEdge.second;
+
+                BOOST_ASSERT(edge.second);
+                edges.push_back(edge);
+            }
+        }
+
+        newStructure.parentChildMapping.push_back(rnDef);
+    }
+
+
+    return RobotFactory::cloneChangeStructure(robot, newStructure);
+}
+
 
 RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, const std::string &startNode, const std::string &endNode)
 {
@@ -147,12 +220,12 @@ RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, const std::string &s
         RobotFactory::robotNodeDef rnDef;
         rnDef.name = nodes[i];
         rnDef.children.push_back(nodes[i+1]);
-        rnDef.invertTransformation = true;
+        rnDef.invertTransformation.push_back(true);
         newStructure.parentChildMapping.push_back(rnDef);
     }
     RobotFactory::robotNodeDef rnDef;
     rnDef.name = nodes[nodes.size() - 1];
-    rnDef.invertTransformation = true;
+    rnDef.invertTransformation.push_back(true);
     newStructure.parentChildMapping.push_back(rnDef);
 
 
@@ -193,7 +266,7 @@ RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, robotStructureDef &n
             newNodes[nodeName] = rn;
         }
 
-        //std::vector<SceneObjectPtr> children;
+        RobotNodePtr parent = newNodes[newStructure.parentChildMapping[i].name];
 
         for (size_t j = 0; j<newStructure.parentChildMapping[i].children.size();j++)
         {
@@ -203,7 +276,7 @@ RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, robotStructureDef &n
                 VR_ERROR << "Error in parentChildMapping, no child node with name " << nodeName << endl;
                 return RobotPtr();
             }
-            
+
             if (newNodes.find(nodeName) == newNodes.end())
             {
                 rn = robot->getRobotNode(nodeName);
@@ -211,22 +284,26 @@ RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, robotStructureDef &n
                 newNodes[nodeName] = rn;
             }
             //children.push_back(newNodes[nodeName]);
-            RobotNodePtr parent = newNodes[newStructure.parentChildMapping[i].name];
             RobotNodePtr child = newNodes[nodeName];
             parent->attachChild(child);
-            if (newStructure.parentChildMapping[i].invertTransformation)
+            if (newStructure.parentChildMapping[i].invertTransformation[j])
             {
                 //Eigen::Matrix4f tr = child->getLocalTransformation().inverse();
                 //localTransformations[parent] = tr;
                 Eigen::Matrix4f tr = parent->getLocalTransformation().inverse();
                 localTransformations[child] = tr;
-                if (localTransformations.find(parent) == localTransformations.end())
-                {
-                    localTransformations[parent] = Eigen::Matrix4f::Identity();
-                }
+            }
+            else
+            {
+                localTransformations[child] = child->getLocalTransformation();
             }
         }
 
+        // if parent has no parent: reset local transformation
+        if (localTransformations.find(parent) == localTransformations.end())
+        {
+            localTransformations[parent] = Eigen::Matrix4f::Identity();
+        }
     }
     // apply all transformations
     std::map<RobotNodePtr, Eigen::Matrix4f, std::less<RobotNodePtr>, Eigen::aligned_allocator<std::pair<const int, Eigen::Matrix4f> > >::iterator it = localTransformations.begin();

@@ -10,6 +10,7 @@
 
 #include <boost/pointer_cast.hpp>
 #include <algorithm>
+#include <deque>
 
 namespace VirtualRobot {
 

@@ -56,11 +56,15 @@ public slots:
 
 	void selectRobotNode(int n);
 	void jointValueChanged(int n);
+	void fixedTimeStepChanged(int n);
+	void updateTimerChanged(int n);
     void comVisu();	
 	void updateJointInfo();
 
     void startStopEngine();
     void stepEngine();
+
+    void checkBoxFixedTimeStep();
 protected:
     bool loadRobot(std::string robotFilename);
 	void setupUI();

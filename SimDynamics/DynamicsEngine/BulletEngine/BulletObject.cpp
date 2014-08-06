@@ -41,11 +41,6 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
 	{
 		VR_WARNING << "Building empty collision shape for object " << o->getName() << endl;
 		collisionShape.reset(new btEmptyShape());
-
-		/*VR_WARNING << "Building Collision model for object " << o->getName() << endl;
-		VirtualRobot::ObstaclePtr ob = Obstacle::createBox(10.0f,10.0f,10.0f);
-		ob->setGlobalPose(o->getGlobalPose());
-		colModel = ob->getCollisionModel();*/
     } else
 	{
         THROW_VR_EXCEPTION_IF(!colModel, "No CollisionModel, could not create dynamics model...");
@@ -117,18 +112,12 @@ BulletObject::BulletObject(VirtualRobot::SceneObjectPtr o)
 		if (colModel)
 		{
 			collisionShape->calculateLocalInertia(mass,localInertia);
-//#ifndef USE_BULLET_GENERIC_6DOF_CONSTRAINT
-			// check for small values
-			//if (localInertia.length()<1.0f && localInertia.length()>0)
-			//	localInertia /= localInertia.length(); // small inertia values result in freaking out joints ?!
-//#endif
 		} else
 #ifndef USE_BULLET_GENERIC_6DOF_CONSTRAINT
 			localInertia.setValue(btScalar(1),btScalar(1),btScalar(1)); // give Object a dummy inertia matrix
 #else
             localInertia.setValue(btScalar(1),btScalar(1),btScalar(1)); // give Object a dummy inertia matrix
 #endif
-            //localInertia.setValue(btScalar(40),btScalar(40),btScalar(40)); // give Object a dummy inertia matrix (large values needed, otherwise the objects will not stay connected on strong impulses) 
 	}
 #endif
 	localInertia *= interatiaFactor;

@@ -231,11 +231,11 @@ void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Ve
 {
     boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
 	DynamicsEngine::createFloorPlane(pos,up);
-    double size = floorExtendMM;//50000.0f; // mm
-    double sizeSmall = floorDepthMM; 500.0f;
-	double w = size;
-	double h = size;
-	double d = sizeSmall;
+    float size = float(floorExtendMM);//50000.0f; // mm
+    float sizeSmall = float(floorDepthMM);// 500.0f;
+	float w = size;
+	float h = size;
+	float d = sizeSmall;
 	if (up(1) == 0 && up(2) == 0)
 	{
 		w = sizeSmall;
@@ -289,7 +289,7 @@ Eigen::Matrix4f BulletEngine::getRotMatrix(const btMatrix3x3 &pose)
 btTransform BulletEngine::getPoseBullet( const Eigen::Matrix4f &pose, bool scaling )
 {
 	btTransform res;
-	double sc = 1.0f;
+	btScalar sc = btScalar(1.0f);
 	if (scaling && DynamicsWorld::convertMM2M)
 		sc = 0.001f; // mm -> m
 	btVector3 pos(pose(0,3)*sc,pose(1,3)*sc,pose(2,3)*sc);
@@ -559,7 +559,7 @@ std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 void BulletEngine::stepSimulation( double dt, int maxSubSteps, double fixedTimeStep )
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
-	dynamicsWorld->stepSimulation(dt, maxSubSteps, fixedTimeStep);
+	dynamicsWorld->stepSimulation(btScalar(dt), maxSubSteps, btScalar(fixedTimeStep));
 }
 
 

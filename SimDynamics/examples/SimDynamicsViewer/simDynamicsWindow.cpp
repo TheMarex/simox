@@ -145,6 +145,11 @@ void SimDynamicsWindow::setupUI()
     connect(UI.pushButtonStep, SIGNAL(clicked()), this, SLOT(stepEngine()));
 	connect(UI.comboBoxRobotNode, SIGNAL(activated(int)), this, SLOT(selectRobotNode(int)));
 	connect(UI.horizontalSliderTarget, SIGNAL(valueChanged(int)), this, SLOT(jointValueChanged(int)));
+    connect(UI.checkBoxFixedTimeStep, SIGNAL(clicked()), this, SLOT(checkBoxFixedTimeStep()));
+    UI.horizontalSliderFixedTimeStep->setValue(viewer->getBulletSimTimeStepMsec());
+    UI.horizontalSliderUpdateTimer->setValue(viewer->getUpdateTimerInterval());
+    connect(UI.horizontalSliderFixedTimeStep, SIGNAL(valueChanged(int)), this, SLOT(fixedTimeStepChanged(int)));
+    connect(UI.horizontalSliderUpdateTimer, SIGNAL(valueChanged(int)), this, SLOT(updateTimerChanged(int)));
 
 	/*connect(UI.pushButtonLoad, SIGNAL(clicked()), this, SLOT(selectRobot()));
 	connect(UI.pushButtonClose, SIGNAL(clicked()), this, SLOT(closeHand()));
@@ -756,11 +761,13 @@ void SimDynamicsWindow::startStopEngine()
     {
         UI.pushButtonStartStop->setText(QString("Start Engine"));
         UI.pushButtonStep->setEnabled(true);
+        UI.horizontalSliderUpdateTimer->setEnabled(false);
         viewer->stopEngine();
     } else
     {
         UI.pushButtonStartStop->setText(QString("Stop Engine"));
         UI.pushButtonStep->setEnabled(false);
+        UI.horizontalSliderUpdateTimer->setEnabled(true);
         viewer->startEngine();
     }
 }
@@ -768,5 +775,28 @@ void SimDynamicsWindow::startStopEngine()
 void SimDynamicsWindow::stepEngine()
 {
     viewer->stepPhysics();
+}
+
+void SimDynamicsWindow::checkBoxFixedTimeStep()
+{
+    if (UI.checkBoxFixedTimeStep->isChecked())
+    {
+        UI.horizontalSliderFixedTimeStep->setEnabled(true);
+        viewer->setSimModeFixedTimeStep();
+    } else
+    {
+        UI.horizontalSliderFixedTimeStep->setEnabled(false);
+        viewer->setSimModeRealTime();
+    }
+}
+
+void SimDynamicsWindow::fixedTimeStepChanged( int n )
+{
+    viewer->setBulletSimTimeStepMsec(n);
+}
+
+void SimDynamicsWindow::updateTimerChanged( int n )
+{
+    viewer->setUpdateInterval(n);
 }
 

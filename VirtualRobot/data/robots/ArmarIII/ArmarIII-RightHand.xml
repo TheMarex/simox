@@ -26,8 +26,8 @@
 		<Transform>
 			<Translation x="0" y="0" z="36" units='mm'/>
 		</Transform>
-		
-		<Visualization enable="true">
+
+        <Visualization enable="true">
 			<File type="Inventor">fullmodel/palm1_r.iv</File>
 		</Visualization>
 		

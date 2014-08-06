@@ -181,7 +181,8 @@
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/wrist2_l.iv</File>
 		</Visualization>
-        <CollisionModel>
+        <!-- no collision model, since bullet does not like two models with fixed joints inbetween-->
+        <!--CollisionModel>
 			<File type="Inventor">convexModel/wrist2_l.iv</File>
 		</CollisionModel>
 
@@ -190,7 +191,7 @@
             <Mass value="2.59945309" units="kg" />
             <IgnoreCollision name="Underarm L"/>
 
-        </Physics>
+        </Physics-->
         <Sensor type="forcetorque"/>
 		<Child name="EndArmL"/>
 	</RobotNode>

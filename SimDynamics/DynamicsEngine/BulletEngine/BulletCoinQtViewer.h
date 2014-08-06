@@ -58,6 +58,27 @@ public:
 	*/
 	virtual void initSceneGraph(QFrame* embedViewer, SoNode* scene);
 
+    /*! 
+        In this mode, the time between two updates is measures and the engine is stepped accordingly. (standard)
+        Could result in inaccurate simulation. Especially, if the steps tend to become large (e.g. on slow computers).
+    */
+    void setSimModeRealTime();
+
+    /*!
+        Sets the simulation mode to fixed time step.
+        The time step can be specified in milli seconds:
+        \see setBulletSimTimeStepMsec
+    */
+    void setSimModeFixedTimeStep();
+
+    /*!
+        How often should the physics engine be updated.
+        Standard: 5ms
+        On slow computers the update interval might be longer than specified.
+        \param updateTimerIntervalMS The timer interval in milliseconds.
+    */
+    void setUpdateInterval(int updateTimerIntervalMS);
+
 	void viewAll();
 
 	/*!
@@ -122,7 +143,8 @@ public:
 	/*!
 		See setBulletSimMaxSubSteps()
 	 */
-	int getBulletSimMaxSubSteps() const { return bulletMaxSubSteps; }
+    int getBulletSimMaxSubSteps() const { return bulletMaxSubSteps; }
+    int getUpdateTimerInterval() const { return updateTimerIntervalMS; }
 
 	/*!
 	 * Adds callback that is called each time the engine is updated.
@@ -183,9 +205,12 @@ protected:
 	int bulletTimeStepMsec;
 	int bulletMaxSubSteps;
 
+    bool simModeFixedTimeStep;
+
 	bool warned_norealtime;
 
 	bool enablePhysicsUpdates;
+    int updateTimerIntervalMS;
 
 	boost::recursive_mutex engineMutex;
 };

@@ -19,13 +19,15 @@ namespace SimDynamics
 
 
 BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
-: warned_norealtime(false)
+: warned_norealtime(false), simModeFixedTimeStep(false)
 {
 	bulletTimeStepMsec = 16; // 60FPS
 	bulletMaxSubSteps = 1;
 	enablePhysicsUpdates = true;
 
-	const double TIMER_MS = 5.0f;
+    updateTimerIntervalMS = 5;
+
+	//const double TIMER_MS = 5.0f;
 
 	SIMDYNAMICS_ASSERT(world);
 
@@ -48,7 +50,7 @@ BulletCoinQtViewer::BulletCoinQtViewer(DynamicsWorldPtr world)
 	// register callback
 	SoSensorManager *sensor_mgr = SoDB::getSensorManager();
 	timerSensor = new SoTimerSensor(timerCB, this);
-	timerSensor->setInterval(SbTime(TIMER_MS/1000.0f));
+    setUpdateInterval(updateTimerIntervalMS);
 	sensor_mgr->insertTimerSensor(timerSensor);
 
 	// selection cb
@@ -165,23 +167,30 @@ void BulletCoinQtViewer::stepPhysics()
 			VR_INFO << "Slow frame (" << ms << "us elapsed)! Limiting elapsed time (losing realtime capabilities for this frame)." << endl;
 			ms = minFPS;
 		} */
+        btScalar dt1;
+        if (!simModeFixedTimeStep)
+        {
+		    if ((ms / 1000.0f) > bulletMaxSubSteps * bulletTimeStepMsec) {
+			    if (!warned_norealtime)
+			    {
+				    VR_INFO << "Elapsed time (" << (ms / 1000.0f) << "ms) too long: Simulation is not running in realtime." << endl;
+				    warned_norealtime = true;
+			    }
+		    }
+		    else
+		    {
+			    warned_norealtime = false;
+		    }
 
-		if ((ms / 1000.0f) > bulletMaxSubSteps * bulletTimeStepMsec) {
-			if (!warned_norealtime)
-			{
-				VR_INFO << "Elapsed time (" << (ms / 1000.0f) << "ms) too long: Simulation is not running in realtime." << endl;
-				warned_norealtime = true;
-			}
-		}
-		else
-		{
-			warned_norealtime = false;
-		}
-
-		btScalar dt1 = btScalar(ms / 1000000.0f);
-
+		    dt1 = btScalar(ms / 1000000.0f);
+        } else
+        {
+            // FIXED TIME STEP
+            dt1 = float(bulletTimeStepMsec) / 1000.0f;
+        }
 		// VR_INFO << "stepSimulation(" << dt1 << ", " << bulletMaxSubSteps << ", " << (bulletTimeStepMsec / 1000.0f) << ")" << endl;
-		bulletEngine->stepSimulation(dt1, bulletMaxSubSteps, bulletTimeStepMsec / 1000.0f);
+
+		bulletEngine->stepSimulation(dt1, bulletMaxSubSteps, float(bulletTimeStepMsec) / 1000.0f);
 
 		//optional but useful: debug drawing
 		//m_dynamicsWorld->debugDrawWorld();
@@ -406,6 +415,24 @@ void BulletCoinQtViewer::updatePhysics()
 	if (enablePhysicsUpdates)
 		stepPhysics();
 }
+
+void BulletCoinQtViewer::setSimModeRealTime()
+{
+    simModeFixedTimeStep = false;
+}
+
+void BulletCoinQtViewer::setSimModeFixedTimeStep()
+{
+    simModeFixedTimeStep = true;
+}
+
+void BulletCoinQtViewer::setUpdateInterval( int updateTimerIntervalMS )
+{
+    this->updateTimerIntervalMS = updateTimerIntervalMS;
+    if (timerSensor)
+        timerSensor->setInterval(SbTime(float(updateTimerIntervalMS)/1000.0f));
+}
+
 
 }
 

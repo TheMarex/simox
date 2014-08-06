@@ -155,7 +155,7 @@
 			<File type="Inventor">fullmodel/wrist1_r.iv</File>
 		</Visualization>
 		<CollisionModel>
-			<File type="Inventor">convexModel/wrist1_r.iv</File><!--convexModel/wrist1_l.iv-->
+			<File type="Inventor">convexModel/wrist1_r.iv</File>
 		</CollisionModel>
 		<Child name="Wrist 2 R"/>
 	</RobotNode>
@@ -176,15 +176,16 @@
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/wrist2_r.iv</File>
 		</Visualization>
-        <CollisionModel>
-			<File type="Inventor">convexModel/wrist2_r.iv</File><!--convexModel/wrist2_l.iv-->
+        <!-- no collision model, since bullet does not like two models with fixed joints inbetween-->
+        <!--CollisionModel>
+			<File type="Inventor">convexModel/wrist2_r.iv</File>
 		</CollisionModel>
 		
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2.59945309" units="kg" />
             <IgnoreCollision name="Underarm R"/>
-        </Physics>
+        </Physics-->
         <Sensor type="forcetorque"/>
 		<Child name="EndArmR"/>
 	</RobotNode>

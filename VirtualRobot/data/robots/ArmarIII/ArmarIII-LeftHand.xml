@@ -50,7 +50,9 @@
 		<Joint type="revolute">
 			<Axis x="0" y="-1" z="0"/>
 			<Limits unit="degree" lo="-90" hi="90"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/palm2_l.iv</File>
@@ -82,7 +84,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/thumb_l1.iv</File>
@@ -107,7 +111,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/thumb_l2.iv</File>
@@ -135,7 +141,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="-1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/pinky_l1.iv</File>
@@ -160,7 +168,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="-1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/pinky_l2.iv</File>
@@ -188,7 +198,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="-1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/ring_l1.iv</File>
@@ -213,7 +225,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="-1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/ring_l2.iv</File>
@@ -241,7 +255,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="-1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/middle_l1.iv</File>
@@ -266,7 +282,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="-1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/middle_l2.iv</File>
@@ -294,7 +312,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="-1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/index_l1.iv</File>
@@ -319,7 +339,9 @@
 		<Joint type="revolute">
 			<Limits unit="degree" lo="0" hi="180"/>
 			<Axis x="0" y="-1" z="0"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		
 		<Visualization enable="true">
 			<File type="Inventor">fullmodel/index_l2.iv</File>

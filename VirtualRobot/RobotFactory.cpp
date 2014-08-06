@@ -132,7 +132,7 @@ RobotPtr RobotFactory::cloneInversed(RobotPtr robot, const std::string& newRootN
         RobotFactory::robotNodeDef rnDef;
         rnDef.name = currentEdge.second->getName();
 
-        // invert transformation of old parend
+        // invert transformation of old parent
         if (parent && parent != currentEdge.first)
         {
             rnDef.invertTransformation.push_back(true);

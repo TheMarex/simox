@@ -34,6 +34,8 @@
             <!--DH theta="90" d="0" a="0" alpha="90" unitsangle="degree" unitslength="mm"/-->
             <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
         </Joint>
 
         <Visualization>
@@ -62,6 +64,8 @@
             <!--DH theta="90" d="0" a="0" alpha="90" unitsangle="degree" unitslength="mm"/-->
             <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
         </Joint>
         
         <Visualization>
@@ -91,6 +95,8 @@
             <!--DH theta="90" d="120" a="0"  alpha="90" unitsangle="degree" unitslength="mm"/-->
             <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
         </Joint>
         
         <Visualization>
@@ -117,6 +123,8 @@
             <!--DH theta="0" d="0" a="0"  alpha="-90" unitsangle="degree" unitslength="mm"/-->
             <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-45" hi="45"/>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
         </Joint>
         
         <Physics>
@@ -157,6 +165,8 @@
         <Joint type="revolute"> 
             <axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-30" hi="30"/>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
         </Joint>
         <Visualization> 
             <File type="Inventor">fullmodel/jaw.iv</File>
@@ -171,6 +181,8 @@
         <Joint type="revolute">
             <Axis x="0" y="0" z="1"/>
             <Limits unit="degree" lo="-30" hi="45"/>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
         </Joint>
         <Child name="Eye_Left_Dummy"/>
         <Child name="Eye_Right_Dummy"/>
@@ -181,6 +193,8 @@
         <Joint type="prismatic">
             <TranslationDirection x="1" y="0" z="0"/>
             <Limits unit="mm" lo="0" hi="10000"/>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
         </Joint>
  		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="3"/>
@@ -205,6 +219,8 @@
         <Joint type="revolute">
           <Axis x="0" y="0" z="1"/>
           <Limits unit="degree" lo="-30" hi="30"/>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
         </Joint>
         <Visualization>
           <File type="Inventor">fullmodel/eye_l.iv</File>
@@ -218,6 +234,8 @@
         <Joint type="revolute">
           <Axis x="0" y="0" z="1"/>
           <Limits unit="degree" lo="-30" hi="30"/>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
         </Joint>
         <Visualization>
           <File type="Inventor">fullmodel/eye_r.iv</File>
@@ -239,6 +257,8 @@
   <RobotNode name="Lid Left Bottom">
     <Joint type="revolute">
       <Axis x="0" y="1" z="0"/>
+        <MaxVelocity unit="radian" value="1"/>
+        <MaxAcceleration value="10"/>
     </Joint>
     <Visualization>
       <File type="Inventor">fullmodel/lid_l_bottom.iv</File>
@@ -248,6 +268,8 @@
   <RobotNode name="Lid Left Top">
     <Joint type="revolute">
       <Axis x="0" y="1" z="0"/>
+        <MaxVelocity unit="radian" value="1"/>
+        <MaxAcceleration value="10"/>
     </Joint>
     <Visualization>
       <File type="Inventor">fullmodel/lid_l_top.iv</File>
@@ -266,6 +288,8 @@
   <RobotNode name="Lid Right Bottom">
     <Joint type="revolute">
       <Axis x="0" y="1" z="0"/>
+        <MaxVelocity unit="radian" value="1"/>
+        <MaxAcceleration value="10"/>
     </Joint>
     <Visualization>
       <File type="Inventor">fullmodel/lid_r_bottom.iv</File>
@@ -275,6 +299,8 @@
   <RobotNode name="Lid Right Top">
   <Joint type="revolute">
     <Axis x="0" y="1" z="0"/>
+      <MaxVelocity unit="radian" value="1"/>
+      <MaxAcceleration value="10"/>
   </Joint>
     <Visualization>
       <File type="Inventor">fullmodel/lid_r_top.iv</File>

@@ -47,7 +47,9 @@
 		<Joint type="revolute">
 			<axis x="0" y="0" z="1"/>
 			<Limits unit="degree" lo="-360" hi="360"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 		</Visualization>
@@ -76,7 +78,9 @@
 			<Joint type="revolute">
 			<Axis x="1" y="0" z="0"/>
 			<Limits unit="degree" lo="-45" hi="45"/>
-		</Joint>
+                <MaxVelocity unit="radian" value="1"/>
+                <MaxAcceleration value="10"/>
+            </Joint>
 
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -95,7 +99,9 @@
 		<Joint type="revolute">
 			<Axis x="0" y="1" z="0"/>
 			<Limits unit="degree" lo="-45" hi="45"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
@@ -115,7 +121,9 @@
 		<Joint type="revolute">
 			<Axis x="0" y="0" z="1"/>
 			<Limits unit="degree" lo="-45" hi="45"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="15.415" units="kg" />

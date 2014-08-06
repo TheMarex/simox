@@ -9,6 +9,7 @@ namespace Primitive {
 
 class Primitive {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     static const int TYPE = 0;
     const int type;
     Eigen::Matrix4f transform;

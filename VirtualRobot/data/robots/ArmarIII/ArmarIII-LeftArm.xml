@@ -17,7 +17,9 @@
 			<!--DH a="0" d="0" theta="90" alpha="90" unitsangle="degree" unitslength="mm"/-->
 			<axis x="0" y="0" z="1"/>
 			<Limits unit="degree" lo="-106.91" hi="80"/>
-      <!--42.8-->
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+            <!--42.8-->
 		</Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
@@ -41,7 +43,9 @@
 			<!--DH a="0" d="0" theta="75" alpha="90" unitsangle="degree" unitslength="mm"/-->
 			<axis x="0" y="0" z="1"/>
 			<Limits unit="degree" lo="-94.62" hi="13.85"/>  <!-- ?! -->
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="2.5" units="kg" />
@@ -64,7 +68,9 @@
 			<!--DH a="20" d="-310" theta="-90" alpha="90" unitsangle="degree" unitslength="mm"/-->
 			<axis x="0" y="0" z="1"/>
 			<Limits unit="degree" lo="-69.65" hi="108.25"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="1.55685000" units="kg" />
@@ -89,7 +95,9 @@
 			<axis x="0" y="0" z="1"/>
 			<Limits unit="degree" lo="-122.96" hi="55"/>
         <!--19.14-->
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		<Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>
 			<File type="Inventor">fullmodel/elbow_l.iv</File>
@@ -114,7 +122,9 @@
 			<axis x="0" y="0" z="1"/>
 			<!--Limits unit="degree" lo="-57.29" hi="174.48"/-->
 			<Limits unit="degree" lo="-108.25" hi="69.65"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
         <Visualization enable="true">
 			<File type="Inventor">fullmodel/underarm_l.iv</File>
 		</Visualization>
@@ -137,7 +147,9 @@
 			<!--DH a="0" d="0" theta="-90" alpha="-90" unitsangle="degree" unitslength="mm"/-->
 			<axis x="0" y="0" z="1"/>
 			<Limits unit="degree" lo="-29.36" hi="24.11"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
             <Mass value="1.29945309" units="kg" />
@@ -161,7 +173,9 @@
 			<!--DH a="0" d="0" theta="-90" alpha="90" unitsangle="degree" unitslength="mm"/-->
 			<axis x="0" y="0" z="1"/>
 			<Limits unit="degree" lo="-38.4" hi="44.32"/>
-		</Joint>
+            <MaxVelocity unit="radian" value="1"/>
+            <MaxAcceleration value="10"/>
+        </Joint>
 
         <Visualization enable="true">
 			<CoordinateAxis type="Inventor" enable="false" scaling="8"/>

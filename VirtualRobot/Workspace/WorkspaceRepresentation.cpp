@@ -483,49 +483,12 @@ void WorkspaceRepresentation::save(const std::string &filename)
 			VR_ERROR << "Custom saving failed?!" << endl;
 		}
 
-
 		// Data
 		FileIO::writeString(file, "DATA_START");
-		int size = 0;
-		int maxCompressedSize = numVoxels[3]*numVoxels[4]*numVoxels[5]*3;
-		/*unsigned char *compressedData = new unsigned char[maxCompressedSize];
-		for (int x=0;x<numVoxels[0];x++)
-			for (int y=0;y<numVoxels[1];y++)
-				for (int z=0;z<numVoxels[2];z++)
-				{
-					size = CompressionRLE::RLE_Compress(data->getDataRot(x,y,z),compressedData,data->getSizeRot());
-					FileIO::write<int>(file, size);
-					if(size > 0)
-						FileIO::writeArray<unsigned char>(file, compressedData, size);
-				}
-		delete []compressedData;*/
-		CompressionBZip2Ptr bzip2(new CompressionBZip2(&file));
-		unsigned char* emptyData = new unsigned char[data->getSizeRot()];
-		memset(emptyData,0,data->getSizeRot()*sizeof(unsigned char));
-		for (int x=0;x<numVoxels[0];x++)
-			for (int y=0;y<numVoxels[1];y++)
-				for (int z=0;z<numVoxels[2];z++)
-				{
-					void* dataBlock;
-					// this avoids that an empty data block is created within the workspace data when no data is available.
-					if (data->hasEntry(x,y,z))
-					{
-						dataBlock = (void*)(data->getDataRot(x,y,z));
-					} else
-					{
-						dataBlock = (void*)emptyData;
-					}
-					if (!bzip2->write(dataBlock,data->getSizeRot()*sizeof(unsigned char)))
-					{
-						VR_ERROR << "Error writing to file.." << endl;
-						bzip2->close();
-						file.close();
-						return;
-					}
-				}
-		delete [] emptyData;
-
-		bzip2->close();
+        if (!data->save(file)) {
+            VR_ERROR << "Unable to store data!" << endl;
+            return;
+        }
 		FileIO::writeString(file, "DATA_END");
 	}
 	catch(VirtualRobotException &e)

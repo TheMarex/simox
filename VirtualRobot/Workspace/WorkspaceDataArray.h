@@ -25,6 +25,7 @@
 
 #include "WorkspaceData.h"
 #include "../VirtualRobotImportExport.h"
+#include "../Compression/CompressionBZip2.h"
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/type_traits/is_base_of.hpp>
@@ -53,6 +54,9 @@ public:
 
 	//! Clone other data structure
     WorkspaceDataArray(WorkspaceDataArray *other);
+
+    //! create Workspace out of file
+    WorkspaceDataArray(std::ofstream &file);
 
     ~WorkspaceDataArray();
 
@@ -108,6 +112,8 @@ public:
     unsigned char** getRawData(){return data;}
 
     WorkspaceData* clone();
+
+    bool save(std::ofstream &file);
 protected:
 
     void ensureData(unsigned int x, unsigned int y, unsigned int z);

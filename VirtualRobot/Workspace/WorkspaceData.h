@@ -102,6 +102,8 @@ public:
 
     virtual WorkspaceData* clone() = 0;
 
+    virtual bool save(std::ofstream &file) = 0;
+
     virtual void setVoxelFilledCount(int c){voxelFilledCount = c;}
 
     virtual unsigned char getMaxEntry() {return maxEntry;}

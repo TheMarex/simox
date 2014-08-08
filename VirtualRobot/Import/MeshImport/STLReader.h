@@ -47,7 +47,7 @@ public:
   /// Returns the threshold to be used for considering two point to be equal.
   float epsilon() const { return eps_; }
 
-
+  void setScaling (float s);
 
 private:
 
@@ -63,10 +63,10 @@ private:
   bool read_stla(std::istream& _in, TriMeshModelPtr t) const;
   bool read_stlb(const std::string& _filename, TriMeshModelPtr t) const;
   bool read_stlb(std::istream& _in, TriMeshModelPtr t) const;
-
+  
 
 private:
-
+  float scaling;
   float eps_;
 };
 

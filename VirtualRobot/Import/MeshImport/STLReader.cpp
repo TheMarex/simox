@@ -52,6 +52,7 @@ STLReader::
 STLReader()
   : eps_(FLT_MIN)
 {
+    scaling = 1.0f;
 }
 
 
@@ -261,6 +262,8 @@ read_stla(std::istream& _in, TriMeshModelPtr t) const
         strstream >> v[1];
         strstream >> v[2];
 
+        v*= scaling;
+
         // has vector been referenced before?
         if ((vMapIt=vMap.find(v)) == vMap.end())
         {
@@ -397,6 +400,8 @@ read_stlb(std::istream& _in, TriMeshModelPtr t) const
       v[1] = read_float(_in, swapFlag);
       v[2] = read_float(_in, swapFlag);
 
+      v *= scaling;
+
       // has vector been referenced before?
       if ((vMapIt=vMap.find(v)) == vMap.end())
       {
@@ -497,6 +502,12 @@ check_stl_type(const std::string& _filename) const
   // if sizes match -> it's STLB
   return (binary_size == file_size ? STLB : STLA);
 }
+
+void STLReader::setScaling( float s )
+{
+    scaling = s;
+}
+
 
 
 //=============================================================================

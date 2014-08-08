@@ -199,6 +199,7 @@ namespace VirtualRobot {
 
         TriMeshModelPtr t(new TriMeshModel());
         STLReaderPtr r(new STLReader());
+        r->setScaling(1000.0f); // mm
         bool readOK = r->read(filename,t);
         if (!readOK)
         {

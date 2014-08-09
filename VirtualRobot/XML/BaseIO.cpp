@@ -618,11 +618,11 @@ void BaseIO::makeRelativePath( const std::string &basePath, std::string &filenam
 	if (filename.empty())
 		return;
 #if (BOOST_VERSION>=104800)
-    // cononical needs boost version >=1.48
+    // canonical needs boost version >=1.48
     namespace fs = boost::filesystem;    
 
     fs::path filepath;
-    if(boost::filesystem::exists(fs::path(basePath) / fs::path(filename)))
+    if(fs::path(filename).is_absolute() && boost::filesystem::exists(fs::path(basePath) / fs::path(filename)))
     {        
         return;
     }

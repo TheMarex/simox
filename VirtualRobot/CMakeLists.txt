@@ -269,6 +269,43 @@ endif ()
 #    COLLADA/ColladaParser.h
 #    )
 #endif ()
+
+
+#check for URDF
+include(SearchForTinyXML)
+FIND_PACKAGE(urdfdom)
+#FIND_PACKAGE(PkgConfig)
+#PKG_CHECK_MODULES(URDFDOM REQUIRED urdfdom>=0.2.9)
+#PKG_CHECK_MODULES(URDFDOM_HEADERS REQUIRED urdfdom_headers>=0.2.3)
+
+if (tinyxml_library AND URDF_FOUND)
+   MESSAGE(STATUS " ** Including URDF importer")
+
+    include_directories(${tinyxml_include_dirs})
+    link_directories(${tinyxml_library_dirs})
+    add_definitions(${tinyxml_cflags})
+    add_definitions(" -DTIXML_USE_STL ")
+
+    INCLUDE_DIRECTORIES (
+	    ${URDFDOM_INCLUDE_DIRS}
+	    ${URDFDOM_PARSER_INCLUDE_DIRS}
+	    ${URDFDOM_HEADERS_INCLUDE_DIRS}
+    )
+
+    SET(SOURCES
+      ${SOURCES}
+	    Import/URDF/SimoxURDFFactory.cpp
+	    )
+    SET(INCLUDES
+      ${INCLUDES}
+	    Import/URDF/SimoxURDFFactory.h
+	    )
+
+    SET(Simox_EXTERNAL_LIBRARIES ${Simox_EXTERNAL_LIBRARIES} ${URDFDOM_LIBRARIES})
+else()
+    MESSAGE(STATUS " *** urdfDom or TinyXML not found: skipping URDF importer...")
+endif()
+
 # include collision detection
 INCLUDE (CollisionDetection/CMakeLists.txt)
 
@@ -330,6 +367,9 @@ INSTALL(DIRECTORY ${PROJECT_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX}
         PATTERN "*.iv"
         PATTERN "*.vrml"
         PATTERN "*.wrl"
+        PATTERN "*.stl"
+        PATTERN "*.urdf"
+        PATTERN "*.dae"
         PATTERN "*.png"
         PATTERN "*.jpg"
         PATTERN "*.bin"

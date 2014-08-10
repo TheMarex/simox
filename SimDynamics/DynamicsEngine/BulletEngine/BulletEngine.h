@@ -143,6 +143,12 @@ public:
 	 */
 	void addExternalCallback(BulletStepCallback function, void* data);
 
+    /*!
+        The simulated time starts with 0 (on creation) and is updated on every steSimulation call.
+        \return simulated time in seconds.
+    */
+    double getSimTime();
+
 	/*!
 		Transforms pose to bullet.
 		Translation is scaled from mm to m.
@@ -199,6 +205,8 @@ protected:
 	VirtualRobot::ObstaclePtr groundObject;
 
 	BulletEngineConfigPtr bulletConfig;
+
+    double simTime;
 };
 
 typedef boost::shared_ptr<BulletEngine> BulletEnginePtr;

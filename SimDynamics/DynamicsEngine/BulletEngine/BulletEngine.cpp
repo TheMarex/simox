@@ -16,6 +16,7 @@ BulletEngine::BulletEngine()
 	overlappingPairCache = NULL;
 	constraintSolver = NULL;
 	dynamicsWorld = NULL;
+    simTime = 0;
 }
 
 BulletEngine::~BulletEngine()
@@ -559,7 +560,13 @@ std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 void BulletEngine::stepSimulation( double dt, int maxSubSteps, double fixedTimeStep )
 {
 	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    simTime += dt;
 	dynamicsWorld->stepSimulation(btScalar(dt), maxSubSteps, btScalar(fixedTimeStep));
+}
+
+double BulletEngine::getSimTime()
+{
+    return simTime;
 }
 
 

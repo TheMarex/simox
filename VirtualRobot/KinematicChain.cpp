@@ -9,8 +9,8 @@
 namespace VirtualRobot
 {
 
-KinematicChain::KinematicChain(const std::string& name, const std::vector< RobotNodePtr >& robotNodes, RobotNodePtr tcp, RobotNodePtr kinematicRoot /*= RobotNodePtr()*/ )
-	:RobotNodeSet(name, RobotPtr(), robotNodes, kinematicRoot)
+KinematicChain::KinematicChain(const std::string& name, RobotPtr robot, const std::vector< RobotNodePtr >& robotNodes, RobotNodePtr tcp, RobotNodePtr kinematicRoot /*= RobotNodePtr()*/ )
+    :RobotNodeSet(name, robot, robotNodes, kinematicRoot)
 {
 	if (robotNodes.size()==0)
 		THROW_VR_EXCEPTION("Zero sized Kinematic chain is not allowed");
@@ -30,7 +30,7 @@ KinematicChain::KinematicChain(const std::string& name, const std::vector< Robot
 
 	this->robot = robotNodes[0]->getRobot();
 	if (!tcp)
-		this->tcp = robotNodes[0];
+        this->tcp = robotNodes[this->getSize()-1];
 	else
 		this->tcp = tcp;
 }

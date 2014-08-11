@@ -35,7 +35,7 @@ namespace VirtualRobot
 			  \param kinematicRoot	This specifies the first node of the robot's kinematic tree to be used for updating all members of this set. 
 									kinematicRoot does not have to be a node of this set. If not given, the first entry of robotNodes is used.
 			  */
-			KinematicChain(const std::string& name, const std::vector< RobotNodePtr >& robotNodes, RobotNodePtr tcp = RobotNodePtr(), RobotNodePtr kinematicRoot = RobotNodePtr() );
+            KinematicChain(const std::string& name, RobotPtr robot, const std::vector< RobotNodePtr >& robotNodes, RobotNodePtr tcp = RobotNodePtr(), RobotNodePtr kinematicRoot = RobotNodePtr() );
 
 			/*!
 			*/

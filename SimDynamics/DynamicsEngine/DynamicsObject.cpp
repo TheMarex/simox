@@ -76,5 +76,10 @@ void DynamicsObject::applyTorque(const Eigen::Vector3f &torque)
 
 }
 
+void DynamicsObject::setSimType( VirtualRobot::SceneObject::Physics::SimulationType s )
+{
+    sceneObject->setSimulationType(s);
+}
+
 
 } // namespace SimDynamics

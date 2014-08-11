@@ -81,6 +81,8 @@ public:
      */
     virtual void applyTorque(const Eigen::Vector3f &torque);
 
+    virtual void setSimType(VirtualRobot::SceneObject::Physics::SimulationType s);
+
 protected:
 
     void setPoseIntern(const Eigen::Matrix4f &pose);

@@ -299,5 +299,30 @@ void BulletObject::applyTorque(const Eigen::Vector3f &torque)
     rigidBody->applyTorque(btVel);
 }
 
+void BulletObject::setSimType( VirtualRobot::SceneObject::Physics::SimulationType s )
+{
+    btVector3 localInertia;
+    localInertia.setZero();
+    CollisionModelPtr colModel = sceneObject->getCollisionModel();
+
+    switch (s)
+    {
+    case VirtualRobot::SceneObject::Physics::eDynamic:
+    case VirtualRobot::SceneObject::Physics::eUnknown:
+        if (colModel)
+        {
+            collisionShape->calculateLocalInertia(sceneObject->getMass(),localInertia);
+        } else
+            localInertia.setValue(btScalar(1),btScalar(1),btScalar(1)); // give Object a dummy inertia matrix
+        rigidBody->setMassProps(sceneObject->getMass(),localInertia);
+        break;
+    default:
+        // static
+        rigidBody->setMassProps(0,localInertia);
+    }
+
+    DynamicsObject::setSimType(s);
+}
+
 
 } // namespace VirtualRobot

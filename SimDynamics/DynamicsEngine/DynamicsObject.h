@@ -82,11 +82,12 @@ public:
      */
     virtual void applyTorque(const Eigen::Vector3f &torque);
 
+    virtual void setSimType(VirtualRobot::SceneObject::Physics::SimulationType s);
+
 
 protected:
 
 	VirtualRobot::SceneObjectPtr sceneObject;
-    //SimulationType simulationType;
 };
 
 typedef boost::shared_ptr<DynamicsObject> DynamicsObjectPtr;

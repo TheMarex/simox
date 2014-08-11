@@ -3,9 +3,15 @@
 SET (URDF_FOUND FALSE)
 
 
-FIND_PATH(URDFDOM_INCLUDE_DIRS urdfdom_model/model.h "$ENV{URDFDIR}/include" "$ENV{URDF_DIR}/include")
+FIND_PATH(URDFDOM_INCLUDE_DIRS urdfdom_model/model.h "$ENV{URDFDIR}/include" "$ENV{URDF_DIR}/include" "/usr/include")
+IF (NOT URDFDOM_INCLUDE_DIRS)
+	FIND_PATH(URDFDOM_INCLUDE_DIRS urdf_model/model.h "$ENV{URDFDIR}/include" "$ENV{URDF_DIR}/include" "/usr/include")
+endif()
 FIND_PATH(URDFDOM_PARSER_INCLUDE_DIRS urdf_parser/urdf_parser.h "$ENV{URDFDIR}/include" "$ENV{URDF_DIR}/include")
-FIND_LIBRARY(URDFDOM_LIBRARIES urdf "$ENV{URDFDIR}/lib" "$ENV{URDF_DIR}/lib")
+FIND_LIBRARY(URDFDOM_LIBRARIES urdf "$ENV{URDFDIR}/lib" "$ENV{URDF_DIR}/lib" "/usr/lib" "/usr/lib/x86_64-linux-gnu")
+IF (NOT URDFDOM_LIBRARIES)
+	FIND_LIBRARY(URDFDOM_LIBRARIES urdfdom_model "$ENV{URDFDIR}/lib" "$ENV{URDF_DIR}/lib" "/usr/lib" "/usr/lib/x86_64-linux-gnu")
+endif()
 
 
 IF (URDFDOM_INCLUDE_DIRS AND URDFDOM_PARSER_INCLUDE_DIRS AND URDFDOM_LIBRARIES)

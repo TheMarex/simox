@@ -100,6 +100,9 @@ public:
 
     virtual void setGlobalPose(Eigen::Matrix4f &gp);
 
+    //! can be used to access the internal controllers
+    std::map<VirtualRobot::RobotNodePtr, VelocityMotorController>& getControllers();
+
 protected:
 
 	virtual void createDynamicsNode(VirtualRobot::RobotNodePtr node);

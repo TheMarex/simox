@@ -2,17 +2,21 @@
 #define __DYNAMICS_UTILS__H__
 
 #include <iostream>
+#include "../SimDynamics.h"
 
 namespace SimDynamics {
-class PIDController {
+
+    class SIMDYNAMICS_IMPORT_EXPORT PIDController {
 public:
 	PIDController(double gainP, double gainI, double gainD);
 
 	double update(double error, double dt);
 
-	void reset();
+    void reset();
+    void reset(double gainP, double gainI, double gainD);
 
 	void debug();
+    void getPID(double &storeP, double &storeI, double &storeD);
 
 private:
 	double gainP;
@@ -24,7 +28,7 @@ private:
 };
 
 // use bit field because enums are a pain
-union ActuationMode {
+union SIMDYNAMICS_IMPORT_EXPORT ActuationMode {
 	struct {
 		unsigned char position:1;
 		unsigned char velocity:1;
@@ -58,7 +62,7 @@ union ActuationMode {
  * position error -> [PID] -> (+) -> [PID] -> (+) -> [PID] -> joint
  *
  */
-class TorqueMotorController{
+class SIMDYNAMICS_IMPORT_EXPORT TorqueMotorController{
 public:
 	TorqueMotorController();
 	TorqueMotorController(const PIDController& positionController,
@@ -92,7 +96,7 @@ private:
  * position error -> [PID] -> (+) -> joint
  *
  */
-class VelocityMotorController {
+class SIMDYNAMICS_IMPORT_EXPORT VelocityMotorController {
 public:
 	VelocityMotorController(double maxVelocity=-1.0, double maxAcceleration=-1.0);
 
@@ -100,9 +104,12 @@ public:
 
 	double update(double positionError, double targetVelocity, ActuationMode actuation, double dt);
 
-	void reset();
+    void reset();
+    void reset(double pid_pos_gainP, double pid_pos_gainI, double pid_pos_gainD);
 
 	void debug();
+
+    void getPosPID(double &storeP, double &storeI, double &storeD);
 private:
 	PIDController positionController;
 	double maxVelocity;

@@ -284,6 +284,11 @@ void DynamicsRobot::setGlobalPose(Eigen::Matrix4f &gp)
     }
 }
 
+std::map<VirtualRobot::RobotNodePtr, VelocityMotorController>& DynamicsRobot::getControllers()
+{
+    return actuationControllers;
+}
+
 /*
 void DynamicsRobot::setPose( const Eigen::Matrix4f &pose )
 {

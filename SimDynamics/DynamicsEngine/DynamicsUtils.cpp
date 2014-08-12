@@ -29,9 +29,18 @@ double PIDController::update(double error, double dt)
 
 void PIDController::reset()
 {
-	errorSum = 0.0;
-	lastError = 0.0;
+    reset (gainP,gainI,gainD);
 }
+
+void PIDController::reset( double gainP, double gainI, double gainD )
+{
+    errorSum = 0.0;
+    lastError = 0.0;
+    this->gainP = gainP;
+    this->gainI = gainI;
+    this->gainD = gainD;
+}
+
 
 void PIDController::debug()
 {
@@ -40,6 +49,14 @@ void PIDController::debug()
 			  << " last output: " << lastOutput
 			  << std::endl;
 }
+
+void PIDController::getPID( double &storeP, double &storeI, double &storeD )
+{
+    storeP = gainP;
+    storeI = gainI;
+    storeD = gainD;
+}
+
 
 TorqueMotorController::TorqueMotorController()
 : positionController(0.5, 0.05, 0.0)
@@ -137,6 +154,16 @@ double VelocityMotorController::update(double positionError, double targetVeloci
 void VelocityMotorController::reset()
 {
 	positionController.reset();
+}
+
+void VelocityMotorController::reset( double pid_pos_gainP, double pid_pos_gainI, double pid_pos_gainD )
+{
+    positionController.reset(pid_pos_gainP,pid_pos_gainI,pid_pos_gainD);
+}
+
+void VelocityMotorController::getPosPID(double &storeP, double &storeI, double &storeD)
+{
+    positionController.getPID(storeP,storeI,storeD);
 }
 
 void VelocityMotorController::debug()

@@ -180,12 +180,6 @@ void SimDynamicsWindow::resetSceneryAll()
 {
 	if (robot)
 		robot->applyJointValues();
-	//cout << "nyi..." << endl;
-/*	if (!robot)
-		return;
-	std::vector<RobotNodePtr> allRobotNodes = robot->getRobotNodes();
-	std::vector<float> jv(allRobotNodes.size(),0.0f);
-	robot->setJointValues(allRobotNodes,jv);*/
 }
 
 
@@ -331,9 +325,7 @@ bool SimDynamicsWindow::loadRobot(std::string robotFilename)
     try
     {
 		VirtualRobot::BoundingBox bbox = robot->getBoundingBox();
-		
-		
-	    //robot->print();
+
 	    Eigen::Matrix4f gp = Eigen::Matrix4f::Identity();
 		//gp(2,3) = 5.0f;
 		gp(2,3) = -bbox.getMin()(2) + 4.0f;
@@ -355,7 +347,7 @@ void SimDynamicsWindow::selectRobotNode( int n )
 	UI.comboBoxRobotNode->setCurrentIndex(n);
 	RobotNodeRevolutePtr rn;
 	if (n>=0 && n<(int)robotNodes.size())
-	{	
+	{
 		rn = robotNodes[n];
 	}
 	if (rn)

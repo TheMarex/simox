@@ -20,6 +20,8 @@
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
 
+#include <boost/math/special_functions/fpclassify.hpp>
+
 //#define DEBUG_FIXED_OBJECTS
 //#define DEBUG_SHOW_LINKS
 using namespace VirtualRobot;
@@ -30,7 +32,7 @@ namespace SimDynamics {
 BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
 	: DynamicsRobot(rob)
 {
-    bulletMaxMotorImulse = 100.0f;
+    bulletMaxMotorImulse = 800.0f;
 
 	buildBulletModels(enableJointMotors);
 
@@ -49,6 +51,20 @@ BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
             std::cout << "Found force torque sensor: " << node->getName() << std::endl;
         }
     }
+#ifdef _DEBUG
+    std::string nameBodies = "BulletRobot_RNS_Bodies_All";
+    std::vector<RobotNodePtr> rnAll = robot->getRobotNodes();
+    std::vector<RobotNodePtr> rnsBodies;
+    for (size_t i=0;i<rnAll.size();i++)
+    {
+        RobotNodePtr r = rnAll[i];
+        //if (r->isRotationalJoint() || r->isTranslationalJoint())
+        //    rnsJoints.push_back(r);
+        if (r->getMass()>0)
+            rnsBodies.push_back(r);
+    }
+    RobotNodeSetPtr rnsB = RobotNodeSet::createRobotNodeSet(getRobot(),nameBodies,rnsBodies,RobotNodePtr(),RobotNodePtr(),true);
+#endif
 }
 	
 BulletRobot::~BulletRobot()
@@ -57,6 +73,7 @@ BulletRobot::~BulletRobot()
 
 void BulletRobot::buildBulletModels(bool enableJointMotors)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	if (!robot)
 		return;
 
@@ -130,6 +147,7 @@ void BulletRobot::buildBulletModels(bool enableJointMotors)
 
 void BulletRobot::addIgnoredCollisionModels(RobotNodePtr rn)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     VR_ASSERT (rn);
     if (!rn->getCollisionModel())
         return; // nothing to do: no col model -> no bullet model -> no collisions
@@ -157,6 +175,7 @@ void BulletRobot::addIgnoredCollisionModels(RobotNodePtr rn)
 
 void BulletRobot::createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::RobotNodePtr joint, VirtualRobot::RobotNodePtr joint2, VirtualRobot::RobotNodePtr bodyB, bool enableJointMotors )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     // ensure dynamics nodes are created
     createDynamicsNode(bodyA);
     createDynamicsNode(bodyB);
@@ -359,6 +378,7 @@ void BulletRobot::createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::Ro
 
 bool BulletRobot::hasLink( VirtualRobot::RobotNodePtr node1, VirtualRobot::RobotNodePtr node2 )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	for (size_t i=0; i<links.size();i++)
 	{
 		if (links[i].nodeA == node1 && links[i].nodeB == node2)
@@ -392,15 +412,17 @@ void BulletRobot::ensureKinematicConstraints()
 
 void BulletRobot::actuateJoints(double dt)
 {
-    //cout << "=== === BulletRobot: actuateJoints() 1 === " << endl;
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
+    //cout << "=== === BulletRobot: actuateJoints() 1 === " << this << endl;
 
     std::map<VirtualRobot::RobotNodePtr, robotNodeActuationTarget>::iterator it = actuationTargets.begin();
 
-    int jointCounter = 0;
+    //int jointCounter = 0;
     //cout << "**** Control Values: ";
 
     for (; it != actuationTargets.end(); it++)
     {
+        //cout << "it:" << it->first << ", name: " << it->first->getName() << endl;
         VelocityMotorController& controller = actuationControllers[it->first];
 
         if (it->second.node->isRotationalJoint())
@@ -411,6 +433,7 @@ void BulletRobot::actuateJoints(double dt)
 
             btScalar posTarget = btScalar(it->second.jointValueTarget + link.jointValueOffset);
             btScalar posActual = btScalar(getJointAngle(it->first));
+            btScalar velActual = btScalar(getJointSpeed(it->first));
             btScalar velocityTarget = btScalar(it->second.jointVelocityTarget);
 
 #ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
@@ -450,19 +473,24 @@ void BulletRobot::actuateJoints(double dt)
             double targetVelocity;
             if (actuation.modes.position && actuation.modes.velocity)
             {
+                //cout << "################### posActual:" << posActual << ", posTarget" << posTarget << ", velTarget:" << velocityTarget << endl;
                 targetVelocity = controller.update(posTarget - posActual, velocityTarget, actuation, btScalar(dt));
             }
             else if (actuation.modes.position)
             {
-				targetVelocity = controller.update(posTarget - posActual, 0.0, actuation, btScalar(dt));
+               // cout << "################### posActual:" << posActual << ", posTarget" << posTarget << endl;
+                targetVelocity = controller.update(posTarget - posActual, 0.0, actuation, btScalar(dt));
             }
             else if (actuation.modes.velocity)
             {
+                //cout << "################### velActual:" << velActual << ", velTarget" << velocityTarget << endl;
+                controller.setCurrentVelocity(velActual);
                 targetVelocity = controller.update(0.0, velocityTarget, actuation, btScalar(dt));
             }
             // FIXME this bypasses the controller (and doesn't work..)
             else if (actuation.modes.torque)
             {
+                //cout << "################### torque:" << it->second.jointTorqueTarget << endl;
                 targetVelocity = it->second.jointTorqueTarget;
                 //cout << "jointTorqueTarget for joint " << it->second.node->getName() << " :" << it->second.jointTorqueTarget << endl;
                 /*
@@ -504,7 +532,38 @@ void BulletRobot::actuateJoints(double dt)
                 jointCounter++;
 */
             }
-            hinge->enableAngularMotor(true, btScalar(targetVelocity), bulletMaxMotorImulse);
+
+            btScalar maxImpulse = bulletMaxMotorImulse;
+            /*if (it->second.node->getMaxTorque()>0)
+            {
+                maxImpulse = it->second.node->getMaxTorque() * btScalar(dt);
+            }*/
+#ifdef _DEBUG
+            if (it->first->getName() == "Elbow R")
+                cout << "################### " << it->first->getName() <<": posActual:" << posActual << ", posTarget:" << posTarget << ", actvel:"  << velActual << ", target vel:" << targetVelocity << ", maxImpulse" << maxImpulse << endl;
+#endif
+#ifdef _DEBUG
+            std::string nameBodies = "BulletRobot_RNS_Bodies_All";
+            VirtualRobot::RobotNodeSetPtr rnsBodies = robot->getRobotNodeSet(nameBodies);
+            Eigen::Vector3f v = getComVelocityGlobal(rnsBodies);
+            if (boost::math::isnan(v(0)) || boost::math::isnan(v(1)) || boost::math::isnan(v(2)))
+            {
+                VR_ERROR << "NAN before bullet call!!!" << endl;
+            }
+#endif
+            hinge->enableAngularMotor(true, btScalar(targetVelocity), maxImpulse);
+#ifdef _DEBUG
+            //std::string nameBodies = "BulletRobot_RNS_Bodies_All";
+            //VirtualRobot::RobotNodeSetPtr rnsBodies = robot->getRobotNodeSet(nameBodies);
+            v = getComVelocityGlobal(rnsBodies);
+            if (boost::math::isnan(v(0)) || boost::math::isnan(v(1)) || boost::math::isnan(v(2)))
+            {
+                VR_ERROR << "NAN after bullet call!!!" << endl;
+            }
+#endif
+
+
+
 #endif
         }
     }
@@ -514,6 +573,7 @@ void BulletRobot::actuateJoints(double dt)
 
 void BulletRobot::updateSensors(double dt)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     boost::unordered_set<std::string> contactObjectNames;
     // this seems stupid and it is, but that is abstract interfaces for you.
     for(std::vector<SensorPtr>::iterator it = sensors.begin(); it != sensors.end(); it++)
@@ -587,6 +647,7 @@ void BulletRobot::updateSensors(double dt)
 
 BulletRobot::LinkInfo BulletRobot::getLink( VirtualRobot::RobotNodePtr node )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	for (size_t i=0;i<links.size();i++)
 	{
 		if (links[i].nodeJoint == node || links[i].nodeJoint2 == node)
@@ -598,6 +659,7 @@ BulletRobot::LinkInfo BulletRobot::getLink( VirtualRobot::RobotNodePtr node )
 
 std::vector<BulletRobot::LinkInfo> BulletRobot::getLinks( VirtualRobot::RobotNodePtr node )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     std::vector<BulletRobot::LinkInfo> result;
 	for (size_t i=0;i<links.size();i++)
 	{
@@ -609,6 +671,7 @@ std::vector<BulletRobot::LinkInfo> BulletRobot::getLinks( VirtualRobot::RobotNod
 
 bool BulletRobot::hasLink( VirtualRobot::RobotNodePtr node )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	for (size_t i=0;i<links.size();i++)
 	{
 		if (links[i].nodeJoint == node || links[i].nodeJoint2 == node)
@@ -619,6 +682,7 @@ bool BulletRobot::hasLink( VirtualRobot::RobotNodePtr node )
 
 void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, double jointValue )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	VR_ASSERT(node);
 
 	if (node->isRotationalJoint())
@@ -672,6 +736,7 @@ void BulletRobot::actuateNode( VirtualRobot::RobotNodePtr node, double jointValu
 
 void BulletRobot::actuateNodeVel(RobotNodePtr node, double jointVelocity)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     VR_ASSERT(node);
 
     if (node->isRotationalJoint())
@@ -725,10 +790,11 @@ void BulletRobot::actuateNodeVel(RobotNodePtr node, double jointVelocity)
 
 double BulletRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	VR_ASSERT(rn);
 	if (!hasLink(rn))
 	{
-		VR_ERROR << "No link with node " << rn->getName() << endl;
+        //VR_ERROR << "No link with node " << rn->getName() << endl;
 		return 0.0f;
 	}
 	LinkInfo link = getLink(rn);
@@ -773,10 +839,11 @@ double BulletRobot::getJointAngle( VirtualRobot::RobotNodePtr rn )
 
 double BulletRobot::getJointTargetSpeed( VirtualRobot::RobotNodePtr rn )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     VR_ASSERT(rn);
     if (!hasLink(rn))
     {
-        VR_ERROR << "No link with node " << rn->getName() << endl;
+        //VR_ERROR << "No link with node " << rn->getName() << endl;
         return 0.0f;
     }
     LinkInfo link = getLink(rn);
@@ -804,10 +871,11 @@ double BulletRobot::getJointTargetSpeed( VirtualRobot::RobotNodePtr rn )
 
 double BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     VR_ASSERT(rn);
 	if (!hasLink(rn))
 	{
-		VR_ERROR << "No link with node " << rn->getName() << endl;
+        //VR_ERROR << "No link with node " << rn->getName() << endl;
 		return 0.0f;
 	}
 	LinkInfo link = getLink(rn);
@@ -831,6 +899,7 @@ double BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
 
 double BulletRobot::getNodeTarget( VirtualRobot::RobotNodePtr node )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 #ifdef USE_BULLET_GENERIC_6DOF_CONSTRAINT
     return DynamicsRobot::getNodeTarget(node);
 #else
@@ -841,12 +910,13 @@ double BulletRobot::getNodeTarget( VirtualRobot::RobotNodePtr node )
 
 Eigen::Vector3f BulletRobot::getJointTorques(RobotNodePtr rn)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     VR_ASSERT(rn);
     Eigen::Vector3f result;
     result.setZero();
     if (!hasLink(rn))
     {
-        VR_ERROR << "No link with node " << rn->getName() << endl;
+        //VR_ERROR << "No link with node " << rn->getName() << endl;
         return result;
     }
     LinkInfo link = getLink(rn);
@@ -862,10 +932,11 @@ Eigen::Vector3f BulletRobot::getJointTorques(RobotNodePtr rn)
 
 double BulletRobot::getJointTorque(RobotNodePtr rn)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     VR_ASSERT(rn);
     if (!hasLink(rn))
     {
-        VR_ERROR << "No link with node " << rn->getName() << endl;
+        //VR_ERROR << "No link with node " << rn->getName() << endl;
         return 0.0;
     }
     LinkInfo link = getLink(rn);
@@ -883,12 +954,13 @@ double BulletRobot::getJointTorque(RobotNodePtr rn)
 
 Eigen::Vector3f BulletRobot::getJointForces(RobotNodePtr rn)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     VR_ASSERT(rn);
     Eigen::Vector3f result;
     result.setZero();
     if (!hasLink(rn))
     {
-        VR_ERROR << "No link with node " << rn->getName() << endl;
+        //VR_ERROR << "No link with node " << rn->getName() << endl;
         return result;
     }
     LinkInfo link = getLink(rn);
@@ -904,6 +976,7 @@ Eigen::Vector3f BulletRobot::getJointForces(RobotNodePtr rn)
 
 Eigen::Matrix4f BulletRobot::getComGlobal( VirtualRobot::RobotNodePtr rn )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(getDynamicsRobotNode(rn));
     if (!bo)
     {
@@ -915,6 +988,7 @@ Eigen::Matrix4f BulletRobot::getComGlobal( VirtualRobot::RobotNodePtr rn )
 
 Eigen::Vector3f BulletRobot::getComGlobal( VirtualRobot::RobotNodeSetPtr set)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	Eigen::Vector3f com = Eigen::Vector3f::Zero();
 	double totalMass = 0.0;
 	for (unsigned int i = 0; i < set->getSize(); i++)
@@ -932,6 +1006,7 @@ Eigen::Vector3f BulletRobot::getComGlobal( VirtualRobot::RobotNodeSetPtr set)
 
 Eigen::Vector3f BulletRobot::getComVelocityGlobal( VirtualRobot::RobotNodeSetPtr set)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	Eigen::Vector3f com = Eigen::Vector3f::Zero();
 	double totalMass = 0.0;
 	for (unsigned int i = 0; i < set->getSize(); i++)
@@ -939,16 +1014,32 @@ Eigen::Vector3f BulletRobot::getComVelocityGlobal( VirtualRobot::RobotNodeSetPtr
 		VirtualRobot::RobotNodePtr node = (*set)[i];
 		BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(getDynamicsRobotNode(node));
 		Eigen::Vector3f vel = bo->getLinearVelocity();
+        if (boost::math::isnan(vel(0)) || boost::math::isnan(vel(1)) || boost::math::isnan(vel(2)))
+        {
+            VR_ERROR << "NAN result: getLinearVelocity:" << bo->getName() << ", i:" << i << endl;
+            node->print();
+            VR_ERROR << "BULLETOBJECT com:" << bo->getCom() << endl;
+            VR_ERROR << "BULLETOBJECT: ang vel:" << bo->getAngularVelocity() << endl;
+            VR_ERROR << "BULLETOBJECT:" << bo->getRigidBody()->getWorldTransform().getOrigin() << endl;
+
+
+        }
+
 		com += node->getMass() * vel;
 		totalMass += node->getMass();
 	}
-
-	com *= float(1.0f/totalMass);
+    if (fabs(totalMass)<1e-5)
+    {
+        VR_ERROR << "Little mass: " << totalMass << ". Could not compute com velocity..." << endl;
+    }
+    else
+        com *= float(1.0f/totalMass);
 	return com;
 }
 
 void BulletRobot::setPoseNonActuatedRobotNodes()
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     VR_ASSERT(robot);
     std::vector<RobotNodePtr> rns = robot->getRobotNodes();
     std::vector<RobotNodePtr> actuatedNodes;
@@ -995,6 +1086,7 @@ void BulletRobot::setPoseNonActuatedRobotNodes()
 
 void BulletRobot::enableForceTorqueFeedback(const LinkInfo& link , bool enable)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     if (!link.joint->needsFeedback() && enable)
 	{
         link.joint->enableFeedback(true);
@@ -1013,6 +1105,7 @@ void BulletRobot::enableForceTorqueFeedback(const LinkInfo& link , bool enable)
 
 Eigen::VectorXf BulletRobot::getForceTorqueFeedbackA( const LinkInfo& link )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	Eigen::VectorXf r(6);
 	r.setZero();
 	if (!link.joint || !link.joint->needsFeedback())
@@ -1026,8 +1119,10 @@ Eigen::VectorXf BulletRobot::getForceTorqueFeedbackA( const LinkInfo& link )
 	r << feedback->m_appliedForceBodyA[0],feedback->m_appliedForceBodyA[1],feedback->m_appliedForceBodyA[2],feedback->m_appliedTorqueBodyA[0],feedback->m_appliedTorqueBodyA[1],feedback->m_appliedTorqueBodyA[2];
 	return r;
 }
+
 Eigen::VectorXf BulletRobot::getForceTorqueFeedbackB( const LinkInfo& link )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	Eigen::VectorXf r(6);
 	r.setZero();
 	if (!link.joint || !link.joint->needsFeedback())
@@ -1044,6 +1139,7 @@ Eigen::VectorXf BulletRobot::getForceTorqueFeedbackB( const LinkInfo& link )
 
 Eigen::VectorXf BulletRobot::getJointForceTorqueGlobal(const BulletRobot::LinkInfo &link)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     Eigen::VectorXf ftA = getForceTorqueFeedbackA(link);
     Eigen::VectorXf ftB = getForceTorqueFeedbackB(link);
 

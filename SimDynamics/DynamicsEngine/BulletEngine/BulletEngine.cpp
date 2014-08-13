@@ -9,7 +9,8 @@
 
 namespace SimDynamics {
 
-BulletEngine::BulletEngine()
+BulletEngine::BulletEngine(boost::shared_ptr <boost::recursive_mutex> engineMutex)
+    :DynamicsEngine(engineMutex)
 {
 	collision_config = NULL;
 	dispatcher = NULL;
@@ -42,7 +43,7 @@ bool BulletEngine::init( DynamicsEngineConfigPtr config )
 
 bool BulletEngine::init( BulletEngineConfigPtr config )
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	DynamicsEngine::init(config);
 	bulletConfig = config;
 
@@ -93,7 +94,7 @@ bool BulletEngine::init( BulletEngineConfigPtr config )
 
 bool BulletEngine::cleanup()
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	while (robots.size()>0)
 	{
 		size_t start = robots.size();
@@ -125,7 +126,7 @@ bool BulletEngine::cleanup()
 
 void BulletEngine::updateConfig(BulletEngineConfigPtr newConfig)
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 
 	bulletConfig = newConfig;
 
@@ -157,7 +158,7 @@ void BulletEngine::updateConfig(BulletEngineConfigPtr newConfig)
 
 bool BulletEngine::addObject( DynamicsObjectPtr o )
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	BulletObjectPtr btObject = boost::dynamic_pointer_cast<BulletObject>(o);
 	if (!btObject)
 	{
@@ -202,7 +203,7 @@ bool BulletEngine::addObject( DynamicsObjectPtr o )
 
 bool BulletEngine::removeObject( DynamicsObjectPtr o )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	BulletObjectPtr btObject = boost::dynamic_pointer_cast<BulletObject>(o);
 	if (!btObject)
 	{
@@ -216,7 +217,7 @@ bool BulletEngine::removeObject( DynamicsObjectPtr o )
 
 bool BulletEngine::removeLink( BulletRobot::LinkInfo &l )
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	dynamicsWorld->removeConstraint(l.joint.get());
 	this->resetCollisions(static_cast<DynamicsObject*>(l.dynNode1.get()));
 	this->resetCollisions(static_cast<DynamicsObject*>(l.dynNode2.get()));
@@ -230,7 +231,7 @@ btDynamicsWorld* BulletEngine::getBulletWorld()
 
 void BulletEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Vector3f &up )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	DynamicsEngine::createFloorPlane(pos,up);
     float size = float(floorExtendMM);//50000.0f; // mm
     float sizeSmall = float(floorDepthMM);// 500.0f;
@@ -348,7 +349,7 @@ Eigen::Vector3f BulletEngine::getVecEigen( const btVector3 &vec, bool scaling )
 
 bool BulletEngine::addRobot( DynamicsRobotPtr r )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	BulletRobotPtr btRobot = boost::dynamic_pointer_cast<BulletRobot>(r);
 	if (!btRobot)
 	{
@@ -373,7 +374,7 @@ bool BulletEngine::addRobot( DynamicsRobotPtr r )
 
 void BulletEngine::addExternalCallback(BulletStepCallback function, void* data)
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 
 	callbacks.push_back(ExCallbackData(function, data));
 }
@@ -381,7 +382,11 @@ void BulletEngine::addExternalCallback(BulletStepCallback function, void* data)
 void BulletEngine::externalCallbacks(btDynamicsWorld *world, btScalar timeStep)
 {
     BulletEngine *e = static_cast<BulletEngine *>(world->getWorldUserInfo());
-    boost::recursive_mutex::scoped_lock scoped_lock(e->engineMutex);
+    if (!e)
+        return;
+
+    // apply lock
+    MutexLockPtr lock = e->getScopedLock();
 
 	e->updateRobots(timeStep);
 
@@ -403,7 +408,7 @@ void BulletEngine::updateRobots(btScalar timeStep)
 
 bool BulletEngine::removeRobot( DynamicsRobotPtr r )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	BulletRobotPtr btRobot = boost::dynamic_pointer_cast<BulletRobot>(r);
 	if (!btRobot)
 	{
@@ -428,7 +433,7 @@ bool BulletEngine::removeRobot( DynamicsRobotPtr r )
 
 bool BulletEngine::addLink( BulletRobot::LinkInfo &l )
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 #ifdef DEBUG_FIXED_OBJECTS
 	cout << "TEST2" << endl;
 #else
@@ -443,7 +448,7 @@ bool BulletEngine::addLink( BulletRobot::LinkInfo &l )
 
 void BulletEngine::print()
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	cout << "------------------ Bullet Engine ------------------" << endl;
 	for (size_t i=0;i<objects.size();i++)
 	{
@@ -499,7 +504,7 @@ void BulletEngine::print()
 
 void BulletEngine::activateAllObjects()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	for (size_t i=0;i<objects.size();i++)
 	{
 		BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(objects[i]);
@@ -513,7 +518,7 @@ void BulletEngine::activateAllObjects()
 
 std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	//Assume world->stepSimulation or world->performDiscreteCollisionDetection has been called
 
 	std::vector<DynamicsEngine::DynamicsContactInfo> result;
@@ -559,7 +564,7 @@ std::vector<DynamicsEngine::DynamicsContactInfo> BulletEngine::getContacts()
 
 void BulletEngine::stepSimulation( double dt, int maxSubSteps, double fixedTimeStep )
 {
-	boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     simTime += dt;
 	dynamicsWorld->stepSimulation(btScalar(dt), maxSubSteps, btScalar(fixedTimeStep));
 }

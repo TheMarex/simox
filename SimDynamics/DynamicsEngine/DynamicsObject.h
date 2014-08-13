@@ -25,6 +25,7 @@
 
 #include "../SimDynamics.h"
 #include <VirtualRobot/SceneObject.h>
+#include <boost/thread/recursive_mutex.hpp>
 
 namespace SimDynamics
 {
@@ -82,12 +83,18 @@ public:
      */
     virtual void applyTorque(const Eigen::Vector3f &torque);
 
+    //! If set, all actions are protected with this mutex
+    virtual void setMutex(boost::shared_ptr <boost::recursive_mutex> engineMutexPtr);
+
     virtual void setSimType(VirtualRobot::SceneObject::Physics::SimulationType s);
 
 
 protected:
 
 	VirtualRobot::SceneObjectPtr sceneObject;
+
+    boost::shared_ptr <boost::recursive_mutex> engineMutexPtr;
+
 };
 
 typedef boost::shared_ptr<DynamicsObject> DynamicsObjectPtr;

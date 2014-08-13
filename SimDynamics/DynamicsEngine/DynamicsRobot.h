@@ -100,6 +100,9 @@ public:
 
     virtual void setGlobalPose(Eigen::Matrix4f &gp);
 
+    //! If set, all actions are protected with this mutex
+    virtual void setMutex(boost::shared_ptr <boost::recursive_mutex> engineMutexPtr);
+
     //! can be used to access the internal controllers
     std::map<VirtualRobot::RobotNodePtr, VelocityMotorController>& getControllers();
 
@@ -134,6 +137,8 @@ protected:
 
 	std::vector<VirtualRobot::RobotNodePtr> robotNodes;
 	std::map<VirtualRobot::RobotNodePtr, DynamicsObjectPtr> dynamicRobotNodes;
+
+    boost::shared_ptr <boost::recursive_mutex> engineMutexPtr;
 };
 
 typedef boost::shared_ptr<DynamicsRobot> DynamicsRobotPtr;

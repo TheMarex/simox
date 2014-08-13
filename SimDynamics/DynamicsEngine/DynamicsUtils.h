@@ -83,11 +83,12 @@ private:
  *
  * Note: Torque is ignored. This controler returns *velocities*.
  *
+ *
  * Position only:
  * position error --> [PID] --> joint
  *
  * Velocity only:
- * target velocity --> joint
+ * velocity error -> [PID] --> joint
  *
  * Position + Velocity:
  *                       target velocity
@@ -102,20 +103,26 @@ public:
 
 	VelocityMotorController(const PIDController& positionController);
 
-	double update(double positionError, double targetVelocity, ActuationMode actuation, double dt);
+    void setCurrentVelocity(double vel);
 
-    void reset();
+    double update(double positionError, double targetVelocity, ActuationMode actuation, double dt);
+
+	void reset();
+    //! set new p,i,d values for position controller
     void reset(double pid_pos_gainP, double pid_pos_gainI, double pid_pos_gainD);
 
 	void debug();
 
     void getPosPID(double &storeP, double &storeI, double &storeD);
 private:
-	PIDController positionController;
-	double maxVelocity;
+    PIDController positionController;
+    PIDController velocityController;
+    double maxVelocity;
 	double maxAcceleration;
 	double velocity;
 };
+
 }
+
 
 #endif

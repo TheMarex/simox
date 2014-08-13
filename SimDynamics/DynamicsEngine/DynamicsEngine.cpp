@@ -4,12 +4,16 @@
 
 namespace SimDynamics {
 
-DynamicsEngine::DynamicsEngine()
+DynamicsEngine::DynamicsEngine(boost::shared_ptr <boost::recursive_mutex> engineMutex)
 {
 	floorPos.setZero();
 	floorUp.setZero();
     floorDepthMM = 500.0f;
     floorExtendMM = 50000.0f;
+    if (engineMutex)
+        engineMutexPtr = engineMutex;
+    else
+        engineMutexPtr.reset(new boost::recursive_mutex());
 }
 	
 DynamicsEngine::~DynamicsEngine()
@@ -20,7 +24,7 @@ DynamicsEngine::~DynamicsEngine()
 
 Eigen::Vector3f DynamicsEngine::getGravity()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	return dynamicsConfig->gravity;
 }
 
@@ -30,22 +34,28 @@ bool DynamicsEngine::init( DynamicsEngineConfigPtr config )
 		dynamicsConfig = config;
 	else
 		dynamicsConfig.reset(new DynamicsEngineConfig());
-	return true;
+    return true;
+}
+
+void DynamicsEngine::setMutex(boost::shared_ptr<boost::recursive_mutex> engineMutex)
+{
+    engineMutexPtr = engineMutex;
 }
 
 bool DynamicsEngine::addObject( DynamicsObjectPtr o )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	if (find(objects.begin(), objects.end(), o) == objects.end())
 	{
 		objects.push_back(o);
 	}
+    o->setMutex(engineMutexPtr);
 	return true;
 }
 
 bool DynamicsEngine::removeObject( DynamicsObjectPtr o )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	std::vector<DynamicsObjectPtr>::iterator it = find(objects.begin(), objects.end(), o);
 	if (it == objects.end())
 		return false;
@@ -56,14 +66,14 @@ bool DynamicsEngine::removeObject( DynamicsObjectPtr o )
 
 void DynamicsEngine::createFloorPlane( const Eigen::Vector3f &pos, const Eigen::Vector3f &up )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	floorPos = pos;
 	floorUp = up;
 }
 
 bool DynamicsEngine::addRobot( DynamicsRobotPtr r )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	if (find(robots.begin(), robots.end(), r) == robots.end())
 	{
         for (size_t i=0;i<robots.size();i++)
@@ -76,12 +86,13 @@ bool DynamicsEngine::addRobot( DynamicsRobotPtr r )
         }
 		robots.push_back(r);
 	}
+    r->setMutex(engineMutexPtr);
 	return true;
 }
 
 bool DynamicsEngine::removeRobot( DynamicsRobotPtr r )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	std::vector<DynamicsRobotPtr>::iterator it = find(robots.begin(), robots.end(), r);
 	if (it == robots.end())
 		return false;
@@ -92,7 +103,7 @@ bool DynamicsEngine::removeRobot( DynamicsRobotPtr r )
 
 void DynamicsEngine::disableCollision( DynamicsObject* o1, DynamicsObject* o2 )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	std::vector<DynamicsObject*>::iterator i1 = find(collisionDisabled[o1].begin(),collisionDisabled[o1].end(),o2);
 	if (i1==collisionDisabled[o1].end())
 	{
@@ -107,7 +118,7 @@ void DynamicsEngine::disableCollision( DynamicsObject* o1, DynamicsObject* o2 )
 
 void DynamicsEngine::disableCollision( DynamicsObject* o1 )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	std::vector<DynamicsObject*>::iterator i1 = find(collisionToAllDisabled.begin(),collisionToAllDisabled.end(),o1);
 	if (i1 == collisionToAllDisabled.end())
 		collisionToAllDisabled.push_back(o1);
@@ -115,7 +126,7 @@ void DynamicsEngine::disableCollision( DynamicsObject* o1 )
 
 void DynamicsEngine::enableCollision( DynamicsObject* o1, DynamicsObject* o2 )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	//if (o1 < o2)
 	//{
 		std::vector<DynamicsObject*>::iterator i1 = find(collisionDisabled[o1].begin(),collisionDisabled[o1].end(),o2);
@@ -135,7 +146,7 @@ void DynamicsEngine::enableCollision( DynamicsObject* o1, DynamicsObject* o2 )
 
 void DynamicsEngine::enableCollision( DynamicsObject* o1 )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	std::vector<DynamicsObject*>::iterator i1 = find(collisionToAllDisabled.begin(),collisionToAllDisabled.end(),o1);
 	if (i1 != collisionToAllDisabled.end())
 		collisionToAllDisabled.erase(i1);
@@ -143,7 +154,7 @@ void DynamicsEngine::enableCollision( DynamicsObject* o1 )
 
 bool DynamicsEngine::checkCollisionEnabled( DynamicsObject* o1 )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	std::vector<DynamicsObject*>::iterator i1 = find(collisionToAllDisabled.begin(),collisionToAllDisabled.end(),o1);
     return (i1 == collisionToAllDisabled.end());
 }
@@ -158,7 +169,7 @@ void DynamicsEngine::getFloorInfo(Eigen::Vector3f &floorPos, Eigen::Vector3f &fl
 
 bool DynamicsEngine::checkCollisionEnabled( DynamicsObject* o1, DynamicsObject* o2 )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	if (!checkCollisionEnabled(o1))
 		return false;
 	if (!checkCollisionEnabled(o2))
@@ -180,7 +191,7 @@ bool DynamicsEngine::checkCollisionEnabled( DynamicsObject* o1, DynamicsObject* 
 
 void DynamicsEngine::resetCollisions( DynamicsObject* o )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	collisionDisabled.erase(o);
 	std::map < DynamicsObject*, std::vector<DynamicsObject*> >::iterator i1 = collisionDisabled.begin();
 	while (i1 != collisionDisabled.end())
@@ -197,26 +208,26 @@ void DynamicsEngine::resetCollisions( DynamicsObject* o )
 
 std::vector<DynamicsRobotPtr> DynamicsEngine::getRobots()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	return robots;
 }
 
 std::vector<DynamicsObjectPtr> DynamicsEngine::getObjects()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	return objects;
 }
 
 std::vector<DynamicsEngine::DynamicsContactInfo> DynamicsEngine::getContacts()
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	std::vector<DynamicsEngine::DynamicsContactInfo> result;
 	return result;
 }
 
 SimDynamics::DynamicsRobotPtr DynamicsEngine::getRobot( VirtualRobot::RobotPtr r )
 {
-    boost::recursive_mutex::scoped_lock scoped_lock(engineMutex);
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     for (size_t i=0;i<robots.size();i++)
     {
         if (robots[i]->getRobot() == r)
@@ -225,6 +236,12 @@ SimDynamics::DynamicsRobotPtr DynamicsEngine::getRobot( VirtualRobot::RobotPtr r
         }
     }
     return DynamicsRobotPtr();
+}
+
+DynamicsEngine::MutexLockPtr DynamicsEngine::getScopedLock()
+{
+    boost::shared_ptr< boost::recursive_mutex::scoped_lock > scoped_lock(new boost::recursive_mutex::scoped_lock(*engineMutexPtr));
+    return scoped_lock;
 }
 
 } // namespace SimDynamics

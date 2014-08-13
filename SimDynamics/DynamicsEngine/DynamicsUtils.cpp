@@ -110,11 +110,16 @@ double TorqueMotorController::update(double positionError, double velocityError,
 }
 
 VelocityMotorController::VelocityMotorController(double maxVelocity, double maxAcceleration)
-: positionController(80.0, 10.0, 0.8)
+    : positionController(15.0, 0.0, 0.0)
+, velocityController(15.0, 0.0, 0.0)
 , maxVelocity(maxVelocity)
 , maxAcceleration(maxAcceleration)
 , velocity(0)
 {
+}
+void VelocityMotorController::setCurrentVelocity(double vel)
+{
+    velocity = vel;
 }
 
 double VelocityMotorController::update(double positionError, double targetVelocity, ActuationMode actuation, double dt)
@@ -131,7 +136,10 @@ double VelocityMotorController::update(double positionError, double targetVeloci
 	else if (actuation.modes.position)
 		output = posUpdate;
 	else if (actuation.modes.velocity)
-		output = targetVelocity;
+    {
+        double velError = targetVelocity - velocity;
+        output = velocityController.update(velError, dt);
+    }
 
 	if (maxVelocity > 0.0 && fabs(output) > maxVelocity)
 	{
@@ -170,4 +178,7 @@ void VelocityMotorController::debug()
 {
 	positionController.debug();
 }
+
+
+
 }

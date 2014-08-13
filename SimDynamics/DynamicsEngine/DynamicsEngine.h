@@ -59,10 +59,11 @@ class SIMDYNAMICS_IMPORT_EXPORT DynamicsEngine
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-	/*!
-	Constructor
+    /*!
+        Constructor
+        \param engineMutex Optionally, all engine access methods can be protected by an external mutex. If not set, an internal mutex is creeated.
 	*/
-	DynamicsEngine();
+    DynamicsEngine(boost::shared_ptr <boost::recursive_mutex> engineMutex = boost::shared_ptr<boost::recursive_mutex>());
 
 	/*!
 	*/
@@ -72,6 +73,8 @@ public:
 		Initialize the engine with this configuration
 	*/
 	virtual bool init(DynamicsEngineConfigPtr config);
+
+    void setMutex(boost::shared_ptr <boost::recursive_mutex> engineMutex);
 
 	Eigen::Vector3f getGravity();
 
@@ -152,6 +155,23 @@ public:
     */
     virtual DynamicsRobotPtr getRobot(VirtualRobot::RobotPtr r);
 
+    typedef boost::shared_ptr< boost::recursive_mutex::scoped_lock > MutexLockPtr;
+
+    /*!
+        This lock can be used to protect data access. It locks the mutex until deletion.
+
+        Exemplary usage:
+        {
+            MutexLockPtr lock = engine->getScopedLock();
+            // now the mutex is locked
+
+            // access data
+            // ...
+
+        } // end of scope -> lock gets deleted and mutex is released automatically
+    */
+    MutexLockPtr getScopedLock();
+
 protected:
 	DynamicsEngineConfigPtr dynamicsConfig;
 
@@ -168,7 +188,7 @@ protected:
     double floorExtendMM;
     double floorDepthMM;
 
-    boost::recursive_mutex engineMutex;
+    boost::shared_ptr <boost::recursive_mutex> engineMutexPtr;
 
 };
 

@@ -511,7 +511,15 @@ bool DifferentialIK::checkTolerances()
 	bool result = true;
 	for (size_t i=0; i<tcp_set.size();i++){
         SceneObjectPtr tcp = tcp_set[i];
-		if (getErrorPosition(tcp) > tolerancePosition[tcp] || getErrorRotation(tcp)>toleranceRotation[tcp])
+        float currentErrorPos = getErrorPosition(tcp);
+        float maxErrorPos = tolerancePosition[tcp];
+        float currentErrorRot = getErrorRotation(tcp);
+        float maxErrorRot = toleranceRotation[tcp];
+        if (verbose)
+        {
+            VR_INFO << "TCP " << tcp->getName() << ", errPos:" << currentErrorPos << ", errRot:" << currentErrorRot << ", maxErrPos:" << maxErrorPos << ", maxErrorRot:" << maxErrorRot << endl;
+        }
+        if (currentErrorPos > maxErrorPos  || currentErrorRot>maxErrorRot)
 		{
 			result = false;
 			//break;

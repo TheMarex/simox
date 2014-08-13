@@ -4,6 +4,7 @@
 #include "../../DynamicsWorld.h"
 
 #include <boost/pointer_cast.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 
 using namespace VirtualRobot;
 
@@ -60,6 +61,12 @@ void SimoxMotionState::setWorldTransform(const btTransform& worldPose)
 
     // _transform is the Bullet pose, used in getWorldTransform().
     _transform = worldPose; // com position
+#ifdef _DEBUG
+                    if (boost::math::isnan(_transform.getOrigin().x()) || boost::math::isnan(_transform.getOrigin().y()) || boost::math::isnan(_transform.getOrigin().z()))
+                    {
+                        VR_ERROR << "NAN transform!!!" << endl;
+                    }
+#endif
 	m_graphicsWorldTrans = _transform; // this is used for debug drawing
 	_graphicsTransfrom = _transform;
 	//_graphicsTransfrom.getOrigin();// -= _comOffset.getOrigin(); // com adjusted
@@ -123,6 +130,12 @@ void SimoxMotionState::setGlobalPoseSimox( const Eigen::Matrix4f& worldPose )
                 if (links[i].nodeJoint)
                 {
                     float ja = float(bdr->getJointAngle(links[i].nodeJoint));
+#ifdef _DEBUG
+                    if (boost::math::isnan(ja))
+                    {
+                        VR_ERROR << "NAN !!!" << endl;
+                    }
+#endif
                     // we can update the joint value via an RobotNodeActuator
                     RobotNodeActuatorPtr rna (new RobotNodeActuator(links[i].nodeJoint));
                     rna->updateJointAngle(ja);

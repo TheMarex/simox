@@ -89,9 +89,10 @@ public:
 	friend class BulletObject;
 
 	/*!
-	Constructor
-	*/
-	BulletEngine();
+        Constructor
+        \param engineMutex Optionally, all engine access methods can be protected by an external mutex. If not set, an internal mutex is creeated.
+    */
+    BulletEngine(boost::shared_ptr <boost::recursive_mutex> engineMutex = boost::shared_ptr<boost::recursive_mutex>());
 
 	/*!
 	*/

@@ -15,6 +15,7 @@ namespace SimDynamics
 class SIMDYNAMICS_IMPORT_EXPORT BulletRobotLogger
 {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	BulletRobotLogger(BulletEnginePtr engine,
 					  const BulletRobotPtr robot,
 					  const VirtualRobot::RobotNodeSetPtr& jointNodes,
@@ -27,6 +28,13 @@ public:
 	, timestamp(0.0f)
 	, logPath("")
 	{
+        int dof = jointNodes->getSize();
+        actualAngle.resize(dof);
+        targetAngle.resize(dof);
+        actualVelocity.resize(dof);
+        targetVelocity.resize(dof);
+        actualTorque.resize(dof);
+        actualForces.resize(3, dof);
 		engine->addExternalCallback(logCB, (void*) this);
 	}
 
@@ -49,21 +57,28 @@ public:
 
 private:
 	const BulletRobotPtr robot;
-	VirtualRobot::RobotNodeSetPtr jointNodes;
+    bool running;
+    VirtualRobot::RobotNodeSetPtr jointNodes;
 	VirtualRobot::RobotNodeSetPtr bodyNodes;
-	std::vector<Eigen::VectorXf> targetAngleLog;
-	std::vector<Eigen::VectorXf> targetVelocityLog;
-	std::vector<Eigen::VectorXf> actualAngleLog;
-	std::vector<Eigen::VectorXf> actualVelocityLog;
-	std::vector<Eigen::VectorXf> actualJointTorquesLog;
-	std::vector<Eigen::Matrix3Xf> actualJointForcesLog;
-	std::vector<Eigen::Vector3f> actualCoMLog;
-	std::vector<Eigen::Vector3f> actualCoMVelocityLog;
+    std::vector<Eigen::VectorXf, Eigen::aligned_allocator<Eigen::VectorXf> > targetAngleLog;
+    std::vector<Eigen::VectorXf, Eigen::aligned_allocator<Eigen::VectorXf> > targetVelocityLog;
+    std::vector<Eigen::VectorXf, Eigen::aligned_allocator<Eigen::VectorXf> > actualAngleLog;
+    std::vector<Eigen::VectorXf, Eigen::aligned_allocator<Eigen::VectorXf> > actualVelocityLog;
+    std::vector<Eigen::VectorXf, Eigen::aligned_allocator<Eigen::VectorXf> > actualJointTorquesLog;
+    std::vector<Eigen::Matrix3Xf, Eigen::aligned_allocator<Eigen::Matrix3Xf> > actualJointForcesLog;
+    std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > actualCoMLog;
+    std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > actualCoMVelocityLog;
 	std::vector<double> timestamps;
-	double timestamp;
-	bool running;
 	int max_samples;
-	std::string logPath;
+    double timestamp;
+    std::string logPath;
+
+    Eigen::VectorXf actualAngle;
+    Eigen::VectorXf targetAngle;
+    Eigen::VectorXf actualVelocity;
+    Eigen::VectorXf targetVelocity;
+    Eigen::VectorXf actualTorque;
+    Eigen::Matrix3Xf actualForces;
 
 	static void logCB(void* data, btScalar dt);
 	void log(btScalar dt);

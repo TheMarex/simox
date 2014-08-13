@@ -223,6 +223,7 @@ boost::shared_ptr<btRigidBody> BulletObject::getRigidBody()
 
 void BulletObject::setPosition( const Eigen::Vector3f &posMM )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
 	pose.block(0,3,3,1) = posMM;
 	setPose(pose);
@@ -230,6 +231,7 @@ void BulletObject::setPosition( const Eigen::Vector3f &posMM )
 
 void BulletObject::setPoseIntern( const Eigen::Matrix4f &pose )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     /* convert to local coord system, apply comoffset and convert back*/
     Eigen::Matrix4f poseLocal = sceneObject->getGlobalPose().inverse() * pose;
     poseLocal.block(0, 3, 3, 1) += com;
@@ -242,12 +244,14 @@ void BulletObject::setPoseIntern( const Eigen::Matrix4f &pose )
 
 void BulletObject::setPose( const Eigen::Matrix4f &pose )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     DynamicsObject::setPose(pose);
     setPoseIntern(pose);
 }
 
 Eigen::Vector3f BulletObject::getLinearVelocity()
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	if (!rigidBody)
 		return Eigen::Vector3f::Zero();
 	return (BulletEngine::getVecEigen(rigidBody->getLinearVelocity()));
@@ -255,6 +259,7 @@ Eigen::Vector3f BulletObject::getLinearVelocity()
 
 Eigen::Vector3f BulletObject::getAngularVelocity()
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	if (!rigidBody)
 		return Eigen::Vector3f::Zero();
     return (BulletEngine::getVecEigen(rigidBody->getAngularVelocity(),false));
@@ -262,6 +267,7 @@ Eigen::Vector3f BulletObject::getAngularVelocity()
 
 void BulletObject::setLinearVelocity( const Eigen::Vector3f &vel )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	if (!rigidBody)
 		return;
 	btVector3 btVel = BulletEngine::getVecBullet(vel,false);
@@ -270,6 +276,7 @@ void BulletObject::setLinearVelocity( const Eigen::Vector3f &vel )
 
 void BulletObject::setAngularVelocity( const Eigen::Vector3f &vel )
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
 	if (!rigidBody)
 		return;
 	btVector3 btVel = BulletEngine::getVecBullet(vel,false);
@@ -278,6 +285,7 @@ void BulletObject::setAngularVelocity( const Eigen::Vector3f &vel )
 
 Eigen::Matrix4f BulletObject::getComGlobal()
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     btTransform tr;
     motionState->getWorldTransform(tr);
     return BulletEngine::getPoseEigen(tr);
@@ -285,6 +293,7 @@ Eigen::Matrix4f BulletObject::getComGlobal()
 
 void BulletObject::applyForce(const Eigen::Vector3f &force)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     if (!rigidBody)
         return;
     btVector3 btVel = BulletEngine::getVecBullet(force,false);
@@ -293,6 +302,7 @@ void BulletObject::applyForce(const Eigen::Vector3f &force)
 
 void BulletObject::applyTorque(const Eigen::Vector3f &torque)
 {
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
     if (!rigidBody)
         return;
     btVector3 btVel = BulletEngine::getVecBullet(torque,false);

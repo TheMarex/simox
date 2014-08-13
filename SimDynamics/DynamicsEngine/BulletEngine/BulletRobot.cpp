@@ -484,7 +484,6 @@ void BulletRobot::actuateJoints(double dt)
             else if (actuation.modes.velocity)
             {
                 //cout << "################### velActual:" << velActual << ", velTarget" << velocityTarget << endl;
-                controller.setCurrentVelocity(velActual);
                 targetVelocity = controller.update(0.0, velocityTarget, actuation, btScalar(dt));
             }
             // FIXME this bypasses the controller (and doesn't work..)

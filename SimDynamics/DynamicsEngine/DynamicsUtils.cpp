@@ -115,11 +115,8 @@ VelocityMotorController::VelocityMotorController(double maxVelocity, double maxA
 , maxVelocity(maxVelocity)
 , maxAcceleration(maxAcceleration)
 , velocity(0)
+, acceleration(0)
 {
-}
-void VelocityMotorController::setCurrentVelocity(double vel)
-{
-    velocity = vel;
 }
 
 double VelocityMotorController::update(double positionError, double targetVelocity, ActuationMode actuation, double dt)

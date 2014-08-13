@@ -116,7 +116,6 @@ public:
     void getPosPID(double &storeP, double &storeI, double &storeD);
 private:
     PIDController positionController;
-    PIDController velocityController;
     double maxVelocity;
 	double maxAcceleration;
 	double velocity;

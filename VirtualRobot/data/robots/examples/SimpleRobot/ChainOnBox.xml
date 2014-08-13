@@ -10,9 +10,6 @@
 			<UseAsCollisionModel/>
 		</Visualization>
 		<Physics>
-			<IgnoreCollision name="Joint1"/>
-			<IgnoreCollision name="Joint2"/>
-			<IgnoreCollision name="Joint3"/>
             <Mass value="10000" units="kg" />
         </Physics>
 		<Child name="Joint1_Trafo"/>
@@ -45,7 +42,7 @@
 		</Visualization>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
-            <Mass value="1" units="kg" />
+            <Mass value="10" units="kg" />
         </Physics>
 		<Child name="Joint2"/>
 	</RobotNode>
@@ -72,12 +69,12 @@
 		</Visualization>
 		<Physics>
             <CoM location="VisualizationBBoxCenter"/>
-            <Mass value="1" units="kg" />
+            <Mass value="10" units="kg" />
         </Physics>
-		<Child name="Joint3"/>
+		<!--Child name="Joint3"/-->
 	</RobotNode>
 
-	<RobotNode name="Joint3">
+	<!--RobotNode name="Joint3">
 		<Transform>
 			<DH a="250" d="0" theta="0" alpha="0" units="degree"/>
 		</Transform>
@@ -104,7 +101,6 @@
         </Physics>
 		<Child name="EndTransform"/>
 	</RobotNode>
-
 	<RobotNode name="EndTransform">
 		<Transform>
 			<Translation x="250" y="0" z="50"/>
@@ -127,17 +123,18 @@
             <Mass value="10" units="kg" />
         </Physics>
 	</RobotNode>
+-->
 
 	<RobotNodeSet name="AllJoints">
 		<Node name="Joint1"/>
-		<Node name="Joint2"/>
-		<Node name="Joint3"/>
+		<!--Node name="Joint2"/>
+		<Node name="Joint3"/-->
 	</RobotNodeSet>
 
 	<RobotNodeSet name="CollisionModel">
-		<Node name="Joint1"/>
-		<Node name="Joint2"/>
-		<Node name="Joint3"/>
-  	    <Node name="EndPoint"/>
+		<Node name="Body2"/>
+		<!--Node name="Body3"/>
+		<Node name="Body4"/>
+  	    <Node name="EndPoint"/-->
 	</RobotNodeSet>
 </Robot>

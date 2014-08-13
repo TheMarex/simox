@@ -437,12 +437,6 @@ void SimDynamicsWindow::updateJointInfo()
 		u->units = SoUnits::MILLIMETERS;
 		forceSep->addChild(u);
 
-		Eigen::Vector3f n = ftA.head(3);
-		//n = linkInfo.nodeA->toGlobalCoordinateSystemVec(n);
-		float l = ftA.head(3).norm();
-		float w = 5.0f;
-		SoSeparator *forceA = new SoSeparator;
-		SoSeparator *arrowForceA = CoinVisualizationFactory::CreateArrow(n,l,w,VisualizationFactory::Color::Red());
 
 		/*
 		cout << "FORCE_A: " << linkInfo.dynNode1->getRigidBody()->getTotalForce()[0] << "," << linkInfo.dynNode1->getRigidBody()->getTotalForce()[1] << "," << linkInfo.dynNode1->getRigidBody()->getTotalForce()[2] << endl;
@@ -451,31 +445,15 @@ void SimDynamicsWindow::updateJointInfo()
 		cout << "TORQUEB: " << linkInfo.dynNode2->getRigidBody()->getTotalTorque()[0] << "," << linkInfo.dynNode2->getRigidBody()->getTotalTorque()[1] << "," << linkInfo.dynNode2->getRigidBody()->getTotalTorque()[2] << endl;
 		*/
 
-		// show as nodeA local coords system
-		/*
-		Eigen::Matrix4f comCoord = linkInfo.nodeA->getGlobalPose();
-		Eigen::Matrix4f comLocal = Eigen::Matrix4f::Identity();
-		comLocal.block(0,3,3,1) = linkInfo.nodeA->getCoMLocal();
-		comCoord = comCoord * comLocal;
-		*/
-		// show as global coords 
-		Eigen::Matrix4f comGlobal = Eigen::Matrix4f::Identity();
-		comGlobal.block(0,3,3,1) = linkInfo.nodeA->getCoMGlobal();
-		SoMatrixTransform *m = CoinVisualizationFactory::getMatrixTransform(comGlobal);
-		forceA->addChild(m);
-		forceA->addChild(arrowForceA);
-
-		forceSep->addChild(forceA);
 
 		Eigen::Vector3f jointGlobal = linkInfo.nodeJoint->getGlobalPose().block(0,3,3,1);
 		Eigen::Vector3f comBGlobal = linkInfo.nodeB->getCoMGlobal();
 
 		// force that is applied on objectA by objectB
         Eigen::Vector3f FBGlobal =  ftA.head(3);
-        Eigen::Vector3f TBGlobal =  ftB.tail(3) ;
+        Eigen::Vector3f TBGlobal =  ftB.tail(3);
 
-        Eigen::VectorXf torqueJointGlobal  = bulletRobot->getJointForceTorqueGlobal(linkInfo);//= TBGlobal  - (comBGlobal-jointGlobal).cross(FBGlobal) * 0.001;
-//        cout << "torqueJointGlobal: " << torqueJointGlobal << endl;
+        Eigen::VectorXf torqueJointGlobal = bulletRobot->getJointForceTorqueGlobal(linkInfo);//= TBGlobal  - (comBGlobal-jointGlobal).cross(FBGlobal) * 0.001;
         std::stringstream streamFTJoint;
         streamFTJoint.precision(1);
         streamFTJoint << "ForceTorqueJoint: "<< std::fixed;
@@ -484,9 +462,22 @@ void SimDynamicsWindow::updateJointInfo()
         }
         UI.label_ForceTorqueJoint->setText(QString::fromStdString(streamFTJoint.str()));
 
-		
+		/*
+		Eigen::Vector3f n = ftA.head(3);
+		float l = ftA.head(3).norm();
+		float w = 5.0f;
+		SoSeparator *forceA = new SoSeparator;
+		SoSeparator *arrowForceA = CoinVisualizationFactory::CreateArrow(n,l,w,VisualizationFactory::Color::Red());
+
+		// show as global coords 
+		Eigen::Matrix4f comGlobal = Eigen::Matrix4f::Identity();
+		comGlobal.block(0,3,3,1) = linkInfo.nodeA->getCoMGlobal();
+		SoMatrixTransform *m = CoinVisualizationFactory::getMatrixTransform(comGlobal);
+		forceA->addChild(m);
+		forceA->addChild(arrowForceA);
+		forceSep->addChild(forceA);
+
 		n = ftB.head(3);
-		//n = linkInfo.nodeB->toGlobalCoordinateSystemVec(n);
 		l = ftB.head(3).norm();
 		w = 5.0f;
 		SoSeparator *forceB = new SoSeparator;
@@ -497,34 +488,26 @@ void SimDynamicsWindow::updateJointInfo()
 		m = CoinVisualizationFactory::getMatrixTransform(comGlobal);
 		forceB->addChild(m);
 		forceB->addChild(arrowForceB);
-
 		forceSep->addChild(forceB);
-
-
-
-/*
-		if (!linkInfo.joint->needsFeedback())
-		{
-			linkInfo.joint->enableFeedback(true);
-			btJointFeedback* feedback = new btJointFeedback;
-			feedback->m_appliedForceBodyA = btVector3(0, 0, 0);
-			feedback->m_appliedForceBodyB = btVector3(0, 0, 0);
-			feedback->m_appliedTorqueBodyA = btVector3(0, 0, 0);
-			feedback->m_appliedTorqueBodyB = btVector3(0, 0, 0);
-			linkInfo.joint->setJointFeedback(feedback);
-		}
-		else
-		{
-			btJointFeedback* feedback = linkInfo.joint->getJointFeedback();
-			cout << "feedback->m_appliedForceBodyA: " << feedback->m_appliedForceBodyA[0] << "," << feedback->m_appliedForceBodyA[1] << "," << feedback->m_appliedForceBodyA[2] << endl;
-			cout << "feedback->m_appliedForceBodyB: " << feedback->m_appliedForceBodyB[0] << "," << feedback->m_appliedForceBodyB[1] << "," << feedback->m_appliedForceBodyB[2] << endl;
-			cout << "feedback->m_appliedTorqueBodyA: " << feedback->m_appliedTorqueBodyA[0] << "," << feedback->m_appliedTorqueBodyA[1] << "," << feedback->m_appliedTorqueBodyA[2] << endl;
-			cout << "feedback->m_appliedTorqueBodyB: " << feedback->m_appliedTorqueBodyB[0] << "," << feedback->m_appliedTorqueBodyB[1] << "," << feedback->m_appliedTorqueBodyB[2] << endl;
-
-		}
 		*/
+
+		Eigen::Vector3f n = bulletRobot->getJointTorques(rn);
+		float l = n.norm()*10;
+		float w = 5.0f;
+		SoSeparator* torqueSep = new SoSeparator();
+		SoSeparator* arrowTorque = CoinVisualizationFactory::CreateArrow(n,l,w,VisualizationFactory::Color::Red());
+
+		std::cout << "########## Joint torque: " <<  l << std::endl;
+
+		Eigen::Matrix4f originGlobal = rn->getGlobalPose();
+		std::cout << rn->getName() << ": " << originGlobal(2, 3) << std::endl;
+		originGlobal.block(0, 0, 3, 3) = Eigen::Matrix3f::Identity();
+		SoMatrixTransform *m = CoinVisualizationFactory::getMatrixTransform(originGlobal);
+		torqueSep->addChild(m);
+		torqueSep->addChild(arrowTorque);
+		forceSep->addChild(torqueSep);
 	}
-	
+
 	if (rn)
 	{
 		qMin = QString::number(rn->getJointLimitLo(),'f',4);

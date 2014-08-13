@@ -109,11 +109,11 @@ double TorqueMotorController::update(double positionError, double velocityError,
 	return 0.0f;
 }
 
-VelocityMotorController::VelocityMotorController(double maxVelocity, double maxAcceleration)
-    : positionController(15.0, 0.0, 0.0)
-, velocityController(15.0, 0.0, 0.0)
+VelocityMotorController::VelocityMotorController(double maxVelocity, double maxAcceleration, double maxJerk)
+: positionController(100.0, 0.0, 0.0)
 , maxVelocity(maxVelocity)
 , maxAcceleration(maxAcceleration)
+, maxJerk(maxJerk > 0 ? maxJerk : 15000)
 , velocity(0)
 , acceleration(0)
 {
@@ -127,33 +127,47 @@ double VelocityMotorController::update(double positionError, double targetVeloci
 		posUpdate = positionController.update(positionError, dt);
 	}
 
-	double output = 0.0f;
-	if (actuation.modes.position && actuation.modes.velocity)
-		output = posUpdate + targetVelocity;
-	else if (actuation.modes.position)
-		output = posUpdate;
-	else if (actuation.modes.velocity)
-    {
-        double velError = targetVelocity - velocity;
-        output = velocityController.update(velError, dt);
-    }
+	double output_velocity = 0.0;
 
-	if (maxVelocity > 0.0 && fabs(output) > maxVelocity)
+	// if we don't set a target velocity, stop 
+	if (!actuation.modes.velocity)
+		targetVelocity = 0;
+
+	output_velocity = posUpdate + targetVelocity;
+
+	if (maxVelocity > 0.0 && fabs(output_velocity) > maxVelocity)
 	{
-		double sign = output > 0 ? 1.0 : -1.0;
-		output = sign * maxVelocity;
+		double sign = output_velocity > 0 ? 1.0 : -1.0;
+		std::cout << "Limiting velocity: " << output_velocity << " -> " << sign * maxVelocity << std::endl;
+		output_velocity = sign * maxVelocity;
 	}
 
-	if (maxAcceleration > 0.0 && fabs(output - velocity)/dt > maxAcceleration)
+	double output_acceleration = (output_velocity - velocity) / dt;
+	if (maxAcceleration > 0.0 && fabs(output_acceleration) > maxAcceleration)
 	{
-		double sign = (output - velocity) > 0 ? 1.0 : -1.0;
+		double sign = output_acceleration > 0 ? 1.0 : -1.0;
 
-		output = velocity + sign * maxAcceleration*dt;
+		std::cout << "Limiting acceleration: " << output_acceleration << " -> " << sign * maxAcceleration << std::endl;
+		output_acceleration = sign * maxAcceleration;
+		output_velocity = velocity + output_acceleration*dt;
 	}
 
-	velocity = output;
+	/*
+	double output_jerk = (output_acceleration - acceleration) / dt;
+	if (fabs(output_jerk) > maxJerk)
+	{
+		double sign = output_jerk > 0 ? 1.0 : -1.0;
+		std::cout << "Limiting jerk: " << output_jerk << " -> " << sign * maxJerk << std::endl;
+		output_jerk = sign*maxJerk;
+		output_acceleration = output_jerk*dt;
+		output_velocity = velocity + output_acceleration*dt;
+	}
+	*/
 
-	return output;
+	velocity = output_velocity;
+	acceleration = output_acceleration;
+
+	return output_velocity;
 }
 
 void VelocityMotorController::reset()

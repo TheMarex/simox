@@ -99,7 +99,7 @@ private:
  */
 class SIMDYNAMICS_IMPORT_EXPORT VelocityMotorController {
 public:
-	VelocityMotorController(double maxVelocity=-1.0, double maxAcceleration=-1.0);
+	VelocityMotorController(double maxVelocity=-1.0, double maxAcceleration=-1.0, double maxJerk=-1);
 
 	VelocityMotorController(const PIDController& positionController);
 
@@ -118,7 +118,9 @@ private:
     PIDController positionController;
     double maxVelocity;
 	double maxAcceleration;
+	double maxJerk;
 	double velocity;
+	double acceleration;
 };
 
 }

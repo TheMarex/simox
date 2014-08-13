@@ -51,7 +51,7 @@ BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
             std::cout << "Found force torque sensor: " << node->getName() << std::endl;
         }
     }
-#ifdef 0
+#if 0
     std::string nameBodies = "BulletRobot_RNS_Bodies_All";
     std::vector<RobotNodePtr> rnAll = robot->getRobotNodes();
     std::vector<RobotNodePtr> rnsBodies;
@@ -538,11 +538,11 @@ void BulletRobot::actuateJoints(double dt)
             {
                 maxImpulse = it->second.node->getMaxTorque() * btScalar(dt);
             }*/
-#ifdef 0
+#if 0
             if (it->first->getName() == "Elbow R")
                 cout << "################### " << it->first->getName() <<": posActual:" << posActual << ", posTarget:" << posTarget << ", actvel:"  << velActual << ", target vel:" << targetVelocity << ", maxImpulse" << maxImpulse << endl;
 #endif
-#ifdef 0
+#if 0
             std::string nameBodies = "BulletRobot_RNS_Bodies_All";
             VirtualRobot::RobotNodeSetPtr rnsBodies = robot->getRobotNodeSet(nameBodies);
             Eigen::Vector3f v = getComVelocityGlobal(rnsBodies);
@@ -552,7 +552,7 @@ void BulletRobot::actuateJoints(double dt)
             }
 #endif
             hinge->enableAngularMotor(true, btScalar(targetVelocity), maxImpulse);
-#ifdef 0
+#if 0
             //std::string nameBodies = "BulletRobot_RNS_Bodies_All";
             //VirtualRobot::RobotNodeSetPtr rnsBodies = robot->getRobotNodeSet(nameBodies);
             v = getComVelocityGlobal(rnsBodies);

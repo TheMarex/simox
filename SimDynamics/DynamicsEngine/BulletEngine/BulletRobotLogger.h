@@ -2,6 +2,7 @@
 #define __BULLET_LOGGER_H__
 
 #include <Eigen/Dense>
+#include <VirtualRobot/RobotNodeSet.h>
 
 #include "BulletEngine.h"
 #include "BulletRobot.h"

@@ -250,7 +250,14 @@ RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, robotStructureDef &n
     newRobot->setRootNode(newNodes[newStructure.rootName]);
 
     std::string nodeName;
-    std::map<RobotNodePtr, Eigen::Matrix4f, std::less<RobotNodePtr>, Eigen::aligned_allocator<std::pair<const int, Eigen::Matrix4f> > > localTransformations;
+    typedef std::map<RobotNodePtr,
+                     Eigen::Matrix4f,
+                     std::less<RobotNodePtr>,
+                     Eigen::aligned_allocator<std::pair<const int, Eigen::Matrix4f> > >
+            NodeTransformationMapT;
+
+    NodeTransformationMapT localTransformations;
+    std::map<RobotNodePtr, bool> directionInversion;
 
     for (size_t i = 0; i < newStructure.parentChildMapping.size(); i++)
     {
@@ -293,10 +300,13 @@ RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, robotStructureDef &n
                 //localTransformations[parent] = tr;
                 Eigen::Matrix4f tr = parent->getLocalTransformation().inverse();
                 localTransformations[child] = tr;
+                // we also need to invert the direction
+                directionInversion[child] = true;
             }
             else
             {
                 localTransformations[child] = child->getLocalTransformation();
+                directionInversion[child] = false;
             }
         }
 
@@ -304,13 +314,21 @@ RobotPtr RobotFactory::cloneChangeStructure(RobotPtr robot, robotStructureDef &n
         if (localTransformations.find(parent) == localTransformations.end())
         {
             localTransformations[parent] = Eigen::Matrix4f::Identity();
+            directionInversion[parent] = false;
         }
     }
     // apply all transformations
-    std::map<RobotNodePtr, Eigen::Matrix4f, std::less<RobotNodePtr>, Eigen::aligned_allocator<std::pair<const int, Eigen::Matrix4f> > >::iterator it = localTransformations.begin();
+    NodeTransformationMapT::iterator it = localTransformations.begin();
     while (it != localTransformations.end())
     {
         it->first->localTransformation = it->second;
+        std::map<RobotNodePtr, bool>::iterator inv_it = directionInversion.find(it->first);
+        VR_ASSERT (inv_it != directionInversion.end());
+        RobotNodeRevolutePtr rotJoint = boost::dynamic_pointer_cast<RobotNodeRevolute>(it->first);
+        if (inv_it->second && rotJoint)
+        {
+            rotJoint->jointRotationAxis *= -1.0f;
+        }
         it++;
     }
     newRobot->getRootNode()->initialize();

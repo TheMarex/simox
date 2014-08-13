@@ -85,7 +85,7 @@ bool RobotNodeRevolute::initialize(SceneObjectPtr parent, const std::vector<Scen
 
 void RobotNodeRevolute::updateTransformationMatrices(const Eigen::Matrix4f &parentPose)
 {
-	Eigen::Affine3f tmpT(Eigen::AngleAxisf(this->getJointValue()+jointValueOffset,jointRotationAxis));
+	Eigen::Affine3f tmpT(Eigen::AngleAxisf(jointValue + jointValueOffset, jointRotationAxis));
 	globalPose = parentPose * getLocalTransformation() * tmpT.matrix();
 }
 

@@ -106,6 +106,8 @@ public:
     //! can be used to access the internal controllers
     std::map<VirtualRobot::RobotNodePtr, VelocityMotorController>& getControllers();
 
+    virtual bool attachObject(const std::string& nodeName, DynamicsObjectPtr object);
+
 protected:
 
 	virtual void createDynamicsNode(VirtualRobot::RobotNodePtr node);

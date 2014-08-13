@@ -162,6 +162,7 @@ public:
 	*/
 	std::vector<LinkInfo> getLinks(VirtualRobot::RobotNodePtr node);
 
+    virtual bool attachObject(const std::string &nodeName, DynamicsObjectPtr object);
 
 protected:
 	void buildBulletModels(bool enableJointMotors);
@@ -183,7 +184,9 @@ protected:
 
     std::vector<LinkInfo> links;
 
-	btScalar bulletMaxMotorImulse;
+    btScalar bulletMaxMotorImulse;
+    boost::shared_ptr<btTypedConstraint> createFixedJoint(boost::shared_ptr<btRigidBody> btBody1, boost::shared_ptr<btRigidBody> btBody2, Eigen::Matrix4f &anchor_inNode1, Eigen::Matrix4f &anchor_inNode2);
+    boost::shared_ptr<btTypedConstraint> createHingeJoint(boost::shared_ptr<btRigidBody> btBody1, boost::shared_ptr<btRigidBody> btBody2, Eigen::Matrix4f& coordSystemNode1, Eigen::Matrix4f& coordSystemNode2,  Eigen::Matrix4f& anchor_inNode1, Eigen::Matrix4f& anchor_inNode2, Eigen::Vector3f &axisGlobal, Eigen::Vector3f &axisLocal, Eigen::Matrix4f &coordSystemJoint, double limMinBT, double limMaxBT);
 };
 
 typedef boost::shared_ptr<BulletRobot> BulletRobotPtr;

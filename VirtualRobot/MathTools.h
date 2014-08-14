@@ -448,6 +448,32 @@ namespace MathTools
 		return res;
 	}
 
+	//! Returns nearest point to p on segment given by the two end points
+	template<typename VectorT>
+	inline VectorT nearestPointOnSegment(const VectorT& firstEndPoint, const VectorT& secondEndPoint, const VectorT &p)
+	{
+		VectorT direction = secondEndPoint - firstEndPoint;
+		direction /= direction.norm();
+		const BaseLine<VectorT> l(firstEndPoint, direction);
+		VR_ASSERT(l.isValid());
+
+		VectorT onLine = nearestPointOnLine<VectorT>(l, p);
+		double alpha = (onLine-firstEndPoint).dot(direction);
+
+		// point not on segment, below first end point
+		if (alpha < 0)
+		{
+			return firstEndPoint;
+		}
+		// point not on segment, above second end point
+		if (alpha > (secondEndPoint-firstEndPoint).norm())
+		{
+			return secondEndPoint;
+		}
+
+		return onLine;
+	}
+
 	//! Returns the distance of vector p to line l
 	template<typename VectorT>
 	inline float distPointLine( const BaseLine<VectorT> &l, const VectorT &p )
@@ -456,6 +482,13 @@ namespace MathTools
 			return -1.0f;
 		VectorT p2 = nearestPointOnLine<VectorT>(l, p);
 		return (p2-p).norm();
+	}
+
+	//! Returns the distance of vector p to segment given by the two end points
+	template<typename VectorT>
+	inline float distPointSegment( const VectorT& firstEndPoint, const VectorT& secondEndPoint, const VectorT& p)
+	{
+		return (p-nearestPointOnSegment(firstEndPoint, secondEndPoint, p)).norm();
 	}
 
 	//! Check if three points are collinear

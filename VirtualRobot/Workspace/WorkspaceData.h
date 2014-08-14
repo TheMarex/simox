@@ -80,14 +80,14 @@ public:
 
     virtual bool hasEntry(unsigned int x, unsigned int y, unsigned int z) = 0;
 
-    virtual unsigned char get(float x[], const WorkspaceRepresentation *workspace) const = 0;
+    virtual unsigned char get(float x[], const WorkspaceRepresentation *workspace) = 0;
 
     //! Simulates a multi-dimensional array access
     virtual unsigned char get(unsigned int x0, unsigned int x1, unsigned int x2,
-                             unsigned int x3, unsigned int x4, unsigned int x5) const = 0;
+                             unsigned int x3, unsigned int x4, unsigned int x5) = 0;
 
     //! Simulates a multi-dimensional array access
-    virtual unsigned char get( unsigned int x[6] ) const = 0;
+    virtual unsigned char get( unsigned int x[6] ) = 0;
 
     // clear all entrys
     virtual void clear() = 0;

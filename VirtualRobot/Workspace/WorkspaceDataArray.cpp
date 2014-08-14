@@ -181,7 +181,7 @@ const unsigned char *WorkspaceDataArray::getDataRot(unsigned int x, unsigned int
     return data[x*sizeTr0+y*sizeTr1+z];
 }
 
-unsigned char WorkspaceDataArray::get(float x[6], const WorkspaceRepresentation *workspace) const {
+unsigned char WorkspaceDataArray::get(float x[6], const WorkspaceRepresentation *workspace) {
     unsigned int v[6];
     if (workspace->getVoxelFromPose(x, v)) {
         return get(v);
@@ -223,7 +223,7 @@ int WorkspaceDataArray::sumAngleReachabilities(int x0, int x1, int x2)
     return res;
 }
 
-unsigned char WorkspaceDataArray::get(unsigned int x0, unsigned int x1, unsigned int x2, unsigned int x3, unsigned int x4, unsigned int x5) const
+unsigned char WorkspaceDataArray::get(unsigned int x0, unsigned int x1, unsigned int x2, unsigned int x3, unsigned int x4, unsigned int x5)
 {
     unsigned int posTr = 0, posRot = 0;
     getPos(x0,x1,x2,x3,x4,x5,posTr,posRot);
@@ -233,7 +233,7 @@ unsigned char WorkspaceDataArray::get(unsigned int x0, unsigned int x1, unsigned
         return 0;
 }
 
-unsigned char WorkspaceDataArray::get(unsigned int x[]) const
+unsigned char WorkspaceDataArray::get(unsigned int x[])
 {
     unsigned int posTr = 0, posRot = 0;
     getPos(x,posTr,posRot);

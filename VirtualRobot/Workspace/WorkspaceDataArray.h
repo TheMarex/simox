@@ -88,16 +88,16 @@ public:
 	*/
 	const unsigned char *getDataRot(unsigned int x, unsigned int y, unsigned int z);
 
-    unsigned char get(float x[], const WorkspaceRepresentation *workspace) const;
+    unsigned char get(float x[], const WorkspaceRepresentation *workspace);
 
     int getMaxSummedAngleReachablity();
 
 	//! Simulates a multi-dimensional array access
     inline unsigned char get(unsigned int x0, unsigned int x1, unsigned int x2,
-                             unsigned int x3, unsigned int x4, unsigned int x5) const;
+                             unsigned int x3, unsigned int x4, unsigned int x5);
 
 	//! Simulates a multi-dimensional array access
-    inline unsigned char get( unsigned int x[6] ) const;
+    inline unsigned char get( unsigned int x[6]);
 
 	bool hasEntry(unsigned int x, unsigned int y, unsigned int z);
 

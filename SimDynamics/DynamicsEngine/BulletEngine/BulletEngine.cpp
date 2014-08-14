@@ -575,4 +575,62 @@ double BulletEngine::getSimTime()
 }
 
 
+bool BulletEngine::attachObjectToRobot(DynamicsRobotPtr r, const std::string &nodeName, DynamicsObjectPtr object)
+{
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
+    if (!r)
+        return false;
+
+
+    BulletRobotPtr br = boost::dynamic_pointer_cast<BulletRobot>(r);
+    if (!br)
+    {
+        VR_ERROR << "no bullet robot" << endl;
+        return false;
+    }
+    BulletRobot::LinkInfoPtr link = br->attachObjectLink(nodeName,object);
+    if (!link)
+    {
+        VR_ERROR << "Failed to create bullet robot link" << endl;
+        return false;
+    }
+
+    return addLink(*link);
+}
+
+bool BulletEngine::detachObjectFromRobot(DynamicsRobotPtr r, DynamicsObjectPtr object)
+{
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
+    if (!r)
+        return false;
+
+
+    BulletRobotPtr br = boost::dynamic_pointer_cast<BulletRobot>(r);
+    if (!br)
+    {
+        VR_ERROR << "no bullet robot" << endl;
+        return false;
+    }
+    BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(object);
+    if (!bo)
+    {
+        VR_ERROR << "no bullet object" << endl;
+        return false;
+    }
+    std::vector<BulletRobot::LinkInfo> links = br->getLinks(bo);
+    for (size_t i=0;i<links.size(); i++)
+    {
+        removeLink(links[i]);
+    }
+
+    bool res = br->detachObject(object);
+    if (!res)
+    {
+        VR_ERROR << "Failed to detach object" << endl;
+        return false;
+    }
+
+    return true;
+}
+
 } // namespace SimDynamics

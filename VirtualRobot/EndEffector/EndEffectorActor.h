@@ -53,6 +53,8 @@ public:
 
 	EndEffectorActor(const std::string &name, const std::vector< ActorDefinition > &a, CollisionCheckerPtr colChecker = CollisionCheckerPtr());
 
+    std::vector<ActorDefinition> getDefinition();
+
 	/*!
 		Clones the EndEffectorActor with respect to the given robot. Note that unlike the clone-methods of
 		RobotNodeSet and EndEffector, this method does not register anything with the robot.

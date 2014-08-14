@@ -24,7 +24,12 @@ EndEffectorActor::EndEffectorActor(const std::string &name, const std::vector< A
 {
 	this->colChecker = colChecker;
 	if(!this->colChecker)
-		this->colChecker = CollisionChecker::getGlobalCollisionChecker();
+        this->colChecker = CollisionChecker::getGlobalCollisionChecker();
+}
+
+std::vector<EndEffectorActor::ActorDefinition> EndEffectorActor::getDefinition()
+{
+    return actors;
 }
 
 EndEffectorActorPtr EndEffectorActor::clone(RobotPtr newRobot)

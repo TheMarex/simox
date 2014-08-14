@@ -150,6 +150,10 @@ public:
     */
     double getSimTime();
 
+    virtual bool attachObjectToRobot(DynamicsRobotPtr r, const std::string &nodeName, DynamicsObjectPtr object);
+    virtual bool detachObjectFromRobot(DynamicsRobotPtr r, DynamicsObjectPtr object);
+
+
 	/*!
 		Transforms pose to bullet.
 		Translation is scaled from mm to m.

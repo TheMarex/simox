@@ -34,6 +34,7 @@ namespace SimDynamics
 {
 class SIMDYNAMICS_IMPORT_EXPORT DynamicsRobot
 {
+    friend class DynamicsEngine;
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -106,11 +107,14 @@ public:
     //! can be used to access the internal controllers
     std::map<VirtualRobot::RobotNodePtr, VelocityMotorController>& getControllers();
 
-    virtual bool attachObject(const std::string& nodeName, DynamicsObjectPtr object);
 
 protected:
 
 	virtual void createDynamicsNode(VirtualRobot::RobotNodePtr node);
+
+    //! creates a link and attaches object to internal data structure
+    virtual bool attachObject(const std::string& nodeName, DynamicsObjectPtr object);
+    virtual bool detachObject(DynamicsObjectPtr object);
 
 
 	struct robotNodeActuationTarget

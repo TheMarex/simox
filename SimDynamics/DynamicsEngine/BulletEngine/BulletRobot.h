@@ -32,6 +32,7 @@ namespace SimDynamics
 {
 class SIMDYNAMICS_IMPORT_EXPORT BulletRobot : public DynamicsRobot
 {
+    friend class BulletEngine;
 public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -57,6 +58,8 @@ public:
 		boost::shared_ptr<btTypedConstraint> joint;
 		double jointValueOffset; // offset simox -> bullet joint values
 	};
+
+    typedef boost::shared_ptr<LinkInfo> LinkInfoPtr;
 
 
     /**
@@ -155,17 +158,31 @@ public:
 	/*!
 		Returns link where the given node is the joint node.
 	*/
-	LinkInfo getLink(VirtualRobot::RobotNodePtr node);
+    LinkInfo getLink(VirtualRobot::RobotNodePtr node);
+
+    //! Get link that connects both objects
+    LinkInfo getLink(BulletObjectPtr object1, BulletObjectPtr object2);
 
 	/*!
 		Returns all links where the given node is involved (bodyA, bodyB or joint)
 	*/
-	std::vector<LinkInfo> getLinks(VirtualRobot::RobotNodePtr node);
+    std::vector<LinkInfo> getLinks(VirtualRobot::RobotNodePtr node);
 
-    virtual bool attachObject(const std::string &nodeName, DynamicsObjectPtr object);
+    /*!
+        Returns all links where the given node is involved (dynNode1 or dynNode2)
+    */
+    std::vector<LinkInfo> getLinks(BulletObjectPtr node);
+
 
 protected:
 	void buildBulletModels(bool enableJointMotors);
+
+    //! creates a link and attaches object to internal data structure
+    virtual bool attachObject(const std::string& nodeName, DynamicsObjectPtr object);
+    LinkInfoPtr attachObjectLink(const std::string& nodeName, DynamicsObjectPtr object);
+
+    virtual bool detachObject(DynamicsObjectPtr object);
+
 
     //void createLink( VirtualRobot::RobotNodePtr bodyA, VirtualRobot::RobotNodePtr joint, VirtualRobot::RobotNodePtr bodyB, Eigen::Matrix4f &trafoA2J, Eigen::Matrix4f &trafoJ2B, bool enableJointMotors = true );
     // Possible joint types:
@@ -181,6 +198,9 @@ protected:
 
     // process all ignoreCollision tags of physics section of RobotNode. Adds according collision disabled information to physics engine.
     void addIgnoredCollisionModels(VirtualRobot::RobotNodePtr rn);
+
+    // removes all links in list where dynNode1 and dynNode2 are as given in l
+    bool removeLink(const LinkInfo& l);
 
     std::vector<LinkInfo> links;
 

@@ -27,6 +27,8 @@
 using namespace VirtualRobot;
 using namespace std;
 
+//#define PRINT_TEST_DEBUG_MESSAGES
+
 namespace SimDynamics {
 
 BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
@@ -51,20 +53,6 @@ BulletRobot::BulletRobot(VirtualRobot::RobotPtr rob, bool enableJointMotors)
             std::cout << "Found force torque sensor: " << node->getName() << std::endl;
         }
     }
-#if 0
-    std::string nameBodies = "BulletRobot_RNS_Bodies_All";
-    std::vector<RobotNodePtr> rnAll = robot->getRobotNodes();
-    std::vector<RobotNodePtr> rnsBodies;
-    for (size_t i=0;i<rnAll.size();i++)
-    {
-        RobotNodePtr r = rnAll[i];
-        //if (r->isRotationalJoint() || r->isTranslationalJoint())
-        //    rnsJoints.push_back(r);
-        if (r->getMass()>0)
-            rnsBodies.push_back(r);
-    }
-    RobotNodeSetPtr rnsB = RobotNodeSet::createRobotNodeSet(getRobot(),nameBodies,rnsBodies,RobotNodePtr(),RobotNodePtr(),true);
-#endif
 }
 	
 BulletRobot::~BulletRobot()
@@ -171,6 +159,22 @@ void BulletRobot::addIgnoredCollisionModels(RobotNodePtr rn)
             DynamicsWorld::GetWorld()->getEngine()->disableCollision(drn1.get(),drn2.get());
         }
     }
+}
+
+bool BulletRobot::removeLink(const BulletRobot::LinkInfo &l)
+{
+    bool result = false;
+    std::vector<LinkInfo>::iterator it = links.begin();
+    while (it!=links.end())
+    {
+        if (it->dynNode1==l.dynNode1 && it->dynNode2== l.dynNode2)
+        {
+            it = links.erase(it);
+            result = true;
+        } else
+            it++;
+    }
+    return result;
 }
 
 boost::shared_ptr<btTypedConstraint> BulletRobot::createHingeJoint(boost::shared_ptr<btRigidBody> btBody1, boost::shared_ptr<btRigidBody> btBody2, Eigen::Matrix4f& coordSystemNode1, Eigen::Matrix4f& coordSystemNode2,  Eigen::Matrix4f& anchor_inNode1, Eigen::Matrix4f& anchor_inNode2, Eigen::Vector3f &axisGlobal, Eigen::Vector3f &axisLocal, Eigen::Matrix4f &coordSystemJoint, double limMinBT, double limMaxBT)
@@ -551,31 +555,12 @@ void BulletRobot::actuateJoints(double dt)
             {
                 maxImpulse = it->second.node->getMaxTorque() * btScalar(dt);
             }*/
-#if 1
+#if PRINT_TEST_DEBUG_MESSAGES
             if (it->first->getName() == "Elbow R")
                 cout << "################### " << it->first->getName() <<": posActual:" << posActual << ", posTarget:" << posTarget << ", actvel:"  << velActual << ", target vel:" << targetVelocity << ", maxImpulse" << maxImpulse << endl;
 #endif
-#if 0
-            std::string nameBodies = "BulletRobot_RNS_Bodies_All";
-            VirtualRobot::RobotNodeSetPtr rnsBodies = robot->getRobotNodeSet(nameBodies);
-            Eigen::Vector3f v = getComVelocityGlobal(rnsBodies);
-            if (boost::math::isnan(v(0)) || boost::math::isnan(v(1)) || boost::math::isnan(v(2)))
-            {
-                VR_ERROR << "NAN before bullet call!!!" << endl;
-            }
-#endif
+
             hinge->enableAngularMotor(true, btScalar(targetVelocity), maxImpulse);
-#if 0
-            //std::string nameBodies = "BulletRobot_RNS_Bodies_All";
-            //VirtualRobot::RobotNodeSetPtr rnsBodies = robot->getRobotNodeSet(nameBodies);
-            v = getComVelocityGlobal(rnsBodies);
-            if (boost::math::isnan(v(0)) || boost::math::isnan(v(1)) || boost::math::isnan(v(2)))
-            {
-                VR_ERROR << "NAN after bullet call!!!" << endl;
-            }
-#endif
-
-
 
 #endif
         }
@@ -667,7 +652,19 @@ BulletRobot::LinkInfo BulletRobot::getLink( VirtualRobot::RobotNodePtr node )
 			return links[i];
 	}
 	THROW_VR_EXCEPTION("No link with node " << node->getName());
-	return LinkInfo();
+    return LinkInfo();
+}
+
+BulletRobot::LinkInfo BulletRobot::getLink(BulletObjectPtr object1, BulletObjectPtr object2)
+{
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
+    for (size_t i=0;i<links.size();i++)
+    {
+        if ( (links[i].dynNode1 == object1 && links[i].dynNode2 == object2) || (links[i].dynNode1 == object2 && links[i].dynNode2 == object1))
+            return links[i];
+    }
+    VR_WARNING << "No link with nodes: " << object1->getName() << " and " << object2->getName() << endl;
+    return LinkInfo();
 }
 
 std::vector<BulletRobot::LinkInfo> BulletRobot::getLinks( VirtualRobot::RobotNodePtr node )
@@ -682,23 +679,42 @@ std::vector<BulletRobot::LinkInfo> BulletRobot::getLinks( VirtualRobot::RobotNod
     return result;
 }
 
+std::vector<BulletRobot::LinkInfo> BulletRobot::getLinks(BulletObjectPtr node)
+{
+    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
+    std::vector<BulletRobot::LinkInfo> result;
+    for (size_t i=0;i<links.size();i++)
+    {
+        if (links[i].dynNode1 == node || links[i].dynNode2 == node)
+            result.push_back(links[i]);
+    }
+    return result;
+
+}
+
 bool BulletRobot::attachObject(const string &nodeName, DynamicsObjectPtr object)
 {
+    return attachObjectLink(nodeName,object);
+}
+
+BulletRobot::LinkInfoPtr BulletRobot::attachObjectLink(const string &nodeName, DynamicsObjectPtr object)
+{
+    BulletRobot::LinkInfoPtr result;
     if (!robot || !robot->hasRobotNode(nodeName))
     {
         VR_ERROR << "no node with name " << nodeName << endl;
-        return false;
+        return result;
     }
     if (!object)
     {
         VR_ERROR << "no object " << endl;
-        return false;
+        return result;
     }
     BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(object);
     if (!bo)
     {
         VR_ERROR << "no bullet object " << endl;
-        return false;
+        return result;
     }
 
     RobotNodePtr nodeA = robot->getRobotNode(nodeName);
@@ -716,14 +732,14 @@ bool BulletRobot::attachObject(const string &nodeName, DynamicsObjectPtr object)
         if (!drn)
         {
             VR_ERROR << "No dynamics object..." << endl;
-            return false;
+            return result;
         }
     }
     BulletObjectPtr bdrn = boost::dynamic_pointer_cast<BulletObject>(drn);
     if (!bo)
     {
         VR_ERROR << "no bullet robot object " << endl;
-        return false;
+        return result;
     }
 
     // create bullet joint
@@ -754,24 +770,62 @@ bool BulletRobot::attachObject(const string &nodeName, DynamicsObjectPtr object)
 
     boost::shared_ptr<btTypedConstraint> jointbt = createFixedJoint(btBody1, btBody2, anchor_inNode1, anchor_inNode2);
 
-    LinkInfo i;
-    i.nodeA = nodeA;
+    result.reset(new LinkInfo());
+    result->nodeA = nodeA;
     //i.nodeB = ;
-    i.dynNode1 = bdrn;
-    i.dynNode2 = bo;
-    //i.nodeJoint = joint;
+    result->dynNode1 = bdrn;
+    result->dynNode2 = bo;
+    result->nodeJoint = nodeA;
     //i.nodeJoint2 = joint2;
-    i.joint = jointbt;
-    i.jointValueOffset = 0;
+    result->joint = jointbt;
+    result->jointValueOffset = 0;
 
     // disable col model
-    i.disabledCollisionPairs.push_back(
+    result->disabledCollisionPairs.push_back(
         std::pair<DynamicsObjectPtr,DynamicsObjectPtr>(
         drn,
         object));
 
-    links.push_back(i);
-    return true;
+    links.push_back(*result);
+
+    VR_INFO << "Attached object " << object->getName() << " to node " << nodeName << endl;
+    return result;
+}
+
+bool BulletRobot::detachObject(DynamicsObjectPtr object)
+{
+    BulletRobot::LinkInfoPtr result;
+    if (!robot)
+    {
+        VR_ERROR << "no robot " << endl;
+        return false;
+    }
+    if (!object)
+    {
+        VR_ERROR << "no object " << endl;
+        return false;
+    }
+    BulletObjectPtr bo = boost::dynamic_pointer_cast<BulletObject>(object);
+    if (!bo)
+    {
+        VR_ERROR << "no bullet object " << endl;
+        return false;
+    }
+
+    bool res = true;
+    std::vector<LinkInfo> ls = getLinks(bo);
+    if (ls.size()==0)
+    {
+        VR_ERROR << "No link with object " << object->getName() << endl;
+        return true; // not a failure, object is not attached
+    }
+    for (size_t i=0;i<ls.size();i++)
+    {
+        res = res & removeLink(ls[i]);
+    }
+
+    VR_INFO << "Detached object " << object->getName() << " from robot " << robot->getName() << endl;
+    return res;
 }
 
 bool BulletRobot::hasLink( VirtualRobot::RobotNodePtr node )
@@ -994,11 +1048,20 @@ double BulletRobot::getJointSpeed( VirtualRobot::RobotNodePtr rn )
         VR_WARNING << "NYI" << endl;
        return 0.0;
 	}
+    boost::shared_ptr<RobotNodeRevolute> rnRevJoint = boost::dynamic_pointer_cast<RobotNodeRevolute>(link.nodeJoint);
 
     Eigen::Vector3f deltaVel = link.dynNode1->getAngularVelocity() - link.dynNode2->getAngularVelocity();
-    boost::shared_ptr<RobotNodeRevolute> rnRevJoint = boost::dynamic_pointer_cast<RobotNodeRevolute>(link.nodeJoint);
     double speed = deltaVel.dot(rnRevJoint->getJointRotationAxis());
     return speed;//hinge->getMotorTargetVelosity();
+
+    /*
+     * // does the same:
+     double result = 0;
+     Eigen::Vector3f globalAxis = rnRevJoint->getJointRotationAxis();
+     result += globalAxis.dot(link.dynNode2->getAngularVelocity());
+     result -= globalAxis.dot(link.dynNode1->getAngularVelocity());
+     return result;*/
+
 #endif
 }
 

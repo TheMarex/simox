@@ -84,6 +84,13 @@ public:
 	virtual bool addRobot(DynamicsRobotPtr r);
 	virtual bool removeRobot(DynamicsRobotPtr r);
 
+    virtual bool attachObjectToRobot(const std::string& robotName, const std::string& nodeName, DynamicsObjectPtr object);
+    virtual bool attachObjectToRobot(DynamicsRobotPtr r, const std::string& nodeName, DynamicsObjectPtr object);
+
+    virtual bool detachObjectFromRobot(const std::string& robotName, DynamicsObjectPtr object);
+    virtual bool detachObjectFromRobot(DynamicsRobotPtr r, DynamicsObjectPtr object);
+
+
 	std::vector<DynamicsRobotPtr> getRobots();
 
 	/*!
@@ -154,6 +161,7 @@ public:
         An empty pointer is returned if no dynamic robot created from r has been added so far.
     */
     virtual DynamicsRobotPtr getRobot(VirtualRobot::RobotPtr r);
+    virtual DynamicsRobotPtr getRobot(const std::string &robName);
 
     typedef boost::shared_ptr< boost::recursive_mutex::scoped_lock > MutexLockPtr;
 

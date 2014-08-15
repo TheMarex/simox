@@ -96,13 +96,6 @@ void DynamicsRobot::actuateNode( VirtualRobot::RobotNodePtr node, double jointVa
 	//	createDynamicsNode(node);
 
 
-#if 1
-    if (node->getName()=="Elbow R")
-    {
-        cout << "##### +++++ New Node target:" << node->getName() << ", jointValue:" << jointValue << endl;
-    }
-#endif
-
     robotNodeActuationTarget target;
     target.actuation.modes.position = 1;
     target.node = node;
@@ -320,11 +313,6 @@ void DynamicsRobot::setMutex(boost::shared_ptr<boost::recursive_mutex> engineMut
 std::map<VirtualRobot::RobotNodePtr, VelocityMotorController>& DynamicsRobot::getControllers()
 {
     return actuationControllers;
-}
-
-bool DynamicsRobot::attachObject(const std::string &nodeName, DynamicsObjectPtr object)
-{
-    return false;
 }
 
 /*

@@ -142,8 +142,6 @@ void BulletCoinQtViewer::initSceneGraph( QFrame* embedViewer, SoNode* scene )
 		sceneGraph->addChild(scene);
 
 	viewer->setSceneGraph(sceneGraphRoot);
-    viewer->setAntialiasing(true, 4);
-
 	viewer->viewAll();
 }
 

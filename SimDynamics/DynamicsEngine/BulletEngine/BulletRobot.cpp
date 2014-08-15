@@ -771,7 +771,6 @@ bool BulletRobot::attachObject(const string &nodeName, DynamicsObjectPtr object)
         object));
 
     links.push_back(i);
-    return true;
 }
 
 bool BulletRobot::hasLink( VirtualRobot::RobotNodePtr node )

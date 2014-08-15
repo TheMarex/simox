@@ -326,10 +326,6 @@ bool DynamicsRobot::attachObject(const std::string &nodeName, DynamicsObjectPtr 
 {
     return false;
 }
-bool DynamicsRobot::detachObject(DynamicsObjectPtr object)
-{
-    return false;
-}
 
 /*
 void DynamicsRobot::setPose( const Eigen::Matrix4f &pose )

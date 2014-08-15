@@ -98,52 +98,7 @@ bool DynamicsEngine::removeRobot( DynamicsRobotPtr r )
 		return false;
 
 	robots.erase(it);
-    return true;
-}
-
-bool DynamicsEngine::attachObjectToRobot(const std::string &robotName, const std::string &nodeName, DynamicsObjectPtr object)
-{
-    DynamicsRobotPtr r = getRobot(robotName);
-    if (!r)
-    {
-        VR_ERROR << "No robot with name " << robotName << endl;
-        return false;
-    }
-    return attachObjectToRobot(r,nodeName,object);
-}
-
-bool DynamicsEngine::attachObjectToRobot(DynamicsRobotPtr r, const std::string &nodeName, DynamicsObjectPtr object)
-{
-    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
-    if (!r)
-        return false;
-    if (!r->attachObject(nodeName,object))
-        return false;
-
-    return true;
-}
-
-bool DynamicsEngine::detachObjectFromRobot(const std::string &robotName, DynamicsObjectPtr object)
-{
-    DynamicsRobotPtr r = getRobot(robotName);
-    if (!r)
-    {
-        VR_ERROR << "No robot with name " << robotName << endl;
-        return false;
-    }
-    return detachObjectFromRobot(r,object);
-
-}
-
-bool DynamicsEngine::detachObjectFromRobot(DynamicsRobotPtr r, DynamicsObjectPtr object)
-{
-    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
-    if (!r)
-        return false;
-    if (!r->detachObject(object))
-        return false;
-
-    return true;
+	return true;
 }
 
 void DynamicsEngine::disableCollision( DynamicsObject* o1, DynamicsObject* o2 )
@@ -276,19 +231,6 @@ SimDynamics::DynamicsRobotPtr DynamicsEngine::getRobot( VirtualRobot::RobotPtr r
     for (size_t i=0;i<robots.size();i++)
     {
         if (robots[i]->getRobot() == r)
-        {
-            return robots[i];
-        }
-    }
-    return DynamicsRobotPtr();
-}
-
-DynamicsRobotPtr DynamicsEngine::getRobot(const std::string &robName)
-{
-    boost::recursive_mutex::scoped_lock scoped_lock(*engineMutexPtr);
-    for (size_t i=0;i<robots.size();i++)
-    {
-        if (robots[i]->getName() == robName)
         {
             return robots[i];
         }

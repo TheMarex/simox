@@ -676,11 +676,16 @@ std::string MathTools::getTransformXMLString(const Eigen::Matrix3f &m, const std
 
 Eigen::Vector3f MathTools::transformPosition( const Eigen::Vector3f &pos, const Eigen::Matrix4f &m )
 {
-	Eigen::Matrix4f t;
-	t.setIdentity();
-	t.block(0,3,3,1)=pos;
+	Eigen::Vector4f t(pos.x(), pos.y(), pos.z(), 1);
 	t = m * t;
-	return t.block(0,3,3,1);
+	return t.head(3);
+}
+
+Eigen::Vector2f MathTools::transformPosition( const Eigen::Vector2f &pos, const Eigen::Matrix4f &m )
+{
+	Eigen::Vector4f t(pos.x(), pos.y(), 0, 1);
+	t = m * t;
+	return t.head(2);
 }
 
 bool VIRTUAL_ROBOT_IMPORT_EXPORT MathTools::onNormalPointingSide( const Eigen::Vector3f &point, const Plane &p )

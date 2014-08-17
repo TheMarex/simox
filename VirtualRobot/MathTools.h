@@ -513,6 +513,12 @@ namespace MathTools
 	*/
 	Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT transformPosition(const Eigen::Vector3f &pos, const Eigen::Matrix4f &m);
 
+	/*!
+		This method can be used to multiply a 2d position with a matrix
+		result = m * pos
+	*/
+	Eigen::Vector2f VIRTUAL_ROBOT_IMPORT_EXPORT transformPosition(const Eigen::Vector2f &pos, const Eigen::Matrix4f &m);
+
 	//! Get a random point inside the triangle that is spanned by v1, v2 and v3
 	Eigen::Vector3f VIRTUAL_ROBOT_IMPORT_EXPORT randomPointInTriangle(const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const Eigen::Vector3f &v3);
 

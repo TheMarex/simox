@@ -34,15 +34,16 @@ const Eigen::VectorXf &ForceTorqueSensor::getForceTorque()
     return forceTorqueValues;
 }
 
-double ForceTorqueSensor::getAxisTorque()
+Eigen::Vector3f ForceTorqueSensor::getAxisTorque()
 {
 	Eigen::Vector3f torqueVector = forceTorqueValues.tail(3);
 
 	// project onto joint axis
 	RobotNodePtr rn(robotNode);
-	double torque = (torqueVector.adjoint() * rn->getGlobalPose().block(0, 2, 3, 1))(0, 0);
+    Eigen::Vector3f zAxis = rn->getGlobalPose().block(0, 2, 3, 1);
+	Eigen::Vector3f axisTorque = (torqueVector.dot(zAxis)) * zAxis;
 
-	return torque;
+	return axisTorque;
 }
 
 

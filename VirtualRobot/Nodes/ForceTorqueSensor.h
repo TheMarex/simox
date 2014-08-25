@@ -64,9 +64,9 @@ public:
     Eigen::Vector3f getTorque() const;
 
 	/**
-	 * Projects torque on joint axis and returns amplitude.
+	 * Projects torque on joint axis
 	 */
-	double getAxisTorque();
+    Eigen::Vector3f getAxisTorque();
 
 	/*!
 		Print status information.

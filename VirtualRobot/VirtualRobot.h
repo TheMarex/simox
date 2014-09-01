@@ -144,6 +144,9 @@ namespace VirtualRobot
     using std::cout;
     using std::endl;
 
+    class CoMIK;
+    class DifferentialIK;
+    class HierarchicalIK;
     class DHParameter;
     class RobotNode;
     class RobotNodeFactory;
@@ -180,6 +183,9 @@ namespace VirtualRobot
 	class ForceTorqueSensor;
 	class ContactSensor;
 
+    typedef boost::shared_ptr<CoMIK> CoMIKPtr;
+    typedef boost::shared_ptr<HierarchicalIK> HierarchicalIKPtr;
+    typedef boost::shared_ptr<DifferentialIK> DifferentialIKPtr;
     typedef boost::shared_ptr<RobotNode> RobotNodePtr;
     typedef boost::shared_ptr<RobotNodeSet> RobotNodeSetPtr;
     typedef boost::shared_ptr<KinematicChain> KinematicChainPtr;
